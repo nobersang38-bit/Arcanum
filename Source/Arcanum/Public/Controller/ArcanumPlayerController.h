@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Templates/SubclassOf.h"
 #include "GameFramework/PlayerController.h"
-#include "DefenseBattleProjectPlayerController.generated.h"
+#include "ArcanumPlayerController.generated.h"
 
 class UNiagaraSystem;
 class UInputMappingContext;
@@ -14,12 +14,12 @@ class UInputAction;
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
 UCLASS()
-class ADefenseBattleProjectPlayerController : public APlayerController
+class AArcanumPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
 public:
-	ADefenseBattleProjectPlayerController();
+	AArcanumPlayerController();
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	float ShortPressThreshold;
@@ -52,7 +52,7 @@ protected:
 private:
 	FVector CachedDestination;
 
-	bool bIsTouch; // 터치 기기인가?
+	bool bIsTouch;    // 터치 기기인가?
 	float FollowTime; // 얼마나 오랫동안 Press 눌렀나?
 };
 

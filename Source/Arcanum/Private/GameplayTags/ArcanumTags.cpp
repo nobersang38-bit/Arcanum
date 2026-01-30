@@ -1,12 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ArcanumTags.h"
+#include "GameplayTags/ArcanumTags.h"
 
-ArcanumTags::ArcanumTags()
-{
-}
 
-ArcanumTags::~ArcanumTags()
-{
-}

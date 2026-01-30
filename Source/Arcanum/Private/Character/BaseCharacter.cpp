@@ -1,17 +1,17 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "DefenseBattleProjectCharacter.h"
+#include "Character/BaseCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Camera/CameraComponent.h"
 #include "Components/DecalComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/PlayerController.h"
+#include "Controller/ArcanumPlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Materials/Material.h"
 #include "Engine/World.h"
 
-ADefenseBattleProjectCharacter::ADefenseBattleProjectCharacter()
+ABaseCharacter::ABaseCharacter()
 {
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
@@ -39,7 +39,7 @@ ADefenseBattleProjectCharacter::ADefenseBattleProjectCharacter()
 	PrimaryActorTick.bStartWithTickEnabled = true;
 }
 
-void ADefenseBattleProjectCharacter::Tick(float DeltaSeconds)
+void ABaseCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
 }

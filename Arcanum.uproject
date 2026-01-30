@@ -5,7 +5,7 @@
 	"Description": "",
 	"Modules": [
 		{
-			"Name": "DefenseBattleProject",
+			"Name": "Arcanum",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}

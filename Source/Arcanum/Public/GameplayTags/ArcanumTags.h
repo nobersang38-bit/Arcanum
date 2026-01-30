@@ -7,9 +7,7 @@
 /**
  * 
  */
-class DEFENSEBATTLEPROJECT_API ArcanumTags
+class ARCANUM_API ArcanumTags
 {
-public:
-	ArcanumTags();
-	~ArcanumTags();
+
 };

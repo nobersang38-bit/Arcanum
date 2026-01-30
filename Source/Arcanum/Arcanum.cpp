@@ -5,5 +5,5 @@
 
 IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, Arcanum, "Arcanum" );
 
-DEFINE_LOG_CATEGORY(LogDefenseBattleProject)
+DEFINE_LOG_CATEGORY(LogArcanum)
  

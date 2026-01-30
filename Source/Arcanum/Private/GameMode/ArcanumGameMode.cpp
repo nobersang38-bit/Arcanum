@@ -1,14 +1,14 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "DefenseBattleProjectGameMode.h"
-#include "DefenseBattleProjectPlayerController.h"
-#include "DefenseBattleProjectCharacter.h"
+#include "GameMode/ArcanumGameMode.h"
+#include "Controller/ArcanumPlayerController.h"
+#include "Character/BaseCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 
-ADefenseBattleProjectGameMode::ADefenseBattleProjectGameMode()
+AArcanumGameMode::AArcanumGameMode()
 {
 	// use our custom PlayerController class
-	PlayerControllerClass = ADefenseBattleProjectPlayerController::StaticClass();
+	PlayerControllerClass = AArcanumPlayerController::StaticClass();
 
 	// set default pawn class to our Blueprinted character
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/TopDown/Blueprints/BP_TopDownCharacter"));

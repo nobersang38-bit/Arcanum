@@ -1,11 +1,11 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "DefenseBattleProjectPlayerController.h"
+#include "Controller/ArcanumPlayerController.h"
 #include "GameFramework/Pawn.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "NiagaraSystem.h"
 #include "NiagaraFunctionLibrary.h"
-#include "DefenseBattleProjectCharacter.h"
+#include "Character/BaseCharacter.h"
 #include "Engine/World.h"
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
@@ -14,7 +14,7 @@
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
-ADefenseBattleProjectPlayerController::ADefenseBattleProjectPlayerController()
+AArcanumPlayerController::AArcanumPlayerController()
 {
 	bShowMouseCursor = true;
 	DefaultMouseCursor = EMouseCursor::Default;
@@ -22,12 +22,12 @@ ADefenseBattleProjectPlayerController::ADefenseBattleProjectPlayerController()
 	FollowTime = 0.f;
 }
 
-void ADefenseBattleProjectPlayerController::BeginPlay()
+void AArcanumPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-void ADefenseBattleProjectPlayerController::SetupInputComponent()
+void AArcanumPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
@@ -38,15 +38,15 @@ void ADefenseBattleProjectPlayerController::SetupInputComponent()
 
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
 	{
-		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &ADefenseBattleProjectPlayerController::OnInputStarted);
-		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Triggered, this, &ADefenseBattleProjectPlayerController::OnSetDestinationTriggered);
-		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Completed, this, &ADefenseBattleProjectPlayerController::OnSetDestinationReleased);
-		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Canceled, this, &ADefenseBattleProjectPlayerController::OnSetDestinationReleased);
+		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &AArcanumPlayerController::OnInputStarted);
+		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Triggered, this, &AArcanumPlayerController::OnSetDestinationTriggered);
+		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Completed, this, &AArcanumPlayerController::OnSetDestinationReleased);
+		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Canceled, this, &AArcanumPlayerController::OnSetDestinationReleased);
 
-		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Started, this, &ADefenseBattleProjectPlayerController::OnInputStarted);
-		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Triggered, this, &ADefenseBattleProjectPlayerController::OnTouchTriggered);
-		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Completed, this, &ADefenseBattleProjectPlayerController::OnTouchReleased);
-		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Canceled, this, &ADefenseBattleProjectPlayerController::OnTouchReleased);
+		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Started, this, &AArcanumPlayerController::OnInputStarted);
+		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Triggered, this, &AArcanumPlayerController::OnTouchTriggered);
+		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Completed, this, &AArcanumPlayerController::OnTouchReleased);
+		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Canceled, this, &AArcanumPlayerController::OnTouchReleased);
 	}
 	else
 	{
@@ -54,12 +54,12 @@ void ADefenseBattleProjectPlayerController::SetupInputComponent()
 	}
 }
 
-void ADefenseBattleProjectPlayerController::OnInputStarted()
+void AArcanumPlayerController::OnInputStarted()
 {
 	StopMovement();
 }
 
-void ADefenseBattleProjectPlayerController::OnSetDestinationTriggered()
+void AArcanumPlayerController::OnSetDestinationTriggered()
 {
 	FollowTime += GetWorld()->GetDeltaSeconds();
 	
@@ -87,7 +87,7 @@ void ADefenseBattleProjectPlayerController::OnSetDestinationTriggered()
 	}
 }
 
-void ADefenseBattleProjectPlayerController::OnSetDestinationReleased()
+void AArcanumPlayerController::OnSetDestinationReleased()
 {
 	if (FollowTime <= ShortPressThreshold)
 	{
@@ -98,13 +98,13 @@ void ADefenseBattleProjectPlayerController::OnSetDestinationReleased()
 	FollowTime = 0.f;
 }
 
-void ADefenseBattleProjectPlayerController::OnTouchTriggered()
+void AArcanumPlayerController::OnTouchTriggered()
 {
 	bIsTouch = true;
 	OnSetDestinationTriggered();
 }
 
-void ADefenseBattleProjectPlayerController::OnTouchReleased()
+void AArcanumPlayerController::OnTouchReleased()
 {
 	bIsTouch = false;
 	OnSetDestinationReleased();
