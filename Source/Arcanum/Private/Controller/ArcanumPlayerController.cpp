@@ -76,6 +76,9 @@ void AArcanumPlayerController::SetupInputComponent()
 		enhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Triggered, this, &AArcanumPlayerController::OnTouchTriggered);
 		enhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Completed, this, &AArcanumPlayerController::OnTouchReleased);
 		enhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Canceled, this, &AArcanumPlayerController::OnTouchReleased);
+
+		enhancedInputComponent->BindAction(IA_Move, ETriggerEvent::Triggered, this, &AArcanumPlayerController::OnMove);
+		enhancedInputComponent->BindAction(IA_Move, ETriggerEvent::Completed, this, &AArcanumPlayerController::OnMove);
 	}
 	else
 	{
