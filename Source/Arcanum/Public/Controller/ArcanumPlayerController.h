@@ -22,8 +22,6 @@ class AArcanumPlayerController : public APlayerController
 public:
 	AArcanumPlayerController();
 
-
-
 protected:
 	uint32 bMoveToMouseCursor : 1;
 

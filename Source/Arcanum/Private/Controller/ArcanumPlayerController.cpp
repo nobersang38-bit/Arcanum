@@ -23,7 +23,7 @@ AArcanumPlayerController::AArcanumPlayerController()
 	FollowTime = 0.f;
 
 	static ConstructorHelpers::FObjectFinder<UTouchInterface>
-		touchInterface(TEXT("/Game/TopDown/Input/TI_VirtualJoystick.TI_VirtualJoystick"));
+		touchInterface(TEXT("/Game/Controller/TI_VirtualJoystick.TI_VirtualJoystick"));
 
 	if (touchInterface.Succeeded())
 	{
