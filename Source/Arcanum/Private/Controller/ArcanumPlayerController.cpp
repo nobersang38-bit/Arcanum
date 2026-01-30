@@ -11,6 +11,7 @@
 #include "InputActionValue.h"
 #include "EnhancedInputSubsystems.h"
 #include "Engine/LocalPlayer.h"
+#include "GameFramework/TouchInterface.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -20,37 +21,80 @@ AArcanumPlayerController::AArcanumPlayerController()
 	DefaultMouseCursor = EMouseCursor::Default;
 	CachedDestination = FVector::ZeroVector;
 	FollowTime = 0.f;
+
+	static ConstructorHelpers::FObjectFinder<UTouchInterface>
+		touchInterface(TEXT("/Game/TopDown/Input/TI_VirtualJoystick.TI_VirtualJoystick"));
+
+	if (touchInterface.Succeeded())
+	{
+		DefaultTouchInterface = touchInterface.Object;
+	}
+
+	bShowMouseCursor = true;
 }
 
 void AArcanumPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (DefaultTouchInterface)
+	{
+		ActivateTouchInterface(DefaultTouchInterface);
+	}
+
+	/*
+	if (ULocalPlayer* localPlayer = GetLocalPlayer())
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* enhancedinputsubsystem = localPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
+		{
+			if (DefaultIMC)
+			{
+				enhancedinputsubsystem->AddMappingContext(DefaultIMC, 0);
+			}
+		}
+	}
+	*/
 }
 
 void AArcanumPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
-	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
+	if (UEnhancedInputLocalPlayerSubsystem* subSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{
-		Subsystem->AddMappingContext(DefaultMappingContext, 0);
+		subSystem->AddMappingContext(DefaultMappingContext, 0);
 	}
 
-	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
+	if (UEnhancedInputComponent* enhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
 	{
-		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &AArcanumPlayerController::OnInputStarted);
-		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Triggered, this, &AArcanumPlayerController::OnSetDestinationTriggered);
-		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Completed, this, &AArcanumPlayerController::OnSetDestinationReleased);
-		EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Canceled, this, &AArcanumPlayerController::OnSetDestinationReleased);
+		enhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &AArcanumPlayerController::OnInputStarted);
+		enhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Triggered, this, &AArcanumPlayerController::OnSetDestinationTriggered);
+		enhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Completed, this, &AArcanumPlayerController::OnSetDestinationReleased);
+		enhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Canceled, this, &AArcanumPlayerController::OnSetDestinationReleased);
 
-		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Started, this, &AArcanumPlayerController::OnInputStarted);
-		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Triggered, this, &AArcanumPlayerController::OnTouchTriggered);
-		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Completed, this, &AArcanumPlayerController::OnTouchReleased);
-		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Canceled, this, &AArcanumPlayerController::OnTouchReleased);
+		enhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Started, this, &AArcanumPlayerController::OnInputStarted);
+		enhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Triggered, this, &AArcanumPlayerController::OnTouchTriggered);
+		enhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Completed, this, &AArcanumPlayerController::OnTouchReleased);
+		enhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Canceled, this, &AArcanumPlayerController::OnTouchReleased);
 	}
 	else
 	{
 		UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input Component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
+	}
+}
+
+void AArcanumPlayerController::OnMove(const FInputActionValue& InValue)
+{
+	const FVector2D move2D = InValue.Get<FVector2D>();
+
+	APawn* pawn = GetPawn();
+	if (pawn)
+	{
+		const FVector forward = FVector::ForwardVector;
+		const FVector right = FVector::RightVector;
+
+		pawn->AddMovementInput(forward, move2D.Y);
+		pawn->AddMovementInput(right, move2D.X);
 	}
 }
 
@@ -79,11 +123,11 @@ void AArcanumPlayerController::OnSetDestinationTriggered()
 		CachedDestination = Hit.Location;
 	}
 	
-	APawn* ControlledPawn = GetPawn();
-	if (ControlledPawn != nullptr)
+	APawn* controlledPawn = GetPawn();
+	if (controlledPawn != nullptr)
 	{
-		FVector WorldDirection = (CachedDestination - ControlledPawn->GetActorLocation()).GetSafeNormal();
-		ControlledPawn->AddMovementInput(WorldDirection, 1.0, false);
+		FVector worldDirection = (CachedDestination - controlledPawn->GetActorLocation()).GetSafeNormal();
+		controlledPawn->AddMovementInput(worldDirection, 1.0, false);
 	}
 }
 
