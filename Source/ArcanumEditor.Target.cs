@@ -3,13 +3,13 @@
 using UnrealBuildTool;
 using System.Collections.Generic;
 
-public class DefenseBattleProjectTarget : TargetRules
+public class ArcanumEditorTarget : TargetRules
 {
-	public DefenseBattleProjectTarget(TargetInfo Target) : base(Target)
+	public ArcanumEditorTarget(TargetInfo Target) : base(Target)
 	{
-		Type = TargetType.Game;
+		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V5;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_5;
-		ExtraModuleNames.Add("DefenseBattleProject");
+		ExtraModuleNames.Add("Arcanum");
 	}
 }

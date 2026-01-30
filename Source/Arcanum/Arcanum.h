@@ -4,4 +4,4 @@
 
 #include "CoreMinimal.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogDefenseBattleProject, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogArcanum, Log, All);

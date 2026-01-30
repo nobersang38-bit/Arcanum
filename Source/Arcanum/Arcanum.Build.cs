@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class DefenseBattleProject : ModuleRules
+public class Arcanum : ModuleRules
 {
-	public DefenseBattleProject(ReadOnlyTargetRules Target) : base(Target)
+	public Arcanum(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
