@@ -92,28 +92,4 @@ namespace PlayerTags
 		}
 	}
 }
-
-// 김도현
-// 설명
-// 플레이어 캐릭터들 계속 추가
-namespace PlayerCharacterTags
-{
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "PlayerCharacters", "영웅(플레이어 캐릭터)들 태그, 이 태그로 해당 영웅의 정보를 가져올 수 있음");
-	namespace TestCharacter // KDH 테스트 캐릭터 태그입니다 구조체를 만들어 그것을 가져와야합니다
-	{
-		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Value, "PlayerCharacters.TestCharacter", "TestCharacter라는 이름을 가진 영웅"); // 테스트 용
-	}
-}
-
-// 김도현
-// 설명
-// 무기들 계속 추가
-namespace Weapons
-{
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Weapons", "무기들 태그, 이 태그로 해당 영웅의 정보를 가져올 수 있음");
-	namespace TestWeapon // KDH 테스트 무기 태그입니다 구조체를 만들어 그것을 가져와야합니다
-	{
-		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Value, "Weapons.TestWeapon", "TestWeapon이라는 이름을 가진 영웅"); // 테스트 용
-	}
-}
 #pragma endregion
