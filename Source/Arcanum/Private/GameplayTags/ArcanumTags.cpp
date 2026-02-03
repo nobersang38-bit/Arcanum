@@ -1,10 +1,145 @@
 
 #include "GameplayTags/ArcanumTags.h"
 
+// 김유진
+namespace Arcanum
+{
+	namespace Player
+	{
+		namespace ID
+		{
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Elara, "Arcanum.Player.ID.Elara", "엘라라");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Iris, "Arcanum.Player.ID.Iris", "아이리스");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Celestia, "Arcanum.Player.ID.Celestia", "셀레스티아");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Lynette, "Arcanum.Player.ID.Lynette", "리넷");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Arna, "Arcanum.Player.ID.Arna", "아르나");
+		}
+
+		namespace Grade
+		{
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Common, "Arcanum.Player.Grade.Common", "일반");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Rare, "Arcanum.Player.Grade.Rare", "레어");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Epic, "Arcanum.Player.Grade.Epic", "영웅");
+		}
+	}
+
+	namespace Resource
+	{
+		namespace Health
+		{
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(MaxHealth, "Arcanum.Resource.Health.MaxHealth", "체력 최대치");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(ValueHealth, "Arcanum.Resource.Health.ValueHealth", "체력 현재치");
+		}
+
+		namespace Mana
+		{
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(MaxMana, "Arcanum.Resource.Mana.MaxMana", "마나 최대치");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(ValueMana, "Arcanum.Resource.Mana.ValueMana", "마나 현재치");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Regen, "Arcanum.Resource.Mana.Regen", "마나 회복량");
+		}
+
+		namespace Supply
+		{
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(MaxSupply, "Arcanum.Resource.Supply.MaxSupply", "보급 최대치");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(ValueSupply, "Arcanum.Resource.Supply.ValueSupply", "보급 현재치");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Regen, "Arcanum.Resource.Supply.Regen", "보급 회복량");
+		}
+	}
+
+	namespace Combat
+	{
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Combat.Root", "전투 루트");
+
+		namespace State
+		{
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Alive, "Arcanum.Combat.State.Alive", "살아있음");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Dead, "Arcanum.Combat.State.Dead", "죽음");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Stunned, "Arcanum.Combat.State.Stunned", "스턴");
+		}
+	}
+
+	namespace Unit
+	{
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Unit.Root", "유닛 루트");
+
+		namespace Faction
+		{
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ally, "Arcanum.Unit.Faction.Ally", "아군");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Enemy, "Arcanum.Unit.Faction.Enemy", "적군");
+		}
+
+		namespace Enhance
+		{
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Enhanced, "Arcanum.Unit.Enhance.Enhanced", "강화됨");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Max, "Arcanum.Unit.Enhance.Max", "최대 강화");
+		}
+
+		namespace Role
+		{
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Tank, "Arcanum.Unit.Role.Tank", "방어");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Melee, "Arcanum.Unit.Role.Melee", "근딜");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ranged, "Arcanum.Unit.Role.Ranged", "원딜");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(AoEDPS, "Arcanum.Unit.Role.AoEDPS", "광딜");
+		}
+
+		namespace SpawnType
+		{
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Manual, "Arcanum.Unit.SpawnType.Manual", "수동 배치 (아군)");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Auto, "Arcanum.Unit.SpawnType.Auto", "자동 스폰 (아군)");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Wave, "Arcanum.Unit.SpawnType.Wave", "웨이브 스폰 (적군)");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Summon, "Arcanum.Unit.SpawnType.Summon", "소환 (적군)");
+		}
+
+		namespace EnemyType
+		{
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Runner, "Arcanum.Unit.EnemyType.Runner", "일반형: 러너");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(BigHeavy, "Arcanum.Unit.EnemyType.BigHeavy", "일반형: 빅헤비");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Shooter, "Arcanum.Unit.EnemyType.Shooter", "일반형: 슈터");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Spawner, "Arcanum.Unit.EnemyType.Spawner", "일반형: 스포너");
+
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Buffer, "Arcanum.Unit.EnemyType.Buffer", "보스형: 버퍼");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Assassin, "Arcanum.Unit.EnemyType.Assassin", "보스형: 암살자");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Area, "Arcanum.Unit.EnemyType.Area", "보스형: 광역");
+		}
+	}
+
+	namespace AI
+	{
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.AI.Root", "AI 루트");
+
+		namespace TargetPriority
+		{
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Nearest, "Arcanum.AI.TargetPriority.Nearest", "가장 가까운 적");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Weakest, "Arcanum.AI.TargetPriority.Weakest", "HP 낮은 적");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Strongest, "Arcanum.AI.TargetPriority.Strongest", "공격력 높은 적");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Boss, "Arcanum.AI.TargetPriority.Boss", "보스 우선");
+		}
+	}
+
+	namespace Battle
+	{
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Battle.Root", "전투 루트");
+
+		namespace Mode
+		{
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Manual, "Arcanum.Battle.Mode.Manual", "수동 조작");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Auto, "Arcanum.Battle.Mode.Auto", "자동 전투");
+		}
+
+		namespace State
+		{
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Active, "Arcanum.Battle.State.Active", "전투 중");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Paused, "Arcanum.Battle.State.Paused", "일시정지");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ended, "Arcanum.Battle.State.Ended", "전투 종료");
+		}
+	}
+}
+
+// 추영호
 namespace Arcanum
 {
 	/* 상태 */
-	namespace State	{
+	namespace State {
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(PreAwakened, "Arcanum.State.PreAwakened", "각성 전");
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Awakened, "Arcanum.State.Awakened", "각성 후");
 		/* 각성 오라 */
@@ -19,7 +154,7 @@ namespace Arcanum
 	/* 아이템 */
 	namespace Item {
 		/* 장비 */
-		namespace Equipment	{
+		namespace Equipment {
 			namespace Weapon {
 				namespace Common {
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(GreatSword, "Arcanum.Item.Equipment.Weapon.Common.GreatSword", "대검");
@@ -28,21 +163,21 @@ namespace Arcanum
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Shield, "Arcanum.Item.Equipment.Weapon.Common.Shield", "방패");
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Wand, "Arcanum.Item.Equipment.Weapon.Common.Wand", "완드");
 				}
-				namespace Legendary	{
+				namespace Legendary {
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Spear, "Arcanum.Item.Equipment.Weapon.Legendary.Spear", "번개창");
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Blade, "Arcanum.Item.Equipment.Weapon.Legendary.Blade", "블레이드");
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Scepter, "Arcanum.Item.Equipment.Weapon.Legendary.Scepter", "셉터");
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Scythe, "Arcanum.Item.Equipment.Weapon.Legendary.Scythe", "낫");
 				}
 			}
-			namespace Armor	{
+			namespace Armor {
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Helmet, "Arcanum.Item.Equipment.Armor.Helmet", "투구");
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Chest, "Arcanum.Item.Equipment.Armor.Chest", "갑옷");
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Glove, "Arcanum.Item.Equipment.Armor.Glove", "장갑");
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Boot, "Arcanum.Item.Equipment.Armor.Boot", "신발");
 			}
 			namespace SetItem {
-				namespace Armor	{
+				namespace Armor {
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Talasha, "Arcanum.Item.Equipment.SetItem.Armor.Talasha", "탈라샤 세트");
 				}
 			}
@@ -120,3 +255,91 @@ namespace Arcanum
 	}
 }
 
+// 김도현
+namespace Arcanum
+{
+	namespace PlayerTags
+	{
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.PlayerData", "플레이어가 가지고 있어야할 정보의 모음");
+		namespace Currencies // 재화들
+		{
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.PlayerData.Currencies", "플레이어가 가지고 있는 재화들");
+			namespace Gold // 골드
+			{
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.PlayerData.Currencies.Gold", "골드");
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Value, "Arcanum.PlayerData.Currencies.Gold.Value", "골드 현재값");
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(MaxValue, "Arcanum.PlayerData.Currencies.Gold.MaxValue", "골드 최대값");
+			}
+			namespace Shard // 조각
+			{
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.PlayerData.Currencies.Shard", "조각");
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Value, "Arcanum.PlayerData.Currencies.Shard.Value", "조각 현재값");
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(MaxValue, "Arcanum.PlayerData.Currencies.Shard.MaxValue", "조각 최대값");
+			}
+			namespace Soul // 소울
+			{
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.PlayerData.Currencies.Soul", "소울");
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Value, "Arcanum.PlayerData.Currencies.Soul.Value", "소울 현재값");
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(MaxValue, "Arcanum.PlayerData.Currencies.Soul.MaxValue", "소울 최대값");
+			}
+		}
+
+		namespace Inventories
+		{
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.PlayerData.Inventories", "현재 플레이어가 가지고 있는 것들");
+			namespace ConsumedItems // 사용 아이템들
+			{
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Value, "Arcanum.PlayerData.Inventories.ConsumedItems", "사용 아이템들");
+			}
+
+			namespace Weapons // 무기들
+			{
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Value, "Arcanum.PlayerData.Inventories.Weapons", "무기들");
+			}
+
+			namespace Equipments // 장비들
+			{
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Value, "Arcanum.PlayerData.Inventories.Equipments", "장비들");
+			}
+
+			namespace Heroes // 영웅들(플레이어 캐릭터)
+			{
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Value, "Arcanum.PlayerData.Inventories.Heroes", "영웅들");
+			}
+
+			namespace Units // 아군 유닛들
+			{
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Value, "Arcanum.PlayerData.Inventories.Units", "아군 유닛들");
+			}
+		}
+
+		namespace StageInfo // 클리어한 스테이지 정보
+		{
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Value, "Arcanum.PlayerData.StageInfo", "클리어한 스테이지 정보") // 나중에 구조체에서는 배열같은 값을 불러올 것 같습니다
+		}
+
+		namespace LastEquips // 마지막으로 장착한 객체들
+		{
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.PlayerData.LastEquips", "마지막으로 장착한 객체들(게임시작시 불러옴)");
+			namespace Hero // 영웅(플레이어 캐릭터)
+			{
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Value, "Arcanum.PlayerData.LastEquips.Hero", "영웅(플레이어 캐릭터)");
+			}
+
+			namespace ConsumedItems // 사용 아이템들
+			{
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Value, "Arcanum.PlayerData.LastEquips.ConsumedItems", "사용 아이테들");
+			}
+
+			namespace Equipments // 장비들
+			{
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Value, "Arcanum.PlayerData.LastEquips.Equipments", "장비들");
+			}
+
+			namespace Weapons // 무기들
+			{
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Value, "Arcanum.PlayerData.LastEquips.Weapons", "무기들");
+			}
+		}
+	}
+}
