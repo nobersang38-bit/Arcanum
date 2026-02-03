@@ -1,19 +1,18 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-
 #include "CoreMinimal.h"
+#include "NativeGameplayTags.h"
 
 /**
- * 
+ *
  */
-class ARCANUM_API ArcanumTags
-{
-	// KYJ : 플레이어 캐릭터
+ // KYJ : 플레이어 캐릭터
+namespace ArcanumTags {
 	namespace Player {
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
 		namespace ID {
-
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(LILLY);
 		}
 		namespace Class {
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Warrior);			// 전사
@@ -42,6 +41,7 @@ class ARCANUM_API ArcanumTags
 	}
 	// KYJ : 전투 상태
 	namespace Combat {
+		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
 		namespace State {
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Alive);			// 살아있음
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dead);			// 죽음
@@ -89,6 +89,7 @@ class ARCANUM_API ArcanumTags
 
 	// KYJ : AI 타겟팅 로직
 	namespace AI {
+		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
 		namespace TargetPriority {
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Nearest);		// 가장 가까운 적
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Weakest);		// HP 낮은 적
@@ -99,6 +100,7 @@ class ARCANUM_API ArcanumTags
 
 	// KYJ : 전투 제어
 	namespace Battle {
+		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
 		namespace Mode {
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Manual);		// 수동 조작
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Auto);		// 자동 전투
@@ -110,4 +112,4 @@ class ARCANUM_API ArcanumTags
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ended);		// 전투 종료
 		}
 	}
-};
+}
