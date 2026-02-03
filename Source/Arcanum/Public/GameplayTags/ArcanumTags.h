@@ -8,7 +8,7 @@
  *
  */
  // KYJ : 플레이어 캐릭터
-namespace ArcanumTags {
+namespace Arcanum {
 	namespace Player {
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
 		namespace ID {
@@ -47,17 +47,20 @@ namespace ArcanumTags {
 	// KYJ : 자원
 	namespace Resource {
 		namespace Health {
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Max);	
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(MaxHealth);	
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Value);	
 		}
 		namespace Mana {
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Max);
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Value);
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(MaxMana);
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(ValueMana);
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Regen);
+
 		}
 		// 게임 진행 시 필요한 고기
 		namespace Supply {
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Max);
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Value);
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(MaxSupply);
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(ValueSupply);
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Regen);
 		}
 	}
 	// KYJ : 전투 상태
