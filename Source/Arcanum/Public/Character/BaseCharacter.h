@@ -13,7 +13,7 @@ class ABaseCharacter : public ACharacter
 
 public:
 	ABaseCharacter();
-
+	int a = 0;
 	virtual void Tick(float DeltaSeconds) override;
 
 	FORCEINLINE class UCameraComponent* GetTopDownCameraComponent() const { return TopDownCameraComponent; }
