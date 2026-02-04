@@ -30,6 +30,8 @@ void AARLoginController::BeginPlay()
 
 #elif PLATFORM_ANDROID || PLATFORM_IOS
 	bShowMouseCursor = false;
+	bEnableClickEvents = true;
+	bEnableTouchEvents = true;
 	SetVirtualJoystickVisibility(false);
 #endif
 }

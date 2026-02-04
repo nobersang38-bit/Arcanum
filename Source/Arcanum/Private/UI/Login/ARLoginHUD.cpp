@@ -13,6 +13,7 @@
 
 #include "Object/Camera/ARCineCamera.h"
 #include "Object/Character/LoginCharacter.h"
+#include "Core/ARGameInstance.h"
 
 // ========================================================
 // 언리얼 기본 생성
@@ -61,9 +62,6 @@ void UARLoginHUD::OnPreLoginSyncFinished(bool bIsSuccess, const FString& ErrorMe
 	if (SyncLoginWidget) {
 		SyncLoginWidget->OnSyncFinished.RemoveDynamic(this, &UARLoginHUD::OnPreLoginSyncFinished);
 		SyncLoginWidget->SetVisibility(ESlateVisibility::Collapsed);
-
-		SyncLoginWidget->OnSyncFinished.RemoveDynamic(this, &UARLoginHUD::OnPostLoginSyncFinished);
-		SyncLoginWidget->OnSyncFinished.AddDynamic(this, &UARLoginHUD::OnPostLoginSyncFinished);
 	}
 
 	///// Test Start
@@ -116,16 +114,72 @@ void UARLoginHUD::HandleAnnouncementClose()
 }
 void UARLoginHUD::OnGuestLoginButtonClicked()
 {
+	// 각종 버튼들 숨길애들
+	{
+		GuestLoginButton->SetVisibility(ESlateVisibility::Collapsed);
+	}
+
 	if (LoginUserWidget) {
 		LoginUserWidget->SetVisibility(ESlateVisibility::Visible);
+		LoginUserWidget->OnOKClicked.RemoveDynamic(this, &UARLoginHUD::HandleLoginOK);
 		LoginUserWidget->OnCancelClicked.RemoveDynamic(this, &UARLoginHUD::HandleLoginCancel);
+
+		LoginUserWidget->OnOKClicked.AddDynamic(this, &UARLoginHUD::HandleLoginOK);
 		LoginUserWidget->OnCancelClicked.AddDynamic(this, &UARLoginHUD::HandleLoginCancel);
 	}
 }
+void UARLoginHUD::HandleLoginOK(const FString& ID, const FString& PW)
+{
+	if (!LoginUserWidget || !SyncLoginWidget)
+		return;
 
+	LoginUserWidget->SetVisibility(ESlateVisibility::Collapsed);
+
+	SyncText = TEXT("로그인 중");
+	SyncLoginWidget->SetVisibility(ESlateVisibility::Visible);
+	SyncLoginWidget->SetSyncPhase(ESyncPhase::PostLogin, FText::FromString(SyncText));
+
+	// === async 시작 지점 ===
+	StartPostLogin(ID, PW);
+}
+void UARLoginHUD::StartPostLogin(const FString& ID, const FString& PW)
+{
+	/// Todo : 현재는 서버가 없기 때문에 타이머로 대체
+
+	/// Test Start
+	UARGameInstance* GI = GetGameInstance<UARGameInstance>();
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, GI, ID, PW]() {
+			bool bSuccess = false;
+			FString ErrorMsg = TEXT("아이디 또는 비밀번호가 틀렸습니다.");
+			if (GI) {
+				if (GI->CheckLogin(ID, PW)) {
+					bSuccess = true;
+					ErrorMsg = TEXT("");
+				}
+			}
+			else ErrorMsg = TEXT("시스템 오류: GameInstance를 찾을 수 없습니다.");
+			OnPostLoginFinished(bSuccess, ErrorMsg);
+
+		}, 2.0f, false);
+	/// Test End
+}
+void UARLoginHUD::OnPostLoginFinished(bool bSuccess, const FString& ErrorMessage)
+{
+	SyncLoginWidget->SetVisibility(ESlateVisibility::Collapsed);
+
+	if (bSuccess) {
+		LoginUserWidget->SetVisibility(ESlateVisibility::Collapsed);
+		UGameplayStatics::OpenLevel(GetWorld(), NextMapName);
+	}
+	else {
+		LoginUserWidget->SetVisibility(ESlateVisibility::Visible);
+	}
+}
 void UARLoginHUD::HandleLoginCancel()
 {
 	if (LoginUserWidget) {
+		GuestLoginButton->SetVisibility(ESlateVisibility::Visible);
 		LoginUserWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }

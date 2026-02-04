@@ -77,7 +77,13 @@ protected:
 	TObjectPtr<UButton> GuestLoginButton;
 
 	UFUNCTION(BlueprintCallable)
+	void HandleLoginOK(const FString& ID, const FString& PW);
+	UFUNCTION(BlueprintCallable)
 	void HandleLoginCancel();
+private:
+	void StartPostLogin(const FString& ID, const FString& PW);
+	UFUNCTION()
+	void OnPostLoginFinished(bool bSuccess, const FString& ErrorMessage);
 #pragma endregion
 
 #pragma region 게임 종료용
@@ -96,4 +102,7 @@ public:
 	float CameraMoving = 1.f;
 	UPROPERTY()
 	TObjectPtr<ALoginCharacter> LoginCharacter;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "00_Setting")
+	FName NextMapName = FName("LobbyMap");
 };
