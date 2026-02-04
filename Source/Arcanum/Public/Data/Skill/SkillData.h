@@ -26,5 +26,4 @@ struct FSkillData
 	/* 남은 쿨타임(초) */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill|Cooldown")
 	float CooldownRemaining = 0.0f;
-
 };
