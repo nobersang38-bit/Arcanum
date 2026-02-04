@@ -5,9 +5,12 @@
 #include "UI/Login/DataType/ELoginDataTypes.h"
 #include "SyncLoginUserWidget.generated.h"
 
+class UTextBlock;
+class UImage;
+
 /** Delegate */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSyncFinished);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSyncFailed, const FString&, ErrorMessage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSyncFinished, bool, bIsSuccess, const FString&, ErrorMessage);
+
 
 UCLASS()
 class ARCANUM_API USyncLoginUserWidget : public UUserWidget
@@ -16,20 +19,12 @@ class ARCANUM_API USyncLoginUserWidget : public UUserWidget
 
 #pragma region 델리게이트
 public:
-	/** Sync 성공 */
 	UFUNCTION(BlueprintCallable, Category = "Sync")
-	void FinishSyncVisual();
-
-	/** Sync 실패 */
-	UFUNCTION(BlueprintCallable, Category = "Sync")
-	void FailSyncVisual(const FString& ErrorMessage);
+	void FinishSyncVisual(bool bIsSuccess, const FString& ErrorMessage = TEXT(""));
 
 	/** Sync 성공 알림 */
 	UPROPERTY(BlueprintAssignable, Category = "Sync")
 	FOnSyncFinished OnSyncFinished;
-	/** Sync 실패 알림 */
-	UPROPERTY(BlueprintAssignable, Category = "Sync")
-	FOnSyncFailed OnSyncFailed;
 #pragma endregion
 
 #pragma region 언리얼 기본 생성
@@ -41,7 +36,7 @@ protected:
 public:
 	/** Sync 단계 설정 (HUD에서 호출) */
 	UFUNCTION(BlueprintCallable)
-	void SetSyncPhase(ESyncPhase InPhase);
+	void SetSyncPhase(ESyncPhase InPhase, FText InMsg);
 
 private:
 	UFUNCTION()
@@ -56,4 +51,13 @@ protected:
 	/** 현재 Sync 단계 */
 	UPROPERTY(BlueprintReadOnly)
 	ESyncPhase CurrentPhase = ESyncPhase::PreLogin;	
+
+
+	/** 현재 상태를 표시할 텍스트 */
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> Msg;
+
+	/** 삥글삥글 이미지 */
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UImage> Img;
 };

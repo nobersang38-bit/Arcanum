@@ -11,7 +11,7 @@ void UKeyInputUserWidget::NativeConstruct()
         AnyKeyButton->OnClicked.RemoveDynamic(this, &UKeyInputUserWidget::OnButtonClicked);
         AnyKeyButton->OnClicked.AddDynamic(this, &UKeyInputUserWidget::OnButtonClicked);
     }
-    if (PressAnyKeyText) PressAnyKeyText->SetText(FText::FromString(TEXT("Press Any Key")));
+    if (PressAnyKeyText) PressAnyKeyText->SetText(FText::FromString(AnyText));
 }
 void UKeyInputUserWidget::OnButtonClicked()
 {
