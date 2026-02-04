@@ -27,11 +27,7 @@ void ULoginUserWidget::OnLoginClicked()
     FString ID, Password;
     GetLoginInfo(ID, Password);
 
-    // 예시: 로그 출력
-    UE_LOG(LogTemp, Log, TEXT("Login Clicked. ID: %s, Password: %s"), *ID, *Password);
-
-    // 실제 로그인 로직은 여기서 HUD/GameInstance 등에 호출
-    // 예: LoginHUD->HandleLogin(ID, Password);
+    OnOKClicked.Broadcast(ID, Password);
 }
 void ULoginUserWidget::OnCancelButtonClicked()
 {
