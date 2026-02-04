@@ -60,3 +60,4 @@ struct FAwakenRow : public FTableRowBase
 	FGameplayTag TriggerTag;
 };
 
+
