@@ -1,0 +1,42 @@
+[
+  {
+    "Name": "Elara",
+    "ID": "Arcanum.Player.ID.Elara",
+    "Health": 100.0,
+    "Mana": 100.0,
+    "SkeletalMesh": "",
+    "AnimBlueprint": ""
+  },
+  {
+    "Name": "Iris",
+    "ID": "Arcanum.Player.ID.Iris",
+    "Health": 100.0,
+    "Mana": 100.0,
+    "SkeletalMesh": "",
+    "AnimBlueprint": ""
+  },
+  {
+    "Name": "Celestia",
+    "ID": "Arcanum.Player.ID.Celestia",
+    "Health": 100.0,
+    "Mana": 100.0,
+    "SkeletalMesh": "",
+    "AnimBlueprint": ""
+  },
+  {
+    "Name": "Lynette",
+    "ID": "Arcanum.Player.ID.Lynette",
+    "Health": 100.0,
+    "Mana": 100.0,
+    "SkeletalMesh": "",
+    "AnimBlueprint": ""
+  },
+  {
+    "Name": "Arna",
+    "ID": "Arcanum.Player.ID.Arna",
+    "Health": 100.0,
+    "Mana": 100.0,
+    "SkeletalMesh": "",
+    "AnimBlueprint": ""
+  }
+]

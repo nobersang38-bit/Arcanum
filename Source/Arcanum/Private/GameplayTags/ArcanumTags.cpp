@@ -5,8 +5,10 @@ namespace Arcanum
 {
 	namespace Player
 	{
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Player.Root", "플레이어 루트");
 		namespace ID
 		{
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Player.ID.Root", "플레이어 ID 루트");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Elara, "Arcanum.Player.ID.Elara", "엘라라");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Iris, "Arcanum.Player.ID.Iris", "아이리스");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Celestia, "Arcanum.Player.ID.Celestia", "셀레스티아");
@@ -16,6 +18,7 @@ namespace Arcanum
 
 		namespace Grade
 		{
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Player.Grade.Root", "플레이어 Grade 루트");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Common, "Arcanum.Player.Grade.Common", "일반");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Rare, "Arcanum.Player.Grade.Rare", "레어");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Epic, "Arcanum.Player.Grade.Epic", "영웅");
