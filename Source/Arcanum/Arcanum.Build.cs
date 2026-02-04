@@ -4,10 +4,14 @@ using UnrealBuildTool;
 
 public class Arcanum : ModuleRules
 {
-	public Arcanum(ReadOnlyTargetRules Target) : base(Target)
-	{
-		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+    public Arcanum(ReadOnlyTargetRules Target) : base(Target)
+    {
+        PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "NavigationSystem", "AIModule", "Niagara", "EnhancedInput", "GameplayTags" });
+        PublicDependencyModuleNames.AddRange(new string[] {
+            "Core", "CoreUObject", "Engine", "InputCore", "NavigationSystem",
+            "AIModule", "Niagara", "EnhancedInput", "GameplayTags",
+            "CommonUI"
+        });
     }
 }
