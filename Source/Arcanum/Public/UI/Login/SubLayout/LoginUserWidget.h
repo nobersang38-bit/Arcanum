@@ -8,6 +8,7 @@ class UEditableTextBox;
 class UButton;
 class UImage;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnOKClicked, const FString&, ID, const FString&, Password);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCancelClicked);
 
 /**
@@ -25,6 +26,8 @@ class ARCANUM_API ULoginUserWidget : public UUserWidget
 	
 #pragma region 델리게이트
 public:
+	UPROPERTY(BlueprintAssignable, Category = "Login")
+	FOnOKClicked OnOKClicked;
 	UPROPERTY(BlueprintAssignable, Category = "Login")
 	FOnCancelClicked OnCancelClicked;
 #pragma endregion
