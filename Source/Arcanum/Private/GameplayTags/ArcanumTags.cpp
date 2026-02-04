@@ -346,3 +346,11 @@ namespace Arcanum
 		}
 	}
 }
+
+namespace Arcanum {
+	namespace LoginUI	{
+		UE_DEFINE_GAMEPLAY_TAG(None, "Arcanum.LoginUI.None");
+		UE_DEFINE_GAMEPLAY_TAG(Open, "Arcanum.LoginUI.Open");
+		UE_DEFINE_GAMEPLAY_TAG(Login,"Arcanum.LoginUI.Login");
+	}
+}
