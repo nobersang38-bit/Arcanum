@@ -50,5 +50,8 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> AnyKeyButton;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString AnyText = TEXT("Press Any Key");
 #pragma endregion
 };
