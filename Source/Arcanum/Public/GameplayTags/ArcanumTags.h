@@ -409,5 +409,12 @@ namespace Arcanum
 			}
 		}
 	}
-	
+}
+
+namespace Arcanum {
+	namespace LoginUI {
+		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(None);
+		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Open);
+		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Login);
+	}
 }
