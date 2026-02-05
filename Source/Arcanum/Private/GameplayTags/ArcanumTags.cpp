@@ -147,7 +147,6 @@ namespace Arcanum
 		{
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(FuryActive, "Arcanum.State.Aura.FuryActive", "분노 오라 활성");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(ResolveActive, "Arcanum.State.Aura.ResolveActive", "결의 오라 활성");
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(ArcaneActive, "Arcanum.State.Aura.ArcaneActive", "비전 오라 활성");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(FocusActive, "Arcanum.State.Aura.FocusActive", "집중 오라 활성");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(HolyActive, "Arcanum.State.Aura.HolyActive", "신성 오라 활성");
 		}
@@ -166,12 +165,10 @@ namespace Arcanum
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Staff, "Arcanum.Item.Equipment.Weapon.Common.Staff", "지팡이");
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Bow, "Arcanum.Item.Equipment.Weapon.Common.Bow", "활");
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Shield, "Arcanum.Item.Equipment.Weapon.Common.Shield", "방패");
-					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Wand, "Arcanum.Item.Equipment.Weapon.Common.Wand", "완드");
 				}
 				namespace Legendary 
 				{
-					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Spear, "Arcanum.Item.Equipment.Weapon.Legendary.Spear", "번개창");
-					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Blade, "Arcanum.Item.Equipment.Weapon.Legendary.Blade", "블레이드");
+					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Spear, "Arcanum.Item.Equipment.Weapon.Legendary.Spear", "창");
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Scepter, "Arcanum.Item.Equipment.Weapon.Legendary.Scepter", "셉터");
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Scythe, "Arcanum.Item.Equipment.Weapon.Legendary.Scythe", "낫");
 				}
@@ -221,7 +218,6 @@ namespace Arcanum
 		{
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Fury, "Arcanum.Ability.Passive.Fury", "분노");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Resolve, "Arcanum.Ability.Passive.Resolve", "결의");
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Arcane, "Arcanum.Ability.Passive.Arcane", "비전");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Focus, "Arcanum.Ability.Passive.Focus", "집중");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Holy, "Arcanum.Ability.Passive.Holy", "신성");
 		}
@@ -233,17 +229,15 @@ namespace Arcanum
 				namespace Common
 				{
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Slash, "Arcanum.Ability.Skill.Weapon.Common.Slash", "베기");
-					UE_DEFINE_GAMEPLAY_TAG_COMMENT(MissileArc, "Arcanum.Ability.Skill.Weapon.Common.MissileArc", "궤적 미사일");
+					UE_DEFINE_GAMEPLAY_TAG_COMMENT(ChainBolt, "Arcanum.Ability.Skill.Weapon.Common.ChainBolt", "체인 미사일");
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(PiercingShot, "Arcanum.Ability.Skill.Weapon.Common.PiercingShot", "관통 사격");
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(ShockWave, "Arcanum.Ability.Skill.Weapon.Common.ShockWave", "충격파");
-					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Penance, "Arcanum.Ability.Skill.Weapon.Common.Penance", "참회");
 				}
 				namespace Legendary
 				{
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(MjolnirStrike, "Arcanum.Ability.Skill.Weapon.Legendary.MjolnirStrike", "묠니르");
-					UE_DEFINE_GAMEPLAY_TAG_COMMENT(VoidRift, "Arcanum.Ability.Skill.Weapon.Legendary.VoidRift", "보이드 블레이드");
+					UE_DEFINE_GAMEPLAY_TAG_COMMENT(VoidEclipse, "Arcanum.Ability.Skill.Weapon.Legendary.VoidEclipse", "보이드");
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(SolarFlare, "Arcanum.Ability.Skill.Weapon.Legendary.SolarFlare", "솔라");
-					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Lantern, "Arcanum.Ability.Skill.Weapon.Legendary.Lantern", "랜턴");
 				}
 			}
 		}
@@ -253,12 +247,23 @@ namespace Arcanum
 			namespace Trigger
 			{
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(BloodBurst, "Arcanum.Ability.Event.Trigger.BloodBurst", "혈폭");
-				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Retribution, "Arcanum.Ability.Event.Trigger.Retribution", "응징");
-				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Collapse, "Arcanum.Ability.Event.Trigger.Collapse", "붕괴");
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Retribution, "Arcanum.Ability.Event.Trigger.Retribution", "응보");
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Execution, "Arcanum.Ability.Event.Trigger.Execution", "처단");
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Purification, "Arcanum.Ability.Event.Trigger.Purification", "정화");
 			}
 		}
+	}
+	/* 효과 타입 */
+	namespace EffectType
+	{
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Damage, "Arcanum.EffectType.Damage", "효과 타입: 데미지");
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Heal, "Arcanum.EffectType.Heal", "효과 타입: 회복");
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Shield, "Arcanum.EffectType.Shield", "효과 타입: 보호막");
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(SpawnArea, "Arcanum.EffectType.SpawnArea", "효과 타입: 장판/영역 생성");
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ApplyDebuff, "Arcanum.EffectType.ApplyDebuff", "효과 타입: 디버프 적용");
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ResetDebuff, "Arcanum.EffectType.ResetDebuff", "효과 타입: 디버프 리셋");
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ModifyStat, "Arcanum.EffectType.ModifyStat", "효과 타입: 스탯 수정");
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(AddGauge, "Arcanum.EffectType.AddGauge", "효과 타입: 게이지 증가");
 	}
 	/* 효과 */
 	namespace Effect
@@ -267,7 +272,6 @@ namespace Arcanum
 		{
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(AttackSpeed, "Arcanum.Effect.Buff.AttackSpeed", "공격속도 증가");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(DamageReduction, "Arcanum.Effect.Buff.DamageReduction", "피해 감소");
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(SkillHaste, "Arcanum.Effect.Buff.SkillHaste", "스킬 가속");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(CritChance, "Arcanum.Effect.Buff.CritChance", "크리 증가");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(HealthRegen, "Arcanum.Effect.Buff.HealthRegen", "지속 회복");
 		}
@@ -277,20 +281,40 @@ namespace Arcanum
 			{
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Bleed, "Arcanum.Effect.Debuff.Status.Bleed", "출혈");
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Thorns, "Arcanum.Effect.Debuff.Status.Thorns", "가시");
-				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Resonance, "Arcanum.Effect.Debuff.Status.Resonance", "공명");
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Mark, "Arcanum.Effect.Debuff.Status.Mark", "표식");
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Atonement, "Arcanum.Effect.Debuff.Status.Atonement", "속죄");
 
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Shock, "Arcanum.Effect.Debuff.Status.Shock", "감전");
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Burn, "Arcanum.Effect.Debuff.Status.Burn", "화상");
-				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Fear, "Arcanum.Effect.Debuff.Status.Fear", "공포");
 			}
 			namespace Modifier
 			{
-				UE_DEFINE_GAMEPLAY_TAG_COMMENT(MoveSpeed, "Arcanum.Effect.Debuff.Modifier.MoveSpeed", "이동속도 감소");
-				UE_DEFINE_GAMEPLAY_TAG_COMMENT(AttackSpeed, "Arcanum.Effect.Debuff.Modifier.AttackSpeed", "공격속도 감소");
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(MoveSpeed, "Arcanum.Effect.Debuff.Modifier.MoveSpeed", "둔화");
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(AttackSpeed, "Arcanum.Effect.Debuff.Modifier.AttackSpeed", "쇠약");
+			}
+			namespace CrowdControl
+			{
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Stun, "Arcanum.Effect.Debuff.CrowdControl.Stun", "스턴");
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Knockback, "Arcanum.Effect.Debuff.CrowdControl.Knockback", "넉백");
 			}
 		}
+	}
+	/* 타겟 타입 */
+	namespace TargetType
+	{
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Self, "Arcanum.TargetType.Self", "자기 자신");
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Target, "Arcanum.TargetType.Target", "직접 타겟");
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(AlliesInRadius, "Arcanum.TargetType.AlliesInRadius", "범위 내 아군");
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(EnemiesInRadius, "Arcanum.TargetType.EnemiesInRadius", "범위 내 적");
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(BothInRadius, "Arcanum.TargetType.BothInRadius", "범위 내 전체");
+	}
+
+	/* 타겟 필터 */
+	namespace TargetFilter
+	{
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ExcludeAllies, "Arcanum.TargetFilter.ExcludeAllies", "아군 제외");
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(PlayersOnly, "Arcanum.TargetFilter.PlayersOnly", "플레이어만");
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ExcludePlayers, "Arcanum.TargetFilter.ExcludePlayers", "플레이어 제외");
 	}
 }
 
