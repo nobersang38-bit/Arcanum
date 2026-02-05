@@ -26,22 +26,11 @@ void UARLoginHUD::NativeConstruct()
 		KeyInputWidget->OnAnyKeyPressed.RemoveDynamic(this, &UARLoginHUD::OnPressAnyKey);
 		KeyInputWidget->OnAnyKeyPressed.AddDynamic(this, &UARLoginHUD::OnPressAnyKey);
 	}
-	if (SyncLoginWidget) {
-		SyncLoginWidget->OnSyncFinished.RemoveDynamic(this, &UARLoginHUD::OnPreLoginSyncFinished);
-		SyncLoginWidget->OnSyncFinished.AddDynamic(this, &UARLoginHUD::OnPreLoginSyncFinished);
-		SyncLoginWidget->SetVisibility(ESlateVisibility::Collapsed);
-	}
-	if (AnnouncetUserWidget) {
-		AnnouncetUserWidget->SetVisibility(ESlateVisibility::Collapsed);
-	}
-	if (GuestLoginButton) {
-		GuestLoginButton->SetVisibility(ESlateVisibility::Collapsed);
-	}
-	if (LoginUserWidget) {
-		LoginUserWidget->SetVisibility(ESlateVisibility::Collapsed);
-	}
-
-	if (QuitGameWidget) QuitGameWidget->SetVisibility(ESlateVisibility::Collapsed);
+	if (SyncLoginWidget)		SyncLoginWidget->SetVisibility(ESlateVisibility::Collapsed);
+	if (AnnouncetUserWidget)	AnnouncetUserWidget->SetVisibility(ESlateVisibility::Collapsed);
+	if (GuestLoginButton)		GuestLoginButton->SetVisibility(ESlateVisibility::Collapsed);
+	if (LoginUserWidget)		LoginUserWidget->SetVisibility(ESlateVisibility::Collapsed);
+	if (QuitGameWidget)			QuitGameWidget->SetVisibility(ESlateVisibility::Collapsed);
 
 	SetCameraByRole(Arcanum::LoginUI::Open);
 	LoginCharacter = Cast<ALoginCharacter>(UGameplayStatics::GetActorOfClass(GetWorld(), ALoginCharacter::StaticClass()));
@@ -51,6 +40,9 @@ void UARLoginHUD::OnPressAnyKey()
 	if (KeyInputWidget) KeyInputWidget->RemoveFromParent();
 
 	if (SyncLoginWidget) {
+		SyncLoginWidget->OnSyncFinished.RemoveDynamic(this, &UARLoginHUD::OnPreLoginSyncFinished);
+		SyncLoginWidget->OnSyncFinished.AddDynamic(this, &UARLoginHUD::OnPreLoginSyncFinished);
+
 		SyncLoginWidget->SetVisibility(ESlateVisibility::Visible);
 		SyncText = TEXT("동기화중");
 		SyncLoginWidget->SetSyncPhase(ESyncPhase::PreLogin, FText::FromString(SyncText));
@@ -64,38 +56,40 @@ void UARLoginHUD::OnPreLoginSyncFinished(bool bIsSuccess, const FString& ErrorMe
 		SyncLoginWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
 
-	///// Test Start
-	//bIsSuccess = false;
-	///// Test End
 
-	if(bIsSuccess){
-		SetCameraByRole(Arcanum::LoginUI::Login, false);
-		
-		if (LoginCharacter)  LoginCharacter->PlayAppearEffect();
-		if (AnnouncetUserWidget) {
-			float Delay = LoginCharacter->GetAppearDuration() + 2.f;
-			
-			FTimerHandle TimerHandle;
-			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]() {
-				/// Test Start
-				AnnounceString = TEXT("서버 점검 안내:\n" "- 오늘 12시부터 1시간 점검\n" "- 점검 중에는 로그인 불가\n" "- 이용에 참고 바랍니다.");
-				/// Test End
 
-				AnnouncetUserWidget->SetAnnouncementText(FText::FromString(AnnounceString));
-				AnnouncetUserWidget->OnCloseClicked.AddDynamic(this, &UARLoginHUD::HandleAnnouncementClose);
-				AnnouncetUserWidget->SetVisibility(ESlateVisibility::Visible); 
-			}, Delay, false);
-		}
-	}
-	else {
-		QuitGameWidget->SetQuitMessage(ErrorMessage);
+	/////// Test Start
+	////bIsSuccess = false;
+	/////// Test End
 
-		///// Test Start
-		//QuitGameWidget->SetQuitMessage(TEXT("서버 점검 중"));
-		///// Test End
+	//if(bIsSuccess){
+	//	SetCameraByRole(Arcanum::LoginUI::Login, false);
+	//	
+	//	if (LoginCharacter)  LoginCharacter->PlayAppearEffect();
+	//	if (AnnouncetUserWidget) {
+	//		float Delay = LoginCharacter->GetAppearDuration() + 2.f;
+	//		
+	//		FTimerHandle TimerHandle;
+	//		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]() {
+	//			/// Test Start
+	//			AnnounceString = TEXT("서버 점검 안내:\n" "- 오늘 12시부터 1시간 점검\n" "- 점검 중에는 로그인 불가\n" "- 이용에 참고 바랍니다.");
+	//			/// Test End
 
-		QuitGameWidget->SetVisibility(ESlateVisibility::Visible);
-	}
+	//			AnnouncetUserWidget->SetAnnouncementText(FText::FromString(AnnounceString));
+	//			AnnouncetUserWidget->OnCloseClicked.AddDynamic(this, &UARLoginHUD::HandleAnnouncementClose);
+	//			AnnouncetUserWidget->SetVisibility(ESlateVisibility::Visible); 
+	//		}, Delay, false);
+	//	}
+	//}
+	//else {
+	//	QuitGameWidget->SetQuitMessage(ErrorMessage);
+
+	//	///// Test Start
+	//	//QuitGameWidget->SetQuitMessage(TEXT("서버 점검 중"));
+	//	///// Test End
+
+	//	QuitGameWidget->SetVisibility(ESlateVisibility::Visible);
+	//}
 }
 void UARLoginHUD::OnPostLoginSyncFinished(bool bIsSuccess, const FString& ErrorMessage)
 {
