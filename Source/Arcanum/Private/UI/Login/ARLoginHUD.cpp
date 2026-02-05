@@ -56,7 +56,7 @@ void UARLoginHUD::OnPreLoginSyncFinished(bool bIsSuccess, const FString& ErrorMe
 		SyncLoginWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
 
-
+	if (LoginCharacter)  LoginCharacter->PlayAppearEffect();
 
 	/////// Test Start
 	////bIsSuccess = false;
