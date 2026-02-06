@@ -261,12 +261,13 @@ namespace Arcanum
 	{
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Damage, "Arcanum.EffectType.Damage", "효과 타입: 데미지");
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Heal, "Arcanum.EffectType.Heal", "효과 타입: 회복");
-		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Shield, "Arcanum.EffectType.Shield", "효과 타입: 보호막");
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(AddBarrier, "Arcanum.EffectType.AddBarrier", "효과 타입: 보호막 추가");
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(SpawnArea, "Arcanum.EffectType.SpawnArea", "효과 타입: 장판/영역 생성");
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ApplyDebuff, "Arcanum.EffectType.ApplyDebuff", "효과 타입: 디버프 적용");
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ResetDebuff, "Arcanum.EffectType.ResetDebuff", "효과 타입: 디버프 리셋");
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ModifyStat, "Arcanum.EffectType.ModifyStat", "효과 타입: 스탯 수정");
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(AddGauge, "Arcanum.EffectType.AddGauge", "효과 타입: 게이지 증가");
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Pull, "Arcanum.EffectType.Pull", "효과 타입: 끌어 당김");
 	}
 	/* 효과 */
 	namespace Effect
@@ -277,13 +278,14 @@ namespace Arcanum
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(DamageReduction, "Arcanum.Effect.Buff.DamageReduction", "피해 감소");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(CritChance, "Arcanum.Effect.Buff.CritChance", "크리 증가");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(HealthRegen, "Arcanum.Effect.Buff.HealthRegen", "지속 회복");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Barrier, "Arcanum.Effect.Buff.Barrier", "보호막");
 		}
 		namespace Debuff
 		{
 			namespace Status
 			{
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Bleed, "Arcanum.Effect.Debuff.Status.Bleed", "출혈");
-				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Thorns, "Arcanum.Effect.Debuff.Status.Thorns", "가시");
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Guard, "Arcanum.Effect.Debuff.Status.Guard", "수호");
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Mark, "Arcanum.Effect.Debuff.Status.Mark", "표식");
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Atonement, "Arcanum.Effect.Debuff.Status.Atonement", "속죄");
 

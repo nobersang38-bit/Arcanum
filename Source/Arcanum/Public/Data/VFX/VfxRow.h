@@ -29,9 +29,13 @@ struct FVfxRow : public FTableRowBase
 	FVector LocationOffset = FVector::ZeroVector;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "VFX|Transform")
-	FVector RotationOffset = FVector::ZeroVector;
+	FRotator RotationOffset = FRotator::ZeroRotator;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "VFX|Transform")
 	FVector Scale = FVector(1.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "VFX|Time")
+	float LifeTime = 0.0f;
+
 };
 
