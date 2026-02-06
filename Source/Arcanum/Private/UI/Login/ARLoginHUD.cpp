@@ -32,7 +32,6 @@ void UARLoginHUD::NativeConstruct()
 	if (LoginUserWidget)		LoginUserWidget->SetVisibility(ESlateVisibility::Collapsed);
 	if (QuitGameWidget)			QuitGameWidget->SetVisibility(ESlateVisibility::Collapsed);
 
-	SetCameraByRole(Arcanum::LoginUI::Open);
 	LoginCharacter = Cast<ALoginCharacter>(UGameplayStatics::GetActorOfClass(GetWorld(), ALoginCharacter::StaticClass()));
 }
 void UARLoginHUD::OnPressAnyKey()
@@ -57,7 +56,14 @@ void UARLoginHUD::OnPreLoginSyncFinished(bool bIsSuccess, const FString& ErrorMe
 	}
 
 	if (LoginCharacter)  LoginCharacter->PlayAppearEffect();
+}
+void UARLoginHUD::OnPostLoginSyncFinished(bool bIsSuccess, const FString& ErrorMessage)
+{
 
+}
+
+void UARLoginHUD::HandleAnnouncementOpen()
+{
 	/////// Test Start
 	////bIsSuccess = false;
 	/////// Test End
@@ -91,11 +97,6 @@ void UARLoginHUD::OnPreLoginSyncFinished(bool bIsSuccess, const FString& ErrorMe
 	//	QuitGameWidget->SetVisibility(ESlateVisibility::Visible);
 	//}
 }
-void UARLoginHUD::OnPostLoginSyncFinished(bool bIsSuccess, const FString& ErrorMessage)
-{
-
-}
-
 void UARLoginHUD::HandleAnnouncementClose()
 {
 	if (AnnouncetUserWidget) AnnouncetUserWidget->SetVisibility(ESlateVisibility::Collapsed);

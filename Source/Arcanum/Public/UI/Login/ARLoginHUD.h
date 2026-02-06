@@ -56,6 +56,9 @@ private:
 public:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UAnnouncetUserWidget> AnnouncetUserWidget;
+	/** 버튼 클릭으로 공지사항 열때 WBP에서 호출*/
+	UFUNCTION(BlueprintCallable)
+	void HandleAnnouncementOpen();
 protected:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	FString AnnounceString;

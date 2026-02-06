@@ -345,9 +345,22 @@ namespace Arcanum
 }
 
 namespace Arcanum {
-	namespace LoginUI	{
-		UE_DEFINE_GAMEPLAY_TAG(None, "Arcanum.LoginUI.None");
-		UE_DEFINE_GAMEPLAY_TAG(Open, "Arcanum.LoginUI.Open");
-		UE_DEFINE_GAMEPLAY_TAG(Login,"Arcanum.LoginUI.Login");
+	namespace UI {
+		namespace LoginUI {
+			namespace State {
+				UE_DEFINE_GAMEPLAY_TAG(Idle,		"Arcanum.UI.LoginUI.State.Idle");
+				UE_DEFINE_GAMEPLAY_TAG(Sync,		"Arcanum.UI.LoginUI.State.Sync");
+				UE_DEFINE_GAMEPLAY_TAG(Announce,	"Arcanum.UI.LoginUI.State.Announce");
+				UE_DEFINE_GAMEPLAY_TAG(Setting,		"Arcanum.UI.LoginUI.State.Setting");
+				UE_DEFINE_GAMEPLAY_TAG(QuitGame,	"Arcanum.UI.LoginUI.State.QuitGame");
+			}
+			namespace BtnPage {
+				UE_DEFINE_GAMEPLAY_TAG(None,		"Arcanum.UI.LoginUI.BtnPage.None");
+				UE_DEFINE_GAMEPLAY_TAG(Announce,	"Arcanum.UI.LoginUI.BtnPage.Announce");
+				UE_DEFINE_GAMEPLAY_TAG(Setting,		"Arcanum.UI.LoginUI.BtnPage.Setting");
+				UE_DEFINE_GAMEPLAY_TAG(Play,		"Arcanum.UI.LoginUI.BtnPage.Play");
+				UE_DEFINE_GAMEPLAY_TAG(QuitGame,	"Arcanum.UI.LoginUI.BtnPage.QuitGame");
+			}
+		}
 	}
 }
