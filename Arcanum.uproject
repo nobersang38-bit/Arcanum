@@ -11,11 +11,16 @@
 			"AdditionalDependencies": [
 				"Engine",
 				"UMG",
-				"CinematicCamera"
+				"CinematicCamera",
+				"CoreUObject"
 			]
 		}
 	],
 	"Plugins": [
+		{
+			"Name": "GameplayAbilities",
+			"Enabled": true
+		},
 		{
 			"Name": "ModelingToolsEditorMode",
 			"Enabled": true,
