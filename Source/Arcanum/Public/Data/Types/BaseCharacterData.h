@@ -7,7 +7,7 @@
 #include "BaseCharacterData.generated.h"
 
 // 김도현
-// 아군 유닛, 적군 유닛, 플레이어 캐릭터가 가져야할 공용 정보
+// 아군 유닛, 적군 유닛이 가져야할 공용 정보
 USTRUCT(BlueprintType)
 struct FBaseCharacterData
 {

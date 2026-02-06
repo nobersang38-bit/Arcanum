@@ -409,6 +409,20 @@ namespace Arcanum
 			}
 		}
 	}
+
+	namespace TeamID
+	{
+		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+		namespace Friendly
+		{
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Value);
+		}
+
+		namespace Enemy
+		{
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Value);
+		}
+	}
 }
 
 namespace Arcanum {

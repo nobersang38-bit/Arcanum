@@ -387,22 +387,36 @@ namespace Arcanum
 				}
 			}
 		}
+	}
 
-		// 고정 데이터
-		namespace StaticData
+	// 고정 데이터
+	namespace StaticData
+	{
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.StaticData", "고정 데이터");
+
+		namespace Stage
 		{
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.StaticData", "고정 데이터");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.StaticData.Stage", "스테이지");
 
-			namespace Stage
+			// 테스트 스테이지
+			namespace TestStage01
 			{
-				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.StaticData.Stage", "스테이지");
-
-				// 테스트 스테이지
-				namespace TestStage01
-				{
-					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Value, "Arcanum.StaticData.Stage.TestStage01", "테스트용 스테이지 태그");
-				}
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Value, "Arcanum.StaticData.Stage.TestStage01", "테스트용 스테이지 태그");
 			}
+		}
+	}
+
+	namespace TeamID
+	{
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.TeamID", "팀 아이디");
+		namespace Friendly
+		{
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Value, "Arcanum.TeamID.Friendly", "아군");
+		}
+
+		namespace Enemy
+		{
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Value, "Arcanum.TeamID.Enemy", "적군");
 		}
 	}
 }

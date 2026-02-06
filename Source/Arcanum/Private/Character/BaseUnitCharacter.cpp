@@ -15,6 +15,20 @@ ABaseUnitCharacter::ABaseUnitCharacter()
 	GetCharacterMovement()->SetRVOAvoidanceWeight(0.0f);
 }
 
+FGameplayTag ABaseUnitCharacter::GetTeamTag_Implementation()
+{
+	if (TeamID.IsValid())
+	{
+		return TeamID;
+	}
+	else if (GetController() && GetController()->Implements<UTeamInterface>())
+	{
+		return ITeamInterface::Execute_GetTeamTag(GetController());
+	}
+
+	return FGameplayTag::EmptyTag;
+}
+
 // Called when the game starts or when spawned
 void ABaseUnitCharacter::BeginPlay()
 {
