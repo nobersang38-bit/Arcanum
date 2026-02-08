@@ -2,19 +2,23 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "UI/Login/DataType/ELoginDataTypes.h"
+#include "UI/DataType/ELoginDataTypes.h"
+#include "UI/DataType/EDialogResult.h"
 #include "GameplayTags/ArcanumTags.h"
 #include "ARLoginHUD.generated.h"
-
-class UButton;
 
 class UKeyInputUserWidget;
 class ULoginUserWidget;
 class USyncLoginUserWidget;
 class UQuitGameUserWidget;
 class UAnnouncetUserWidget;
+class ULoginPanelWidget;
+class UCommonBtnWidget;
+class UCommonDialog;
 
+class UVerticalBox;
 class ALoginCharacter;
+
 
 UCLASS()
 class ARCANUM_API UARLoginHUD : public UUserWidget
@@ -30,7 +34,6 @@ protected:
 public:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UKeyInputUserWidget> KeyInputWidget;
-
 private:
 	UFUNCTION()
 	void OnPressAnyKey();
@@ -50,59 +53,73 @@ private:
 	/** ID 비번 확인 후 플레이어 데이터 가져올때 */
 	UFUNCTION()
 	void OnPostLoginSyncFinished(bool bIsSuccess, const FString& ErrorMessage);
+	void VisibleSyncWidget(bool bIsSuccess, const FString& Message = TEXT(""));
 #pragma endregion
 
-#pragma region 공지사항 용
+#pragma region 공지사항
 public:
+	UFUNCTION(BlueprintCallable)
+	void ClickAnnounceBtn();
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UCommonBtnWidget> AnnounceBtn;
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UAnnouncetUserWidget> AnnouncetUserWidget;
-	/** 버튼 클릭으로 공지사항 열때 WBP에서 호출*/
-	UFUNCTION(BlueprintCallable)
-	void HandleAnnouncementOpen();
-protected:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	FString AnnounceString;
 private:
+	/** 버튼 클릭으로 공지사항 열때 WBP에서 호출*/
+	UFUNCTION()
+	void HandleAnnouncementOpen(bool bIsSuccess);
 	UFUNCTION()
 	void HandleAnnouncementClose();
 #pragma endregion
 
-#pragma region 아디/비번용
+#pragma region 설정
 public:
-	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	TObjectPtr<ULoginUserWidget> LoginUserWidget;
-
+	/// Todo : 추후 세팅 만들면 추가 예정.
 	UFUNCTION(BlueprintCallable)
-	void OnGuestLoginButtonClicked();
+	void ClickSettingBtn();
 protected:
-	/** 게스트 로그인 버튼 */
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UButton> GuestLoginButton;
-
-	UFUNCTION(BlueprintCallable)
-	void HandleLoginOK(const FString& ID, const FString& PW);
-	UFUNCTION(BlueprintCallable)
-	void HandleLoginCancel();
-private:
-	void StartPostLogin(const FString& ID, const FString& PW);
-	UFUNCTION()
-	void OnPostLoginFinished(bool bSuccess, const FString& ErrorMessage);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UCommonBtnWidget> SettingBtn;
 #pragma endregion
 
-#pragma region 게임 종료용
+#pragma region 플레이
 public:
+	UFUNCTION(BlueprintCallable)
+	void ClickPlayBtn();
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UCommonBtnWidget> PlayBtn;
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<ULoginPanelWidget> LoginPanelWidget;
+private:
+	UFUNCTION()
+	void HandlePlayBtn(bool IsState);
+#pragma endregion
+
+#pragma region 종료
+public:
+	UFUNCTION(BlueprintCallable)
+	void ClickExitBtn();
+protected:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UQuitGameUserWidget> QuitGameWidget;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UCommonBtnWidget> ExitBtn;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UCommonDialog> ExitCommonDialog;
+private:
+	UFUNCTION()
+	void OnExitCommonDialog(EDialogResult res);
 #pragma endregion
 
-public:
-	/** 특정 GameplayTag를 가진 CineCamera를 찾아서 ViewTarget으로 설정 */
-	UFUNCTION(BlueprintCallable, Category = "Camera")
-	void SetCameraByRole(FGameplayTag CameraRole, bool bImmediately = true);
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UVerticalBox> VerticalBox;
 
-	/** A카메라에서 B카메라로 이동할때의 이동 시간 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "00_Setting")
-	float CameraMoving = 1.f;
 	UPROPERTY()
 	TObjectPtr<ALoginCharacter> LoginCharacter;
 

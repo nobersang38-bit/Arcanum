@@ -22,13 +22,17 @@ class ARCANUM_API UCommonBtnWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
-	public:
+public:
     // 1. 초기 설정 데이터 (텍스트는 자주 바뀌므로 유지)
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Button Settings", meta = (ExposeOnSpawn = "true"))
     FText DisplayText;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Button Settings", meta = (ExposeOnSpawn = "true"))
-    class UTexture2D* IconTexture;
+    class UTexture2D* NormalTexture;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Button Settings", meta = (ExposeOnSpawn = "true"))
+    class UTexture2D* HoverTexture;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Button Settings", meta = (ExposeOnSpawn = "true"))
+    class UTexture2D* ClickTexture;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Button Settings")
     EButtonType ButtonType = EButtonType::TextAndIcon;
@@ -48,9 +52,6 @@ class ARCANUM_API UCommonBtnWidget : public UUserWidget
     UFUNCTION(BlueprintCallable, Category = "Button Settings")
     void SetButtonText(FText InText);
 
-    UFUNCTION(BlueprintCallable, Category = "Button Settings")
-    void SetButtonIcon(UTexture2D* InIcon);
-
     // --- 위젯 바인딩 (WBP의 컴포넌트와 이름 일치 필수) ---
     UPROPERTY(meta = (BindWidget))
     class UButton* MainButton;
@@ -59,10 +60,10 @@ class ARCANUM_API UCommonBtnWidget : public UUserWidget
     class UTextBlock* ButtonLabel;
 
     UPROPERTY(meta = (BindWidget))
-    class UImage* ButtonIcon;
+    class UImage* BackGroundImg;
 
     UPROPERTY(meta = (BindWidget))
-    class UImage* BackGroundImg;
+    class UButton* IconButton;
 
 protected:
     virtual void NativePreConstruct() override;
@@ -75,6 +76,7 @@ protected:
 
     // 비주얼 업데이트 (런타임/에디터 공용)
     void UpdateVisuals();
+    void ApplyButtonStyle(class UButton* InButton, class UTexture2D* Normal, class UTexture2D* Hover, class UTexture2D* Click);
 
     UFUNCTION()
     void HandleButtonClicked();

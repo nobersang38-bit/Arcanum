@@ -1,23 +1,19 @@
 #include "Object/Character/LoginCharacter.h"
 
-#include "NiagaraComponent.h"
-#include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerController.h"
+#include "Components/SceneCaptureComponent2D.h"
 
 ALoginCharacter::ALoginCharacter()
 {
     PrimaryActorTick.bCanEverTick = true;
+    PrimaryActorTick.bTickEvenWhenPaused = false;
 
-    // Burst Effect 생성
-    AppearEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("AppearEffect"));
-    AppearEffect->SetupAttachment(GetRootComponent());
-    AppearEffect->SetAutoActivate(false);
-
-    // Loop Effect 생성
-    HoloLoopEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("HoloLoopEffect"));
-    HoloLoopEffect->SetupAttachment(GetRootComponent());
-    HoloLoopEffect->SetAutoActivate(false);
+    CaptureComp = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("PortraitCapture"));
+    CaptureComp->SetupAttachment(RootComponent);
+    CaptureComp->bCaptureEveryFrame = false;
+    CaptureComp->bAlwaysPersistRenderingState = true;
+    CaptureComp->CaptureSource = ESceneCaptureSource::SCS_SceneColorHDR;
 }
 
 void ALoginCharacter::BeginPlay()
@@ -36,32 +32,15 @@ void ALoginCharacter::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
 }
 
-void ALoginCharacter::PlayAppearEffect(bool bRequiredTick)
+void ALoginCharacter::AppearCharacter(bool bRequiredTick)
 {
     if (bHasAppeared) return;
-    if (bRequiredTick) SetActorTickEnabled(true);
-
     SetActorHiddenInGame(false);
 
-    if (AppearEffectTemplate) {
-        AppearEffect->SetAsset(AppearEffectTemplate);
-        AppearEffect->Activate(true);
+    if (CaptureComp) {
+        CaptureComp->bCaptureEveryFrame = true;
+        CaptureComp->CaptureScene();
     }
-
-    bHasAppeared = true;
-    StartHoloLoop();
-}
-
-void ALoginCharacter::StartHoloLoop()
-{
-    if (HoloLoopTemplate) {
-        HoloLoopEffect->SetAsset(HoloLoopTemplate);
-        HoloLoopEffect->Activate(true);
-    }
-}
-void ALoginCharacter::StopHoloLoop()
-{
-    if (HoloLoopEffect) HoloLoopEffect->Deactivate();
 }
 
 void ALoginCharacter::ResetCharacter()
@@ -71,8 +50,10 @@ void ALoginCharacter::ResetCharacter()
     SetActorHiddenInGame(true);
     bHasAppeared = false;
 
-    if (AppearEffect) AppearEffect->Deactivate();
-    if (HoloLoopEffect) HoloLoopEffect->Deactivate();
+    if (CaptureComp) {
+        CaptureComp->bCaptureEveryFrame = false;
+        CaptureComp->CaptureScene();
+    }
 }
 
 void ALoginCharacter::LookAtCamera()

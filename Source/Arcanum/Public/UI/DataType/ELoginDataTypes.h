@@ -7,5 +7,6 @@ UENUM(BlueprintType)
 enum class ESyncPhase : uint8
 {
 	PreLogin	UMETA(DisplayName = "Pre Login Sync"),
+	ServerRun	UMETA(DisplayName = "Server Sync"),
 	PostLogin	UMETA(DisplayName = "Post Login Sync")
 };

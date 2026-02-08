@@ -1,4 +1,4 @@
-#include "UI/Login/SubLayout/CommonBtnWidget.h"
+#include "UI/Common/CommonBtnWidget.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
@@ -13,11 +13,13 @@ void UCommonBtnWidget::NativeConstruct()
 {
     Super::NativeConstruct();
 
-    // 버튼 클릭 이벤트 연결
-    if (MainButton)
-    {
+    if (MainButton) {
         MainButton->OnClicked.RemoveDynamic(this, &UCommonBtnWidget::HandleButtonClicked);
         MainButton->OnClicked.AddDynamic(this, &UCommonBtnWidget::HandleButtonClicked);
+    }
+    if (IconButton) {
+        IconButton->OnClicked.RemoveDynamic(this, &UCommonBtnWidget::HandleButtonClicked);
+        IconButton->OnClicked.AddDynamic(this, &UCommonBtnWidget::HandleButtonClicked);
     }
 
     UpdateVisuals();
@@ -27,8 +29,6 @@ void UCommonBtnWidget::NativeConstruct()
 void UCommonBtnWidget::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
     Super::PostEditChangeProperty(PropertyChangedEvent);
-
-    // 에디터에서 속성 변경 시 즉시 반영
     UpdateVisuals();
 }
 #endif
@@ -41,26 +41,31 @@ void UCommonBtnWidget::UpdateVisuals()
         ButtonLabel->SetVisibility(bShowText ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
     }
 
-    if (ButtonIcon) {
+    if (IconButton) {
         bool bShowIcon = (ButtonType == EButtonType::IconOnly || ButtonType == EButtonType::TextAndIcon);
-        ButtonIcon->SetVisibility(bShowIcon ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+        IconButton->SetVisibility(bShowIcon ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+        if (bShowIcon) ApplyButtonStyle(IconButton, NormalTexture, HoverTexture, ClickTexture);
     }
+}
 
-    if (ButtonIcon) {
-        if (IconTexture) ButtonIcon->SetBrushFromTexture(IconTexture);
-        bool bShowIcon = (ButtonType == EButtonType::IconOnly || ButtonType == EButtonType::TextAndIcon);
-        ButtonIcon->SetVisibility(bShowIcon ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
-    }
+void UCommonBtnWidget::ApplyButtonStyle(UButton* InButton, UTexture2D* Normal, UTexture2D* Hover, UTexture2D* Click)
+{
+    if (!InButton || !Normal) return;
+
+    FButtonStyle Style = InButton->GetStyle();
+
+    Style.Normal.SetResourceObject(Normal);
+    Style.Hovered.SetResourceObject(Hover ? Hover : Normal);
+    Style.Pressed.SetResourceObject(Click ? Click : Normal);
+
+    InButton->SetStyle(Style);
 }
 
 void UCommonBtnWidget::SetButtonAppearance(FText InText, UTexture2D* InIcon, EButtonType InType)
 {
     DisplayText = InText;
     ButtonType = InType;
-    if (ButtonIcon && InIcon)
-    {
-        ButtonIcon->SetBrushFromTexture(InIcon);
-    }
+
     UpdateVisuals();
 }
 
@@ -70,13 +75,6 @@ void UCommonBtnWidget::SetButtonText(FText InText)
     if (ButtonLabel) ButtonLabel->SetText(DisplayText);
 }
 
-void UCommonBtnWidget::SetButtonIcon(UTexture2D* InIcon)
-{
-    if (ButtonIcon && InIcon)
-    {
-        ButtonIcon->SetBrushFromTexture(InIcon);
-    }
-}
 
 void UCommonBtnWidget::HandleButtonClicked()
 {
