@@ -20,6 +20,10 @@ struct FAwakenRow : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Awaken")
 	FGameplayTag AwakenTag;
 
+	/* 스택 디버프 태그 (Bleed/Guard/Mark/Atonement) */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Awaken|Debuff")
+	FGameplayTag StackDebuffTag;
+
 	/* 게이지 최대치 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Awaken|Gauge")
 	float GaugeMax = 100.0f;
@@ -28,13 +32,17 @@ struct FAwakenRow : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Awaken|Gauge")
 	float GaugeGainHit = 0.0f;
 	 
-	/* 오라 효과들 (FEffectRow) */
+	/* (각성 전) 패시브 효과들 (FEffectRow DataTable RowName) */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Awaken|Effect")
-	TArray<FName> EffectIDs;
+	TArray<FName> PassiveEffectIDs;
 
-	/* 트리들 (FTriggerEffectRow) */
+	/* (각성 후) 오라 효과들 (FEffectRow DataTable RowName) */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Awaken|Effect")
+	TArray<FName> AuraEffectIDs;
+
+	/* 트리거들 (FTriggerEffectRow DataTable RowName) */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Awaken|Trigger")
-	TArray<FGameplayTag> TriggerTags;
+	TArray<FName> TriggerIDs;
 };
 
 

@@ -38,5 +38,5 @@ struct FSkillRow : public FTableRowBase
 
 	/* 패턴 파라미터 2 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Skill|Pattern")
-	int32 PatternValue2 = 0;
+	float PatternValue2 = 0;
 };

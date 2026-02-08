@@ -36,6 +36,5 @@ struct FVfxRow : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "VFX|Time")
 	float LifeTime = 0.0f;
-
 };
 

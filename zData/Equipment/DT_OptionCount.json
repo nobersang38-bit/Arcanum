@@ -1,0 +1,43 @@
+[
+  {
+    "Name": "OC_Helmet",
+    "EquipmentTag": "Arcanum.Item.Equipment.Armor.Helmet",
+    "OptionCount": 2
+  },
+  {
+    "Name": "OC_Chest",
+    "EquipmentTag": "Arcanum.Item.Equipment.Armor.Chest",
+    "OptionCount": 3
+  },
+  {
+    "Name": "OC_Glove",
+    "EquipmentTag": "Arcanum.Item.Equipment.Armor.Glove",
+    "OptionCount": 2
+  },
+  {
+    "Name": "OC_Boot",
+    "EquipmentTag": "Arcanum.Item.Equipment.Armor.Boot",
+    "OptionCount": 2
+  },
+
+  {
+    "Name": "OC_Weapon_GreatSword",
+    "EquipmentTag": "Arcanum.Item.Equipment.Weapon.Common.GreatSword",
+    "OptionCount": 3
+  },
+  {
+    "Name": "OC_Weapon_Staff",
+    "EquipmentTag": "Arcanum.Item.Equipment.Weapon.Common.Staff",
+    "OptionCount": 3
+  },
+  {
+    "Name": "OC_Weapon_Bow",
+    "EquipmentTag": "Arcanum.Item.Equipment.Weapon.Common.Bow",
+    "OptionCount": 3
+  },
+  {
+    "Name": "OC_Weapon_Shield",
+    "EquipmentTag": "Arcanum.Item.Equipment.Weapon.Common.Shield",
+    "OptionCount": 3
+  }
+]

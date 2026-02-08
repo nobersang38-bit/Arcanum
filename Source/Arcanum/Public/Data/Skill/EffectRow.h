@@ -27,7 +27,7 @@ struct FEffectRow : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effect")
 	FGameplayTag EffectTargetTag;
 
-	/* 적용할 타겟 규칙 (Arcanum.TargetRule.*) */
+	/* 적용할 타겟 규칙 (Arcanum.TargetType.*) */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effect|Target")
 	FGameplayTag TargetTypeTag;
 
