@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "Interface/TeamInterface.h"
+#include "BehaviorTree/Blackboard/BlackboardKey.h"
 #include "UnitAIController.generated.h"
 
 // 김도현
@@ -34,6 +35,9 @@ public:
 	// Todo : 나중에 데이터 테이블에서 가져와야함, 지금은 임시로 직접 넣음
 	virtual FGameplayTag GetTeamTag_Implementation() override;
 
+	// 매니저가 타겟을 할당해줌
+	void TargetAssigned(ACharacter* Target);
+
 protected:
 	virtual void OnPossess(APawn* InPawn) override;
 
@@ -47,7 +51,25 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (Categories = "Arcanum.TeamID"))
 	FGameplayTag TeamID;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Test")
+	FName BBTargetActorName;
+
+	// 타겟을 찾을때 틱
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Test")
+	float UpdateInterval = 2.0f;
+
+	// 서로 계산할때 같은시간에 연산 안하게 오차범위
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Test")
+	float UpdateIntervalMargin = 0.2f;
+
+	// 스폰되었을때 계산 시작할 범위
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Test")
+	FVector2D InitialDelayRange = FVector2D(0.0f, 0.2f);
+
 private:
+	UFUNCTION()
+	void AIInitialize(APawn* InPawn);
+
 	AActor* TargetCalcTest();
 
 	UFUNCTION()
@@ -56,6 +78,10 @@ private:
 	UFUNCTION()
 	void EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 private:
+	// 현재 내가 공격중인 적이거나 공격해야하는 적
+	UPROPERTY()
+	TWeakObjectPtr<ACharacter> TargetCharacter = nullptr;
+
 	// 감지용 구체 콜리전
 	UPROPERTY()
 	TObjectPtr<class USphereComponent> DetectComponent = nullptr;
@@ -66,4 +92,6 @@ private:
 
 	// 현재 나를 공격중인 적은 몇명인가, 나중에 액터나 캐릭터 배열로 바꿀수도 있음
 	int32 AttackerCount = 0;
+
+	FBlackboard::FKey TargetActorKey;
 };
