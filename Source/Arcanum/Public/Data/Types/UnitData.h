@@ -4,22 +4,22 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "Data/Types/BaseCharacterData.h"
-#include "Data/Types/EnemyCombatStat.h"
-#include "EnemyUnitData.generated.h"
+#include "Data/Types/UnitCombatStat.h"
+#include "Data/Types/BaseUnitData.h"
+#include "UnitData.generated.h"
 
 // 김도현
-// 적군 유닛 데이터
+// 아군 유닛 데이터
 USTRUCT(BlueprintType)
-struct FEnemyUnitData
+struct FUnitData
 {
 	GENERATED_BODY()
-protected:
+public:
 	// 기본정보
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FBaseCharacterData Info;
+	FBaseUnitData Info;
 
 	// 전투 스탯
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FEnemyCombatStat Stat;
+	FUnitCombatStat Stat;
 };

@@ -14,8 +14,8 @@ USTRUCT(BlueprintType)
 struct FCommonCombatStat
 {
 	GENERATED_BODY()
-protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (Categories = "Arcanum.TeamID"))
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (Categories = "Arcanum.Unit.Faction"))
 	FGameplayTag TeamID;
 
 	// 체력

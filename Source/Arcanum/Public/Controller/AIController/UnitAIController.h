@@ -5,93 +5,15 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "Interface/TeamInterface.h"
-#include "BehaviorTree/Blackboard/BlackboardKey.h"
 #include "UnitAIController.generated.h"
 
 // 김도현
 // 아군 유닛, 적군 유닛 AI컨트롤러
 // 타겟 우선순위를 두기 위한 기능포함
 UCLASS()
-class ARCANUM_API AUnitAIController : public AAIController, public ITeamInterface
+class ARCANUM_API AUnitAIController : public AAIController
 {
 	GENERATED_BODY()
 public:
 	AUnitAIController();
-	virtual void BeginPlay() override;
-
-public:
-	// 현재 나를 공격중인 적은 몇명인가
-	UFUNCTION(BlueprintCallable)
-	int32 GetAttackerCount() const { return AttackerCount; };
-
-	// Todo : 나중에 공격하는 함수에 추가해서 알아서 작동하게 해야함
-	// 공격중인 적 하나 추가, 이 대상을 공격할때 외부에서 꼭 이 함수 호출해야함
-	void AddAttackerCount() { AttackerCount++; };
-
-	// Todo : 나중에 공격 안하는 함수에 추가해서 알아서 작동하게 해야함
-	// 공격중인 적 하나 제거, 이 대상을 더이상 공격하지 않으면 꼭 이 함수 호출해야함
-	void RemoveAttackerCount() { AttackerCount--; };
-
-	// Todo : 나중에 데이터 테이블에서 가져와야함, 지금은 임시로 직접 넣음
-	virtual FGameplayTag GetTeamTag_Implementation() override;
-
-	// 매니저가 타겟을 할당해줌
-	void TargetAssigned(ACharacter* Target);
-
-protected:
-	virtual void OnPossess(APawn* InPawn) override;
-
-protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TObjectPtr<class UBehaviorTree> BehaviorTree = nullptr;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TObjectPtr<class UDATargetPriorityWeight> TargetPriorityWeight = nullptr;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (Categories = "Arcanum.TeamID"))
-	FGameplayTag TeamID;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Test")
-	FName BBTargetActorName;
-
-	// 타겟을 찾을때 틱
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Test")
-	float UpdateInterval = 2.0f;
-
-	// 서로 계산할때 같은시간에 연산 안하게 오차범위
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Test")
-	float UpdateIntervalMargin = 0.2f;
-
-	// 스폰되었을때 계산 시작할 범위
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Test")
-	FVector2D InitialDelayRange = FVector2D(0.0f, 0.2f);
-
-private:
-	UFUNCTION()
-	void AIInitialize(APawn* InPawn);
-
-	AActor* TargetCalcTest();
-
-	UFUNCTION()
-	void BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UFUNCTION()
-	void EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-private:
-	// 현재 내가 공격중인 적이거나 공격해야하는 적
-	UPROPERTY()
-	TWeakObjectPtr<ACharacter> TargetCharacter = nullptr;
-
-	// 감지용 구체 콜리전
-	UPROPERTY()
-	TObjectPtr<class USphereComponent> DetectComponent = nullptr;
-
-	// 감지된 적 유닛
-	UPROPERTY()
-	TSet<TWeakObjectPtr<ACharacter>> DetectedCharacters;
-
-	// 현재 나를 공격중인 적은 몇명인가, 나중에 액터나 캐릭터 배열로 바꿀수도 있음
-	int32 AttackerCount = 0;
-
-	FBlackboard::FKey TargetActorKey;
 };

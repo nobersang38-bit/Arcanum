@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "Data/Types/AllyUnitData.h"
+#include "Data/Types/UnitData.h"
 #include "GameplayTagContainer.h"
 #include "AllyUnitsDataRow.generated.h"
 
@@ -14,11 +14,11 @@ USTRUCT(BlueprintType)
 struct FAllyUnitsDataRow : public FTableRowBase
 {
 	GENERATED_BODY()
-protected:
+public:
 	// 해당 유닛의 태그(나중에 찾을때 사용)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FGameplayTag Tag;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FAllyUnitData UnitData;
+	FUnitData UnitData;
 };

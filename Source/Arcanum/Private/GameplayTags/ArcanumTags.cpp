@@ -417,20 +417,6 @@ namespace Arcanum
 			}
 		}
 	}
-
-	namespace TeamID
-	{
-		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.TeamID", "팀 아이디");
-		namespace Friendly
-		{
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Value, "Arcanum.TeamID.Friendly", "아군");
-		}
-
-		namespace Enemy
-		{
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Value, "Arcanum.TeamID.Enemy", "적군");
-		}
-	}
 }
 
 namespace Arcanum {
