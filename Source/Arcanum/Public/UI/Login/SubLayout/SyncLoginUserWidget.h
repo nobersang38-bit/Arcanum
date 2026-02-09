@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "UI/Login/DataType/ELoginDataTypes.h"
+#include "UI/DataType/ELoginDataTypes.h"
 #include "SyncLoginUserWidget.generated.h"
 
 class UTextBlock;

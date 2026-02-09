@@ -10,8 +10,8 @@ public class Arcanum : ModuleRules
 
         PublicDependencyModuleNames.AddRange(new string[] { 
 			"Core", "CoreUObject", "Engine", "InputCore", "NavigationSystem", 
-			"AIModule", "Niagara", "EnhancedInput", "GameplayTags","GameplayAbilities","GameplayTasks",
-            "CommonUI"
+			"AIModule", "Niagara", "EnhancedInput", "GameplayTags",
+            "CommonUI","UMG", "Slate", "SlateCore"
         });
     }
 }

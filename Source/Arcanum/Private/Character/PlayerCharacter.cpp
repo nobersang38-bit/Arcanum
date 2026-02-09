@@ -2,7 +2,6 @@
 
 
 #include "Character/PlayerCharacter.h"
-#include "AbilitySystemComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -35,7 +34,6 @@ APlayerCharacter::APlayerCharacter()
 
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
-	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 }
 
 // Called when the game starts or when spawned
@@ -43,24 +41,11 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	//FGameplayTag PlayerID = FGameplayTag::RequestGameplayTag(TEXT("Arcanum.Player.ID.Elara"));
-	//GameplayTags.AddTag(PlayerID);
+	// 기본 캐릭터 ID 태그
+	FGameplayTag PlayerID = FGameplayTag::RequestGameplayTag(TEXT("Arcanum.Player.ID.Elara"));
+	GameplayTags.AddTag(PlayerID);
 
-	if (ASC)
-	{
-		// 기존 ID 태그 제거 (ID 하위 태그만)
-		ASC->RemoveLooseGameplayTag(Arcanum::Player::ID::Root);
-
-		// 기본 플레이어 ID 태그 추가(Elara)
-		FGameplayTag PlayerID = FGameplayTag::RequestGameplayTag(TEXT("Arcanum.Player.ID.Elara"));
-		ASC->AddLooseGameplayTag(PlayerID);
-		
-		FGameplayTagContainer ASC_Tags;
-		ASC->GetOwnedGameplayTags(ASC_Tags);
-
-		PrintIDTag();
-	}
-	
+	PrintIDTag();
 }
 
 // Called every frame
@@ -79,63 +64,46 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 void APlayerCharacter::SetIDTag(FGameplayTag NewIDTag)
 {
-	if (!ASC || !NewIDTag.IsValid())
+	if (!NewIDTag.IsValid())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ASC가 없거나 태그가 없음!!!"));
+		UE_LOG(LogTemp, Warning, TEXT("태그가 없음!!!"));
 		return;
 	}
 
-	//// ID 태그 루트 제거
-	//const FGameplayTag PlayerIDRoot = Arcanum::Player::ID::Root;
-	//ASC->RemoveLooseGameplayTag(PlayerIDRoot);
-	//UE_LOG(LogTemp, Warning, TEXT("ID 태그 루트 제거: %s"), *PlayerIDRoot.ToString());
+	FGameplayTagContainer RemoveTags;
 
-	//// 기존 태그들을 모두 제거하고, 새 태그만 추가
-	FGameplayTagContainer ASC_Tags;
-	ASC->GetOwnedGameplayTags(ASC_Tags);
+	FGameplayTag IDRootTag = FGameplayTag::RequestGameplayTag(TEXT("Arcanum.Player.ID"));
 
-	// ASC_Tags에서 "ID."로 시작하는 태그들을 제거
-	for (const FGameplayTag& Tag : ASC_Tags)
+	// 플레이어가 가지고 있는 태그에서 ID 태그만 가져와서 RemoveTags 안에 넣기
+	for (const FGameplayTag& Tag : GameplayTags)
 	{
-		if (Tag.ToString().Contains(TEXT("ID.")))  // ID 태그들만 삭제
+		if (Tag.MatchesTag(IDRootTag))
 		{
-			ASC->RemoveLooseGameplayTag(Tag);
-			//UE_LOG(LogTemp, Warning, TEXT("기존 ID 태그 제거: %s"), *Tag.ToString());
+			RemoveTags.AddTag(Tag);
 		}
 	}
 
-	// 새 ID 태그 추가
-	ASC->AddLooseGameplayTag(NewIDTag);
-	//UE_LOG(LogTemp, Warning, TEXT("새 ID 태그 추가: %s"), *NewIDTag.ToString());
-
+	// 태그에서 ID 태그만 삭제
+	for (const FGameplayTag& Tag : RemoveTags)
+	{
+		GameplayTags.RemoveTag(Tag);
+	}
+	GameplayTags.AddTag(NewIDTag);
 	PrintIDTag();
 }
 
 void APlayerCharacter::PrintIDTag()
 {
-	if (!ASC) return;
-	FGameplayTagContainer ASC_Tags;
-	ASC->GetOwnedGameplayTags(ASC_Tags);
 
-	FString tagString;
-
-	tagString.Empty();
-	for (const FGameplayTag& Tag : ASC_Tags)
+	if (GameplayTags.Num() == 0)
 	{
-		if (Tag.ToString().Contains(TEXT("ID.")))
-		{
-			tagString += Tag.ToString() + TEXT(", ");
-		}
+		UE_LOG(LogTemp, Warning, TEXT("GameplayTags 비어있음"));
+		return;
 	}
 
-	// 태그 상태 출력
-	if (tagString.IsEmpty())
+	for (const FGameplayTag& Tag : GameplayTags)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("캐릭터 ID 태그 없음"));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("캐릭터 ID 태그: %s"), *tagString);
+		UE_LOG(LogTemp, Log, TEXT("Tag: %s"), *Tag.ToString());
 	}
 }
 

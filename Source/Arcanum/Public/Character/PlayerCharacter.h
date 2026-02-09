@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "GameplayTags/ArcanumTags.h"
-#include "AbilitySystemInterface.h"
 #include "PlayerCharacter.generated.h"
 
 /*
@@ -13,17 +12,14 @@
 */
 
 UCLASS()
-class ARCANUM_API APlayerCharacter : public ACharacter, public IAbilitySystemInterface
+class ARCANUM_API APlayerCharacter : public ACharacter
+	//, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
 	APlayerCharacter();
-
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override {
-		return ASC;
-	};
 
 protected:
 	virtual void BeginPlay() override;
@@ -41,9 +37,6 @@ public:
 	
 
 protected:
-	// 어빌리티
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ability")
-	TObjectPtr<UAbilitySystemComponent> ASC = nullptr;
 
 	// 스프링암
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
@@ -53,7 +46,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	TObjectPtr<class UCameraComponent> Camera = nullptr;
 
-	// 캐릭터 ID 태그
+	// 캐릭터 태그
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tags")
 	FGameplayTagContainer GameplayTags;
 
