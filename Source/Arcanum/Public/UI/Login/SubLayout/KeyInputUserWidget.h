@@ -15,7 +15,7 @@ class UButton;
  *  3. 입력 감지 시 Delegate Broadcast
  */
 
- // 입력 감지 시 블루프린트나 다른 클래스에서 반응할 수 있도록 하는 다이나믹 멀티캐스트 델리게이트
+// 입력 감지 시 블루프린트나 다른 클래스에서 반응할 수 있도록 하는 다이나믹 멀티캐스트 델리게이트
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAnyKeyPressed);
 
 UCLASS()
@@ -28,10 +28,19 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Input | Events")
 	FOnAnyKeyPressed OnAnyKeyPressed;
 
+	/** 필요 시 위젯내 애니메이션 재생*/
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void PlayWidgetAnimation();
+
+	UFUNCTION(BlueprintCallable)
+	void PlayWidgetAnimation_Implementation();
+
+	/** 모든 종류의 입력을 공통적으로 처리하고 델리게이트를 호출하는 내부 함수 */
+	UFUNCTION(BlueprintCallable)
+	void HandleAnyInput();
 protected:
 	/** 위젯 생성 시 초기화 로직: 포커스 설정 등을 처리 */
 	virtual void NativeConstruct() override;
-	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry,const FKeyEvent& InKeyEvent) override;
 
 private:
 	UFUNCTION()
@@ -39,8 +48,6 @@ private:
 
 	/** 중복 입력 처리를 방지하기 위한 플래그 (true면 이미 입력이 처리) */
 	bool bInputReceived = false;
-	/** 모든 종류의 입력을 공통적으로 처리하고 델리게이트를 호출하는 내부 함수 */
-	void HandleAnyInput();
 
 #pragma region WBP 바인딩
 protected:
@@ -48,7 +55,7 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> PressAnyKeyText;
 
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UButton> AnyKeyButton;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
