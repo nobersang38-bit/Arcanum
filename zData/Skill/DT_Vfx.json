@@ -1,0 +1,239 @@
+[
+  {
+    "Name": "VFX_Hit_Normal",
+    "Niagara": "",
+    "SocketName": "VFX_Chest",
+    "LocationOffset": { "X": 0.0, "Y": 0.0, "Z": 0.0 },
+    "RotationOffset": { "Pitch": 0.0, "Yaw": 0.0, "Roll": 0.0 },
+    "Scale": { "X": 1.0, "Y": 1.0, "Z": 1.0 },
+    "LifeTime": 0.6
+  },
+
+  {
+    "Name": "VFX_Debuff_Bleed",
+    "Niagara": "",
+    "SocketName": "VFX_Chest",
+    "LocationOffset": { "X": 0.0, "Y": 0.0, "Z": 0.0 },
+    "RotationOffset": { "Pitch": 0.0, "Yaw": 0.0, "Roll": 0.0 },
+    "Scale": { "X": 1.0, "Y": 1.0, "Z": 1.0 },
+    "LifeTime": 0.0
+  },
+  {
+    "Name": "VFX_Debuff_Mark",
+    "Niagara": "",
+    "SocketName": "VFX_Chest",
+    "LocationOffset": { "X": 0.0, "Y": 0.0, "Z": 0.0 },
+    "RotationOffset": { "Pitch": 0.0, "Yaw": 0.0, "Roll": 0.0 },
+    "Scale": { "X": 1.0, "Y": 1.0, "Z": 1.0 },
+    "LifeTime": 0.0
+  },
+  {
+    "Name": "VFX_Debuff_Atonement",
+    "Niagara": "",
+    "SocketName": "VFX_Chest",
+    "LocationOffset": { "X": 0.0, "Y": 0.0, "Z": 0.0 },
+    "RotationOffset": { "Pitch": 0.0, "Yaw": 0.0, "Roll": 0.0 },
+    "Scale": { "X": 1.0, "Y": 1.0, "Z": 1.0 },
+    "LifeTime": 0.0
+  },
+  {
+    "Name": "VFX_Debuff_Slow",
+    "Niagara": "",
+    "SocketName": "VFX_Chest",
+    "LocationOffset": { "X": 0.0, "Y": 0.0, "Z": 0.0 },
+    "RotationOffset": { "Pitch": 0.0, "Yaw": 0.0, "Roll": 0.0 },
+    "Scale": { "X": 1.0, "Y": 1.0, "Z": 1.0 },
+    "LifeTime": 0.0
+  },
+  {
+    "Name": "VFX_Debuff_Weaken",
+    "Niagara": "",
+    "SocketName": "VFX_Chest",
+    "LocationOffset": { "X": 0.0, "Y": 0.0, "Z": 0.0 },
+    "RotationOffset": { "Pitch": 0.0, "Yaw": 0.0, "Roll": 0.0 },
+    "Scale": { "X": 1.0, "Y": 1.0, "Z": 1.0 },
+    "LifeTime": 0.0
+  },
+  {
+    "Name": "VFX_Debuff_Shock",
+    "Niagara": "",
+    "SocketName": "VFX_Chest",
+    "LocationOffset": { "X": 0.0, "Y": 0.0, "Z": 0.0 },
+    "RotationOffset": { "Pitch": 0.0, "Yaw": 0.0, "Roll": 0.0 },
+    "Scale": { "X": 1.0, "Y": 1.0, "Z": 1.0 },
+    "LifeTime": 0.0
+  },
+  {
+    "Name": "VFX_Debuff_Burn",
+    "Niagara": "",
+    "SocketName": "VFX_Chest",
+    "LocationOffset": { "X": 0.0, "Y": 0.0, "Z": 0.0 },
+    "RotationOffset": { "Pitch": 0.0, "Yaw": 0.0, "Roll": 0.0 },
+    "Scale": { "X": 1.0, "Y": 1.0, "Z": 1.0 },
+    "LifeTime": 0.0
+  },
+  {
+    "Name": "VFX_Debuff_Guard",
+    "Niagara": "",
+    "SocketName": "VFX_Chest",
+    "LocationOffset": { "X": 0.0, "Y": 0.0, "Z": 0.0 },
+    "RotationOffset": { "Pitch": 0.0, "Yaw": 0.0, "Roll": 0.0 },
+    "Scale": { "X": 1.0, "Y": 1.0, "Z": 1.0 },
+    "LifeTime": 0.0
+  },
+  {
+    "Name": "VFX_Aura_Fury",
+    "Niagara": "",
+    "SocketName": "VFX_Root",
+    "LocationOffset": { "X": 0.0, "Y": 0.0, "Z": 0.0 },
+    "RotationOffset": { "Pitch": 0.0, "Yaw": 0.0, "Roll": 0.0 },
+    "Scale": { "X": 1.0, "Y": 1.0, "Z": 1.0 },
+    "LifeTime": 0.0
+  },
+  {
+    "Name": "VFX_Aura_Resolve",
+    "Niagara": "",
+    "SocketName": "VFX_Root",
+    "LocationOffset": { "X": 0.0, "Y": 0.0, "Z": 0.0 },
+    "RotationOffset": { "Pitch": 0.0, "Yaw": 0.0, "Roll": 0.0 },
+    "Scale": { "X": 1.0, "Y": 1.0, "Z": 1.0 },
+    "LifeTime": 0.0
+  },
+  {
+    "Name": "VFX_Aura_Focus",
+    "Niagara": "",
+    "SocketName": "VFX_Root",
+    "LocationOffset": { "X": 0.0, "Y": 0.0, "Z": 0.0 },
+    "RotationOffset": { "Pitch": 0.0, "Yaw": 0.0, "Roll": 0.0 },
+    "Scale": { "X": 1.0, "Y": 1.0, "Z": 1.0 },
+    "LifeTime": 0.0
+  },
+  {
+    "Name": "VFX_Aura_Holy",
+    "Niagara": "",
+    "SocketName": "VFX_Root",
+    "LocationOffset": { "X": 0.0, "Y": 0.0, "Z": 0.0 },
+    "RotationOffset": { "Pitch": 0.0, "Yaw": 0.0, "Roll": 0.0 },
+    "Scale": { "X": 1.0, "Y": 1.0, "Z": 1.0 },
+    "LifeTime": 0.0
+  },
+
+  {
+    "Name": "VFX_Buff_Fury",
+    "Niagara": "",
+    "SocketName": "VFX_Chest",
+    "LocationOffset": { "X": 0.0, "Y": 0.0, "Z": 0.0 },
+    "RotationOffset": { "Pitch": 0.0, "Yaw": 0.0, "Roll": 0.0 },
+    "Scale": { "X": 1.0, "Y": 1.0, "Z": 1.0 },
+    "LifeTime": 0.0
+  },
+  {
+    "Name": "VFX_Buff_Resolve",
+    "Niagara": "",
+    "SocketName": "VFX_Chest",
+    "LocationOffset": { "X": 0.0, "Y": 0.0, "Z": 0.0 },
+    "RotationOffset": { "Pitch": 0.0, "Yaw": 0.0, "Roll": 0.0 },
+    "Scale": { "X": 1.0, "Y": 1.0, "Z": 1.0 },
+    "LifeTime": 0.0
+  },
+  {
+    "Name": "VFX_Buff_Focus",
+    "Niagara": "",
+    "SocketName": "VFX_Chest",
+    "LocationOffset": { "X": 0.0, "Y": 0.0, "Z": 0.0 },
+    "RotationOffset": { "Pitch": 0.0, "Yaw": 0.0, "Roll": 0.0 },
+    "Scale": { "X": 1.0, "Y": 1.0, "Z": 1.0 },
+    "LifeTime": 0.0
+  },
+  {
+    "Name": "VFX_Buff_Holy",
+    "Niagara": "",
+    "SocketName": "VFX_Chest",
+    "LocationOffset": { "X": 0.0, "Y": 0.0, "Z": 0.0 },
+    "RotationOffset": { "Pitch": 0.0, "Yaw": 0.0, "Roll": 0.0 },
+    "Scale": { "X": 1.0, "Y": 1.0, "Z": 1.0 },
+    "LifeTime": 0.0
+  },
+  {
+    "Name": "VFX_Buff_Barrier",
+    "Niagara": "",
+    "SocketName": "VFX_Chest",
+    "LocationOffset": { "X": 0.0, "Y": 0.0, "Z": 0.0 },
+    "RotationOffset": { "Pitch": 0.0, "Yaw": 0.0, "Roll": 0.0 },
+    "Scale": { "X": 1.0, "Y": 1.0, "Z": 1.0 },
+    "LifeTime": 0.0
+  },
+  {
+    "Name": "VFX_Trigger_BloodBurst",
+    "Niagara": "",
+    "SocketName": "VFX_Chest",
+    "LocationOffset": { "X": 0.0, "Y": 0.0, "Z": 0.0 },
+    "RotationOffset": { "Pitch": 0.0, "Yaw": 0.0, "Roll": 0.0 },
+    "Scale": { "X": 1.0, "Y": 1.0, "Z": 1.0 },
+    "LifeTime": 0.9
+  },
+  {
+    "Name": "VFX_Trigger_Retribution",
+    "Niagara": "",
+    "SocketName": "VFX_Chest",
+    "LocationOffset": { "X": 0.0, "Y": 0.0, "Z": 0.0 },
+    "RotationOffset": { "Pitch": 0.0, "Yaw": 0.0, "Roll": 0.0 },
+    "Scale": { "X": 1.0, "Y": 1.0, "Z": 1.0 },
+    "LifeTime": 0.9
+  },
+  {
+    "Name": "VFX_Trigger_Execution",
+    "Niagara": "",
+    "SocketName": "VFX_Chest",
+    "LocationOffset": { "X": 0.0, "Y": 0.0, "Z": 0.0 },
+    "RotationOffset": { "Pitch": 0.0, "Yaw": 0.0, "Roll": 0.0 },
+    "Scale": { "X": 1.0, "Y": 1.0, "Z": 1.0 },
+    "LifeTime": 0.9
+  },
+  {
+    "Name": "VFX_Trigger_Purification",
+    "Niagara": "",
+    "SocketName": "VFX_Chest",
+    "LocationOffset": { "X": 0.0, "Y": 0.0, "Z": 0.0 },
+    "RotationOffset": { "Pitch": 0.0, "Yaw": 0.0, "Roll": 0.0 },
+    "Scale": { "X": 1.0, "Y": 1.0, "Z": 1.0 },
+    "LifeTime": 0.9
+  },
+
+  {
+    "Name": "VFX_Legend_VoidPull",
+    "Niagara": "",
+    "SocketName": "None",
+    "LocationOffset": { "X": 0.0, "Y": 0.0, "Z": 0.0 },
+    "RotationOffset": { "Pitch": 0.0, "Yaw": 0.0, "Roll": 0.0 },
+    "Scale": { "X": 1.0, "Y": 1.0, "Z": 1.0 },
+    "LifeTime": 1.5
+  },
+  {
+    "Name": "VFX_Legend_VoidExplode",
+    "Niagara": "",
+    "SocketName": "None",
+    "LocationOffset": { "X": 0.0, "Y": 0.0, "Z": 0.0 },
+    "RotationOffset": { "Pitch": 0.0, "Yaw": 0.0, "Roll": 0.0 },
+    "Scale": { "X": 1.0, "Y": 1.0, "Z": 1.0 },
+    "LifeTime": 1.0
+  },
+  {
+    "Name": "VFX_Legend_MjolnirStrike",
+    "Niagara": "",
+    "SocketName": "None",
+    "LocationOffset": { "X": 0.0, "Y": 0.0, "Z": 0.0 },
+    "RotationOffset": { "Pitch": 0.0, "Yaw": 0.0, "Roll": 0.0 },
+    "Scale": { "X": 1.0, "Y": 1.0, "Z": 1.0 },
+    "LifeTime": 1.2
+  },
+  {
+    "Name": "VFX_Legend_SolarFall",
+    "Niagara": "",
+    "SocketName": "None",
+    "LocationOffset": { "X": 0.0, "Y": 0.0, "Z": 0.0 },
+    "RotationOffset": { "Pitch": 0.0, "Yaw": 0.0, "Roll": 0.0 },
+    "Scale": { "X": 1.0, "Y": 1.0, "Z": 1.0 },
+    "LifeTime": 1.5
+  }
+]

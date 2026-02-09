@@ -1,0 +1,42 @@
+[
+  {
+    "Name": "Awaken_Fury",
+    "AwakenTag": "Arcanum.Ability.Passive.Fury",
+    "StackDebuffTag": "Arcanum.Effect.Debuff.Status.Bleed",
+    "GaugeMax": 100.0,
+    "GaugeGainHit": 1.0,
+    "PassiveEffectIDs": [ "E_Passive_Fury_AttackSpeed" ],
+    "AuraEffectIDs": [ "E_Aura_Fury_VFX" ],
+    "TriggerIDs": [ "Trig_BloodBurst" ]
+  },
+  {
+    "Name": "Awaken_Resolve",
+    "AwakenTag": "Arcanum.Ability.Passive.Resolve",
+    "StackDebuffTag": "Arcanum.Effect.Debuff.Status.Guard",
+    "GaugeMax": 100.0,
+    "GaugeGainHit": 1.0,
+    "PassiveEffectIDs": [ "E_Passive_Resolve_DamageReduction" ],
+    "AuraEffectIDs": [ "E_Aura_Resolve_VFX" ],
+    "TriggerIDs": [ "Trig_Retribution" ]
+  },
+  {
+    "Name": "Awaken_Focus",
+    "AwakenTag": "Arcanum.Ability.Passive.Focus",
+    "StackDebuffTag": "Arcanum.Effect.Debuff.Status.Mark",
+    "GaugeMax": 100.0,
+    "GaugeGainHit": 1.0,
+    "PassiveEffectIDs": [ "E_Passive_Focus_CritChance" ],
+    "AuraEffectIDs": [ "E_Aura_Focus_VFX" ],
+    "TriggerIDs": [ "Trig_Execution" ]
+  },
+  {
+    "Name": "Awaken_Holy",
+    "AwakenTag": "Arcanum.Ability.Passive.Holy",
+    "StackDebuffTag": "Arcanum.Effect.Debuff.Status.Atonement",
+    "GaugeMax": 100.0,
+    "GaugeGainHit": 1.0,
+    "PassiveEffectIDs": [ "E_Passive_Holy_HealthRegen" ],
+    "AuraEffectIDs": [ "E_Aura_Holy_VFX" ],
+    "TriggerIDs": [ "Trig_Purification" ]
+  }
+]

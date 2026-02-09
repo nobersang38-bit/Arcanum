@@ -1,0 +1,26 @@
+[
+  {
+    "Name": "Trig_BloodBurst",
+    "TriggerTag": "Arcanum.Ability.Event.Trigger.BloodBurst",
+    "ConditionDebuffTag": "Arcanum.Effect.Debuff.Status.Bleed",
+    " ": [ "E_Trigger_BloodBurst", "E_Reset_Bleed" ]
+  },
+  {
+    "Name": "Trig_Retribution",
+    "TriggerTag": "Arcanum.Ability.Event.Trigger.Retribution",
+    "ConditionDebuffTag": "Arcanum.Effect.Debuff.Status.Guard",
+    "EffectIDs": [ "E_Trigger_Retribution", "E_Reset_Guard" ]
+  },
+  {
+    "Name": "Trig_Execution",
+    "TriggerTag": "Arcanum.Ability.Event.Trigger.Execution",
+    "ConditionDebuffTag": "Arcanum.Effect.Debuff.Status.Mark",
+    "EffectIDs": [ "E_Trigger_Execution", "E_Reset_Mark" ]
+  },
+  {
+    "Name": "Trig_Purification",
+    "TriggerTag": "Arcanum.Ability.Event.Trigger.Purification",
+    "ConditionDebuffTag": "Arcanum.Effect.Debuff.Status.Atonement",
+    "EffectIDs": [ "E_Trigger_Purification", "E_Reset_Atonement" ]
+  }
+]
