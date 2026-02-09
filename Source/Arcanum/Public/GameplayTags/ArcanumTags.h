@@ -139,15 +139,15 @@ namespace Arcanum {
 /**
  * TODO : 추영호 태그
  */
-namespace Arcanum 
+namespace Arcanum
 {
 	/* 상태 */
-	namespace State 
+	namespace State
 	{
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(PreAwakened); // 각성 전
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Awakened);    // 각성 후
 		/* 각성 오라 */
-		namespace Aura 
+		namespace Aura
 		{
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(FuryActive);     // 분노
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(ResolveActive);  // 결의	
@@ -156,21 +156,21 @@ namespace Arcanum
 		}
 	}
 	/* 아이템 */
-	namespace Item 
+	namespace Item
 	{
 		/* 장비 */
-		namespace Equipment 
+		namespace Equipment
 		{
-			namespace Weapon 
+			namespace Weapon
 			{
-				namespace Common 
+				namespace Common
 				{
 					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(GreatSword); // 대검
 					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Staff);      // 지팡이
 					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Bow);        // 활
 					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shield);     // 방패
 				}
-				namespace Legendary 
+				namespace Legendary
 				{
 					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Spear);      // 창
 					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Scepter);    // 셉터
@@ -184,11 +184,11 @@ namespace Arcanum
 				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Glove);  // 장갑
 				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Boot);   // 신발
 			}
-			namespace SetItem 
+			namespace SetItem
 			{
 				namespace Armor
 				{
-				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Talasha);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Talasha);
 				}
 			}
 		}
@@ -200,7 +200,7 @@ namespace Arcanum
 		}
 	}
 	/* 능력치 */
-	namespace Stat 
+	namespace Stat
 	{
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(BaseAttack);        // 기본 공격력
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(SkillPower);        // 스킬 공격력 계수
@@ -216,9 +216,9 @@ namespace Arcanum
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(DamageReduction);   // 피해 감소
 	}
 	/* 행동 */
-	namespace Ability 
+	namespace Ability
 	{
-		namespace Passive 
+		namespace Passive
 		{
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Fury);    // 분노
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Resolve); // 결의
@@ -228,17 +228,17 @@ namespace Arcanum
 		/* 스킬 */
 		namespace Skill
 		{
-			namespace Weapon 
+			namespace Weapon
 			{
-				namespace Common 
+				namespace Common
 				{
 					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Slash);         // 베기
 					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(ChainBolt);     // 체인 볼트
 					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(PiercingShot);  // 관통 사격
 					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(ShockWave);     // 충격파
 				}
-				namespace Legendary 
-				{  
+				namespace Legendary
+				{
 					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(MjolnirStrike); // 묠니르
 					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(VoidEclipse);   // 보이드
 					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(SolarFlare);    // 솔라
@@ -246,7 +246,7 @@ namespace Arcanum
 			}
 		}
 		/* 발동 */
-		namespace Event	
+		namespace Event
 		{
 			namespace Trigger
 			{
@@ -255,7 +255,7 @@ namespace Arcanum
 				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Execution);     // 처단
 				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Purification);  // 정화
 			}
-		}	    
+		}
 	}
 	/* 효과 타입 */
 	namespace EffectType
@@ -273,7 +273,7 @@ namespace Arcanum
 	/* 효과 */
 	namespace Effect
 	{
-		namespace Buff 
+		namespace Buff
 		{
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(AttackSpeed);     // 공격속도 증가
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(DamageReduction); // 피해 감소
@@ -281,9 +281,9 @@ namespace Arcanum
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(HealthRegen);     // 지속 회복
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Barrier);         // 보호막
 		}
-		namespace Debuff 
+		namespace Debuff
 		{
-			namespace Status 
+			namespace Status
 			{
 				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Bleed);       // 출혈
 				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Guard);       // 수호
