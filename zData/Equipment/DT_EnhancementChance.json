@@ -1,0 +1,27 @@
+[
+  {
+    "Name": "EC_Upgrade_1",
+    "UpgradeLevel": 1,
+    "SuccessChance": 100.0
+  },
+  {
+    "Name": "EC_Upgrade_2",
+    "UpgradeLevel": 2,
+    "SuccessChance": 50.0
+  },
+  {
+    "Name": "EC_Upgrade_3",
+    "UpgradeLevel": 3,
+    "SuccessChance": 25.0
+  },
+  {
+    "Name": "EC_Upgrade_4",
+    "UpgradeLevel": 4,
+    "SuccessChance": 12.0
+  },
+  {
+    "Name": "EC_Upgrade_5",
+    "UpgradeLevel": 5,
+    "SuccessChance": 6.0
+  }
+]
