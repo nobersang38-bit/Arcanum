@@ -15,17 +15,22 @@ void UKeyInputUserWidget::NativeConstruct()
 }
 void UKeyInputUserWidget::OnButtonClicked()
 {
-	HandleAnyInput();
+    if (bInputReceived) return;
+
+    bInputReceived = true;
+    if (AnyKeyButton) {
+        AnyKeyButton->SetIsEnabled(false);
+        AnyKeyButton->SetVisibility(ESlateVisibility::Collapsed);
+    }
+    PlayWidgetAnimation();
+}
+void UKeyInputUserWidget::PlayWidgetAnimation_Implementation()
+{
 }
 void UKeyInputUserWidget::HandleAnyInput()
 {
-    if (!bInputReceived) {
-        bInputReceived = true;
+    if (bInputReceived) {
         OnAnyKeyPressed.Broadcast();
+        if (AnyKeyButton) AnyKeyButton->SetIsEnabled(false);
     }
-}
-FReply UKeyInputUserWidget::NativeOnKeyDown(const FGeometry& InGeometry,const FKeyEvent& InKeyEvent)
-{
-    HandleAnyInput();
-    return FReply::Handled();
 }
