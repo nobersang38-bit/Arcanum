@@ -1,0 +1,6 @@
+[
+  {
+    "Name": "Player",
+    "Supply": {  "ParentTag" : "Arcanum.PlayerData.Currencies.Regen.Supply" , "Current": 40, "BaseMax": 40, "BaseTick": 300, "BonusMax": 0.0, "BonusTick": 0.0}
+  }
+]

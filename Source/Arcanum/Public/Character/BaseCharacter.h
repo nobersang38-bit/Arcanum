@@ -6,11 +6,22 @@
 #include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
 
+class UPlayerBattleStatsComponent;
+
 UCLASS(Blueprintable)
 class ABaseCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+#pragma region 테스트용
+public:
+	/// Debug
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UPlayerBattleStatsComponent> PlayerBattleStatsComp;
+#pragma endregion
+
+	
+	
 public:
 	ABaseCharacter();
 	int a = 0;
@@ -18,6 +29,9 @@ public:
 
 	FORCEINLINE class UCameraComponent* GetTopDownCameraComponent() const { return TopDownCameraComponent; }
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+
+protected:
+	virtual void BeginPlay() override;
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
