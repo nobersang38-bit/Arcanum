@@ -262,7 +262,10 @@ void UCharacterBattleStatsComponent::UpdateFinalStatValue(FGameplayTag Tag)
         float B_Flat = 0.f, B_Mul = 0.f;
         float C_Flat = 0.f, C_Mul = 0.f;
         for (const auto& Mod : ActiveModifiers) {
-            if (Mod.StatTag == Tag) { B_Flat += Mod.Value.Flat; B_Mul += Mod.Value.Mul; }
+            if (Mod.StatTag == Tag) { 
+                B_Flat += Mod.Value.Flat; 
+                B_Mul += Mod.Value.Mul; 
+            }
         }
 
         if (Tag == RStat->Child_Max) {
