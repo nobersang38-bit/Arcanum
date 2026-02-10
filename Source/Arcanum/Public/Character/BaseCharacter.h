@@ -1,5 +1,3 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -7,6 +5,7 @@
 #include "BaseCharacter.generated.h"
 
 class UPlayerBattleStatsComponent;
+class UCharacterBattleStatsComponent;
 
 UCLASS(Blueprintable)
 class ABaseCharacter : public ACharacter
@@ -18,6 +17,10 @@ public:
 	/// Debug
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UPlayerBattleStatsComponent> PlayerBattleStatsComp;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UCharacterBattleStatsComponent> CharacterBattleStatsComp;
 #pragma endregion
 
 	

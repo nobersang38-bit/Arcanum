@@ -153,8 +153,9 @@ void UPlayerBattleStatsComponent::RebuildTotalStats()
         Stat.Current = FMath::Clamp(Stat.Current, 0.f, Stat.GetTotalMax());
     }
 }
-
-
+// ========================================================
+// 배틀 중 부를 함수
+// ========================================================
 void UPlayerBattleStatsComponent::ChangeStatValue(FGameplayTag StatTag, float DamageAmount, AActor* DamageCauser)
 {
     for (FRegenStat& Stat : TotalRegenStats) {

@@ -14,6 +14,7 @@
 #pragma region 컴포넌트 관련 테스트
 /// Debug
 #include "Component/Stats/PlayerBattleStatsComponent.h"
+#include "Component/Stats/CharacterBattleStatsComponent.h"
 #pragma endregion
 
 
@@ -48,6 +49,7 @@ ABaseCharacter::ABaseCharacter()
 #pragma region GameEntry 컴포넌트 관련 테스트
 	/// Debug
 	PlayerBattleStatsComp = CreateDefaultSubobject<UPlayerBattleStatsComponent>(TEXT("PlayerBattleStatsComp"));
+	CharacterBattleStatsComp = CreateDefaultSubobject<UCharacterBattleStatsComponent>(TEXT("CharacterBattleStatsComp"));
 #pragma endregion
 }
 
