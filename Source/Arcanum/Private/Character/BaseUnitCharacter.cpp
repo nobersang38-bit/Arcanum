@@ -12,6 +12,8 @@
 #include "Components/SphereComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "Component/UnitCombatComponent.h"
+#include "Data/Rows/AllyUnitsDataRow.h"
+#include "Data/Rows/EnemyUnitsDataRow.h"
 
 // Sets default values
 ABaseUnitCharacter::ABaseUnitCharacter()
@@ -41,13 +43,6 @@ FGameplayTag ABaseUnitCharacter::GetTeamTag_Implementation()
 
 void ABaseUnitCharacter::BeginPlay()
 {
-	if (!UnitData.Info.AISetting.TargetPriorityWeight.IsNull())
-	{
-		if (UDATargetPriorityWeight* TargetPriorityWeight = UnitData.Info.AISetting.TargetPriorityWeight.LoadSynchronous())
-		{
-			UnitCombatComponent->SetTargetPriorityWeight(TargetPriorityWeight);
-		}
-	}
 	Super::BeginPlay();
 }
 
@@ -66,6 +61,28 @@ void ABaseUnitCharacter::PossessedBy(AController* NewController)
 	GetWorld()->GetTimerManager().SetTimerForNextTick(AIInitializeTimerDelegate);
 
 	DataInitialize();
+}
+
+void ABaseUnitCharacter::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	const FName MemberPropertyName = (PropertyChangedEvent.MemberProperty != nullptr) ? PropertyChangedEvent.MemberProperty->GetFName() : NAME_None;
+
+	if (MemberPropertyName == GET_MEMBER_NAME_CHECKED(ABaseUnitCharacter, DTUnitDataRowHandle))
+	{
+		if (DTUnitDataRowHandle.DataTable && !DTUnitDataRowHandle.RowName.IsNone()) 
+		{
+			if (const FAllyUnitsDataRow* AllyRow = DTUnitDataRowHandle.DataTable->FindRow<FAllyUnitsDataRow>(DTUnitDataRowHandle.RowName, TEXT("Load")))
+			{
+				if (AllyRow) UnitData = (*AllyRow).UnitData;
+			}
+			else if(const FEnemyUnitsDataRow* EnemyRow = DTUnitDataRowHandle.DataTable->FindRow<FEnemyUnitsDataRow>(DTUnitDataRowHandle.RowName, TEXT("Load")))
+			{
+				if (EnemyRow) UnitData = (*EnemyRow).UnitData;
+			}
+		}
+	}
 }
 
 void ABaseUnitCharacter::TargetAssigned(ACharacter* Target)
@@ -172,5 +189,10 @@ void ABaseUnitCharacter::EndOverlap(UPrimitiveComponent* OverlappedComponent, AA
 	{
 		DetectedCharacters.Remove(DetectedCharacter);
 	}
+}
+
+const FUnitData& ABaseUnitCharacter::GetUnitData()
+{
+	return UnitData;
 }
 

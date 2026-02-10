@@ -4,33 +4,39 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Data/DataAssets/DATargetPriorityWeight.h"
+#include "Data/Types/BaseUnitData.h"
 #include "UnitCombatComponent.generated.h"
 
 
+// 김도현
+// 전투 컴포넌트(AI컴포넌트)
+class USphereComponent;
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ARCANUM_API UUnitCombatComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this component's properties
 	UUnitCombatComponent();
-
-public:
-	FORCEINLINE void SetTargetPriorityWeight(UDATargetPriorityWeight* InData) { TargetPriorityWeight = InData; }
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 protected:
+	UFUNCTION()
+	void DeferredBeginPlay();
+
+	UFUNCTION()
+	void TickUpdate();
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TWeakObjectPtr<USphereComponent> DetectComponent = nullptr;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TObjectPtr<UDATargetPriorityWeight> TargetPriorityWeight = nullptr;
+	FUnitAISetting UnitAISetting;
 
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-		
+private:
+	FTimerHandle TickTimerHandle;
 };

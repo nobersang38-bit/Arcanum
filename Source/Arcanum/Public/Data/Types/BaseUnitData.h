@@ -13,16 +13,12 @@ struct FAITickParams
 {
 	GENERATED_BODY()
 public:
-	// 타겟을 찾을때 틱
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Test")
-	float UpdateInterval = 2.0f;
+	// 타겟을 찾을때 틱, 범위
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TickParam")
+	FVector2D UpdateIntervalRange = FVector2D(1.9f, 2.1f);
 
-	// 서로 계산할때 같은시간에 연산 안하게 오차범위
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Test")
-	float UpdateIntervalMargin = 0.2f;
-
-	// 스폰되었을때 계산 시작할 범위
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Test")
+	// 스폰되었을때 계산 시작할 시간 범위
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TickParam")
 	FVector2D InitialDelayRange = FVector2D(0.0f, 0.2f);
 };
 
