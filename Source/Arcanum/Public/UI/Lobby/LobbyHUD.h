@@ -19,6 +19,7 @@
 class UCommonBtnWidget;
 class UCommonDialog;
 class UHorizontalBox;
+class UBackgroundBlur;
 
 UCLASS()
 class ARCANUM_API ULobbyHUD : public UUserWidget
@@ -62,7 +63,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UHorizontalBox> SettingUHorizontalBox;
 
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UBackgroundBlur> BackgroundBlur;
+	
 private:
 	UFUNCTION()
 	void ClickBattleMenuBtn();

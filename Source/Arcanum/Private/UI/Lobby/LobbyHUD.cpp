@@ -7,12 +7,14 @@
 //#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/HorizontalBox.h"
+#include "Components/BackgroundBlur.h"
 
 void ULobbyHUD::NativeConstruct()
 {
 	Super::NativeConstruct();
 
 	if (ExitCommonDialog) ExitCommonDialog->SetVisibility(ESlateVisibility::Collapsed);
+	if (BackgroundBlur) BackgroundBlur->SetVisibility(ESlateVisibility::Collapsed);
 
 	if (BattleMenuBtn) {
 		BattleMenuBtn->OnClicked.RemoveDynamic(this, &ULobbyHUD::ClickBattleMenuBtn);
@@ -94,6 +96,7 @@ void ULobbyHUD::ClickQuitBtn()
 	if (ExitCommonDialog)
 	{
 		ExitCommonDialog->SetVisibility(ESlateVisibility::Visible);
+		BackgroundBlur->SetVisibility(ESlateVisibility::Visible);
 
 		ExitCommonDialog->OnResult.RemoveDynamic(this, &ULobbyHUD::OnExitCommonDialog);
 		ExitCommonDialog->OnResult.AddDynamic(this, &ULobbyHUD::OnExitCommonDialog);
@@ -129,6 +132,7 @@ void ULobbyHUD::OnExitCommonDialog(EDialogResult res)
 	{
 		//UE_LOG(LogTemp, Log, TEXT("cancel 클릭"));
 		ExitCommonDialog->SetVisibility(ESlateVisibility::Hidden);
+		BackgroundBlur->SetVisibility(ESlateVisibility::Collapsed);
 
 		if (MenuHorizontalBox)
 		{
