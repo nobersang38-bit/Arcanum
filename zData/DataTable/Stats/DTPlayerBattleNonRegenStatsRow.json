@@ -1,0 +1,6 @@
+[
+  {
+    "Name": "Player",
+    "CommandCenterStamina":    { "TagName": "Arcanum.BattleStat.Player.NonRegen.CommandCenterStamina",     "BaseValue": 1500, "BonusValue": 0, "ModifierValue": 0 }
+  }
+]

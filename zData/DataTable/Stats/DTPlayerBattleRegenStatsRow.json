@@ -1,0 +1,6 @@
+[
+  {
+    "Name": "Player",
+    "Meat": {  "ParentTag" : "Arcanum.BattleStat.Player.Regen.Meat" , "Current": 40, "BaseMax": 40, "BaseTick": 1,"BonusMax": 0.0,"ModifierMax": 0.0,"ModifierTick": 0.0}
+  }
+]

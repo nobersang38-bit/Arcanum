@@ -1,0 +1,56 @@
+[
+  {
+    "Name": "Elara",
+    "AttackPower":    { "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackPower",     "BaseValue": 10, "BonusValue": 0, "ModifierValue": 0 },
+    "AttackSpeed":    { "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed",     "BaseValue": 5, "BonusValue": 0 , "ModifierValue": 0 },
+    "Evasion":        { "TagName": "Arcanum.BattleStat.Character.NonRegen.Evasion",         "BaseValue": 5, "BonusValue": 0, "ModifierValue": 0 },
+    "MoveSpeed":      { "TagName": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed",       "BaseValue": 3, "BonusValue": 0, "ModifierValue": 0 },
+    "CritChance":     { "TagName": "Arcanum.BattleStat.Character.NonRegen.CritChance",      "BaseValue": 0.05, "BonusValue": 0, "ModifierValue": 0 },
+    "DamageReduction":{ "TagName": "Arcanum.BattleStat.Character.NonRegen.DamageReduction", "BaseValue": 0.1, "BonusValue": 0, "ModifierValue": 0 }
+  },
+  {
+    "Name": "Iris",
+    "AttackPower":    { "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackPower",     "BaseValue": 10, "BonusValue": 0, "ModifierValue": 0 },
+    "AttackSpeed":    { "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed",     "BaseValue": 5, "BonusValue": 0 , "ModifierValue": 0 },
+    "Evasion":        { "TagName": "Arcanum.BattleStat.Character.NonRegen.Evasion",         "BaseValue": 5, "BonusValue": 0, "ModifierValue": 0 },
+    "MoveSpeed":      { "TagName": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed",       "BaseValue": 3, "BonusValue": 0, "ModifierValue": 0 },
+    "CritChance":     { "TagName": "Arcanum.BattleStat.Character.NonRegen.CritChance",      "BaseValue": 0.05, "BonusValue": 0, "ModifierValue": 0 },
+    "DamageReduction":{ "TagName": "Arcanum.BattleStat.Character.NonRegen.DamageReduction", "BaseValue": 0.1, "BonusValue": 0, "ModifierValue": 0 }
+  },
+  {
+    "Name": "Celestia",
+    "AttackPower":    { "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackPower",     "BaseValue": 10, "BonusValue": 0, "ModifierValue": 0 },
+    "AttackSpeed":    { "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed",     "BaseValue": 5, "BonusValue": 0 , "ModifierValue": 0 },
+    "Evasion":        { "TagName": "Arcanum.BattleStat.Character.NonRegen.Evasion",         "BaseValue": 5, "BonusValue": 0, "ModifierValue": 0 },
+    "MoveSpeed":      { "TagName": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed",       "BaseValue": 3, "BonusValue": 0, "ModifierValue": 0 },
+    "CritChance":     { "TagName": "Arcanum.BattleStat.Character.NonRegen.CritChance",      "BaseValue": 0.05, "BonusValue": 0, "ModifierValue": 0 },
+    "DamageReduction":{ "TagName": "Arcanum.BattleStat.Character.NonRegen.DamageReduction", "BaseValue": 0.1, "BonusValue": 0, "ModifierValue": 0 }
+  },
+  {
+    "Name": "Lynette",
+    "AttackPower":    { "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackPower",     "BaseValue": 10, "BonusValue": 0, "ModifierValue": 0 },
+    "AttackSpeed":    { "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed",     "BaseValue": 5, "BonusValue": 0 , "ModifierValue": 0 },
+    "Evasion":        { "TagName": "Arcanum.BattleStat.Character.NonRegen.Evasion",         "BaseValue": 5, "BonusValue": 0, "ModifierValue": 0 },
+    "MoveSpeed":      { "TagName": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed",       "BaseValue": 3, "BonusValue": 0, "ModifierValue": 0 },
+    "CritChance":     { "TagName": "Arcanum.BattleStat.Character.NonRegen.CritChance",      "BaseValue": 0.05, "BonusValue": 0, "ModifierValue": 0 },
+    "DamageReduction":{ "TagName": "Arcanum.BattleStat.Character.NonRegen.DamageReduction", "BaseValue": 0.1, "BonusValue": 0, "ModifierValue": 0 }
+  },
+  {
+    "Name": "Arna",
+    "AttackPower":    { "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackPower",     "BaseValue": 10, "BonusValue": 0, "ModifierValue": 0 },
+    "AttackSpeed":    { "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed",     "BaseValue": 5, "BonusValue": 0 , "ModifierValue": 0 },
+    "Evasion":        { "TagName": "Arcanum.BattleStat.Character.NonRegen.Evasion",         "BaseValue": 5, "BonusValue": 0, "ModifierValue": 0 },
+    "MoveSpeed":      { "TagName": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed",       "BaseValue": 3, "BonusValue": 0, "ModifierValue": 0 },
+    "CritChance":     { "TagName": "Arcanum.BattleStat.Character.NonRegen.CritChance",      "BaseValue": 0.05, "BonusValue": 0, "ModifierValue": 0 },
+    "DamageReduction":{ "TagName": "Arcanum.BattleStat.Character.NonRegen.DamageReduction", "BaseValue": 0.1, "BonusValue": 0, "ModifierValue": 0 }
+  },
+  {
+    "Name": "Enemy1",
+    "AttackPower":    { "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackPower",     "BaseValue": 10, "BonusValue": 0, "ModifierValue": 0 },
+    "AttackSpeed":    { "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed",     "BaseValue": 5, "BonusValue": 0 , "ModifierValue": 0 },
+    "Evasion":        { "TagName": "Arcanum.BattleStat.Character.NonRegen.Evasion",         "BaseValue": 5, "BonusValue": 0, "ModifierValue": 0 },
+    "MoveSpeed":      { "TagName": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed",       "BaseValue": 3, "BonusValue": 0, "ModifierValue": 0 },
+    "CritChance":     { "TagName": "Arcanum.BattleStat.Character.NonRegen.CritChance",      "BaseValue": 0.05, "BonusValue": 0, "ModifierValue": 0 },
+    "DamageReduction":{ "TagName": "Arcanum.BattleStat.Character.NonRegen.DamageReduction", "BaseValue": 0.1, "BonusValue": 0, "ModifierValue": 0 }
+  }
+]
