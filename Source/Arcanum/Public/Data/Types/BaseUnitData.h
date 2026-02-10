@@ -7,6 +7,22 @@
 #include "BaseUnitData.generated.h"
 
 // 김도현
+// 런타임 중의 데이터
+USTRUCT(BlueprintType)
+struct FUnitRuntimeData
+{
+	GENERATED_BODY()
+public:
+	// 나를 때리려고하는 적은 누구누구인가
+	UPROPERTY()
+	TSet<TWeakObjectPtr<ACharacter>> AttackingTargets;
+
+	// 내가 발견한 엘리트 적, 엘리트 적이 없다면 비어있음
+	UPROPERTY()
+	TSet<TWeakObjectPtr<ACharacter>> Elites;
+};
+
+// 김도현
 // AI 틱 최적화 구조체
 USTRUCT(BlueprintType)
 struct FAITickParams
@@ -80,6 +96,22 @@ struct FUnitAISetting
 {
 	GENERATED_BODY()
 public:
+	// 해당 유닛은 엘리트인가
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")
+	bool bIsElite = false;
+
+	// 한번 타겟을 공격시작하면 타겟을 변경할 수 있는가, false이면 틱마다 검사하니 AITickParams의 UpdataInterval여유있게 설정해야 함, true로 하는걸 추천
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
+	bool bUseLockTarget = true;
+
+	// 최대 몇명을 감지할 것 인가
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
+	int32 MaxTargetCount = 10;
+
+	// 때릴 수 있는 거리는 얼마인가, SquaredLength 기준 입니다
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
+	float AttackRange = 10000.0f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
 	TSoftObjectPtr<class UBehaviorTree> BehaviorTree = nullptr;
 

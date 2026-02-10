@@ -4,12 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "GameplayTagContainer.h"
-#include "TeamInterface.generated.h"
+#include "Data/Types/BaseUnitData.h"
+#include "RuntimeUnitDataInterface.generated.h"
 
-// This class does not need to be modified.
+// 김도현
+// 주변의 적의 정보
 UINTERFACE(MinimalAPI)
-class UTeamInterface : public UInterface
+class URuntimeUnitDataInterface : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -17,11 +18,11 @@ class UTeamInterface : public UInterface
 /**
  * 
  */
-class ARCANUM_API ITeamInterface
+class ARCANUM_API IRuntimeUnitDataInterface
 {
 	GENERATED_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual FGameplayTag GetTeamTag() = 0;
+	virtual FUnitRuntimeData& GetUnitRuntimeData() = 0;
 };
