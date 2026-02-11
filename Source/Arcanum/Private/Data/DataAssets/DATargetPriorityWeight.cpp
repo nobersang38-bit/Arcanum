@@ -45,7 +45,6 @@ float UDATargetPriorityWeight::CalculateScore(ACharacter* MyCharacter, ACharacte
 	// 엘리트일수록 점수가 높음
 	CurrentTargetScore += CalculateScoreEliteWeight(TargetUnitData);
 	
-	UE_LOG(LogTemp, Warning, TEXT("점수 결과 나옴!!! : %f"), CurrentTargetScore);
     return CurrentTargetScore;
 }
 
@@ -69,8 +68,10 @@ float UDATargetPriorityWeight::CalculateScoreAttackingTargetNumWeight(const FUni
 	float CurrentTargetScore = 0.0f;
 	if (AttackingTargetNumWeightSet.bUseWeight)
 	{
-		float PartScore = TargetUnitRuntimeData.AttackingTargets.Num();
+		float PartScore = 10.0f;
 
+		PartScore -= TargetUnitRuntimeData.AttackingTargets.Num();
+		PartScore = FMath::Clamp(PartScore, 0.0f, 10.0f);
 		PartScore *= AttackingTargetNumWeightSet.TargetWeight;
 		PartScore = FMath::Clamp(PartScore, 0.0f, 10.0f);
 
@@ -102,6 +103,8 @@ float UDATargetPriorityWeight::CalculateScoreDistanceWeight(ACharacter* MyCharac
 // 나를 공격하는 대상에게 점수를 줌
 float UDATargetPriorityWeight::CalculateScoreAggroWeight(const FUnitRuntimeData& MyUnitRuntimeData, ACharacter* TargetCharacter) const
 {
+	if (!TargetCharacter) return 0.0f;
+
 	float CurrentTargetScore = 0.0f;
 	if (AggroWeightSet.bUseWeight)
 	{

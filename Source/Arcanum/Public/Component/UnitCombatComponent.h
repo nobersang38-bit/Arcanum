@@ -73,22 +73,37 @@ protected:
 	FUnitAISetting UnitAISetting;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FUnitData UnitData;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FUnitRuntimeData UnitRuntimeData;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bDebug_StopAI = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bDebug_DrawMoveTargeLine = false;
 
 private:
 	UFUNCTION()
 	void AIInitialize();
+
+	UFUNCTION()
+	void Onhit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 	void Idle();
 	void Move();
 	void Attack();
 	void ActionRestricted(FGameplayTag InActionRestrictedTag);
 	void Death();
+
 private:
 	UPROPERTY()
 	TWeakObjectPtr<class AAIController> OwnerAIC = nullptr;
 
 	FTimerHandle TickTimerHandle;
+	FTimerHandle AttackTimerHandle;
+	FTimerHandle DeathTimerHandle;
 
 	FBlackboard::FKey TargetActorKey;
 
@@ -112,4 +127,10 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<class UDATargetPriorityWeight> TargetPriorityWeight = nullptr;
+
+	UPROPERTY()
+	TWeakObjectPtr<ACharacter> OwnerCharacter = nullptr;
+
+	UPROPERTY()
+	TWeakObjectPtr<class UCapsuleComponent> OwnerCapsuleComponent = nullptr;
 };

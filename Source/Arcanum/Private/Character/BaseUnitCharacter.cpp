@@ -14,6 +14,7 @@
 #include "Component/UnitCombatComponent.h"
 #include "Data/Rows/AllyUnitsDataRow.h"
 #include "Data/Rows/EnemyUnitsDataRow.h"
+#include "Component/Stats/CharacterBattleStatsComponent.h"
 
 // Sets default values
 ABaseUnitCharacter::ABaseUnitCharacter()
@@ -22,6 +23,7 @@ ABaseUnitCharacter::ABaseUnitCharacter()
 	PrimaryActorTick.bCanEverTick = false;
 
 	UnitCombatComponent = CreateDefaultSubobject<UUnitCombatComponent>(TEXT("UnitCombatComponent"));
+	CharacterBattleStatsComponent = CreateDefaultSubobject<UCharacterBattleStatsComponent>(TEXT("CharacterBattleStatsComponent"));
 
 	GetCharacterMovement()->bUseRVOAvoidance = true;
 	GetCharacterMovement()->AvoidanceConsiderationRadius = 200.0f;
@@ -43,6 +45,8 @@ FGameplayTag ABaseUnitCharacter::GetTeamTag()
 void ABaseUnitCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+
 }
 
 void ABaseUnitCharacter::PossessedBy(AController* NewController)
@@ -50,7 +54,7 @@ void ABaseUnitCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 	DataInitialize();
 }
-
+#if WITH_EDITOR
 void ABaseUnitCharacter::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
@@ -72,6 +76,7 @@ void ABaseUnitCharacter::PostEditChangeProperty(FPropertyChangedEvent& PropertyC
 		}
 	}
 }
+#endif
 
 void ABaseUnitCharacter::DataInitialize()
 {
@@ -87,6 +92,9 @@ void ABaseUnitCharacter::DataInitialize()
 	{
 		GetMesh()->SetAnimInstanceClass(UnitData.Info.AnimSetting.AnimInstance);
 	}
+
+	/*GetCharacterMovement()->MaxWalkSpeed = Speed;
+	UnitData.Info.AISetting.AttackRange = Range;*/
 }
 
 FUnitRuntimeData& ABaseUnitCharacter::GetUnitRuntimeData()

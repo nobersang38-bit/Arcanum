@@ -18,6 +18,15 @@ class ARCANUM_API ABaseUnitCharacter : public ACharacter, public ITeamInterface,
 {
 	GENERATED_BODY()
 public:
+#pragma region Debug
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "00_Test")
+	//float Speed = 400.0f;
+
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "00_Test")
+	//float Range = 200.0f;
+
+#pragma endregion
+
 	ABaseUnitCharacter();
 
 public:
@@ -37,6 +46,9 @@ protected:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<class UUnitCombatComponent> UnitCombatComponent = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<class UCharacterBattleStatsComponent> CharacterBattleStatsComponent = nullptr;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MainData")

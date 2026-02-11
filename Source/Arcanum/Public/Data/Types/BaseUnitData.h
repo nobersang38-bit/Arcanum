@@ -112,6 +112,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
 	float AttackRange = 10000.0f;
 
+	// 공격 주기
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
+	float AttackRate = 1.5f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
 	TSoftObjectPtr<class UBehaviorTree> BehaviorTree = nullptr;
 
