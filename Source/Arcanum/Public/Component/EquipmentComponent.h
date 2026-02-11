@@ -81,7 +81,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Arcanum|Equipment|Set")
 	void SetLegendaryWeaponHelmetSet(const FWeaponHelmetSet& InSet);
 
-	/* 일반 세트 스왑(0<->1). 무기+투구만 교체 */
+	/* 일반 세트 스왑(0<->1), 무기+투구만 교체 */
 	UFUNCTION(BlueprintCallable, Category = "Arcanum|Equipment|Set")
 	bool SwapNormalWeaponSet();
 
@@ -93,13 +93,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Arcanum|Equipment|Set")
 	bool DeactivateLegendaryWeaponSet();
 
+	// Getter
+	/* 현재 선택된 일반 무기/투구 세트 인덱스 */
 	UFUNCTION(BlueprintCallable, Category = "Arcanum|Equipment|Set")
 	int32 GetCurrentNormalSetIndex() const	{ return CurrentNormalSetIndex; }
 
+	/* 전설 무기/투구 세트가 적용 중인지(전설 모드인지) */
 	UFUNCTION(BlueprintCallable, Category = "Arcanum|Equipment|Set")
 	bool IsLegendaryActive() const {return (CurrentSetMode == EWeaponSetMode::Legendary); }
-
-	// Getter
+	
 	/* 스킬 : 현재 무기 태그(Weapon 슬롯) */
 	UFUNCTION(BlueprintCallable, Category = "Arcanum|Equipment")
 	FGameplayTag GetCurrentWeaponTag() const { return WeaponTag; }
