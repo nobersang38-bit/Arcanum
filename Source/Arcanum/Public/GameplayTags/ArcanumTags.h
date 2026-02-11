@@ -434,6 +434,60 @@ namespace Arcanum
    ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(CooldownReduction); // 쿨다운 감소
 */
 
+
+
+namespace Arcanum {
+	namespace Skills {
+		namespace SkillName {
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(None);
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Slash);			// 무기 스킬: 베기
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(ChainBolt);		// 무기 스킬: 체인 볼트
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(PiercingShot);	// 무기 스킬: 관통 사격
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(ShockWave);		// 무기 스킬: 충격파
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(MjolnirStrike);	// 무기 스킬: 묠니르
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(VoidEclipse);	// 무기 스킬: 보이드
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(SolarFlare);		// 무기 스킬: 솔라
+		}
+		namespace SkillTypes {
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(None);
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Active);			// 실제 필드에 보일 애들
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Passive);		// 캐릭터 내부에서만 작동하는 애들
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Aura);			// 실제 외부에 나타나는 Passive 계열
+		}
+		namespace TargetingType {
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(None);
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Self);
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Unit);
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ground);
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Direction);
+		}
+		namespace TargetFilter {
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(None);
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Enemy);
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ally);
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Self);
+		}
+		namespace SkillVFX { // 이펙트 효과용 0을 기준으로 +버프, -디버프 => 추후 스킬컴포넌트에서 스택도 관리함
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Bleed);       // 출혈
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Guard);       // 수호
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Mark);        // 표식
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Atonement);   // 속죄
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shock);       // 감전 
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Burn);        // 화상
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Stun);        // 스턴
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Knockback);   // 넉백
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(MoveSpeed);   // 이동속도
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(AttackSpeed); // 공격속도
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(DamageReduction); // 피해
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(CritChance);      // 크리 증가
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(HealthRegen);     // 지속 회복
+		}
+	}
+	namespace Items {
+
+	}
+}
+
 namespace Arcanum {
 	namespace BattleStat {
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
@@ -562,9 +616,6 @@ namespace Arcanum {
 		*/
 	}
 }
-
-
-
 
 namespace Arcanum {
 	namespace UI {
