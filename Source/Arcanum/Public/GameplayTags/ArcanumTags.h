@@ -186,17 +186,14 @@ namespace Arcanum
 			}
 			namespace SetItem
 			{
-				namespace Armor
-				{
-					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Talasha);
-				}
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(ManaCycle);        // 마력 순환 4셋
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(ItemEffectBonus);  // 아이템 효과 증가 4셋
 			}
-		}
-		namespace SetBonus
-		{
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Surge);    // 역류
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Majesty);  // 위엄
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Avarice);  // 탐욕
+			namespace SetBonus
+			{
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(ManaCycle);        // 마력 순환
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(ItemEffectBonus);  // 아이템 효과 증가
+			}
 		}
 	}
 	/* 능력치 */
