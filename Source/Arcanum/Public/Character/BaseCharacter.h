@@ -1,16 +1,30 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
 
+class UPlayerBattleStatsComponent;
+class UCharacterBattleStatsComponent;
+
 UCLASS(Blueprintable)
 class ABaseCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+#pragma region 테스트용
+public:
+	/// Debug
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UPlayerBattleStatsComponent> PlayerBattleStatsComp;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UCharacterBattleStatsComponent> CharacterBattleStatsComp;
+#pragma endregion
+
+	
+	
 public:
 	ABaseCharacter();
 	int a = 0;
@@ -18,6 +32,9 @@ public:
 
 	FORCEINLINE class UCameraComponent* GetTopDownCameraComponent() const { return TopDownCameraComponent; }
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+
+protected:
+	virtual void BeginPlay() override;
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
