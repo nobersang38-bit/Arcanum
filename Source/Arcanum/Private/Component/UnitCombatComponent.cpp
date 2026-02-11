@@ -285,54 +285,10 @@ ACharacter* UUnitCombatComponent::GetHigherPriorityTarget(ACharacter* CurrentTar
 	ACharacter* ResultCharacter = nullptr;
 	float CurrentTargetScore = 0;
 
-	auto CurrentDataInterface = Cast<IUnitDataInterface>(CurrentTarget);
-	auto CurrentRuntimeDataInterface = Cast<IRuntimeUnitDataInterface>(CurrentTarget);
-
-	if (CurrentDataInterface && CurrentRuntimeDataInterface)
+	if (ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner()))
 	{
-		const FUnitData& CurrentUnitData = CurrentDataInterface->GetUnitData();
-		const FUnitRuntimeData& CurrentUnitRuntimeData = CurrentRuntimeDataInterface->GetUnitRuntimeData();
-
-		// 파트당 최대 점수는 10, 최소 점수는  0
-		// 해당 적을 공격하고 있는 아군이 적을수록 점수 올라감
-		if (TargetPriorityWeight->GetUseAttackingTargetNumWeight())
-		{
-			float PartScore = CurrentUnitRuntimeData.AttackingTargets.Num();
-
-			PartScore *= TargetPriorityWeight->GetAttackingTargetNumWeight();
-			PartScore = FMath::Clamp(PartScore, 0.0f, 10.0f);
-
-			CurrentTargetScore += PartScore;
-		}
-
-		// 거리가 가까울수록 점수가 높음
-		if (TargetPriorityWeight->GetUseDistanceWeight())
-		{
-			float PartScore = 10.0f;
-
-			float Distance = (GetOwner()->GetActorLocation() - CurrentTarget->GetActorLocation()).SquaredLength();
-			Distance *= 0.0001f;
-
-			PartScore -= Distance;
-			PartScore *= TargetPriorityWeight->GetDistanceWeight();
-			PartScore = FMath::Clamp(PartScore, 0.0f, 10.0f);
-
-			CurrentTargetScore += PartScore;
-		}
-
-		// 나를 공격하는 대상에게 점수를 줌
-		if (TargetPriorityWeight->GetUseAggroWeight())
-		{
-			float PartScore = 0.0f;
-
-			if (UnitRuntimeData.AttackingTargets.Contains(CurrentTarget))
-			{
-
-			}
-		}
+		CurrentTargetScore = TargetPriorityWeight->CalculateScore(OwnerCharacter, CurrentTarget);
 	}
-
-
 
 	if (!WinTarget) // 처음실행이라면 무조건 CurrentTarget값 냅보내기
 	{
@@ -340,7 +296,16 @@ ACharacter* UUnitCombatComponent::GetHigherPriorityTarget(ACharacter* CurrentTar
 		WinScore = CurrentTargetScore;
 		return ResultCharacter;
 	}
-	return nullptr;
+
+	if (WinScore < CurrentTargetScore)
+	{
+		WinScore = CurrentTargetScore;
+		return CurrentTarget;
+	}
+	else
+	{
+		return WinTarget;
+	}
 }
 
 // 애매한 상황이 발생하면 여기로 오게됨

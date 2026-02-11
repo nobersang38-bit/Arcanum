@@ -4,7 +4,23 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
+#include "Data/Types/BaseUnitData.h"
+#include "Data/Types/UnitData.h"
 #include "DATargetPriorityWeight.generated.h"
+
+// 김도현
+// AI 우선순위 하위 구조체
+USTRUCT(BlueprintType)
+struct FTargetPriorityWeightSetting
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bUseWeight = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float TargetWeight = 0.5f;
+};
 
 // 김도현
 // AI 우선순위 데이터
@@ -17,24 +33,26 @@ public:
 	FORCEINLINE float GetDetectDistance() const { return DetectDistance; };
 
 	// 랜덤하게 지정할 점수
-	FORCEINLINE bool GetUseRandomTargetWeight() { return bUseRandomTargetWeight; };
-	FORCEINLINE float GetRandomTargetWeight() const { return RandomTargetWeight; };
+	FORCEINLINE const FTargetPriorityWeightSetting& GetRandomTargetWeightData() const { return RandomTargetWeightSet; };
 
 	// 해당 적을 공격하고 있는 아군이 적을수록 점수 올라감
-	FORCEINLINE bool GetUseAttackingTargetNumWeight() { return bUseAttackingTargetNumWeight; };
-	FORCEINLINE float GetAttackingTargetNumWeight() const { return AttackingTargetNumWeight; };
+	FORCEINLINE const FTargetPriorityWeightSetting& GetAttackingTargetNumWeightData() const { return AttackingTargetNumWeightSet; };
 
-	// 거리가 가까울 수록 점수가 높음
-	FORCEINLINE bool GetUseDistanceWeight() { return bUseDistanceWeight; };
-	FORCEINLINE float GetDistanceWeight() const { return DistanceWeight; };
+	// 나와 적의 거리가 가까울 수록 점수가 높음
+	FORCEINLINE const FTargetPriorityWeightSetting& GetDistanceWeightData() const { return DistanceWeightSet; };
 
 	// 나를 공격하는 대상에게 점수를 줌
-	FORCEINLINE bool GetUseAggroWeight() { return bUseAggroWeight; };
-	FORCEINLINE float GetAggroWeight() const { return AggroWeight; };
+	FORCEINLINE const FTargetPriorityWeightSetting& GetAggroWeightData() const { return AggroWeightSet; };
+
+	// 해당 적의 체력이 적으면 점수가 높음(백분율)
+	FORCEINLINE const FTargetPriorityWeightSetting& GetLowHealthWeightData() const { return LowHealthWeightSet; };
 
 	// 엘리트일수록 점수가 높음
-	FORCEINLINE bool GetUseEliteWeight() { return bUseEliteWeight; };
-	FORCEINLINE float GetEliteWeight() const { return EliteWeight; };
+	FORCEINLINE const FTargetPriorityWeightSetting& GetEliteWeightData() const { return EliteWeightSet; };
+
+
+	//점수 계산 함수
+	float CalculateScore(ACharacter* MyCharacter, ACharacter* TargetCharacter) const;
 
 protected:
 	// 플레이어 캐릭터 인가
@@ -45,39 +63,46 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float DetectDistance = 1000.0f;
 
-	// 이걸 사용할건가
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool bUseRandomTargetWeight = true;
 	// 랜덤하게 지정할 점수
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float RandomTargetWeight = 0.5f;
+	FTargetPriorityWeightSetting RandomTargetWeightSet;
 
-	// 이걸 사용할건가
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool bUseAttackingTargetNumWeight = true;
 	// 해당 적을 공격하고 있는 아군이 적을수록 점수 올라감
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float AttackingTargetNumWeight = 0.5f;
+	FTargetPriorityWeightSetting AttackingTargetNumWeightSet;
 
-	// 이걸 사용할건가
+	// 나와 적의 거리가 가까울 수록 점수가 높음
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool bUseDistanceWeight = true;
-	// 거리가 가까울 수록 점수가 높음
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float DistanceWeight = 0.5f;
+	FTargetPriorityWeightSetting DistanceWeightSet;
 
-	// 이걸 사용할건가
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool bUseAggroWeight = true;
 	// 나를 공격하는 대상에게 점수를 줌
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float AggroWeight = 0.5f;
+	FTargetPriorityWeightSetting AggroWeightSet;
 
-	
-	// 이걸 사용할건가
+	// 해당 적의 체력이 적으면 점수가 높음(백분율)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool bUseEliteWeight = true;
+	FTargetPriorityWeightSetting LowHealthWeightSet;
+	
 	// 엘리트일수록 점수가 높음
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float EliteWeight = 0.5f;
+	FTargetPriorityWeightSetting EliteWeightSet;
+
+private:
+	// 랜덤하게 지정할 점수
+	float CalculateScoreRandomTargetWeight() const;
+
+	// 해당 적을 공격하고 있는 아군이 적을수록 점수 올라감
+	float CalculateScoreAttackingTargetNumWeight(const FUnitRuntimeData& TargetUnitRuntimeData) const;
+
+	// 나와 적의 거리가 가까울 수록 점수가 높음
+	float CalculateScoreDistanceWeight(ACharacter* MyCharacter, ACharacter* TargetCharacter) const;
+
+	// 나를 공격하는 대상에게 점수를 줌
+	float CalculateScoreAggroWeight(const FUnitRuntimeData& MyUnitRuntimeData, ACharacter* TargetCharacter) const;
+
+	// 해당 적의 체력이 적으면 점수가 높음(백분율)
+	float CalculateScoreLowHealthWeight() const;
+
+	// 엘리트일수록 점수가 높음
+	float CalculateScoreEliteWeight(const FUnitData& TargetUnitData) const;
 };
