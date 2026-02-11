@@ -8,39 +8,32 @@ UEquipmentComponent::UEquipmentComponent()
 void UEquipmentComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// 초기화 일반 무기 로드아웃 0번 자동 장착
+	if (CommonWeaponTags.IsValidIndex(0) == true)
+	{
+		if (CommonWeaponTags[0].IsValid() == true)
+		{
+			EquipItem(EEquipSlot::Weapon, CommonWeaponTags[0]);
+		}
+	}
 }
 
-bool UEquipmentComponent::EquipByTag(EEquipSlot InSlot, const FGameplayTag& InEquipTag)
+bool UEquipmentComponent::EquipItem(EEquipSlot InSlot, const FGameplayTag& InEquipTag, bool bForce)
 {
 	if (InEquipTag.IsValid())
 	{
-		FGameplayTag* slotTag = nullptr;
-
-		switch (InSlot)
+		// 전설 모드 중에는 무기 슬롯 교체 차단
+		if (bForce || (CurrentSetMode != EWeaponSetMode::Legendary) || (InSlot != EEquipSlot::Weapon))
 		{
-		case EEquipSlot::Weapon: 
-			slotTag = &WeaponTag; 
-			break;
-		case EEquipSlot::Helmet:
-			slotTag = &HelmetTag; break;
-		case EEquipSlot::Armor: 
-			slotTag = &ArmorTag; break;
-		case EEquipSlot::Gloves: 
-			slotTag = &GlovesTag;
-			break;
-		case EEquipSlot::Shoes:
-			slotTag = &ShoesTag; 
-			break;
-		default:
-			break;
-		}
+			FGameplayTag* currentTag = EquipmentMap.Find(InSlot);
 
-		if (slotTag)
-		{
-			if (*slotTag != InEquipTag)
+			if (currentTag == nullptr || *currentTag != InEquipTag)
 			{
-				*slotTag = InEquipTag;
-				OnEquipChanged.Broadcast(InSlot, *slotTag);
+				EquipmentMap.Emplace(InSlot, InEquipTag);
+
+				OnEquipChanged.Broadcast(InSlot, InEquipTag);
+				OnEquipmentStateChanged.Broadcast();
 
 				return true;
 			}
@@ -50,37 +43,89 @@ bool UEquipmentComponent::EquipByTag(EEquipSlot InSlot, const FGameplayTag& InEq
 	return false;
 }
 
-bool UEquipmentComponent::UnEquip(EEquipSlot InSlot)
+bool UEquipmentComponent::UnEquipItem(EEquipSlot InSlot)
 {
-	FGameplayTag* slotTag = nullptr;
-
-	switch (InSlot)
+	if (EquipmentMap.Contains(InSlot))
 	{
-	case EEquipSlot::Weapon: 
-		slotTag = &WeaponTag;
-		break;
-	case EEquipSlot::Helmet: 
-		slotTag = &HelmetTag;
-		break;
-	case EEquipSlot::Armor:  
-		slotTag = &ArmorTag; 
-		break;
-	case EEquipSlot::Gloves:
-		slotTag = &GlovesTag; 
-		break;
-	case EEquipSlot::Shoes: 
-		slotTag = &ShoesTag; 
-		break;
-	default:
-		break;
+		EquipmentMap.Remove(InSlot);
+
+		OnEquipChanged.Broadcast(InSlot, FGameplayTag::EmptyTag);
+		OnEquipmentStateChanged.Broadcast();
+
+		return true;
 	}
 
-	if (slotTag)
+	return false;
+}
+
+bool UEquipmentComponent::SetCommonWeaponLoadoutData(const TArray<FGameplayTag>& InWeaponTags)
+{
+	if (InWeaponTags.Num() == 2)
 	{
-		if (slotTag->IsValid())
+		CommonWeaponTags = InWeaponTags;
+
+		// 인덱스 보정
+		if (CurrentCommonWeaponIndex != 0 && CurrentCommonWeaponIndex != 1)
 		{
-			*slotTag = FGameplayTag();
-			OnEquipChanged.Broadcast(InSlot, *slotTag);
+			CurrentCommonWeaponIndex = 0;
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+bool UEquipmentComponent::SetLegendaryWeaponData(const FGameplayTag& InWeaponTag)
+{
+	if (InWeaponTag.IsValid())
+	{
+		LegendaryWeaponTag = InWeaponTag;
+
+		return true;
+	}
+
+	return false;
+}
+
+bool UEquipmentComponent::SwapCommonWeapon()
+{
+	if (CurrentSetMode == EWeaponSetMode::Common)
+	{
+		// 0 <-> 1 토글
+		if (CurrentCommonWeaponIndex == 0)
+		{
+			CurrentCommonWeaponIndex = 1;
+		}
+		else
+		{
+			CurrentCommonWeaponIndex = 0;
+		}
+
+		if (CommonWeaponTags.IsValidIndex(CurrentCommonWeaponIndex) == true)
+		{
+			const FGameplayTag& targetWeaponTag = CommonWeaponTags[CurrentCommonWeaponIndex];
+
+			if (targetWeaponTag.IsValid())
+			{
+				EquipItem(EEquipSlot::Weapon, targetWeaponTag);
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+bool UEquipmentComponent::ActivateLegendaryMode()
+{
+	if (CurrentSetMode == EWeaponSetMode::Common)
+	{
+		if (LegendaryWeaponTag.IsValid())
+		{
+			CurrentSetMode = EWeaponSetMode::Legendary;
+
+			EquipItem(EEquipSlot::Weapon, LegendaryWeaponTag, true);
 
 			return true;
 		}
@@ -89,145 +134,23 @@ bool UEquipmentComponent::UnEquip(EEquipSlot InSlot)
 	return false;
 }
 
-FGameplayTag UEquipmentComponent::GetEquippedTag(EEquipSlot InSlot) const
+bool UEquipmentComponent::DeactivateLegendaryMode()
 {
-	FGameplayTag equippedTag;
-
-	switch (InSlot)
-	{
-	case EEquipSlot::Weapon: 
-		equippedTag = WeaponTag; break;
-	case EEquipSlot::Helmet: 
-		equippedTag = HelmetTag; break;
-	case EEquipSlot::Armor:  
-		equippedTag = ArmorTag;  break;
-	case EEquipSlot::Gloves: 
-		equippedTag = GlovesTag; break;
-	case EEquipSlot::Shoes: 
-		equippedTag = ShoesTag; 
-		break;
-	default: equippedTag = FGameplayTag();
-		break;
-	}
-
-	return equippedTag;
-}
-
-void UEquipmentComponent::SetNormalWeaponHelmetSet(int32 InIndex, const FWeaponHelmetSet& InSet)
-{
-	if (InIndex < 0 || InIndex > 1) return;
-
-	NormalSets[InIndex] = InSet;
-
-	// 현재 일반 모드이고, 지금 사용 중인 세트를 갱신하는 경우 즉시 반영
-	if (CurrentSetMode == EWeaponSetMode::Normal && CurrentNormalSetIndex == InIndex)
-	{
-		if (NormalSets[InIndex].WeaponTag.IsValid())
-		{
-			EquipByTag(EEquipSlot::Weapon, NormalSets[InIndex].WeaponTag);
-		}
-
-		if (NormalSets[InIndex].HelmetTag.IsValid())
-		{
-			EquipByTag(EEquipSlot::Helmet, NormalSets[InIndex].HelmetTag);
-		}
-	}
-}
-
-void UEquipmentComponent::SetLegendaryWeaponHelmetSet(const FWeaponHelmetSet& InSet)
-{
-	LegendarySet = InSet;
-
-	// 전설 모드인 상태에서 세트를 바꾸면 즉시 반영
 	if (CurrentSetMode == EWeaponSetMode::Legendary)
 	{
-		if (LegendarySet.WeaponTag.IsValid())
+		CurrentSetMode = EWeaponSetMode::Common;
+
+		if (CommonWeaponTags.IsValidIndex(CurrentCommonWeaponIndex) == true)
 		{
-			EquipByTag(EEquipSlot::Weapon, LegendarySet.WeaponTag);
+			const FGameplayTag& restoreWeaponTag = CommonWeaponTags[CurrentCommonWeaponIndex];
+
+			if (restoreWeaponTag.IsValid())
+			{
+				EquipItem(EEquipSlot::Weapon, restoreWeaponTag, true);
+				return true;
+			}
 		}
-
-		if (LegendarySet.HelmetTag.IsValid())
-		{
-			EquipByTag(EEquipSlot::Helmet, LegendarySet.HelmetTag);
-		}
-	}
-}
-
-bool UEquipmentComponent::SwapNormalWeaponSet()
-{
-	if (CurrentSetMode == EWeaponSetMode::Legendary) { return false; }
-
-	int32 nextIndex = (CurrentNormalSetIndex == 0) ? 1 : 0;
-	FWeaponHelmetSet& nextSet = NormalSets[nextIndex];
-
-	CurrentSetMode = EWeaponSetMode::Normal;
-	CurrentNormalSetIndex = nextIndex;
-
-	bool bWeaponChanged = false;
-	bool bHelmetChanged = false;
-
-	if (nextSet.WeaponTag.IsValid())
-	{
-		bWeaponChanged = EquipByTag(EEquipSlot::Weapon, nextSet.WeaponTag);
-	}
-
-	if (nextSet.HelmetTag.IsValid())
-	{
-		bHelmetChanged = EquipByTag(EEquipSlot::Helmet, nextSet.HelmetTag);
-	}
-
-	return (bWeaponChanged || bHelmetChanged);
-}
-
-bool UEquipmentComponent::ActivateLegendaryWeaponSet()
-{
-	if (CurrentSetMode == EWeaponSetMode::Legendary) { return false; }
-
-	bool bWeaponChanged = false;
-	bool bHelmetChanged = false;
-
-	if (LegendarySet.WeaponTag.IsValid())
-	{
-		bWeaponChanged = EquipByTag(EEquipSlot::Weapon, LegendarySet.WeaponTag);
-	}
-
-	if (LegendarySet.HelmetTag.IsValid())
-	{
-		bHelmetChanged = EquipByTag(EEquipSlot::Helmet, LegendarySet.HelmetTag);
-	}
-
-	if (bWeaponChanged || bHelmetChanged)
-	{
-		SavedNormalSetIndex = CurrentNormalSetIndex;
-		CurrentSetMode = EWeaponSetMode::Legendary;
-
-		return true;
 	}
 
 	return false;
-}
-
-bool UEquipmentComponent::DeactivateLegendaryWeaponSet()
-{
-	if (CurrentSetMode != EWeaponSetMode::Legendary) { return false; }
-
-    FWeaponHelmetSet& restoreSet = NormalSets[SavedNormalSetIndex];
-
-	bool bWeaponChanged = false;
-	bool bHelmetChanged = false;
-
-	if (restoreSet.WeaponTag.IsValid())
-	{
-		bWeaponChanged = EquipByTag(EEquipSlot::Weapon, restoreSet.WeaponTag);
-	}
-
-	if (restoreSet.HelmetTag.IsValid())
-	{
-		bHelmetChanged = EquipByTag(EEquipSlot::Helmet, restoreSet.HelmetTag);
-	}
-
-	CurrentNormalSetIndex = SavedNormalSetIndex;
-	CurrentSetMode = EWeaponSetMode::Normal;
-
-	return (bWeaponChanged || bHelmetChanged);
 }
