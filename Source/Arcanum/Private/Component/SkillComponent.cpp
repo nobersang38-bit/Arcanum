@@ -2,7 +2,6 @@
 #include "Component/EquipmentComponent.h"
 #include "Component/PoolingComponent.h"
 #include "Interface/Poolable.h"
-#include "Data/Rows/WeaponSkillMapRow.h"
 #include "Data/Skill/SkillRow.h"
 #include "Data/Skill/EffectRow.h"
 #include "GameplayTags/ArcanumTags.h"

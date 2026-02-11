@@ -38,4 +38,8 @@ struct FLoadoutData
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FGameplayTag BootTag;
+
+	/* 0: 슬롯1, 1 : 슬롯2 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 StartWeaponIndex = 0; 
 };
