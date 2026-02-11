@@ -202,18 +202,7 @@ namespace Arcanum
 	/* 능력치 */
 	namespace Stat
 	{
-		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(BaseAttack);        // 기본 공격력
-		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(SkillPower);        // 스킬 공격력 계수
-		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(LifeSteal);         // 생명력 흡수
-		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(AttackSpeed);       // 공격 속도
-		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Evasion);           // 회피율
-		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(CooldownReduction); // 쿨다운 감소
-		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(MoveSpeed);         // 이동속도
-		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(CritChance);        // 치명타 확률
-		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Spirit);            // 정신력
-		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Mana);              // 마나
-		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Health);            // 체력
-		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(DamageReduction);   // 피해 감소
+
 	}
 	/* 행동 */
 	namespace Ability
@@ -436,6 +425,146 @@ namespace Arcanum
 		}
 	}
 }
+
+
+
+/* 참고자료
+   ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(SkillPower);        // 스킬 공격력 계수
+   ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(LifeSteal);         // 생명력 흡수
+   ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(CooldownReduction); // 쿨다운 감소
+*/
+
+namespace Arcanum {
+	namespace BattleStat {
+		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+		namespace Player {
+			namespace Regen {
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				namespace Meat {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Value);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(MaxValue);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Regen);
+				}
+			}
+			namespace NonRegen {
+				namespace CommandCenterStamina {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Value);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(BonusValue);
+				}
+			}
+		}
+		namespace Character {
+			namespace Regen {
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				namespace Health {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Value);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(MaxValue);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Regen);
+				}
+				namespace Mana {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Value);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(MaxValue);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Regen);
+				}
+			}
+			namespace NonRegen {
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				namespace AttackPower {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Value);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(BonusValue);
+				}
+				namespace AttackSpeed {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Value);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(BonusValue);
+				}
+				namespace Evasion {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Value);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(BonusValue);
+				}
+				namespace MoveSpeed {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Value);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(BonusValue);
+				}
+				namespace CritChance {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Value);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(BonusValue);
+				}
+				namespace DamageReduction {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Value);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(BonusValue);
+				}
+			}
+		}
+	}
+	namespace PlayerData {
+		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+		// 재화들
+		namespace Currencies {
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+			namespace Regen {
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				namespace Supply {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Value);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(MaxValue);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Regen);
+				}
+			}
+			namespace NonRegen {
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				namespace Gold {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Value);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(MaxValue);
+				}
+				namespace Shard {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Value);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(MaxValue);
+				}
+				namespace Soul {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Value);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(MaxValue);
+				}
+			}
+		}
+
+		/*
+		namespace Inventories {
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+			namespace ConsumedItems {
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Value);
+			}
+			namespace Weapons {
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Value);
+			}
+			namespace Equipments {
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Value);
+			}
+			namespace Heroes {
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Value);
+			}
+			namespace Units {
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Value);
+			}
+		}
+		*/
+	}
+}
+
+
+
 
 namespace Arcanum {
 	namespace UI {
