@@ -50,8 +50,8 @@ struct FRegenStat {
 
         for (const FGameplayTag& Tag : Children) {
             FString TagName = Tag.ToString();
-            if (TagName.EndsWith(TEXT("Max"))) Child_Max = Tag;
-            else if (TagName.EndsWith(TEXT("Tick"))) Child_Tick = Tag;
+            if (TagName.EndsWith(TEXT("MaxValue"))) Child_Max = Tag;
+            else if (TagName.EndsWith(TEXT("Regen"))) Child_Tick = Tag;
             else Child_Current = Tag; // 순수 Health, Mana 등
         }
         /// Todo: 추후 빌드시 풀어야함.

@@ -9,7 +9,7 @@
 
 // 1. Regen 계열용 (고기 정보)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnCombatRegenStatChanged, const FRegenStat&);
-// 2. NonRegen 계열용 (현재는 없음. 추후 추가 대비용)
+// 2. NonRegen 계열용 (건물 체력 같은것들)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnCombatNonRegenStatChanged, const FNonRegenStat&);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -78,11 +78,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ChangeStatValue(FGameplayTag StatTag, float DamageAmount, AActor* DamageCauser);
 
+	UFUNCTION()
+	AActor* GetLastDamageCauser() { return LastDamageCauser; }
 private:
 	UPROPERTY()
 	TObjectPtr<AActor> LastDamageCauser;
 #pragma endregion
-
 
 #pragma region 내부 관리 변수
 public:
