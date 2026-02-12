@@ -8,6 +8,7 @@
 #include "BehaviorTree/Blackboard/BlackboardKey.h"
 #include "GameplayTagContainer.h"
 #include "Interface/UnitDataInterface.h"
+#include "DataInfo/Stats/Data/FBattleStats.h"
 #include "UnitCombatComponent.generated.h"
 
 // 김도현
@@ -40,10 +41,7 @@ public:
 	// 런타입 유닛 데이터 가져오기
 	FUnitRuntimeData& GetUnitRuntimeData() { return UnitRuntimeData; }
 
-	// Todo : 임시 데미지 받기, 나중에 구조체 받아와야함
-	void ApplyDamage(float InDamage, AActor* DamageCauser);
-
-	void TakeDamage();
+	void SendDamage(float InDamage);
 
 protected:
 	// Called when the game starts
@@ -97,7 +95,9 @@ private:
 	void Move();
 	void Attack();
 	void ActionRestricted(FGameplayTag InActionRestrictedTag);
-	void Death();
+	void Death(const FRegenStat& InData);
+
+	void StateReset();
 
 private:
 	UPROPERTY()
@@ -135,4 +135,6 @@ private:
 
 	UPROPERTY()
 	TWeakObjectPtr<class UCapsuleComponent> OwnerCapsuleComponent = nullptr;
+
+	bool bIsDead = false;
 };

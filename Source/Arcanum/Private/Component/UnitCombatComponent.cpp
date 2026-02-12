@@ -18,7 +18,7 @@
 #include "Interface/CombatInterface.h"
 #include "Character/BaseUnitCharacter.h"
 #include "Component/Stats/CharacterBattleStatsComponent.h"
-#include "GameplayTags/ArcanumTags.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
 UUnitCombatComponent::UUnitCombatComponent()
@@ -30,25 +30,11 @@ UUnitCombatComponent::UUnitCombatComponent()
 	// ...
 }
 
-
-void UUnitCombatComponent::ApplyDamage(float InDamage, AActor* DamageCauser)
+void UUnitCombatComponent::SendDamage(float InDamage)
 {
-	// Todo : 캐스트 없애야함
-	if (ABaseUnitCharacter* TempOwner = Cast<ABaseUnitCharacter> (GetOwner()))
+	if (TargetCharacter.IsValid())
 	{
-		TempOwner->GetCharacterBattleStatsComponent()->ChangeStatValue(Arcanum::BattleStat::Character::Regen::Health::Root, -1.0f, DamageCauser);
-	}
-}
-
-void UUnitCombatComponent::TakeDamage()
-{
-	if (!TargetCharacter.IsValid()) return;
-
-	if (TargetCharacter->GetClass()->ImplementsInterface(UCombatInterface::StaticClass()))
-	{
-		auto Interface = Cast<ICombatInterface>(TargetCharacter.Get());
-		// Todo : ApplyDamage임시 데미지 변수 사용
-		Interface->ApplyDamage(UnitData.Stat.AttackPower, GetOwner());
+		UGameplayStatics::ApplyDamage(TargetCharacter.Get(), InDamage, nullptr, GetOwner(), nullptr);
 	}
 }
 
@@ -57,6 +43,13 @@ void UUnitCombatComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UUnitCombatComponent::DeferredBeginPlay);
+
+	//Todo KDH : Cast없애야함
+	// Dead바인딩
+	if (ABaseUnitCharacter* TempOwner = Cast<ABaseUnitCharacter>(GetOwner()))
+	{
+		TempOwner->GetCharacterBattleStatsComponent()->OnCharacterRegenStatChanged.AddUObject(this, &UUnitCombatComponent::Death);
+	}
 }
 
 void UUnitCombatComponent::DeferredBeginPlay()
@@ -126,11 +119,11 @@ void UUnitCombatComponent::TickUpdate()
 		switch (CurrentState)
 		{
 		case EUnitState::Idle:
-			//UE_LOG(LogTemp, Warning, TEXT("IDLE : %s"), *GetOwner()->GetName());
+			UE_LOG(LogTemp, Warning, TEXT("IDLE : %s"), *GetOwner()->GetName());
 			Idle();
 			break;
 		case EUnitState::Move:
-			//UE_LOG(LogTemp, Warning, TEXT("Move : %s"), *GetOwner()->GetName());
+			UE_LOG(LogTemp, Warning, TEXT("Move : %s"), *GetOwner()->GetName());
 			Move();
 			break;
 		case EUnitState::Attack:
@@ -138,11 +131,10 @@ void UUnitCombatComponent::TickUpdate()
 			Attack();
 			break;
 		case EUnitState::ActionRestricted: // Todo : 태그로 CC기 종류 감지해야함
-			//UE_LOG(LogTemp, Warning, TEXT("ActionRestricted : %s"), *GetOwner()->GetName());
+			UE_LOG(LogTemp, Warning, TEXT("ActionRestricted : %s"), *GetOwner()->GetName());
 			break;
 		case EUnitState::Death:
-			//UE_LOG(LogTemp, Warning, TEXT("Death : %s"), *GetOwner()->GetName());
-			Death();
+			UE_LOG(LogTemp, Warning, TEXT("Death : %s"), *GetOwner()->GetName());
 			break;
 		default:
 			break;
@@ -186,11 +178,11 @@ void UUnitCombatComponent::AIInitialize()
 			auto Interface = Cast<ITeamInterface>(GetOwner());
 			FGameplayTag MyTeamID = Interface->GetTeamTag();
 
-			if (MyTeamID == Arcanum::Unit::Faction::Ally)
+			if (MyTeamID.MatchesTag(Arcanum::Unit::Faction::Ally::Root))
 			{
 				TargetNexus = BattlefieldManager->GetEnemyNexus();
 			}
-			else if (MyTeamID == Arcanum::Unit::Faction::Enemy)
+			else if (MyTeamID.MatchesTag(Arcanum::Unit::Faction::Enemy::Root))
 			{
 				TargetNexus = BattlefieldManager->GetAllyNexus();
 			}
@@ -363,17 +355,14 @@ ACharacter* UUnitCombatComponent::GetHigherPriorityTarget(ACharacter* CurrentTar
 // 애매한 상황이 발생하면 여기로 오게됨
 void UUnitCombatComponent::Idle()
 {
-	if (OwnerCharacter.IsValid())
-	{
-		OwnerCharacter->StopAnimMontage();
-	}
-	GetWorld()->GetTimerManager().ClearTimer(AttackTimerHandle);
+	StateReset();
 	TargetAssigned(TargetNexus.Get());
 	CurrentState = EUnitState::Move;
 }
 
 void UUnitCombatComponent::Move()
 {
+	StateReset();
 	SelectBestTarget(DetectedCharacters);
 
 	if (TargetCharacter.IsValid())
@@ -397,8 +386,15 @@ void UUnitCombatComponent::Attack()
 				UAnimMontage* AttackMontage = UnitData.Info.AnimSetting.Attacks[IDX];
 				OwnerCharacter->PlayAnimMontage(AttackMontage);
 			}
-		});
-	GetWorld()->GetTimerManager().SetTimer(AttackTimerHandle, AttackDelegate, UnitAISetting.AttackRate, true, 0.0f);
+			else
+			{
+				CurrentState = EUnitState::Idle;
+			}
+		}); 
+	if (!AttackTimerHandle.IsValid())
+	{
+		GetWorld()->GetTimerManager().SetTimer(AttackTimerHandle, AttackDelegate, UnitAISetting.AttackRate, true, 0.0f);
+	}
 }
 
 void UUnitCombatComponent::ActionRestricted(FGameplayTag InActionRestrictedTag)
@@ -406,25 +402,46 @@ void UUnitCombatComponent::ActionRestricted(FGameplayTag InActionRestrictedTag)
 
 }
 
-void UUnitCombatComponent::Death()
+void UUnitCombatComponent::Death(const FRegenStat& InData)
 {
-	UAnimMontage* DeathMontage = nullptr;
-	if (OwnerCharacter.IsValid() && UnitData.Info.AnimSetting.Deaths.Num() > 0)
+	if (!bIsDead && InData.ParentTag == Arcanum::BattleStat::Character::Regen::Health::Root && InData.Current <= 0.0f)
 	{
-		int32 IDX = FMath::RandRange(0, (UnitData.Info.AnimSetting.Deaths.Num() - 1));
-		DeathMontage = UnitData.Info.AnimSetting.Deaths[IDX];
-		OwnerCharacter->PlayAnimMontage(DeathMontage);
-	}
-
-	FOnMontageEnded DeathDelegate;
-	DeathDelegate.BindWeakLambda(this, [this](UAnimMontage* Montage, bool bInterrupted)
+		bIsDead = true;
+		CurrentState = EUnitState::Death;
+		StateReset();
+		UAnimMontage* DeathMontage = nullptr;
+		int32 IDX = 0;
+		if (OwnerCharacter.IsValid() && UnitData.Info.AnimSetting.Deads.Num() > 0)
 		{
-			// Todo : PoolDeactive로 변경해야함
-			GetOwner()->Destroy();
-		});
+			IDX = FMath::RandRange(0, (UnitData.Info.AnimSetting.Deads.Num() - 1));
+			DeathMontage = UnitData.Info.AnimSetting.Deads[IDX].DeadMontage;
+			OwnerCharacter->PlayAnimMontage(DeathMontage);
 
-	if (DeathMontage == OwnerCharacter->GetCurrentMontage())
-	{
-		OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_SetEndDelegate(DeathDelegate, DeathMontage);
+			FTimerDelegate DeathTimerDelegate;
+			DeathTimerDelegate.BindWeakLambda(this, [this]()
+				{
+					this->GetOwner()->Destroy();
+				});
+			GetWorld()->GetTimerManager().SetTimer(DeathTimerHandle, DeathTimerDelegate, UnitData.Info.AnimSetting.Deads[IDX].DeactiveTime, false, UnitData.Info.AnimSetting.Deads[IDX].DeactiveTime);
+		}
 	}
+	else return;
+}
+
+void UUnitCombatComponent::StateReset()
+{
+	if (OwnerCharacter.IsValid())
+	{
+		OwnerCharacter->StopAnimMontage();
+	}
+	GetWorld()->GetTimerManager().ClearTimer(AttackTimerHandle);
+
+	for (auto It = DetectedCharacters.CreateIterator(); It; ++It)
+	{
+		if (!It->IsValid())
+		{
+			It.RemoveCurrent();
+		}
+	}
+	
 }

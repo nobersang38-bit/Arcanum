@@ -17,8 +17,12 @@ class ARCANUM_API UCharacterHealthWidget : public UUserWidget
 public:
 	UFUNCTION()
 	void SetPercent(const FRegenStat& InHealthData);
+	void SetPercent(float CurrentHealth, float MaxHealth);
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<class UProgressBar> HealthProgress = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<class UTextBlock> HealthText = nullptr;
 };

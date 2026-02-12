@@ -18,8 +18,4 @@ public:
 	// 기본정보
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FBaseUnitData Info;
-
-	// 전투 스탯
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FUnitCombatStat Stat;
 };

@@ -26,12 +26,14 @@ public:
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "00_Test")
 	//float Range = 200.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "00_Test")
+	bool RandomRvoWeight = true;
+
 #pragma endregion
 
 	ABaseUnitCharacter();
 
 public:
-	// Todo : 나중에 데이터 테이블에서 가져와야함, 지금은 임시로 직접 넣음
 	virtual FGameplayTag GetTeamTag() override;
 
 	// Todo : 연결 느슨하게 변경해야함
@@ -67,6 +69,7 @@ protected:
 private:
 	//UFUNCTION()
 	//void AIInitialize();
+	float GetAttackPower();
 
 	UFUNCTION()
 	void DataInitialize();
@@ -76,6 +79,6 @@ private:
 	// ICombatInterface을(를) 통해 상속됨
 	void OnAttackNotifyTriggered() override;
 
-	// ICombatInterface을(를) 통해 상속됨
-	void ApplyDamage(float InDamage, AActor* DamageCauser) override;
+	UFUNCTION()
+	void RecievedDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 };

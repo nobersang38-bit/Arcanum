@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "GameplayTagContainer.h"
 #include "BaseUnitData.generated.h"
 
 // 김도현
@@ -43,6 +44,9 @@ struct FUnitInfoSetting
 {
 	GENERATED_BODY()
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info", meta = (Categories = "Arcanum.Unit"))
+	FGameplayTag Tag;
+
 	// 해당 유닛의 클래스
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")
 	TSubclassOf<class ABaseUnitCharacter> CharacterType = nullptr;
@@ -62,6 +66,18 @@ public:
 	// 대량 1:2비율의 인물화같은 느낌의 텍스처, 캐릭터 선택창의 캐릭터 선택 패널등에 사용
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")
 	TSoftObjectPtr<UTexture2D> Portrait = nullptr;
+};
+
+USTRUCT(BlueprintType)
+struct FUnitDeadMontageSetting
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim")
+	TObjectPtr<class UAnimMontage> DeadMontage = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim")
+	float DeactiveTime = 3.0f;
 };
 
 USTRUCT(BlueprintType)
@@ -88,7 +104,7 @@ public:
 	TArray<TObjectPtr<class UAnimMontage>> Hits;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim")
-	TArray<TObjectPtr<class UAnimMontage>> Deaths;
+	TArray<FUnitDeadMontageSetting> Deads;
 };
 
 USTRUCT(BlueprintType)

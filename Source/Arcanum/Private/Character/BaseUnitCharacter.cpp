@@ -17,7 +17,8 @@
 #include "Component/Stats/CharacterBattleStatsComponent.h"
 #include "Components/WidgetComponent.h"
 #include "UI/CharacterHUD/CharacterHealthWidget.h"
-#include "GameplayTags/ArcanumTags.h"
+#include "Kismet/GameplayStatics.h"
+#include "GameplayTagsManager.h"
 
 // Sets default values
 ABaseUnitCharacter::ABaseUnitCharacter()
@@ -39,9 +40,11 @@ ABaseUnitCharacter::ABaseUnitCharacter()
 
 FGameplayTag ABaseUnitCharacter::GetTeamTag()
 {
-	if (UnitData.Stat.CommonStat.TeamID.IsValid())
+	UGameplayTagsManager& TagManager = UGameplayTagsManager::Get();
+	FGameplayTag TeamTag = TagManager.RequestGameplayTagDirectParent(UnitData.Info.InfoSetting.Tag);
+	if (TeamTag.IsValid())
 	{
-		return UnitData.Stat.CommonStat.TeamID;
+		return TeamTag;
 	}
 
 	return FGameplayTag::EmptyTag;
@@ -54,15 +57,35 @@ void ABaseUnitCharacter::BeginPlay()
 	DataInitialize();
 	if (UUserWidget* TempHealthWidgetUser = Cast<UUserWidget>(HealthBarComponent->GetWidget()))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("체력 변경 발동1"));
 		if (UCharacterHealthWidget* TempHealthWidget = Cast<UCharacterHealthWidget>(TempHealthWidgetUser))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("체력 변경 발동2"));
 			CharacterBattleStatsComponent->OnCharacterRegenStatChanged.AddUObject(TempHealthWidget, &UCharacterHealthWidget::SetPercent);
+			float CurrentHealth = 0.0f;
+			float MaxHealth = 0.0f;
 
-			CharacterBattleStatsComponent->ChangeStatValue(Arcanum::BattleStat::Character::Regen::Health::Root, -1.0f, nullptr);
+			//Arcanum.BattleStat.Character.Regen.Health
+			const TArray<FRegenStat>& RegenStats = CharacterBattleStatsComponent->GetRegenStats();
+			for (int i = 0; i < RegenStats.Num(); i++)
+			{
+				if (RegenStats[i].ParentTag == Arcanum::BattleStat::Character::Regen::Health::Root)
+				{
+					CurrentHealth = RegenStats[i].Current;
+					MaxHealth = RegenStats[i].GetTotalMax();
+					break;
+				}
+			}
+			TempHealthWidget->SetPercent(CurrentHealth, MaxHealth);
 		}
 	}
+	OnTakeAnyDamage.AddDynamic(this, &ABaseUnitCharacter::RecievedDamage);
+
+#pragma region Debug
+	if (RandomRvoWeight)
+	{
+		GetCharacterMovement()->SetRVOAvoidanceWeight(FMath::FRandRange(0.0f, 1.0f));
+	}
+#pragma endregion
+
 }
 
 void ABaseUnitCharacter::PossessedBy(AController* NewController)
@@ -93,6 +116,21 @@ void ABaseUnitCharacter::PostEditChangeProperty(FPropertyChangedEvent& PropertyC
 }
 #endif
 
+float ABaseUnitCharacter::GetAttackPower()
+{
+	float AttackPower = 0.0f;
+	const TArray<FNonRegenStat>& NonRegenStats = CharacterBattleStatsComponent->GetNonRegenStats();
+	for (int i = 0; i < NonRegenStats.Num(); i++)
+	{
+		if (NonRegenStats[i].TagName == Arcanum::BattleStat::Character::NonRegen::AttackPower::Root)
+		{
+			AttackPower = NonRegenStats[i].GetTotalValue();
+			break;
+		}
+	}
+	return AttackPower;
+}
+
 void ABaseUnitCharacter::DataInitialize()
 {
 	if (!UnitData.Info.BodySetting.SkeletalMesh.IsNull())// 스켈레탈 메시 설정
@@ -118,12 +156,13 @@ FUnitRuntimeData& ABaseUnitCharacter::GetUnitRuntimeData()
 
 void ABaseUnitCharacter::OnAttackNotifyTriggered()
 {
-	UnitCombatComponent->TakeDamage();
+	UnitCombatComponent->SendDamage(GetAttackPower());
 }
 
-void ABaseUnitCharacter::ApplyDamage(float InDamage, AActor* DamageCauser)
+// 데미지 받기
+void ABaseUnitCharacter::RecievedDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
-	UnitCombatComponent->ApplyDamage(InDamage, DamageCauser);
+	GetCharacterBattleStatsComponent()->ChangeStatValue(Arcanum::BattleStat::Character::Regen::Health::Root, -(FMath::Abs(Damage)), DamageCauser);
 }
 
 const FUnitData& ABaseUnitCharacter::GetUnitData()
