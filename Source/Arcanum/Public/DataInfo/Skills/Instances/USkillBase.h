@@ -9,7 +9,7 @@
 /**
  * 스킬의 공통 로직을 담당하는 베이스 클래스 (UObject)
  */
-UCLASS(Abstract, Blueprintable, BlueprintType)
+UCLASS(Blueprintable, BlueprintType)
 class ARCANUM_API USkillBase : public UObject
 {
 	GENERATED_BODY()

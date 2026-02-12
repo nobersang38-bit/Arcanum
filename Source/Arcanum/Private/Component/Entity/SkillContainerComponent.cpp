@@ -1,34 +1,58 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Component/Entity/SkillContainerComponent.h"
+#include "DataInfo/Skills/Instances/USkillBase.h"
 
-// Sets default values for this component's properties
 USkillContainerComponent::USkillContainerComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
+	PrimaryComponentTick.bCanEverTick = false;
 }
-
-
-// Called when the game starts
 void USkillContainerComponent::BeginPlay()
 {
-	Super::BeginPlay();
-
-	// ...
-	
+	Super::BeginPlay();	
 }
 
-
-// Called every frame
-void USkillContainerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void USkillContainerComponent::AddSkill(FGameplayTag SkillTag)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+    if (SkillInstances.Contains(SkillTag)) return;
 
-	// ...
+    static const FString ContextString(TEXT("Skill Mapping Context"));
+    FDTSkillMappingRow* MappingRow = SkillMappingTable->FindRow<FDTSkillMappingRow>(SkillTag.GetTagName(), ContextString);
+
+    if (!MappingRow || MappingRow->SkillClass.IsNull()) return;
+    UClass* SkillClass = MappingRow->SkillClass.LoadSynchronous();
+
+    if (!SkillClass) return;
+    USkillBase* NewSkill = NewObject<USkillBase>(GetOwner(), SkillClass);
+    if (FSkillInfo* Info = FindSkillInfo(SkillTag)) {
+        NewSkill->Initialize(GetOwner(), *Info);
+        SkillInstances.Add(SkillTag, NewSkill);
+    }
 }
 
+void USkillContainerComponent::ExecuteSkill(FGameplayTag SkillTag)
+{
+    if (SkillInstances.Contains(SkillTag)) SkillInstances[SkillTag]->ActivateSkill(GetOwner());
+}
+
+void USkillContainerComponent::RemoveSkill(FGameplayTag SkillTag)
+{
+    if (SkillInstances.Contains(SkillTag)) {
+        SkillInstances[SkillTag]->DeactivateSkill(GetOwner());
+        SkillInstances.Remove(SkillTag);
+    }
+}
+
+FSkillInfo* USkillContainerComponent::FindSkillInfo(FGameplayTag SkillTag)
+{
+    if (!SkillInfoTable) return nullptr;
+
+    static const FString ContextString(TEXT("FindSkillInfo"));
+    TArray<FDTSkillsDataRow*> Rows;
+    SkillInfoTable->GetAllRows(ContextString, Rows);
+
+    for (FDTSkillsDataRow* Row : Rows) {
+        if (!Row) continue;
+        if (Row->SkillData.SkillNameTag == SkillTag) return &Row->SkillData;
+    }
+
+    return nullptr;
+}
