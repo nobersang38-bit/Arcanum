@@ -18,10 +18,4 @@ void ABasement::BeginPlay()
 	
 }
 
-// Called every frame
-void ABasement::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
 
