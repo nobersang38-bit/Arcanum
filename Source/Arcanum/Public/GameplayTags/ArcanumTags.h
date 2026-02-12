@@ -204,6 +204,13 @@ namespace Arcanum
 	/* 행동 */
 	namespace Ability
 	{
+		namespace Attack
+		{
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(GreatSword); // 검 평타
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Staff);      // 지팡이 평타
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Bow);        // 활 평타
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shield);     // 방패 평타
+		}
 		namespace Passive
 		{
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Fury);    // 분노

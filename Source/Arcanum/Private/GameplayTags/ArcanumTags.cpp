@@ -196,7 +196,15 @@ namespace Arcanum
 		}
 	}
 	/* 행동 */
-	namespace Ability {
+	namespace Ability 
+	{
+		namespace Attack
+		{
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(GreatSword, "Arcanum.Ability.Attack.GreatSword", "대검 평타");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Staff, "Arcanum.Ability.Attack.Staff", "지팡이 평타");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Bow, "Arcanum.Ability.Attack.Bow", "활 평타");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Shield, "Arcanum.Ability.Attack.Shield", "방패 평타");
+		}
 		namespace Passive {
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Fury, "Arcanum.Ability.Passive.Fury", "분노");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Resolve, "Arcanum.Ability.Passive.Resolve", "결의");

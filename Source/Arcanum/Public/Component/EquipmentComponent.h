@@ -35,7 +35,7 @@ enum class EWeaponPickSlot : uint8
 	Legendary UMETA(DisplayName = "Legendary"),
 };
 
-/* 인게임 무기 모드 (연출/노티파이 흐름용) */
+/* 인게임 무기 모드 */
 UENUM(BlueprintType)
 enum class EWeaponSetMode : uint8
 {
@@ -65,27 +65,27 @@ public:
 	 * 로비(UI): 출전 세팅(선택값)
 	 * =============================== */
 
-	 /* SaveGame에서 불러온 로드아웃을 적용할 때
-		로비 들어오자마자 “마지막 출전 세팅”을 그대로 UI에 반영 */
+	/* SaveGame/ 로비 진입 시 로드아웃 반영 (로비 UI/스탯 갱신) */
 	UFUNCTION(BlueprintCallable, Category = "Arcanum|Equipment|Loadout")
 	bool SetLoadoutData(const FLoadoutData& InLoadoutData);
-
-	/* 현재 로비 출전 세팅 반환 */
-	UFUNCTION(BlueprintPure, Category = "Arcanum|Equipment|Loadout")
-	const FLoadoutData& GetLoadoutData() const { return LoadoutData; }
 	
-	/* UI에서 슬롯 클릭 후 무기 선택 시 호출 (로비 상태값) */
+	/* 로비: 무기 슬롯(슬롯1/슬롯2/전설) 선택값 1개 교체 */
 	UFUNCTION(BlueprintCallable, Category = "Arcanum|Equipment|Loadout")
 	bool SetWeaponPick(EWeaponPickSlot InSlot, const FGameplayTag& InWeaponTag);
 
-	/* 방어구 로비 상태값 (Weapon이면 실패 처리) */
+	/* 로비: 방어구 4부위 선택값 교체 (각 슬롯 전용 태그만 허용) */
 	UFUNCTION(BlueprintCallable, Category = "Arcanum|Equipment|Loadout")
 	bool SetArmorPick(EEquipSlot InSlot, const FGameplayTag& InArmorTag);
 
+	// Getters
+	/* 로비 선택값 반환 */
+	UFUNCTION(BlueprintPure, Category = "Arcanum|Equipment|Loadout")
+	const FLoadoutData& GetLoadoutData() const { return LoadoutData; }
+
 	/*
 	 * 게임 시작(또는 로비 확정): 선택값을 인게임 장착 상태로 확정
-	 * - 이때만 Stats/Skill 재계산 트리거(OnEquipmentStateChanged)를 쏜다
-	 * - StartWeaponIndex(0=Slot1, 1=Slot2) 기준으로 현재 일반무기 세팅
+	 * - 필수 슬롯(일반무기 2 + 방어구 4) 검증 실패 시 false(게임 시작 불가)
+	 * - 전설은 선택(있으면 전설 루트 태그만 허용)
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Arcanum|Equipment|Loadout")
 	bool CommitLoadoutToEquipped();
@@ -94,23 +94,23 @@ public:
 	 * 인게임: 무기 스왑/전설
 	 * =============================== */
 
-    /* 슬롯1 <-> 슬롯2 스왑 : 현재 무기/외형/스킬 분기만 바뀐다(스탯 재계산 X) */
+    /* 인게임: 슬롯1 <-> 슬롯2 스왑 (전설 중 금지, 실패 시 인덱스/장착 상태 변경 없음) */
 	UFUNCTION(BlueprintCallable, Category = "Arcanum|Equipment|Weapon")
 	bool SwapCommonWeapon();
 
-	/* 전설 모드 요청(쿨타임 관리는 Skill/Combat에서) */
+	/* 인게임: 전설 모드 진입 요청 (태그 없으면 false, 실제 교체는 ApplyLegendaryWeapon에서) */
 	UFUNCTION(BlueprintCallable, Category = "Arcanum|Equipment|Weapon")
 	bool ActivateLegendaryMode();
 
-	/* 전설 모드 해제 요청 */
+	/* 인게임: 전설 모드 종료 요청 (백업이 있으면 복구 성공해야 true) */
 	UFUNCTION(BlueprintCallable, Category = "Arcanum|Equipment|Weapon")
 	bool DeactivateLegendaryMode();
 
-	/* 전설 무기 적용/복구 타이밍에서 호출 (노티파이) */
+	/* 노티파이: 전설 무기 적용 (복구용 백업 저장 후 무기 슬롯 교체) */
 	UFUNCTION(BlueprintCallable, Category = "Arcanum|Equipment|Weapon")
 	bool ApplyLegendaryWeapon();
 
-	/* 전설 종료 후 원래 일반 무기로 복구 */
+	/* 노티파이: 전설 종료 후 백업된 일반 무기로 복구 (전설 모드 종료 포함) */
 	UFUNCTION(BlueprintCallable, Category = "Arcanum|Equipment|Weapon")
 	bool RestoreCommonWeapon();
 
@@ -122,7 +122,7 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Arcanum|Equipment|Weapon")
 	int32 GetCurrentCommonWeaponIndex() const { return CurrentCommonWeaponIndex; }
 
-	/* 전설 모드 활성 여부(전설 버튼/쿨 UI 연동, 입력 게이트 등에 사용) */
+	/* 전설 모드 활성 여부 */
 	UFUNCTION(BlueprintPure, Category = "Arcanum|Equipment|Weapon")
 	bool IsLegendaryActive() const { return (CurrentSetMode == EWeaponSetMode::Legendary); }
 
@@ -143,13 +143,25 @@ public:
 	void GetEquippedArmorState(FGameplayTag& OutHelmet, FGameplayTag& OutArmor, FGameplayTag& OutGlove, FGameplayTag& OutBoot) const
 	{
 		OutHelmet = GetEquippedTag(EEquipSlot::Helmet);
-		OutArmor = GetEquippedTag(EEquipSlot::Armor);
-		OutGlove = GetEquippedTag(EEquipSlot::Glove);
-		OutBoot = GetEquippedTag(EEquipSlot::Boot);
+		OutArmor  = GetEquippedTag(EEquipSlot::Armor);
+		OutGlove  = GetEquippedTag(EEquipSlot::Glove);
+		OutBoot   = GetEquippedTag(EEquipSlot::Boot);
 	}
 
 protected:
 	virtual void BeginPlay() override;
+
+private:
+	/* 장착 태그 세팅 + 변경 시 OnEquipChanged 브로드캐스트 */
+	bool SetEquippedTag(EEquipSlot InSlot, const FGameplayTag& InEquipTag, bool bForce);
+
+	/* 슬롯 검증  */
+	bool CanPickWeapon(EWeaponPickSlot InSlot, const FGameplayTag& InTag) const;
+	bool CanPickArmor(EEquipSlot InSlot, const FGameplayTag& InTag) const;
+	bool ValidateLoadoutForStart() const;  // 게임 시작 시 시작 가능 여부
+
+	/* 슬롯 검증 규칙 캐시 */
+	void InitPickRules();
 
 public:
 	UPROPERTY(BlueprintAssignable, Category = "Arcanum|Equipment")
@@ -162,19 +174,14 @@ public:
 	FOnWeaponSlotChanged OnWeaponSlotChanged;
 
 private:
-	/* ===============================
-	 * 내부 헬퍼(인게임 실제 장착값 세팅)
-	 * - 외부에서 임의로 방어구를 바꾸지 않게, Commit/Swap/Legendary 흐름으로만 세팅하기 위한 용도
-	 * =============================== */
-	bool SetEquippedTag(EEquipSlot InSlot, const FGameplayTag& InEquipTag, bool bForce);
-
-	/* 인게임: 현재 장착 상태(무기 외형/스킬 분기용) */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Arcanum|Equipment", meta = (AllowPrivateAccess = "true"))
-	TMap<EEquipSlot, FGameplayTag> EquipmentMap;
 
 	/* 로비(UI): 출전 세팅(선택값) */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Arcanum|Equipment|Loadout", meta = (AllowPrivateAccess = "true"))
 	FLoadoutData LoadoutData;
+
+	/* 인게임: 현재 장착 상태(무기 외형/스킬 분기용) */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Arcanum|Equipment", meta = (AllowPrivateAccess = "true"))
+	TMap<EEquipSlot, FGameplayTag> EquipmentMap;
 
 	/* 인게임: 일반 무기 인덱스(0=슬롯1, 1=슬롯2) */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Arcanum|Equipment|Weapon", meta = (AllowPrivateAccess = "true"))
@@ -184,10 +191,16 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Arcanum|Equipment|Weapon", meta = (AllowPrivateAccess = "true"))
 	EWeaponSetMode CurrentSetMode = EWeaponSetMode::Common;
 
-	/* 전설 복구용 캐시(전설 적용 직전 무기) */
+	/* 전설 복구용 백업(캐시) */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Arcanum|Equipment|Weapon", meta = (AllowPrivateAccess = "true"))
 	FGameplayTag CachedWeaponTagBeforeLegendary;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Arcanum|Equipment|Weapon", meta = (AllowPrivateAccess = "true"))
 	bool bHasWeaponBackup = false;
+
+	/* 검증 루트 태그(캐시) */
+	FGameplayTag WeaponRootTag;
+	FGameplayTag LegendaryWeaponRootTag;  
+	TMap<EEquipSlot, FGameplayTag> ArmorRootBySlot;
+	TMap<EWeaponPickSlot, bool> WeaponAllowEmpty;  // 전설은 안껴도 됨
+	bool bRulesInitialized = false;
 };

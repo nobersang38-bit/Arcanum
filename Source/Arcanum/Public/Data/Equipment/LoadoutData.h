@@ -13,6 +13,14 @@
  * - 인게임 시작 시 이 데이터를 기준으로 실제 장착 상태를 확정한다(현재 장착 무기는 슬롯1)
  * - 로비에서는 무기/방어구 외형을 표시하지 않으며(캐릭터 메시만 변경), 인게임에서 무기 외형만 부착
  */
+
+UENUM(BlueprintType)
+enum class EStartWeaponSlot : uint8
+{
+	Slot1 UMETA(DisplayName = "Slot1"),
+	Slot2 UMETA(DisplayName = "Slot2"),
+};
+
 USTRUCT(BlueprintType)
 struct FLoadoutData
 {
@@ -39,7 +47,6 @@ struct FLoadoutData
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FGameplayTag BootTag;
 
-	/* 0: 슬롯1, 1 : 슬롯2 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 StartWeaponIndex = 0; 
+	EStartWeaponSlot StartWeaponSlot = EStartWeaponSlot::Slot1;
 };

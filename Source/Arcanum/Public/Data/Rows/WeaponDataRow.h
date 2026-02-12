@@ -26,6 +26,10 @@ struct FWeaponDataRow : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapon")
 	FName SocketName = FName("Hand_R");
 
+	/* 이 무기의 평타(기본공격) (Arcanum.Ability.Attack.*) */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapon")
+	FGameplayTag BasicAttackID;
+
 	/* 일반 무기 스킬 ID (Arcanum.Ability.Skill.Weapon.Common.*) */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapon")
 	FGameplayTag CommonSkillID;
