@@ -15,21 +15,41 @@
 #include "Interface/RuntimeUnitDataInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
+#include "Interface/CombatInterface.h"
+#include "Character/BaseUnitCharacter.h"
+#include "Component/Stats/CharacterBattleStatsComponent.h"
+#include "GameplayTags/ArcanumTags.h"
 
 // Sets default values for this component's properties
 UUnitCombatComponent::UUnitCombatComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 
 	// ...
 }
 
 
-void UUnitCombatComponent::ApplyDamage(float InDamage)
+void UUnitCombatComponent::ApplyDamage(float InDamage, AActor* DamageCauser)
 {
-	
+	// Todo : 캐스트 없애야함
+	if (ABaseUnitCharacter* TempOwner = Cast<ABaseUnitCharacter> (GetOwner()))
+	{
+		TempOwner->GetCharacterBattleStatsComponent()->ChangeStatValue(Arcanum::BattleStat::Character::Regen::Health::Root, -1.0f, DamageCauser);
+	}
+}
+
+void UUnitCombatComponent::TakeDamage()
+{
+	if (!TargetCharacter.IsValid()) return;
+
+	if (TargetCharacter->GetClass()->ImplementsInterface(UCombatInterface::StaticClass()))
+	{
+		auto Interface = Cast<ICombatInterface>(TargetCharacter.Get());
+		// Todo : ApplyDamage임시 데미지 변수 사용
+		Interface->ApplyDamage(UnitData.Stat.AttackPower, GetOwner());
+	}
 }
 
 // Called when the game starts
@@ -264,6 +284,13 @@ void UUnitCombatComponent::OnEndDetected(UPrimitiveComponent* OverlappedComponen
 				UnitRuntimeData.Elites.Remove(DetectedCharacter);
 			}
 		}
+		if (DetectedCharacters.Contains(DetectedCharacter) && DetectedCharacter == TargetCharacter)
+		{
+			if (TargetNexus.IsValid())
+			{
+				TargetAssigned(TargetNexus.Get());
+			}
+		}
 		DetectedCharacters.Remove(DetectedCharacter);
 	}
 }
@@ -384,12 +411,12 @@ void UUnitCombatComponent::Death()
 	UAnimMontage* DeathMontage = nullptr;
 	if (OwnerCharacter.IsValid() && UnitData.Info.AnimSetting.Deaths.Num() > 0)
 	{
-		int32 IDX = FMath::RandRange(0, (UnitData.Info.AnimSetting.Attacks.Num() - 1));
+		int32 IDX = FMath::RandRange(0, (UnitData.Info.AnimSetting.Deaths.Num() - 1));
 		DeathMontage = UnitData.Info.AnimSetting.Deaths[IDX];
 		OwnerCharacter->PlayAnimMontage(DeathMontage);
 	}
 
-	FTimerDelegate DeathDelegate;
+	FOnMontageEnded DeathDelegate;
 	DeathDelegate.BindWeakLambda(this, [this](UAnimMontage* Montage, bool bInterrupted)
 		{
 			// Todo : PoolDeactive로 변경해야함
@@ -398,6 +425,6 @@ void UUnitCombatComponent::Death()
 
 	if (DeathMontage == OwnerCharacter->GetCurrentMontage())
 	{
-		OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_GetEndedDelegate()->BindWeakLambda(this, DeathDelegate);
+		OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_SetEndDelegate(DeathDelegate, DeathMontage);
 	}
 }

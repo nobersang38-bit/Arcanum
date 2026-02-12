@@ -15,6 +15,9 @@
 #include "Data/Rows/AllyUnitsDataRow.h"
 #include "Data/Rows/EnemyUnitsDataRow.h"
 #include "Component/Stats/CharacterBattleStatsComponent.h"
+#include "Components/WidgetComponent.h"
+#include "UI/CharacterHUD/CharacterHealthWidget.h"
+#include "GameplayTags/ArcanumTags.h"
 
 // Sets default values
 ABaseUnitCharacter::ABaseUnitCharacter()
@@ -24,6 +27,8 @@ ABaseUnitCharacter::ABaseUnitCharacter()
 
 	UnitCombatComponent = CreateDefaultSubobject<UUnitCombatComponent>(TEXT("UnitCombatComponent"));
 	CharacterBattleStatsComponent = CreateDefaultSubobject<UCharacterBattleStatsComponent>(TEXT("CharacterBattleStatsComponent"));
+	HealthBarComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBarComponent"));
+	HealthBarComponent->SetupAttachment(RootComponent);
 
 	GetCharacterMovement()->bUseRVOAvoidance = true;
 	GetCharacterMovement()->AvoidanceConsiderationRadius = 200.0f;
@@ -46,13 +51,23 @@ void ABaseUnitCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	DataInitialize();
+	if (UUserWidget* TempHealthWidgetUser = Cast<UUserWidget>(HealthBarComponent->GetWidget()))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("체력 변경 발동1"));
+		if (UCharacterHealthWidget* TempHealthWidget = Cast<UCharacterHealthWidget>(TempHealthWidgetUser))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("체력 변경 발동2"));
+			CharacterBattleStatsComponent->OnCharacterRegenStatChanged.AddUObject(TempHealthWidget, &UCharacterHealthWidget::SetPercent);
 
+			CharacterBattleStatsComponent->ChangeStatValue(Arcanum::BattleStat::Character::Regen::Health::Root, -1.0f, nullptr);
+		}
+	}
 }
 
 void ABaseUnitCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-	DataInitialize();
 }
 #if WITH_EDITOR
 void ABaseUnitCharacter::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
@@ -92,7 +107,6 @@ void ABaseUnitCharacter::DataInitialize()
 	{
 		GetMesh()->SetAnimInstanceClass(UnitData.Info.AnimSetting.AnimInstance);
 	}
-
 	/*GetCharacterMovement()->MaxWalkSpeed = Speed;
 	UnitData.Info.AISetting.AttackRange = Range;*/
 }
@@ -100,6 +114,16 @@ void ABaseUnitCharacter::DataInitialize()
 FUnitRuntimeData& ABaseUnitCharacter::GetUnitRuntimeData()
 {
 	return UnitCombatComponent->GetUnitRuntimeData();
+}
+
+void ABaseUnitCharacter::OnAttackNotifyTriggered()
+{
+	UnitCombatComponent->TakeDamage();
+}
+
+void ABaseUnitCharacter::ApplyDamage(float InDamage, AActor* DamageCauser)
+{
+	UnitCombatComponent->ApplyDamage(InDamage, DamageCauser);
 }
 
 const FUnitData& ABaseUnitCharacter::GetUnitData()

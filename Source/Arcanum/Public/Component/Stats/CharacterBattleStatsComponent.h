@@ -67,6 +67,7 @@ private:
 #pragma endregion
 
 #pragma region 배틀 중 부를 함수
+public: // Todo : 김도현 20260212 public 접근 지정자 추가
 	/// <summary>
 	/// Value 변경될때 호출할 함수
 	/// </summary>

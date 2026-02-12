@@ -41,7 +41,9 @@ public:
 	FUnitRuntimeData& GetUnitRuntimeData() { return UnitRuntimeData; }
 
 	// Todo : 임시 데미지 받기, 나중에 구조체 받아와야함
-	void ApplyDamage(float InDamage);
+	void ApplyDamage(float InDamage, AActor* DamageCauser);
+
+	void TakeDamage();
 
 protected:
 	// Called when the game starts
