@@ -21,7 +21,7 @@ enum class EEquipSlot : uint8
 {
 	Weapon UMETA(DisplayName = "Weapon"),
 	Helmet UMETA(DisplayName = "Helmet"),
-	Armor  UMETA(DisplayName = "Armor"),
+	Chest  UMETA(DisplayName = "Chest"),
 	Glove UMETA(DisplayName = "Glove"),
 	Boot  UMETA(DisplayName = "Boot"),
 };
@@ -49,8 +49,11 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEquipChanged, EEquipSlot, InSlot
 /* 캐릭터창 무기 슬롯(1/2/전설) 선택값 변경 알림 */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnWeaponSlotChanged, EWeaponPickSlot, InSlot, FGameplayTag, InNewWeaponTag);
 
-/* 장비 전체 상태 변경 알림 (스탯이 바뀌는 타이밍에만 사용) */
+/* 스탯 적용 타이밍 알림 */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEquipmentStateChanged);
+
+/* 로비 프리뷰 갱신 알림 (LoadoutData가 바뀐 시점) */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLoadoutChanged);
 
 
 UCLASS(ClassGroup = (Arcanum), meta = (BlueprintSpawnableComponent))
@@ -143,7 +146,7 @@ public:
 	void GetEquippedArmorState(FGameplayTag& OutHelmet, FGameplayTag& OutArmor, FGameplayTag& OutGlove, FGameplayTag& OutBoot) const
 	{
 		OutHelmet = GetEquippedTag(EEquipSlot::Helmet);
-		OutArmor  = GetEquippedTag(EEquipSlot::Armor);
+		OutArmor  = GetEquippedTag(EEquipSlot::Chest);
 		OutGlove  = GetEquippedTag(EEquipSlot::Glove);
 		OutBoot   = GetEquippedTag(EEquipSlot::Boot);
 	}
@@ -172,6 +175,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Arcanum|Equipment|Loadout")
 	FOnWeaponSlotChanged OnWeaponSlotChanged;
+
+	UPROPERTY(BlueprintAssignable, Category = "Arcanum|Equipment|Loadout")
+	FOnLoadoutChanged OnLoadoutChanged;
 
 private:
 

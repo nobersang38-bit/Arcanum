@@ -15,7 +15,7 @@ void UEquipmentComponent::BeginPlay()
 
 	EquipmentMap.FindOrAdd(EEquipSlot::Weapon);
 	EquipmentMap.FindOrAdd(EEquipSlot::Helmet);
-	EquipmentMap.FindOrAdd(EEquipSlot::Armor);
+	EquipmentMap.FindOrAdd(EEquipSlot::Chest);
 	EquipmentMap.FindOrAdd(EEquipSlot::Glove);
 	EquipmentMap.FindOrAdd(EEquipSlot::Boot);
 }
@@ -23,7 +23,7 @@ void UEquipmentComponent::BeginPlay()
 /* 슬롯 검증 규칙 캐시 (일반무기 2필수 / 전설 선택 / 방어구 4부위 전용) */
 void UEquipmentComponent::InitPickRules()
 {
-	if (bRulesInitialized == false)
+	if (!bRulesInitialized)
 	{
 		WeaponAllowEmpty.Reset();
 		ArmorRootBySlot.Reset();
@@ -36,7 +36,7 @@ void UEquipmentComponent::InitPickRules()
 		LegendaryWeaponRootTag = UGameplayTagsManager::Get().RequestGameplayTag(FName("Arcanum.Item.Equipment.Weapon.Legendary"), false);
 
 		ArmorRootBySlot.Add(EEquipSlot::Helmet, UGameplayTagsManager::Get().RequestGameplayTag(FName("Arcanum.Item.Equipment.Armor.Helmet"), false));
-		ArmorRootBySlot.Add(EEquipSlot::Armor, UGameplayTagsManager::Get().RequestGameplayTag(FName("Arcanum.Item.Equipment.Armor.Chest"), false));
+		ArmorRootBySlot.Add(EEquipSlot::Chest, UGameplayTagsManager::Get().RequestGameplayTag(FName("Arcanum.Item.Equipment.Armor.Chest"), false));
 		ArmorRootBySlot.Add(EEquipSlot::Glove, UGameplayTagsManager::Get().RequestGameplayTag(FName("Arcanum.Item.Equipment.Armor.Glove"), false));
 		ArmorRootBySlot.Add(EEquipSlot::Boot, UGameplayTagsManager::Get().RequestGameplayTag(FName("Arcanum.Item.Equipment.Armor.Boot"), false));
 
@@ -44,7 +44,7 @@ void UEquipmentComponent::InitPickRules()
 	}
 }
 
-/* SaveGame에서 불러온 로드아웃을 통째로 반영(로비 UI/스탯 프리뷰 갱신용) */
+/* SaveGame에서 불러온 로드아웃을 통째로 반영 (로비 UI/스탯 프리뷰 갱신용) */
 bool UEquipmentComponent::SetLoadoutData(const FLoadoutData& InLoadoutData)
 {
 	InitPickRules();
@@ -55,7 +55,7 @@ bool UEquipmentComponent::SetLoadoutData(const FLoadoutData& InLoadoutData)
 	OnWeaponSlotChanged.Broadcast(EWeaponPickSlot::Slot2, LoadoutData.WeaponSlot2Tag);
 	OnWeaponSlotChanged.Broadcast(EWeaponPickSlot::Legendary, LoadoutData.LegendaryWeaponTag);
 
-	OnEquipmentStateChanged.Broadcast();
+	OnLoadoutChanged.Broadcast();
 
 	return true;
 }
@@ -81,7 +81,7 @@ bool UEquipmentComponent::SetWeaponPick(EWeaponPickSlot InSlot, const FGameplayT
 		}
 
 		OnWeaponSlotChanged.Broadcast(InSlot, InWeaponTag);
-		OnEquipmentStateChanged.Broadcast();
+		OnLoadoutChanged.Broadcast();
 
 		return true;
 	}
@@ -100,7 +100,7 @@ bool UEquipmentComponent::SetArmorPick(EEquipSlot InSlot, const FGameplayTag& In
 		{
 			LoadoutData.HelmetTag = InArmorTag;
 		}
-		else if (InSlot == EEquipSlot::Armor)
+		else if (InSlot == EEquipSlot::Chest)
 		{
 			LoadoutData.ArmorTag = InArmorTag;
 		}
@@ -113,7 +113,8 @@ bool UEquipmentComponent::SetArmorPick(EEquipSlot InSlot, const FGameplayTag& In
 			LoadoutData.BootTag = InArmorTag;
 		}
 
-		OnEquipmentStateChanged.Broadcast();
+		OnLoadoutChanged.Broadcast();
+
 		return true;
 	}
 
@@ -125,7 +126,7 @@ bool UEquipmentComponent::CommitLoadoutToEquipped()
 {
 	InitPickRules();
 
-	if (ValidateLoadoutForStart() == false)
+	if (!ValidateLoadoutForStart())
 	{
 		return false;
 	}
@@ -147,18 +148,21 @@ bool UEquipmentComponent::CommitLoadoutToEquipped()
 	const FGameplayTag startWeaponTag = (CurrentCommonWeaponIndex == 0) ? LoadoutData.WeaponSlot1Tag : LoadoutData.WeaponSlot2Tag;
 
 	SetEquippedTag(EEquipSlot::Helmet, LoadoutData.HelmetTag, true);
-	SetEquippedTag(EEquipSlot::Armor, LoadoutData.ArmorTag, true);
+	SetEquippedTag(EEquipSlot::Chest, LoadoutData.ArmorTag, true);
 	SetEquippedTag(EEquipSlot::Glove, LoadoutData.GloveTag, true);
 	SetEquippedTag(EEquipSlot::Boot, LoadoutData.BootTag, true);
 	SetEquippedTag(EEquipSlot::Weapon, startWeaponTag, true);
 
 	OnEquipmentStateChanged.Broadcast();
+
 	return true;
 }
 
 /* 인게임: 슬롯1 <-> 슬롯2 스왑(전설 중 금지, 실패 시 인덱스/장착 상태 변경 없음) */
 bool UEquipmentComponent::SwapCommonWeapon()
 {
+	InitPickRules();
+
 	if (CurrentSetMode == EWeaponSetMode::Common)
 	{
 		int32 nextIndex = 0;
@@ -182,6 +186,7 @@ bool UEquipmentComponent::SwapCommonWeapon()
 				{
 					CurrentCommonWeaponIndex = nextIndex;
 					SetEquippedTag(EEquipSlot::Weapon, nextWeaponTag, true);
+
 					return true;
 				}
 			}
@@ -202,6 +207,9 @@ bool UEquipmentComponent::ActivateLegendaryMode()
 		{
 			if (CanPickWeapon(EWeaponPickSlot::Legendary, LoadoutData.LegendaryWeaponTag))
 			{
+				bHasWeaponBackup = false;
+				CachedWeaponTagBeforeLegendary = FGameplayTag();
+
 				CurrentSetMode = EWeaponSetMode::Legendary;
 				return true;
 			}
@@ -227,6 +235,7 @@ bool UEquipmentComponent::DeactivateLegendaryMode()
 		}
 
 		CurrentSetMode = EWeaponSetMode::Common;
+
 		return true;
 	}
 
@@ -240,16 +249,18 @@ bool UEquipmentComponent::ApplyLegendaryWeapon()
 
 	if (CurrentSetMode == EWeaponSetMode::Legendary)
 	{
-		if (bHasWeaponBackup == false)
+		if (!bHasWeaponBackup)
 		{
 			if (LoadoutData.LegendaryWeaponTag.IsValid())
 			{
 				if (CanPickWeapon(EWeaponPickSlot::Legendary, LoadoutData.LegendaryWeaponTag))
 				{
 					CachedWeaponTagBeforeLegendary = GetEquippedTag(EEquipSlot::Weapon);
+
 					bHasWeaponBackup = true;
 
 					SetEquippedTag(EEquipSlot::Weapon, LoadoutData.LegendaryWeaponTag, true);
+
 					return true;
 				}
 			}
@@ -270,6 +281,7 @@ bool UEquipmentComponent::RestoreCommonWeapon()
 		}
 
 		bHasWeaponBackup = false;
+
 		CachedWeaponTagBeforeLegendary = FGameplayTag();
 		CurrentSetMode = EWeaponSetMode::Common;
 
@@ -288,6 +300,7 @@ bool UEquipmentComponent::SetEquippedTag(EEquipSlot InSlot, const FGameplayTag& 
 	{
 		currentTag = InEquipTag;
 		OnEquipChanged.Broadcast(InSlot, InEquipTag);
+
 		return true;
 	}
 
@@ -309,7 +322,7 @@ bool UEquipmentComponent::CanPickWeapon(EWeaponPickSlot InSlot, const FGameplayT
 	{
 		const bool allowEmpty = *allowEmptyPtr;
 
-		if (InTag.IsValid() == false)
+		if (!InTag.IsValid())
 		{
 			if (allowEmpty)
 			{
@@ -344,7 +357,7 @@ bool UEquipmentComponent::CanPickWeapon(EWeaponPickSlot InSlot, const FGameplayT
 	return false;
 }
 
-/* 검증: 방어구 선택(Weapon 슬롯 금지 + 각 슬롯 전용 루트 태그 매칭) */
+/* 검증: 방어구 선택 (각 슬롯 전용 루트 태그 매칭) */
 bool UEquipmentComponent::CanPickArmor(EEquipSlot InSlot, const FGameplayTag& InTag) const
 {
 	if (InSlot != EEquipSlot::Weapon)
@@ -366,9 +379,10 @@ bool UEquipmentComponent::CanPickArmor(EEquipSlot InSlot, const FGameplayTag& In
 	return false;
 }
 
-/* 게임 시작 최종 게이트: 일반무기2+방어구4 필수, 전설은 선택(있으면 Legendary만) */
+/* 게임 시작: 일반무기2+방어구4 필수, 전설은 선택 */
 bool UEquipmentComponent::ValidateLoadoutForStart() const
 {
+	// 무기 검사
 	const TPair<EWeaponPickSlot, const FGameplayTag*> requiredWeapons[] =
 	{
 		TPair<EWeaponPickSlot, const FGameplayTag*>(EWeaponPickSlot::Slot1, &LoadoutData.WeaponSlot1Tag),
@@ -383,10 +397,11 @@ bool UEquipmentComponent::ValidateLoadoutForStart() const
 		}
 	}
 
+	// 방어구 검사
 	const TPair<EEquipSlot, const FGameplayTag*> requiredArmors[] =
 	{
 		TPair<EEquipSlot, const FGameplayTag*>(EEquipSlot::Helmet, &LoadoutData.HelmetTag),
-		TPair<EEquipSlot, const FGameplayTag*>(EEquipSlot::Armor,  &LoadoutData.ArmorTag),
+		TPair<EEquipSlot, const FGameplayTag*>(EEquipSlot::Chest,  &LoadoutData.ArmorTag),
 		TPair<EEquipSlot, const FGameplayTag*>(EEquipSlot::Glove,  &LoadoutData.GloveTag),
 		TPair<EEquipSlot, const FGameplayTag*>(EEquipSlot::Boot,   &LoadoutData.BootTag),
 	};
@@ -399,6 +414,7 @@ bool UEquipmentComponent::ValidateLoadoutForStart() const
 		}
 	}
 
+	// 전설 무기 (선택 사항)
 	if (LoadoutData.LegendaryWeaponTag.IsValid())
 	{
 		if (CanPickWeapon(EWeaponPickSlot::Legendary, LoadoutData.LegendaryWeaponTag) == false)
