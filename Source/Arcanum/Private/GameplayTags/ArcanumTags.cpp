@@ -406,6 +406,58 @@ namespace Arcanum
 
 
 namespace Arcanum {
+	namespace Skills {
+		namespace SkillName {
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(None, "Arcanum.Skills.SkillName.None", "Null");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Slash, "Arcanum.Skills.SkillName.Slash", "베기");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(ChainBolt, "Arcanum.Skills.SkillName.ChainBolt", "체인 볼트");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(PiercingShot, "Arcanum.Skills.SkillName.PiercingShot", "관통 사격");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(ShockWave, "Arcanum.Skills.SkillName.ShockWave", "충격파");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(MjolnirStrike, "Arcanum.Skills.SkillName.MjolnirStrike", "묠니르");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(VoidEclipse, "Arcanum.Skills.SkillName.VoidEclipse", "보이드");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(SolarFlare, "Arcanum.Skills.SkillName.SolarFlare", "솔라");	
+		}
+		namespace SkillTypes {
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(None,	"Arcanum.Skills.SkillTypes.None", "Null");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Active,	"Arcanum.Skills.SkillTypes.Active", "액티브 스킬");		// 실제 필드에 보일 애들
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Passive, "Arcanum.Skills.SkillTypes.Passive", "패시브 스킬");		// 캐릭터 내부에서만 작동하는 애들
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Aura,	"Arcanum.Skills.SkillTypes.Aura", "오라");			// 실제 외부에 나타나는 Passive 계열
+		}
+		namespace TargetingType {
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(None,		"Arcanum.Skills.TargetingType.None", "타겟 없음");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Self,		"Arcanum.Skills.TargetingType.Self", "자기 자신");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Unit,		"Arcanum.Skills.TargetingType.Unit", "유닛 선택");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ground,		"Arcanum.Skills.TargetingType.Ground", "지면 위치 지정");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Direction,	"Arcanum.Skills.TargetingType.Direction", "방향 지정");
+		}
+		namespace TargetFilter {
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(None,	"Arcanum.Skills.TargetFilter.None", "제한 없음");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Enemy,	"Arcanum.Skills.TargetFilter.Enemy", "적 대상");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ally,	"Arcanum.Skills.TargetFilter.Ally", "아군 대상");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Self,	"Arcanum.Skills.TargetFilter.Self", "자기 자신");
+		}
+		namespace SkillVFX { // 이펙트 효과용 0을 기준으로 +버프, -디버프 => 추후 스킬컴포넌트에서 스택도 관리함
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(None,			"Arcanum.Skills.SkillVFX.None",				"없음");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Bleed,			"Arcanum.Skills.SkillVFX.Bleed",			"출혈");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Guard,			"Arcanum.Skills.SkillVFX.Guard",			"수호");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Mark,			"Arcanum.Skills.SkillVFX.Mark",				"표식");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Atonement,		"Arcanum.Skills.SkillVFX.Atonement",		"속죄");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Shock,			"Arcanum.Skills.SkillVFX.Shock",			"감전");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Burn,			"Arcanum.Skills.SkillVFX.Burn",				"화상");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Stun,			"Arcanum.Skills.SkillVFX.Stun",				"스턴");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Knockback,		"Arcanum.Skills.SkillVFX.Knockback",		"넉백");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(MoveSpeed,		"Arcanum.Skills.SkillVFX.MoveSpeed",		"이동속도");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(AttackSpeed,		"Arcanum.Skills.SkillVFX.AttackSpeed",		"공격속도");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(DamageReduction, "Arcanum.Skills.SkillVFX.DamageReduction",	"피해");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(CritChance,		"Arcanum.Skills.SkillVFX.CritChance",		"크리 증가");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(HealthRegen,		"Arcanum.Skills.SkillVFX.HealthRegen",		"지속 회복");
+		}
+	}
+	namespace Items {
+		/*, "Arcanum.Skills.SkillVFX", ""*/
+	}
+}
+namespace Arcanum {
 	namespace BattleStat {
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.BattleStat", "배틀 스탯 루트");
 		namespace Player {
@@ -514,8 +566,6 @@ namespace Arcanum {
 		}
 	}
 }
-
-
 namespace Arcanum {
 	namespace UI {
 		namespace LoginUI {
