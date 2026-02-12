@@ -1,0 +1,32 @@
+[
+  {
+    "Name": "UP_0",
+    "UpgradeLevel": 0,
+    "StatMultiplier": 1.00
+  },
+  {
+    "Name": "UP_1",
+    "UpgradeLevel": 1,
+    "StatMultiplier": 1.10
+  },
+  {
+    "Name": "UP_2",
+    "UpgradeLevel": 2,
+    "StatMultiplier": 1.20
+  },
+  {
+    "Name": "UP_3",
+    "UpgradeLevel": 3,
+    "StatMultiplier": 1.30
+  },
+  {
+    "Name": "UP_4",
+    "UpgradeLevel": 4,
+    "StatMultiplier": 1.40
+  },
+  {
+    "Name": "UP_5",
+    "UpgradeLevel": 5,
+    "StatMultiplier": 1.50
+  }
+]

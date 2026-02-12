@@ -1,0 +1,89 @@
+[
+  {
+    "Name": "OP_BaseAttack_Weapon",
+    "StatTag": "Arcanum.Stat.BaseAttack",
+    "MinValue": 10.0,
+    "MaxValue": 15.0,
+    "EquipmentFilterTags": "(GameplayTags=((TagName=\"Arcanum.Item.Equipment.Weapon.Common.GreatSword\"),(TagName=\"Arcanum.Item.Equipment.Weapon.Common.Staff\"),(TagName=\"Arcanum.Item.Equipment.Weapon.Common.Bow\"),(TagName=\"Arcanum.Item.Equipment.Weapon.Common.Shield\")))"
+  },
+  {
+    "Name": "OP_SkillPower_Weapon",
+    "StatTag": "Arcanum.Stat.SkillPower",
+    "MinValue": 0.0,
+    "MaxValue": 0.0,
+    "EquipmentFilterTags": "(GameplayTags=((TagName=\"Arcanum.Item.Equipment.Weapon.Common.GreatSword\"),(TagName=\"Arcanum.Item.Equipment.Weapon.Common.Staff\"),(TagName=\"Arcanum.Item.Equipment.Weapon.Common.Bow\"),(TagName=\"Arcanum.Item.Equipment.Weapon.Common.Shield\")))"
+  },
+  {
+    "Name": "OP_LifeSteal_Weapon",
+    "StatTag": "Arcanum.Stat.LifeSteal",
+    "MinValue": 0.01,
+    "MaxValue": 0.03,
+    "EquipmentFilterTags": "(GameplayTags=((TagName=\"Arcanum.Item.Equipment.Weapon.Common.GreatSword\"),(TagName=\"Arcanum.Item.Equipment.Weapon.Common.Staff\"),(TagName=\"Arcanum.Item.Equipment.Weapon.Common.Bow\"),(TagName=\"Arcanum.Item.Equipment.Weapon.Common.Shield\")))"
+  },
+  {
+    "Name": "OP_AttackSpeed_Weapon",
+    "StatTag": "Arcanum.Stat.AttackSpeed",
+    "MinValue": 0.05,
+    "MaxValue": 0.10,
+    "EquipmentFilterTags": "(GameplayTags=((TagName=\"Arcanum.Item.Equipment.Weapon.Common.GreatSword\"),(TagName=\"Arcanum.Item.Equipment.Weapon.Common.Staff\"),(TagName=\"Arcanum.Item.Equipment.Weapon.Common.Bow\"),(TagName=\"Arcanum.Item.Equipment.Weapon.Common.Shield\")))"
+  },
+
+  {
+    "Name": "OP_Evasion_ChestOnly",
+    "StatTag": "Arcanum.Stat.Evasion",
+    "MinValue": 0.10,
+    "MaxValue": 0.15,
+    "EquipmentFilterTags": "(GameplayTags=((TagName=\"Arcanum.Item.Equipment.Armor.Chest\")))"
+  },
+  {
+    "Name": "OP_CooldownReduction_HelmetOnly",
+    "StatTag": "Arcanum.Stat.CooldownReduction",
+    "MinValue": 0.10,
+    "MaxValue": 0.15,
+    "EquipmentFilterTags": "(GameplayTags=((TagName=\"Arcanum.Item.Equipment.Armor.Helmet\")))"
+  },
+  {
+    "Name": "OP_MoveSpeed_BootOnly",
+    "StatTag": "Arcanum.Stat.MoveSpeed",
+    "MinValue": 0.10,
+    "MaxValue": 0.15,
+    "EquipmentFilterTags": "(GameplayTags=((TagName=\"Arcanum.Item.Equipment.Armor.Boot\")))"
+  },
+  {
+    "Name": "OP_CritChance_GloveOnly",
+    "StatTag": "Arcanum.Stat.CritChance",
+    "MinValue": 0.05,
+    "MaxValue": 0.20,
+    "EquipmentFilterTags": "(GameplayTags=((TagName=\"Arcanum.Item.Equipment.Armor.Glove\")))"
+  },
+
+  {
+    "Name": "OP_Spirit_Any",
+    "StatTag": "Arcanum.Stat.Spirit",
+    "MinValue": 0.01,
+    "MaxValue": 0.03,
+    "EquipmentFilterTags": "(GameplayTags=((TagName=\"Arcanum.Item.Equipment.Armor.Helmet\"),(TagName=\"Arcanum.Item.Equipment.Armor.Chest\"),(TagName=\"Arcanum.Item.Equipment.Armor.Glove\"),(TagName=\"Arcanum.Item.Equipment.Armor.Boot\"),(TagName=\"Arcanum.Item.Equipment.Weapon.Common.GreatSword\"),(TagName=\"Arcanum.Item.Equipment.Weapon.Common.Staff\"),(TagName=\"Arcanum.Item.Equipment.Weapon.Common.Bow\"),(TagName=\"Arcanum.Item.Equipment.Weapon.Common.Shield\")))"
+  },
+  {
+    "Name": "OP_Mana_Any",
+    "StatTag": "Arcanum.Stat.Mana",
+    "MinValue": 10.0,
+    "MaxValue": 20.0,
+    "EquipmentFilterTags": "(GameplayTags=((TagName=\"Arcanum.Item.Equipment.Armor.Helmet\"),(TagName=\"Arcanum.Item.Equipment.Armor.Chest\"),(TagName=\"Arcanum.Item.Equipment.Armor.Glove\"),(TagName=\"Arcanum.Item.Equipment.Armor.Boot\"),(TagName=\"Arcanum.Item.Equipment.Weapon.Common.GreatSword\"),(TagName=\"Arcanum.Item.Equipment.Weapon.Common.Staff\"),(TagName=\"Arcanum.Item.Equipment.Weapon.Common.Bow\"),(TagName=\"Arcanum.Item.Equipment.Weapon.Common.Shield\")))"
+  },
+  {
+    "Name": "OP_Health_Any",
+    "StatTag": "Arcanum.Stat.Health",
+    "MinValue": 10.0,
+    "MaxValue": 20.0,
+    "EquipmentFilterTags": "(GameplayTags=((TagName=\"Arcanum.Item.Equipment.Armor.Helmet\"),(TagName=\"Arcanum.Item.Equipment.Armor.Chest\"),(TagName=\"Arcanum.Item.Equipment.Armor.Glove\"),(TagName=\"Arcanum.Item.Equipment.Armor.Boot\"),(TagName=\"Arcanum.Item.Equipment.Weapon.Common.GreatSword\"),(TagName=\"Arcanum.Item.Equipment.Weapon.Common.Staff\"),(TagName=\"Arcanum.Item.Equipment.Weapon.Common.Bow\"),(TagName=\"Arcanum.Item.Equipment.Weapon.Common.Shield\")))"
+  },
+
+  {
+    "Name": "OP_DamageReduction_Armor",
+    "StatTag": "Arcanum.Stat.DamageReduction",
+    "MinValue": 0.01,
+    "MaxValue": 0.05,
+    "EquipmentFilterTags": "(GameplayTags=((TagName=\"Arcanum.Item.Equipment.Armor.Helmet\"),(TagName=\"Arcanum.Item.Equipment.Armor.Chest\"),(TagName=\"Arcanum.Item.Equipment.Armor.Glove\"),(TagName=\"Arcanum.Item.Equipment.Armor.Boot\")))"
+  }
+]

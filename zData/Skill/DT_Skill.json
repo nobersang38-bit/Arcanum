@@ -1,0 +1,66 @@
+[
+  {
+    "Name": "S_Weapon_Slash",
+    "SkillID": "Arcanum.Ability.Skill.Weapon.Common.Slash",
+    "Cooldown": 3.0,
+    "ManaCost": 10.0,
+    "EffectIDs": [ "E_Damage_Hit", "E_Apply_Knockback" ],
+    "PatternValue1": 0,
+    "PatternValue2": 0.0
+  },
+  {
+    "Name": "S_Weapon_ChainBolt",
+    "SkillID": "Arcanum.Ability.Skill.Weapon.Common.ChainBolt",
+    "Cooldown": 4.0,
+    "ManaCost": 12.0,
+    "EffectIDs": [ "E_Damage_Hit", "E_Apply_Weaken" ],
+    "PatternValue1": 4,
+    "PatternValue2": 500.0
+  },
+  {
+    "Name": "S_Weapon_PiercingShot",
+    "SkillID": "Arcanum.Ability.Skill.Weapon.Common.PiercingShot",
+    "Cooldown": 3.5,
+    "ManaCost": 10.0,
+    "EffectIDs": [ "E_Damage_Hit", "E_Apply_Slow" ],
+    "PatternValue1": 0,
+    "PatternValue2": 0.0
+  },
+  {
+    "Name": "S_Weapon_ShockWave",
+    "SkillID": "Arcanum.Ability.Skill.Weapon.Common.ShockWave",
+    "Cooldown": 6.0,
+    "ManaCost": 15.0,
+    "EffectIDs": [ "E_Damage_Hit", "E_Apply_Stun" ],
+    "PatternValue1": 0,
+    "PatternValue2": 0.0
+  },
+
+  {
+    "Name": "S_Legend_MjolnirStrike",
+    "SkillID": "Arcanum.Ability.Skill.Weapon.Legendary.MjolnirStrike",
+    "Cooldown": 25.0,
+    "ManaCost": 50.0,
+    "EffectIDs": [ "E_Legend_MjolnirStrike", "E_Apply_Shock", "E_Apply_Slow", "E_Apply_Weaken" ],
+    "PatternValue1": 0,
+    "PatternValue2": 0.0
+  },
+  {
+    "Name": "S_Legend_VoidEclipse",
+    "SkillID": "Arcanum.Ability.Skill.Weapon.Legendary.VoidEclipse",
+    "Cooldown": 25.0,
+    "ManaCost": 50.0,
+    "EffectIDs": [ "E_Legend_VoidPull", "E_Legend_VoidExplode" ],
+    "PatternValue1": 0,
+    "PatternValue2": 0.0
+  },
+  {
+    "Name": "S_Legend_SolarFlare",
+    "SkillID": "Arcanum.Ability.Skill.Weapon.Legendary.SolarFlare",
+    "Cooldown": 25.0,
+    "ManaCost": 50.0,
+    "EffectIDs": [ "E_Legend_SolarFall", "E_Apply_Burn" ],
+    "PatternValue1": 0,
+    "PatternValue2": 0.0
+  }
+]

@@ -11,6 +11,13 @@
 #include "Materials/Material.h"
 #include "Engine/World.h"
 
+#pragma region 컴포넌트 관련 테스트
+/// Debug
+#include "Component/Stats/PlayerBattleStatsComponent.h"
+#include "Component/Stats/CharacterBattleStatsComponent.h"
+#pragma endregion
+
+
 ABaseCharacter::ABaseCharacter()
 {
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -37,8 +44,20 @@ ABaseCharacter::ABaseCharacter()
 
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
+
+
+#pragma region GameEntry 컴포넌트 관련 테스트
+	/// Debug
+	PlayerBattleStatsComp = CreateDefaultSubobject<UPlayerBattleStatsComponent>(TEXT("PlayerBattleStatsComp"));
+	CharacterBattleStatsComp = CreateDefaultSubobject<UCharacterBattleStatsComponent>(TEXT("CharacterBattleStatsComp"));
+#pragma endregion
 }
 
+void ABaseCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+}
 void ABaseCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
