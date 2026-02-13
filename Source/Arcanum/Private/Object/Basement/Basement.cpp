@@ -17,23 +17,5 @@ void ABasement::BeginPlay()
 	Super::BeginPlay();
 	
 }
-void ABasement::EnemySpawnTick()
-{
-}
-void ABasement::TrySpawnEnemyUnit()
-{
-}
-void ABasement::TakeDamageToBasement(float Damage)
-{
-}
-bool ABasement::SpawnUnit(int32 Index)
-{
-	return false;
-}
-void ABasement::AddResource(int32 Amount)
-{
-}
-bool ABasement::ConsumeResource(int32 Amount)
-{
-	return false;
-}
+
+
