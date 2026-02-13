@@ -58,7 +58,7 @@ struct FSkillInfo {
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     TSoftObjectPtr<UTexture2D> Icon;
 
-    /** CurrLevel 0이면 미습득*/
+    /** CurrLevel 0이면 기본 0강(노강) */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, SaveGame)
     int32 CurrLevel = 0;
        
