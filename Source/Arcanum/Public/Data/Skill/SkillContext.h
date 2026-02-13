@@ -24,7 +24,7 @@ struct FSkillContext
 	UPROPERTY(BlueprintReadOnly, Category = "Skill")
 	TWeakObjectPtr<AActor> Instigator;
 
-	/* 첫 타겟 (체인/단일 타겟용) */
+	/* 첫 타겟 (유도/체인/단일 타겟용) */
 	UPROPERTY(BlueprintReadOnly, Category = "Skill")
 	TWeakObjectPtr<AActor> TargetActor;
 

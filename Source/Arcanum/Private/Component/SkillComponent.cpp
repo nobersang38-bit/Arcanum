@@ -1,31 +1,46 @@
 #include "Component/SkillComponent.h"
+#include "Component/EquipmentComponent.h"
+#include "GameplayTags/ArcanumTags.h"
+#include "GameplayTagsManager.h"
+#include "DataInfo/Skills/Instances/USkillBase.h"
 
-// Sets default values for this component's properties
 USkillComponent::USkillComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
 }
 
-
-// Called when the game starts
 void USkillComponent::BeginPlay()
 {
-	Super::BeginPlay();
-
-	// ...
-	
 }
 
-
-// Called every frame
-void USkillComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+bool USkillComponent::AcquireSkill(const FGameplayTag& SkillIDTag)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
+	return false;
 }
 
+bool USkillComponent::RemoveSkill(const FGameplayTag& SkillIDTag)
+{
+	return false;
+}
+
+USkillBase* USkillComponent::GetSkill(const FGameplayTag& SkillIDTag) const
+{
+	return nullptr;
+}
+
+bool USkillComponent::ActivateSkill(const FGameplayTag& SkillIDTag)
+{
+	return false;
+}
+
+FTransform USkillComponent::GetSkillSpawnTransform(const FSkillInfo& SkillData) const
+{
+	return FTransform();
+}
+
+void USkillComponent::BindEquipmentEvents()
+{
+}
+
+void USkillComponent::RefreshCurrentSkillTags()
+{
+}

@@ -19,6 +19,11 @@ class UCommonDialog;
 class UVerticalBox;
 class ALoginCharacter;
 
+/*
+ * 역할 : 김유진
+ * 1. 타이틀 - 로그인 화면
+ * 2. 공지사항, 설정, 플레이, 종료 버튼 관리
+ */
 
 UCLASS()
 class ARCANUM_API UARLoginHUD : public UUserWidget

@@ -1,0 +1,44 @@
+[
+  {
+    "Name": "GreatSword",
+    "WeaponTag": "Arcanum.Item.Equipment.Weapon.Common.GreatSword",
+    "CommonSkillID": "Arcanum.Ability.Skill.Weapon.Common.Slash",
+    "LegendarySkillID": ""
+  },
+  {
+    "Name": "Staff",
+    "WeaponTag": "Arcanum.Item.Equipment.Weapon.Common.Staff",
+    "CommonSkillID": "Arcanum.Ability.Skill.Weapon.Common.ChainBolt",
+    "LegendarySkillID": ""
+  },
+  {
+    "Name": "Bow",
+    "WeaponTag": "Arcanum.Item.Equipment.Weapon.Common.Bow",
+    "CommonSkillID": "Arcanum.Ability.Skill.Weapon.Common.PiercingShot",
+    "LegendarySkillID": ""
+  },
+  {
+    "Name": "Shield",
+    "WeaponTag": "Arcanum.Item.Equipment.Weapon.Common.Shield",
+    "CommonSkillID": "Arcanum.Ability.Skill.Weapon.Common.ShockWave",
+    "LegendarySkillID": ""
+  },
+  {
+    "Name": "Spear",
+    "WeaponTag": "Arcanum.Item.Equipment.Weapon.Legendary.Spear",
+    "CommonSkillID": "",
+    "LegendarySkillID": "Arcanum.Ability.Skill.Weapon.Legendary.MjolnirStrike"
+  },
+  {
+    "Name": "Scepter",
+    "WeaponTag": "Arcanum.Item.Equipment.Weapon.Legendary.Scepter",
+    "CommonSkillID": "",
+    "LegendarySkillID": "Arcanum.Ability.Skill.Weapon.Legendary.SolarFlare"
+  },
+  {
+    "Name": "Scythe",
+    "WeaponTag": "Arcanum.Item.Equipment.Weapon.Legendary.Scythe",
+    "CommonSkillID": "",
+    "LegendarySkillID": "Arcanum.Ability.Skill.Weapon.Legendary.VoidEclipse"
+  }
+]

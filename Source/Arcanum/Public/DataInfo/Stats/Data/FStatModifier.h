@@ -24,6 +24,7 @@ struct FExternalStatModifier
 
     friend FArchive& operator<<(FArchive& Ar, FExternalStatModifier& Data)
     {
+
         Ar << Data.Flat;
         Ar << Data.Mul;
         return Ar;
