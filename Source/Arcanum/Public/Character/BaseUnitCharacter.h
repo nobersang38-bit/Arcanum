@@ -27,7 +27,10 @@ public:
 	//float Range = 200.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "00_Test")
-	bool RandomRvoWeight = true;
+	bool RandomRvoWeight = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "00_Test")
+	bool bUseStaticMeshAnim = false;
 
 #pragma endregion
 
@@ -58,6 +61,12 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<class UWidgetComponent> HealthBarComponent = nullptr;
+
+#pragma region Debug
+	/*UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UStaticMeshComponent> StaticMeshCharacter = nullptr;*/
+#pragma endregion
+
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MainData")

@@ -29,6 +29,10 @@ ABaseUnitCharacter::ABaseUnitCharacter()
 	UnitCombatComponent = CreateDefaultSubobject<UUnitCombatComponent>(TEXT("UnitCombatComponent"));
 	CharacterBattleStatsComponent = CreateDefaultSubobject<UCharacterBattleStatsComponent>(TEXT("CharacterBattleStatsComponent"));
 	HealthBarComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBarComponent"));
+
+	//StaticMeshCharacter = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshCharacter"));
+	//StaticMeshCharacter->SetupAttachment(RootComponent);
+
 	HealthBarComponent->SetupAttachment(RootComponent);
 
 	GetCharacterMovement()->bUseRVOAvoidance = true;
