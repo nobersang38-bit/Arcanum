@@ -133,3 +133,4 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Skill|Event")
 	FOnAwakenReadyChanged OnAwakenReadyChanged;
 };
+
