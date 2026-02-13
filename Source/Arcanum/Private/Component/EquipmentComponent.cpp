@@ -32,13 +32,13 @@ void UEquipmentComponent::InitPickRules()
 		WeaponAllowEmpty.Add(EWeaponPickSlot::Slot2, false);
 		WeaponAllowEmpty.Add(EWeaponPickSlot::Legendary, true);
 
-		WeaponRootTag = UGameplayTagsManager::Get().RequestGameplayTag(FName("Arcanum.Item.Equipment.Weapon.Common"), false);
-		LegendaryWeaponRootTag = UGameplayTagsManager::Get().RequestGameplayTag(FName("Arcanum.Item.Equipment.Weapon.Legendary"), false);
+		WeaponRootTag = UGameplayTagsManager::Get().RequestGameplayTag(FName("Arcanum.Items.Weapon.Common"), false);
+		LegendaryWeaponRootTag = UGameplayTagsManager::Get().RequestGameplayTag(FName("Arcanum.Items.Weapon.Legendary"), false);
 
-		ArmorRootBySlot.Add(EEquipSlot::Helmet, UGameplayTagsManager::Get().RequestGameplayTag(FName("Arcanum.Item.Equipment.Armor.Helmet"), false));
-		ArmorRootBySlot.Add(EEquipSlot::Chest, UGameplayTagsManager::Get().RequestGameplayTag(FName("Arcanum.Item.Equipment.Armor.Chest"), false));
-		ArmorRootBySlot.Add(EEquipSlot::Glove, UGameplayTagsManager::Get().RequestGameplayTag(FName("Arcanum.Item.Equipment.Armor.Glove"), false));
-		ArmorRootBySlot.Add(EEquipSlot::Boot, UGameplayTagsManager::Get().RequestGameplayTag(FName("Arcanum.Item.Equipment.Armor.Boot"), false));
+		ArmorRootBySlot.Add(EEquipSlot::Helmet, UGameplayTagsManager::Get().RequestGameplayTag(FName("Arcanum.Items.Armor.Helmet"), false));
+		ArmorRootBySlot.Add(EEquipSlot::Chest, UGameplayTagsManager::Get().RequestGameplayTag(FName("Arcanum.Items.Armor.Chest"), false));
+		ArmorRootBySlot.Add(EEquipSlot::Glove, UGameplayTagsManager::Get().RequestGameplayTag(FName("Arcanum.Items.Armor.Glove"), false));
+		ArmorRootBySlot.Add(EEquipSlot::Boot, UGameplayTagsManager::Get().RequestGameplayTag(FName("Arcanum.Items.Armor.Boot"), false));
 
 		bRulesInitialized = true;
 	}
@@ -55,6 +55,7 @@ bool UEquipmentComponent::SetLoadoutData(const FLoadoutData& InLoadoutData)
 	OnWeaponSlotChanged.Broadcast(EWeaponPickSlot::Slot2, LoadoutData.WeaponSlot2Tag);
 	OnWeaponSlotChanged.Broadcast(EWeaponPickSlot::Legendary, LoadoutData.LegendaryWeaponTag);
 
+	RebuildArmorSetState();
 	OnLoadoutChanged.Broadcast();
 
 	return true;
@@ -113,6 +114,7 @@ bool UEquipmentComponent::SetArmorPick(EEquipSlot InSlot, const FGameplayTag& In
 			LoadoutData.BootTag = InArmorTag;
 		}
 
+		RebuildArmorSetState();
 		OnLoadoutChanged.Broadcast();
 
 		return true;
@@ -153,6 +155,7 @@ bool UEquipmentComponent::CommitLoadoutToEquipped()
 	SetEquippedTag(EEquipSlot::Boot, LoadoutData.BootTag, true);
 	SetEquippedTag(EEquipSlot::Weapon, startWeaponTag, true);
 
+	RebuildArmorSetState();
 	OnEquipmentStateChanged.Broadcast();
 
 	return true;
@@ -311,6 +314,51 @@ bool UEquipmentComponent::SetEquippedTag(EEquipSlot InSlot, const FGameplayTag& 
 	}
 
 	return true;
+}
+
+bool UEquipmentComponent::IsWearingFullArmorSet(const FGameplayTag& InSetRoot) const
+{
+	if (InSetRoot.IsValid())
+	{
+		return
+			LoadoutData.HelmetTag.IsValid() && LoadoutData.HelmetTag.MatchesTag(InSetRoot) &&
+			LoadoutData.ArmorTag.IsValid() && LoadoutData.ArmorTag.MatchesTag(InSetRoot) &&
+			LoadoutData.GloveTag.IsValid() && LoadoutData.GloveTag.MatchesTag(InSetRoot) &&
+			LoadoutData.BootTag.IsValid() && LoadoutData.BootTag.MatchesTag(InSetRoot);
+	}
+
+	return false;
+}
+
+void UEquipmentComponent::RebuildArmorSetState()
+{
+	const FGameplayTag manaRoot = UGameplayTagsManager::Get().RequestGameplayTag(FName("Arcanum.Items.SetItem.ManaCycle"), false);
+	const FGameplayTag itemEffectRoot = UGameplayTagsManager::Get().RequestGameplayTag(FName("Arcanum.Items.SetItem.ItemEffectBonus"), false);
+
+	const bool manaActive = IsWearingFullArmorSet(manaRoot);
+	const bool itemEffectActive = IsWearingFullArmorSet(itemEffectRoot);
+
+	const bool wasManaActive = ActiveArmorSets.Contains(manaRoot);
+	const bool wasItemEffectActive = ActiveArmorSets.Contains(itemEffectRoot);
+
+	ActiveArmorSets.Reset();
+	if (manaActive)
+	{
+		ActiveArmorSets.Add(manaRoot);
+	}
+	if (itemEffectActive)
+	{
+		ActiveArmorSets.Add(itemEffectRoot);
+	}
+
+	if (manaRoot.IsValid() && (wasManaActive != manaActive))
+	{
+		OnArmorSetChanged.Broadcast(manaRoot, manaActive);
+	}
+	if (itemEffectRoot.IsValid() && (wasItemEffectActive != itemEffectActive))
+	{
+		OnArmorSetChanged.Broadcast(itemEffectRoot, itemEffectActive);
+	}
 }
 
 /* 검증: 무기 선택(슬롯1/2=Common 필수, 전설=Legendary 선택) */

@@ -11,9 +11,7 @@
  * 장비 컴포넌트
  * - 로비(UI): FLoadoutData(출전 세팅/선택값) 관리 + 무기 슬롯 변경 알림
  * - 인게임: 현재 장착 상태 관리(무기 외형/스킬 분기용 "현재 무기"만 바뀜)
- * - 스탯은 무기 3개 + 방어구 4부위를 게임 시작 시점 합산 적용
- * - 인게임 무기 스왑/전설 발동은 스탯 재계산 않함(스킬/기본공격 방식/무기 외형만 변경)
- * - 세트 판정/효과 적용은 여기서 하지 않음 (Stats/Skill) 쪽에서 처리
+ * - 방어구4는 시작 1회 고정 합산, 무기는 일반/전설 스왑 할때마다 해당 무기 스탯 적용
  */
 
 UENUM(BlueprintType)
@@ -22,8 +20,8 @@ enum class EEquipSlot : uint8
 	Weapon UMETA(DisplayName = "Weapon"),
 	Helmet UMETA(DisplayName = "Helmet"),
 	Chest  UMETA(DisplayName = "Chest"),
-	Glove UMETA(DisplayName = "Glove"),
-	Boot  UMETA(DisplayName = "Boot"),
+	Glove UMETA(DisplayName  = "Glove"),
+	Boot  UMETA(DisplayName  = "Boot"),
 };
 
 /* 캐릭터창 무기 선택 슬롯(슬롯1/슬롯2/전설) */
@@ -46,13 +44,12 @@ enum class EWeaponSetMode : uint8
 #pragma region 델리게이트
 /* 인게임 장착 변경 알림 (무기 외형/스킬 분기용: Weapon 슬롯 변경 포함) */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEquipChanged, EEquipSlot, InSlot, FGameplayTag, InNewEquipTag);
-
 /* 캐릭터창 무기 슬롯(1/2/전설) 선택값 변경 알림 */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnWeaponSlotChanged, EWeaponPickSlot, InSlot, FGameplayTag, InNewWeaponTag);
-
+/* 세트 보너스 변경 알림 */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnArmorSetChanged, FGameplayTag, InSetTag, bool, bActive);
 /* 스탯 적용 타이밍 알림 */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEquipmentStateChanged);
-
 /* 로비 프리뷰 갱신 알림 (LoadoutData가 바뀐 시점) */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLoadoutChanged);
 #pragma endregion
@@ -142,6 +139,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Arcanum|Equipment")
 	FGameplayTag GetEquippedTag(EEquipSlot InSlot) const { return EquipmentMap.FindRef(InSlot); }
 
+	/* 현재 세트 4셋 활성 여부 */
+	UFUNCTION(BlueprintPure, Category = "Arcanum|Equipment|Set")
+	bool HasArmorSet(const FGameplayTag& InSetTag) const { return ActiveArmorSets.Contains(InSetTag); }
+
 	/* 방어구 4부위의 현재 장착 태그를 한번에 반환 */
 	UFUNCTION(BlueprintPure, Category = "Arcanum|Equipment")
 	void GetEquippedArmorState(FGameplayTag& OutHelmet, FGameplayTag& OutArmor, FGameplayTag& OutGlove, FGameplayTag& OutBoot) const
@@ -159,6 +160,11 @@ private:
 	/* 장착 태그 세팅 + 변경 시 OnEquipChanged 브로드캐스트 */
 	bool SetEquippedTag(EEquipSlot InSlot, const FGameplayTag& InEquipTag, bool bForce);
 
+	/* 세트 4셋이 다 껴졌는지 검사*/
+	bool IsWearingFullArmorSet(const FGameplayTag& InSetRoot) const;
+	/* 방어구 4부위 리빌드 */
+	void RebuildArmorSetState();
+
 	/* 슬롯 검증  */
 	bool CanPickWeapon(EWeaponPickSlot InSlot, const FGameplayTag& InTag) const;
 	bool CanPickArmor(EEquipSlot InSlot, const FGameplayTag& InTag) const;
@@ -174,6 +180,9 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Arcanum|Equipment")
 	FOnEquipmentStateChanged OnEquipmentStateChanged;
 
+	UPROPERTY(BlueprintAssignable, Category = "Arcanum|Equipment|Set")
+	FOnArmorSetChanged OnArmorSetChanged;
+
 	UPROPERTY(BlueprintAssignable, Category = "Arcanum|Equipment|Loadout")
 	FOnWeaponSlotChanged OnWeaponSlotChanged;
 
@@ -181,7 +190,6 @@ public:
 	FOnLoadoutChanged OnLoadoutChanged;
 
 private:
-
 	/* 로비(UI): 출전 세팅(선택값) */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Arcanum|Equipment|Loadout", meta = (AllowPrivateAccess = "true"))
 	FLoadoutData LoadoutData;
@@ -203,6 +211,10 @@ private:
 	FGameplayTag CachedWeaponTagBeforeLegendary;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Arcanum|Equipment|Weapon", meta = (AllowPrivateAccess = "true"))
 	bool bHasWeaponBackup = false;
+
+	/* 세트(4셋) 루트 태그들 */
+	UPROPERTY(VisibleAnywhere, Category = "Arcanum|Equipment|Set")
+	TSet<FGameplayTag> ActiveArmorSets;
 
 	/* 검증 루트 태그(캐시) */
 	FGameplayTag WeaponRootTag;

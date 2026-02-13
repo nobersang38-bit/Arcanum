@@ -3,22 +3,30 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "GameplayTagContainer.h"
-#include "Component/EquipmentComponent.h"
 #include "SkillComponent.generated.h"
 
 /*
  * 추영호
- * - 무기 태그 -> SkillID 선택
- * - SkillRow/EffectRow 실행
- * - 월드 스폰/풀링은 여기서
- * - 각성 트리거용 OnWeaponSkillExecuted 브로드캐스트
+ * 스킬의 획득 / 제거 / 실행을 총괄하는 컴포넌트
+ * - 스킬 정의는 DT
+ * - 스킬 로직은 UObject (USkillBase)
+ * - 월드 개입은 여기서 중계
  */
 
-class UDataTable;
-struct FSkillRow;
+class USkillBase;
+class UEquipmentComponent;
+struct FSkillInfo;
 
-/* 무기 스킬 실행됨 (각성 트리거 발동) */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnWeaponSkillExecuted, AActor*, InInstigator, FGameplayTag, InSkillIDTag);
+#pragma region 델리게이트
+/* 스킬 쿨타운 변경 (UI 쿨다운 표시) */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSkillCooldownChanged, FGameplayTag, InSkillTag, float, InPercent);
+/* 마나 부족으로 스킬 사용 실패 (UI 메시지용) */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSkillCostFailed, FGameplayTag, InSkillTag);
+/* 쿨다운 중으로 스킬 사용 실패 (UI 메시지용) */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSkillCooldownFailed, FGameplayTag, InSkillTag);
+/* 각성 버튼 활성/비활성 (게이지 Max 도달시 true) */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAwakenReadyChanged, bool, bReady);
+#pragma endregion
 
 UCLASS(ClassGroup = (Arcanum), meta = (BlueprintSpawnableComponent))
 class ARCANUM_API USkillComponent : public UActorComponent
@@ -31,74 +39,97 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+#pragma region 초기화 관련
 public:
-	/* 일반/현재 무기 스킬 실행 (현재 장착 WeaponTag 기준) */
-	UFUNCTION(BlueprintCallable, Category = "Arcanum|Skill")
-	bool ActivateWeaponSkill();
-
-	/* 전설 버튼: 장비(무기/투구) 전설로 바꾸고 전설 스킬 실행 */
-	UFUNCTION(BlueprintCallable, Category = "Arcanum|Skill")
-	bool ActivateLegendaryWeaponSkill();
-
-	/* 전설 스킬 종료 시점에 호출(애님 노티파이/이펙트 종료 콜백 등) -> 원래 일반 무기/투구로 원복 */
-	UFUNCTION(BlueprintCallable, Category = "Arcanum|Skill")
-	void EndLegendaryWeaponSkill();
-
-	/* 외부에서 장비컴포 주입 */
-	UFUNCTION(BlueprintCallable, Category = "Arcanum|Skill")
-	void SetEquipmentComponent(UEquipmentComponent* InEquipmentComponent);
-
-public:
-	UPROPERTY(BlueprintAssignable, Category = "Arcanum|Skill")
-	FOnWeaponSkillExecuted OnWeaponSkillExecuted;
+	void InitComponent();
 
 private:
-	/* 장비 교체 콜백 */
-	UFUNCTION()
-	void HandleEquipChanged(EEquipSlot InSlot, FGameplayTag InNewEquipTag);
+	UPROPERTY(VisibleAnywhere, Transient)
+	bool bInitialized = false;
+#pragma endregion
 
-private:
-	/* 바인딩/캐시 */
-	void BindEquipment();
-	void BuildCaches();
+	/* ===============================
+	 * Data
+	 * =============================== */
 
-	/* WeaponTag -> SkillID */
-	bool ResolveSkillIDByWeaponTag(const FGameplayTag& InWeaponTag, FGameplayTag& OutSkillIDTag) const;
+	 /* 스킬 마스터 데이터 테이블 */
+	UPROPERTY(EditDefaultsOnly, Category = "Skill|Data")
+	TObjectPtr<UDataTable> SkillsDataTable;
 
-	/* SkillIDTag -> SkillRow */
-	const FSkillRow* FindSkillRowBySkillID(const FGameplayTag& InSkillIDTag) const;
+	/* DT 기반 스킬 실행용 기본 클래스  */
+	UPROPERTY(EditDefaultsOnly, Category = "Skill|Data")
+	TSubclassOf<USkillBase> DefaultSkillClass;
 
-	/* SkillRow 실행 (EffectIDs 순회) */
-	bool ExecuteSkillRow(const FSkillRow& InSkillRow);
-
-private:
-	UPROPERTY(Transient)
+	/* 장비 변경(스왑/전설) 따라 현재 무기/스킬 태그 갱신 */
+	UPROPERTY(VisibleAnywhere, Transient, Category = "Skill|Ref")
 	TObjectPtr<UEquipmentComponent> EquipmentComponent;
 
-	/* 무기->스킬 매핑 테이블 (WeaponTag -> CommonSkillID/LegendarySkillID) */
-	UPROPERTY(EditDefaultsOnly, Category = "Arcanum|Skill|Data")
-	TObjectPtr<UDataTable> WeaponSkillMapTable;
+	/* 현재 장착 무기 기반으로 계산된 '기본공격/무기스킬/전설스킬' 태그 캐시(UI 버튼은 이걸로 실행) */
+	UPROPERTY(VisibleAnywhere, Transient, Category = "Skill|Runtime")
+	FGameplayTag CurrentBasicAttackTag;
+	UPROPERTY(VisibleAnywhere, Transient, Category = "Skill|Runtime")
+	FGameplayTag CurrentWeaponSkillTag;
+	UPROPERTY(VisibleAnywhere, Transient, Category = "Skill|Runtime")
+	FGameplayTag CurrentLegendarySkillTag;
 
-	/* 스킬 마스터 테이블 */
-	UPROPERTY(EditDefaultsOnly, Category = "Arcanum|Skill|Data")
-	TObjectPtr<UDataTable> SkillTable;
+	/* 현재 보유 중인 스킬 인스턴스들 */
+	UPROPERTY()
+	TMap<FGameplayTag, TObjectPtr<USkillBase>> OwnedSkills;
 
-	/* 이펙트 마스터 테이블 (EffectID = RowName) */
-	UPROPERTY(EditDefaultsOnly, Category = "Arcanum|Skill|Data")
-	TObjectPtr<UDataTable> EffectTable;
+public:
+	/* ===============================
+	 * Skill Life-cycle
+	 * =============================== */
 
-	/* 현재 무기 기준 스킬ID */
-	UPROPERTY(VisibleAnywhere, Category = "Arcanum|Skill")
-	FGameplayTag CurrentWeaponSkillIDTag;
+	 /** 스킬 획득 */
+	bool AcquireSkill(const FGameplayTag& SkillIDTag);
 
-	/* 전설 스킬 사용중 */
-	UPROPERTY(VisibleAnywhere, Category = "Arcanum|Skill")
-	bool bLegendaryActive = false;
+	/** 스킬 제거 */
+	bool RemoveSkill(const FGameplayTag& SkillIDTag);
+
+	/** 보유 중인 스킬 조회 */
+	USkillBase* GetSkill(const FGameplayTag& SkillIDTag) const;
+
+	/* ===============================
+	 * Active Skill
+	 * =============================== */
+
+	 /** 액티브 스킬 실행 */
+	bool ActivateSkill(const FGameplayTag& SkillIDTag);
+
+	/* ===============================
+	 * Spawn Helper (중요)
+	 * =============================== */
+
+	 /**
+	  * 스킬 효과(Projectile, AreaActor 등)의
+	  * 스폰 기준 Transform을 반환
+	  *
+	  * - 소켓 결정은 SkillComponent 책임
+	  * - Skill은 이걸 호출만 함
+	  */
+	FTransform GetSkillSpawnTransform(const FSkillInfo& SkillData) const;
 
 private:
-	/* 런타임 캐시 (UPROPERTY 없음) */
-	TMap<FGameplayTag, FGameplayTag> WeaponTagToSkillIDCache;
-	TMap<FGameplayTag, FName> SkillIDToRowNameCache;
+	/* SkillNameTag -> DataTable RowName 변환 */
+	// static FName MakeRowNameFromSkillTag(const FGameplayTag& SkillIDTag);
 
-	bool bCachesBuilt = false;
+	/* BeginPlay에서 장비컴포 바인딩 + 현재 태그 초기화 */
+	void BindEquipmentEvents();  
+
+	/* 무기 태그 바뀔 때마다 Current*Tag 재계산 */
+	void RefreshCurrentSkillTags();
+
+public:
+	UPROPERTY(BlueprintAssignable, Category = "Skill|Event")
+	FOnSkillCooldownChanged OnSkillCooldownChanged;
+
+	UPROPERTY(BlueprintAssignable, Category = "Skill|Event")
+	FOnSkillCostFailed OnSkillCostFailed;
+
+	UPROPERTY(BlueprintAssignable, Category = "Skill|Event")
+	FOnSkillCooldownFailed OnSkillCooldownFailed;
+
+	UPROPERTY(BlueprintAssignable, Category = "Skill|Event")
+	FOnAwakenReadyChanged OnAwakenReadyChanged;
 };
