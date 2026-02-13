@@ -3,6 +3,8 @@
 
 #include "Core/SubSystem/BattlefieldManagerSubsystem.h"
 #include "GameFramework/Character.h"
+#include "Object/Actor/BattlefieldManagerActor.h"
+#include "GameplayTags/ArcanumTags.h"
 
 void UBattlefieldManagerSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
@@ -28,6 +30,11 @@ void UBattlefieldManagerSubsystem::SetAllyNexus(ACharacter* InNexus)
 void UBattlefieldManagerSubsystem::SetEnemyNexus(ACharacter* InNexus)
 {
 	EnemyNexus = InNexus;
+}
+
+void UBattlefieldManagerSubsystem::SetABattlefieldManagerActor(ABattlefieldManagerActor* InBattlefieldManagerActor)
+{
+	BattlefieldManagerActor = InBattlefieldManagerActor;
 }
 
 void UBattlefieldManagerSubsystem::SetCurrentMatchData(const FMatchData& InData)

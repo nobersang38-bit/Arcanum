@@ -32,6 +32,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "00_Test")
 	bool bUseStaticMeshAnim = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "00_Test")
+	bool MeshHide = false;
+
 #pragma endregion
 
 	ABaseUnitCharacter();
@@ -63,8 +66,8 @@ protected:
 	TObjectPtr<class UWidgetComponent> HealthBarComponent = nullptr;
 
 #pragma region Debug
-	/*UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<UStaticMeshComponent> StaticMeshCharacter = nullptr;*/
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<class UHierarchicalInstancedStaticMeshComponent> StaticMeshCharacter0 = nullptr;
 #pragma endregion
 
 
@@ -76,8 +79,7 @@ protected:
 	FUnitData UnitData;
 
 private:
-	//UFUNCTION()
-	//void AIInitialize();
+	void AnimSetting();
 	float GetAttackPower();
 
 	UFUNCTION()

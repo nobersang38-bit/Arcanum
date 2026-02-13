@@ -81,30 +81,73 @@ public:
 };
 
 USTRUCT(BlueprintType)
-struct FUnitBodySetting
+struct FUnitDeadFrameSetting
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body")
-	TSoftObjectPtr<class USkeletalMesh> SkeletalMesh = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim")
+	FVector DeadMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim")
+	float DeactiveTime = 3.0f;
 };
 
+
+UENUM(BlueprintType)
+enum class EAnimMode : uint8
+{
+	AnimBlueprint    UMETA(DisplayName = "AnimBlueprint"),
+	AnimToTexture    UMETA(DisplayName = "AnimToTexture"),
+};
+
+class UATTAnimPlayData;
 USTRUCT(BlueprintType)
 struct FUnitAnimSetting
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
+	EAnimMode AnimMode = EAnimMode::AnimBlueprint;
+
+#pragma region Mesh
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body", meta = (EditCondition = "AnimMode == EAnimMode::AnimBlueprint", EditConditionHides))
+	TSoftObjectPtr<class USkeletalMesh> SkeletalMesh = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body", meta = (EditCondition = "AnimMode == EAnimMode::AnimToTexture", EditConditionHides))
+	TObjectPtr<class UStaticMesh> StaticMesh = nullptr;
+#pragma endregion
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim", meta = (EditCondition = "AnimMode == EAnimMode::AnimBlueprint", EditConditionHides))
 	TSubclassOf<class UAnimInstance> AnimInstance = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim")
+#pragma region Idle
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim", meta = (EditCondition = "AnimMode == EAnimMode::AnimToTexture", EditConditionHides))
+	TObjectPtr<UATTAnimPlayData> IdleATTData;
+#pragma endregion
+
+
+#pragma region Attacks
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim", meta = (EditCondition = "AnimMode == EAnimMode::AnimBlueprint", EditConditionHides))
 	TArray<TObjectPtr<class UAnimMontage>> Attacks;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim")
-	TArray<TObjectPtr<class UAnimMontage>> Hits;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim", meta = (EditCondition = "AnimMode == EAnimMode::AnimToTexture", EditConditionHides))
+	TArray<TObjectPtr<UATTAnimPlayData>> AttacksATTData;
+#pragma endregion
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim")
+#pragma region Hits
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim", meta = (EditCondition = "AnimMode == EAnimMode::AnimBlueprint", EditConditionHides))
+	TArray<TObjectPtr<class UAnimMontage>> Hits;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim", meta = (EditCondition = "AnimMode == EAnimMode::AnimToTexture", EditConditionHides))
+	TArray<TObjectPtr<UATTAnimPlayData>> HitsATTData;
+#pragma endregion
+
+#pragma region Deads
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim", meta = (EditCondition = "AnimMode == EAnimMode::AnimBlueprint", EditConditionHides))
 	TArray<FUnitDeadMontageSetting> Deads;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim", meta = (EditCondition = "AnimMode == EAnimMode::AnimToTexture", EditConditionHides))
+	TArray<FUnitDeadFrameSetting> DeadsFrameRange;
+#pragma endregion
 };
 
 USTRUCT(BlueprintType)
@@ -154,9 +197,6 @@ struct FBaseUnitData
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")
 	FUnitInfoSetting InfoSetting;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body")
-	FUnitBodySetting BodySetting;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim")
 	FUnitAnimSetting AnimSetting;

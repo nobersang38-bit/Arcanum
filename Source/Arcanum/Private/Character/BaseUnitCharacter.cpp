@@ -18,6 +18,7 @@
 #include "Components/WidgetComponent.h"
 #include "UI/CharacterHUD/CharacterHealthWidget.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/HierarchicalInstancedStaticMeshComponent.h"
 #include "GameplayTagsManager.h"
 
 // Sets default values
@@ -30,8 +31,8 @@ ABaseUnitCharacter::ABaseUnitCharacter()
 	CharacterBattleStatsComponent = CreateDefaultSubobject<UCharacterBattleStatsComponent>(TEXT("CharacterBattleStatsComponent"));
 	HealthBarComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBarComponent"));
 
-	//StaticMeshCharacter = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshCharacter"));
-	//StaticMeshCharacter->SetupAttachment(RootComponent);
+	StaticMeshCharacter0 = CreateDefaultSubobject<UHierarchicalInstancedStaticMeshComponent>(TEXT("StaticMeshCharacter0"));
+	StaticMeshCharacter0->SetupAttachment(RootComponent);
 
 	HealthBarComponent->SetupAttachment(RootComponent);
 
@@ -120,6 +121,50 @@ void ABaseUnitCharacter::PostEditChangeProperty(FPropertyChangedEvent& PropertyC
 }
 #endif
 
+void ABaseUnitCharacter::AnimSetting()
+{
+	switch (UnitData.Info.AnimSetting.AnimMode)
+	{
+	case EAnimMode::AnimBlueprint:
+		StaticMeshCharacter0->SetHiddenInGame(true);
+		StaticMeshCharacter0->Deactivate();
+		if (!UnitData.Info.AnimSetting.SkeletalMesh.IsNull())// 스켈레탈 메시 설정
+		{
+			if (USkeletalMesh* SkeletalMesh = UnitData.Info.AnimSetting.SkeletalMesh.LoadSynchronous())
+			{
+				GetMesh()->SetSkeletalMesh(SkeletalMesh);
+			}
+		}
+		if (UnitData.Info.AnimSetting.AnimInstance) // 애님 인스턴스 설정
+		{
+			GetMesh()->SetAnimInstanceClass(UnitData.Info.AnimSetting.AnimInstance);
+		}
+		break;
+	case EAnimMode::AnimToTexture:
+		GetMesh()->SetHiddenInGame(true);
+		GetMesh()->Deactivate();
+		if (!UnitData.Info.AnimSetting.SkeletalMesh.IsNull())// 스켈레탈 메시 설정
+		{
+			if (UStaticMesh* StaticMesh = UnitData.Info.AnimSetting.StaticMesh)
+			{
+				StaticMeshCharacter0->SetStaticMesh(StaticMesh);
+			}
+		}
+		break;
+
+	default:
+		break;
+	}
+
+	if (MeshHide)
+	{
+		GetMesh()->SetHiddenInGame(true);
+		GetMesh()->Deactivate();
+		StaticMeshCharacter0->SetHiddenInGame(true);
+		StaticMeshCharacter0->Deactivate();
+	}
+}
+
 float ABaseUnitCharacter::GetAttackPower()
 {
 	float AttackPower = 0.0f;
@@ -137,20 +182,7 @@ float ABaseUnitCharacter::GetAttackPower()
 
 void ABaseUnitCharacter::DataInitialize()
 {
-	if (!UnitData.Info.BodySetting.SkeletalMesh.IsNull())// 스켈레탈 메시 설정
-	{
-		if (USkeletalMesh* SkeletalMesh = UnitData.Info.BodySetting.SkeletalMesh.LoadSynchronous())
-		{
-			GetMesh()->SetSkeletalMesh(SkeletalMesh);
-		}
-	}
-
-	if (UnitData.Info.AnimSetting.AnimInstance) // 애님 인스턴스 설정
-	{
-		GetMesh()->SetAnimInstanceClass(UnitData.Info.AnimSetting.AnimInstance);
-	}
-	/*GetCharacterMovement()->MaxWalkSpeed = Speed;
-	UnitData.Info.AISetting.AttackRange = Range;*/
+	AnimSetting();
 }
 
 FUnitRuntimeData& ABaseUnitCharacter::GetUnitRuntimeData()

@@ -18,7 +18,7 @@
 #include "Interface/CombatInterface.h"
 #include "Character/BaseUnitCharacter.h"
 #include "Component/Stats/CharacterBattleStatsComponent.h"
-#include "Kismet/GameplayStatics.h"
+#include "Engine/OverlapResult.h"
 
 // Sets default values for this component's properties
 UUnitCombatComponent::UUnitCombatComponent()
@@ -67,27 +67,6 @@ void UUnitCombatComponent::DeferredBeginPlay()
 		return;
 	}
 
-	// 감지 컴포넌트가 없다면 부모액터에 넣기
-	if (!DetectComponent.IsValid()) 
-	{
-		if (GetOwner())
-		{
-			DetectComponent = NewObject<USphereComponent>(GetOwner(), USphereComponent::StaticClass());
-		}
-
-		if (DetectComponent.IsValid())
-		{
-			DetectComponent->RegisterComponent();
-			DetectComponent->AttachToComponent(GetOwner()->GetRootComponent(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-
-			DetectComponent->bFillCollisionUnderneathForNavmesh = false;
-			DetectComponent->SetCanEverAffectNavigation(false);
-
-			DetectComponent->OnComponentBeginOverlap.AddDynamic(this, &UUnitCombatComponent::OnBeginDetected);
-			DetectComponent->OnComponentEndOverlap.AddDynamic(this, &UUnitCombatComponent::OnEndDetected);
-		}
-	}
-
 	// AI 세팅 가져오기
 	if (GetOwner()->GetClass()->ImplementsInterface(UUnitDataInterface::StaticClass()))
 	{
@@ -119,22 +98,22 @@ void UUnitCombatComponent::TickUpdate()
 		switch (CurrentState)
 		{
 		case EUnitState::Idle:
-			UE_LOG(LogTemp, Warning, TEXT("IDLE : %s"), *GetOwner()->GetName());
+			//UE_LOG(LogTemp, Warning, TEXT("IDLE : %s"), *GetOwner()->GetName());
 			Idle();
 			break;
 		case EUnitState::Move:
-			UE_LOG(LogTemp, Warning, TEXT("Move : %s"), *GetOwner()->GetName());
+			//UE_LOG(LogTemp, Warning, TEXT("Move : %s"), *GetOwner()->GetName());
 			Move();
 			break;
 		case EUnitState::Attack:
-			UE_LOG(LogTemp, Warning, TEXT("Attack : %s"), *GetOwner()->GetName());
+			//UE_LOG(LogTemp, Warning, TEXT("Attack : %s"), *GetOwner()->GetName());
 			Attack();
 			break;
 		case EUnitState::ActionRestricted: // Todo : 태그로 CC기 종류 감지해야함
-			UE_LOG(LogTemp, Warning, TEXT("ActionRestricted : %s"), *GetOwner()->GetName());
+			//UE_LOG(LogTemp, Warning, TEXT("ActionRestricted : %s"), *GetOwner()->GetName());
 			break;
 		case EUnitState::Death:
-			UE_LOG(LogTemp, Warning, TEXT("Death : %s"), *GetOwner()->GetName());
+			//UE_LOG(LogTemp, Warning, TEXT("Death : %s"), *GetOwner()->GetName());
 			break;
 		default:
 			break;
@@ -160,14 +139,6 @@ void UUnitCombatComponent::AIInitialize()
 					TargetActorKey = BBComp->GetKeyID(UnitAISetting.BBTargetActorName);
 				}
 			}
-		}
-	}
-
-	if (!UnitAISetting.TargetPriorityWeight.IsNull())
-	{
-		if (UDATargetPriorityWeight* TempTargetPriorityWeight = UnitAISetting.TargetPriorityWeight.LoadSynchronous())
-		{
-			DetectComponent->SetSphereRadius(TempTargetPriorityWeight->GetDetectDistance());
 		}
 	}
 
@@ -264,29 +235,6 @@ void UUnitCombatComponent::OnBeginDetected(UPrimitiveComponent* OverlappedCompon
 	}
 }
 
-void UUnitCombatComponent::OnEndDetected(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	if (ACharacter* DetectedCharacter = Cast<ACharacter>(OtherActor))
-	{
-		if (DetectedCharacter->GetClass()->ImplementsInterface(UUnitDataInterface::StaticClass()))
-		{
-			auto Interface = Cast<IUnitDataInterface>(DetectedCharacter);
-			if (Interface->GetUnitData().Info.AISetting.bIsElite)
-			{
-				UnitRuntimeData.Elites.Remove(DetectedCharacter);
-			}
-		}
-		if (DetectedCharacters.Contains(DetectedCharacter) && DetectedCharacter == TargetCharacter)
-		{
-			if (TargetNexus.IsValid())
-			{
-				TargetAssigned(TargetNexus.Get());
-			}
-		}
-		DetectedCharacters.Remove(DetectedCharacter);
-	}
-}
-
 // 타겟 찾는 함수
 void UUnitCombatComponent::SelectBestTarget(const TSet<TWeakObjectPtr<ACharacter>>& InDetectedCharacters)
 {
@@ -363,7 +311,34 @@ void UUnitCombatComponent::Idle()
 void UUnitCombatComponent::Move()
 {
 	StateReset();
-	SelectBestTarget(DetectedCharacters);
+
+	FCollisionShape MySphere = FCollisionShape::MakeSphere(TargetPriorityWeight->GetDetectDistance());
+	TArray<FOverlapResult> OutOverlaps;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(GetOwner());
+
+	// 특정 위치(GetActorLocation)에서 한 프레임 즉시 검사
+	bool bHit = GetWorld()->OverlapMultiByChannel(
+		OutOverlaps,
+		GetOwner()->GetActorLocation(),
+		FQuat::Identity,
+		ECollisionChannel::ECC_Pawn, // 설정한 채널
+		MySphere,
+		Params
+	);
+	DetectedCharacters.Empty();
+	for (int i = 0; i < OutOverlaps.Num(); i++)
+	{
+		OnBeginDetected(nullptr, OutOverlaps[i].GetActor(), nullptr, 0, false, FHitResult());
+	}
+	if (DetectedCharacters.Num() > 0)
+	{
+		SelectBestTarget(DetectedCharacters);
+	}
+	else
+	{
+		TargetAssigned(TargetNexus.Get());
+	}
 
 	if (TargetCharacter.IsValid())
 	{
@@ -380,7 +355,7 @@ void UUnitCombatComponent::Attack()
 	FTimerDelegate AttackDelegate;
 	AttackDelegate.BindWeakLambda(this, [this]()
 		{
-			if (OwnerCharacter.IsValid() && UnitData.Info.AnimSetting.Attacks.Num() > 0)
+			if (TargetCharacter.IsValid() && OwnerCharacter.IsValid() && UnitData.Info.AnimSetting.Attacks.Num() > 0)
 			{
 				int32 IDX = FMath::RandRange(0, (UnitData.Info.AnimSetting.Attacks.Num() - 1) );
 				UAnimMontage* AttackMontage = UnitData.Info.AnimSetting.Attacks[IDX];
@@ -388,6 +363,7 @@ void UUnitCombatComponent::Attack()
 			}
 			else
 			{
+				GetWorld()->GetTimerManager().ClearTimer(AttackTimerHandle);
 				CurrentState = EUnitState::Idle;
 			}
 		}); 

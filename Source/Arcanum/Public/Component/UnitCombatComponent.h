@@ -44,7 +44,6 @@ public:
 	void SendDamage(float InDamage);
 
 protected:
-	// Called when the game starts
 	virtual void BeginPlay() override;
 
 protected:
@@ -59,16 +58,10 @@ protected:
 	UFUNCTION()
 	void OnBeginDetected(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	UFUNCTION()
-	void OnEndDetected(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
 	void SelectBestTarget(const TSet<TWeakObjectPtr<ACharacter>>& InDetectedCharacters);
 	ACharacter* GetHigherPriorityTarget(ACharacter* CurrentTarget, ACharacter* WinTarget, int32& WinScore);
 
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TWeakObjectPtr<USphereComponent> DetectComponent = nullptr;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FUnitAISetting UnitAISetting;
 
@@ -122,6 +115,7 @@ private:
 
 	FGameplayTag TeamID;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Debug");
 	EUnitState CurrentState = EUnitState::Idle;
 
 	UPROPERTY()

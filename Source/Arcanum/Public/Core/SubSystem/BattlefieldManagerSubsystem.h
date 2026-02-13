@@ -14,6 +14,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnMatchEnded, const FMatchData&)
 // 전투 스테이지에 관련된 기능
 // Todo : 나중에 스폰관련도 넣어야함
 class ACharacter;
+class ABattlefieldManagerActor;
 UCLASS()
 class ARCANUM_API UBattlefieldManagerSubsystem : public UWorldSubsystem
 {
@@ -41,6 +42,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetEnemyNexus(ACharacter* InNexus);
 
+	UFUNCTION()
+	FORCEINLINE ABattlefieldManagerActor* GetBattlefieldManagerActor() { return BattlefieldManagerActor.Get(); }
+
+	UFUNCTION()
+	void SetABattlefieldManagerActor(ABattlefieldManagerActor* InBattlefieldManagerActor);
+
 	// 현재 스테이지 플레이 정보(진행중인지, 종료했는지 종료됐다면 승리했는지)
 	FORCEINLINE const FMatchData& GetCurrentMatchData() { return CurrentMatchData; }
 
@@ -51,8 +58,13 @@ protected:
 protected:
 	FCombatStageData StageData;
 
+	UPROPERTY()
 	TWeakObjectPtr<ACharacter> AllyNexus = nullptr;
+	UPROPERTY()
 	TWeakObjectPtr<ACharacter> EnemyNexus = nullptr;
 
 	FMatchData CurrentMatchData;
+
+	UPROPERTY()
+	TWeakObjectPtr<ABattlefieldManagerActor> BattlefieldManagerActor = nullptr;
 };
