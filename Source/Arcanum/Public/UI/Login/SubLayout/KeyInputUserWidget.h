@@ -9,7 +9,8 @@ class UButton;
 
 /*
  * Version : 1.0.0.0 2026/02/03
- * 클래스 역할 :
+ * 이름 : 김유진
+ * 클래스 역할 : 
  *  1. Press Any Key 표시
  *  2. 클릭/가상패드 터치 등 최초 1회 감지
  *  3. 입력 감지 시 Delegate Broadcast
