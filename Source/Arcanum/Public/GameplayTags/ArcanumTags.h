@@ -75,8 +75,56 @@ namespace Arcanum {
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
 		// 아군인지 적군인지 체크
 		namespace Faction {
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ally);				// 아군
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Enemy);				// 적군
+			// 아군
+			namespace Ally {
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				namespace Army {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				}
+				namespace Bard {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				}
+				namespace Maid {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				}
+				namespace Tinker {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				}
+			}
+			// 적군
+			namespace Enemy {
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				namespace Macaron {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				}
+				namespace Leech {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				}
+				namespace GhostMacaron {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				}
+				namespace Bat {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				}
+				namespace Cell {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				}
+				namespace Mask {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				}
+				namespace Wolfron {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				}
+				namespace MageMacaron {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				}
+				namespace Felice {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				}
+				namespace CupFelice {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				}
+			}
 		}
 		// 강화 상태
 		namespace Enhance {

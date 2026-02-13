@@ -12,7 +12,8 @@
 				"Engine",
 				"UMG",
 				"CinematicCamera",
-				"CoreUObject"
+				"CoreUObject",
+				"AIModule"
 			]
 		}
 	],
@@ -30,6 +31,10 @@
 		},
 		{
 			"Name": "CommonUI",
+			"Enabled": true
+		},
+		{
+			"Name": "AnimToTexture",
 			"Enabled": true
 		}
 	]

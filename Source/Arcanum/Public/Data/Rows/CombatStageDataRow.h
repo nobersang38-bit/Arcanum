@@ -12,7 +12,7 @@ USTRUCT()
 struct FCombatStageDataRow : public FTableRowBase
 {
 	GENERATED_BODY()
-protected:
+public:
 	// 찾을 때 사용
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FGameplayTag Tag;
