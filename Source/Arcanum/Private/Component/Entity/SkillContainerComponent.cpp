@@ -23,7 +23,7 @@ void USkillContainerComponent::BeginPlay()
 	
 }
 
-
+/*
 // Called every frame
 void USkillContainerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
@@ -31,4 +31,5 @@ void USkillContainerComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 	// ...
 }
+*/
 

@@ -413,7 +413,6 @@ namespace Arcanum {
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(ChainBolt, "Arcanum.Skills.SkillName.ChainBolt", "체인 볼트");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(PiercingShot, "Arcanum.Skills.SkillName.PiercingShot", "관통 사격");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(ShockWave, "Arcanum.Skills.SkillName.ShockWave", "충격파");
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(MjolnirStrike, "Arcanum.Skills.SkillName.MjolnirStrike", "묠니르");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(VoidEclipse, "Arcanum.Skills.SkillName.VoidEclipse", "보이드");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(SolarFlare, "Arcanum.Skills.SkillName.SolarFlare", "솔라");	
 		}
@@ -421,7 +420,7 @@ namespace Arcanum {
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(None,	"Arcanum.Skills.SkillTypes.None", "Null");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Active,	"Arcanum.Skills.SkillTypes.Active", "액티브 스킬");		// 실제 필드에 보일 애들
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Passive, "Arcanum.Skills.SkillTypes.Passive", "패시브 스킬");		// 캐릭터 내부에서만 작동하는 애들
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Aura,	"Arcanum.Skills.SkillTypes.Aura", "오라");			// 실제 외부에 나타나는 Passive 계열
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Aura,	"Arcanum.Skills.SkillTypes.Aura", "오라");			    // 실제 외부에 나타나는 Passive 계열
 		}
 		namespace TargetingType {
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(None,		"Arcanum.Skills.TargetingType.None", "타겟 없음");
@@ -439,9 +438,8 @@ namespace Arcanum {
 		namespace SkillVFX { // 이펙트 효과용 0을 기준으로 +버프, -디버프 => 추후 스킬컴포넌트에서 스택도 관리함
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(None,			"Arcanum.Skills.SkillVFX.None",				"없음");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Bleed,			"Arcanum.Skills.SkillVFX.Bleed",			"출혈");
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Guard,			"Arcanum.Skills.SkillVFX.Guard",			"수호");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Aegis,			"Arcanum.Skills.SkillVFX.Aegis",			"수호");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Mark,			"Arcanum.Skills.SkillVFX.Mark",				"표식");
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Atonement,		"Arcanum.Skills.SkillVFX.Atonement",		"속죄");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Shock,			"Arcanum.Skills.SkillVFX.Shock",			"감전");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Burn,			"Arcanum.Skills.SkillVFX.Burn",				"화상");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Stun,			"Arcanum.Skills.SkillVFX.Stun",				"스턴");

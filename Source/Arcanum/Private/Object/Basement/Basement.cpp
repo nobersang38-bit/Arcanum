@@ -17,11 +17,23 @@ void ABasement::BeginPlay()
 	Super::BeginPlay();
 	
 }
-
-// Called every frame
-void ABasement::Tick(float DeltaTime)
+void ABasement::EnemySpawnTick()
 {
-	Super::Tick(DeltaTime);
-
 }
-
+void ABasement::TrySpawnEnemyUnit()
+{
+}
+void ABasement::TakeDamageToBasement(float Damage)
+{
+}
+bool ABasement::SpawnUnit(int32 Index)
+{
+	return false;
+}
+void ABasement::AddResource(int32 Amount)
+{
+}
+bool ABasement::ConsumeResource(int32 Amount)
+{
+	return false;
+}

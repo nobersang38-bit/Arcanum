@@ -43,6 +43,7 @@ enum class EWeaponSetMode : uint8
 	Legendary UMETA(DisplayName = "Legendary"),
 };
 
+#pragma region 델리게이트
 /* 인게임 장착 변경 알림 (무기 외형/스킬 분기용: Weapon 슬롯 변경 포함) */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEquipChanged, EEquipSlot, InSlot, FGameplayTag, InNewEquipTag);
 
@@ -54,7 +55,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEquipmentStateChanged);
 
 /* 로비 프리뷰 갱신 알림 (LoadoutData가 바뀐 시점) */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLoadoutChanged);
-
+#pragma endregion
 
 UCLASS(ClassGroup = (Arcanum), meta = (BlueprintSpawnableComponent))
 class ARCANUM_API UEquipmentComponent : public UActorComponent
