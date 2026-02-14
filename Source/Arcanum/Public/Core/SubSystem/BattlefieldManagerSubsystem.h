@@ -42,7 +42,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetEnemyNexus(ACharacter* InNexus);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE ABattlefieldManagerActor* GetBattlefieldManagerActor() { return BattlefieldManagerActor.Get(); }
 
 	UFUNCTION()

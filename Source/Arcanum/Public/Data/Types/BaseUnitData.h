@@ -7,6 +7,8 @@
 #include "GameplayTagContainer.h"
 #include "BaseUnitData.generated.h"
 
+class UATTAnimPlayData;
+
 // 김도현
 // 런타임 중의 데이터
 USTRUCT(BlueprintType)
@@ -86,7 +88,7 @@ struct FUnitDeadFrameSetting
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim")
-	FVector DeadMontage;
+	TObjectPtr<UATTAnimPlayData> DeadMontage = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim")
 	float DeactiveTime = 3.0f;
@@ -100,7 +102,6 @@ enum class EAnimMode : uint8
 	AnimToTexture    UMETA(DisplayName = "AnimToTexture"),
 };
 
-class UATTAnimPlayData;
 USTRUCT(BlueprintType)
 struct FUnitAnimSetting
 {
@@ -115,6 +116,24 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body", meta = (EditCondition = "AnimMode == EAnimMode::AnimToTexture", EditConditionHides))
 	TObjectPtr<class UStaticMesh> StaticMesh = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body", meta = (EditCondition = "AnimMode == EAnimMode::AnimToTexture", EditConditionHides))
+	float MeshScale = 1.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body", meta = (EditCondition = "AnimMode == EAnimMode::AnimToTexture", EditConditionHides))
+	float MeshAddHeight = 0.0f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Material", meta = (EditCondition = "AnimMode == EAnimMode::AnimToTexture", EditConditionHides))
+	int32 MaterialNum = 2;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Material", meta = (EditCondition = "AnimMode == EAnimMode::AnimToTexture", EditConditionHides))
+	int32 StartFramePropertyIDX = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Material", meta = (EditCondition = "AnimMode == EAnimMode::AnimToTexture", EditConditionHides))
+	int32 EndFramePropertyIDX = 1;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Material", meta = (EditCondition = "AnimMode == EAnimMode::AnimToTexture", EditConditionHides))
+	FVector2D DefaultAnimFrameRange;
 #pragma endregion
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim", meta = (EditCondition = "AnimMode == EAnimMode::AnimBlueprint", EditConditionHides))

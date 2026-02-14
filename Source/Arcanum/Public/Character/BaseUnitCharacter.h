@@ -28,13 +28,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "00_Test")
 	bool RandomRvoWeight = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "00_Test")
-	bool bUseStaticMeshAnim = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "00_Test")
-	bool MeshHide = false;
-
 #pragma endregion
 
 	ABaseUnitCharacter();
@@ -65,12 +58,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<class UWidgetComponent> HealthBarComponent = nullptr;
 
-#pragma region Debug
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<class UHierarchicalInstancedStaticMeshComponent> StaticMeshCharacter0 = nullptr;
-#pragma endregion
-
-
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MainData")
 	FDataTableRowHandle DTUnitDataRowHandle;
@@ -92,4 +79,6 @@ private:
 
 	UFUNCTION()
 	void RecievedDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+
+
 };

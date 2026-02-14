@@ -7,6 +7,44 @@
 #include "GameplayTagContainer.h"
 #include "BattlefieldManagerActor.generated.h"
 
+USTRUCT()
+struct FISMStaticlData
+{
+	GENERATED_BODY()
+public:
+	int32 StartFrameParameterIDX = 0;
+	float StartFrameParameterDefaultValue = 0.0f;
+
+	int32 EndFrameParameterIDX = 0;
+	float EndFrameParameterDefaultValue = 0.0f;
+
+	float AddHeight = 0.0f;
+	float MeshScale = 1.0f;
+};
+
+USTRUCT()
+struct FUnitISMData
+{
+	GENERATED_BODY()
+public:
+	FUnitISMData() = default;
+	FUnitISMData(AActor* InUnit, int32 InID, class UInstancedStaticMeshComponent* InComponent, FGameplayTag InComponentTag);
+
+	UPROPERTY()
+	TWeakObjectPtr<AActor> Unit = nullptr;
+
+	int32 ID = -1;
+
+	UPROPERTY()
+	TWeakObjectPtr<class UInstancedStaticMeshComponent> Component = nullptr;
+
+	FGameplayTag ComponentTag = FGameplayTag::EmptyTag;
+
+	FISMStaticlData StaticData;
+};
+
+// 김도현
+// 유닛 캐릭터 ISM관리 매니저 액터
 UCLASS()
 class ARCANUM_API ABattlefieldManagerActor : public AActor
 {
@@ -28,12 +66,11 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
-#pragma region Debug
-	UFUNCTION(CallInEditor)
-	void Debug_StaticMeshSpawn();
-#pragma endregion
-	void SpawnStaticMesh(FGameplayTag InTag, AActor* GetOwner);
-	void SpawnStaticMesh(FGameplayTag InTag, const FTransform& InSpawnWorldLocation);
+	// 해당 함수로 스폰하면 관리 대상이 됩니다, 자동으로 트랜스폼 업데이트 됩니다
+	UFUNCTION(BlueprintCallable)
+	void SpawnStaticMesh(FGameplayTag InTag, AActor* InOwner);
+
+	void SetChangeAnimation(AActor* InOwner, FVector2D FrameRange);
 
 protected:
 	void DataSet();
@@ -46,6 +83,11 @@ protected:
 	TObjectPtr<UDataTable> EnemyUnitData = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TMap<FGameplayTag, TObjectPtr<class UHierarchicalInstancedStaticMeshComponent>> HISMs;
+	TMap<FGameplayTag, TObjectPtr<class UInstancedStaticMeshComponent>> ISMs;
 
+private:
+	UPROPERTY()
+	TMap<AActor*, FUnitISMData> UnitISMDatas;
+
+	TMap<FGameplayTag, FISMStaticlData> StaticDatas;
 };

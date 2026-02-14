@@ -20,6 +20,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/HierarchicalInstancedStaticMeshComponent.h"
 #include "GameplayTagsManager.h"
+#include "Object/Actor/BattlefieldManagerActor.h"
 
 // Sets default values
 ABaseUnitCharacter::ABaseUnitCharacter()
@@ -30,9 +31,6 @@ ABaseUnitCharacter::ABaseUnitCharacter()
 	UnitCombatComponent = CreateDefaultSubobject<UUnitCombatComponent>(TEXT("UnitCombatComponent"));
 	CharacterBattleStatsComponent = CreateDefaultSubobject<UCharacterBattleStatsComponent>(TEXT("CharacterBattleStatsComponent"));
 	HealthBarComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBarComponent"));
-
-	StaticMeshCharacter0 = CreateDefaultSubobject<UHierarchicalInstancedStaticMeshComponent>(TEXT("StaticMeshCharacter0"));
-	StaticMeshCharacter0->SetupAttachment(RootComponent);
 
 	HealthBarComponent->SetupAttachment(RootComponent);
 
@@ -126,8 +124,6 @@ void ABaseUnitCharacter::AnimSetting()
 	switch (UnitData.Info.AnimSetting.AnimMode)
 	{
 	case EAnimMode::AnimBlueprint:
-		StaticMeshCharacter0->SetHiddenInGame(true);
-		StaticMeshCharacter0->Deactivate();
 		if (!UnitData.Info.AnimSetting.SkeletalMesh.IsNull())// 스켈레탈 메시 설정
 		{
 			if (USkeletalMesh* SkeletalMesh = UnitData.Info.AnimSetting.SkeletalMesh.LoadSynchronous())
@@ -143,25 +139,14 @@ void ABaseUnitCharacter::AnimSetting()
 	case EAnimMode::AnimToTexture:
 		GetMesh()->SetHiddenInGame(true);
 		GetMesh()->Deactivate();
-		if (!UnitData.Info.AnimSetting.SkeletalMesh.IsNull())// 스켈레탈 메시 설정
+		if (ABattlefieldManagerActor* BattlefieldManagerActor = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>()->GetBattlefieldManagerActor())
 		{
-			if (UStaticMesh* StaticMesh = UnitData.Info.AnimSetting.StaticMesh)
-			{
-				StaticMeshCharacter0->SetStaticMesh(StaticMesh);
-			}
+			BattlefieldManagerActor->SpawnStaticMesh(UnitData.Info.InfoSetting.Tag, this);
 		}
 		break;
 
 	default:
 		break;
-	}
-
-	if (MeshHide)
-	{
-		GetMesh()->SetHiddenInGame(true);
-		GetMesh()->Deactivate();
-		StaticMeshCharacter0->SetHiddenInGame(true);
-		StaticMeshCharacter0->Deactivate();
 	}
 }
 

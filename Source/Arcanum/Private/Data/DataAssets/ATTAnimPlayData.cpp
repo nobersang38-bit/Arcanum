@@ -3,12 +3,19 @@
 
 #include "Data/DataAssets/ATTAnimPlayData.h"
 
-void UATTAnimPlayData::PlayAnim(TArray<UMaterialInstanceDynamic*> SetMaterials)
+void UATTAnimPlayData::PlayAnim(TArray<UMaterialInstanceDynamic*> InMaterials)
 {
-	for (int i = 0; i < SetMaterials.Num(); i++)
+	const FMaterialParameterInfo& StartFrameParameterInfo = FMaterialParameterInfo(StartFrameParameterName, EMaterialParameterAssociation::LayerParameter, -1);
+	const FMaterialParameterInfo& EndFrameParameterInfo = FMaterialParameterInfo(EndFrameParameterName, EMaterialParameterAssociation::LayerParameter, -1);
+
+	for (int i = 0; i < InMaterials.Num(); i++)
 	{
-		SetMaterials[i]->SetScalarParameterValue(StartFrameParameterName, FrameRange.X);
-		SetMaterials[i]->SetScalarParameterValue(EndFrameParameterName, FrameRange.Y);
+		/*InMaterials[i]->SetScalarParameterValue(StartFrameParameterName, FrameRange.X);
+		InMaterials[i]->SetScalarParameterValue(EndFrameParameterName, FrameRange.Y);*/
+
+
+		InMaterials[i]->SetScalarParameterValueByInfo(StartFrameParameterInfo, FrameRange.X);
+		InMaterials[i]->SetScalarParameterValueByInfo(EndFrameParameterInfo, FrameRange.Y);
 		// Todo : AnimToTexture테스트
 		UE_LOG(LogTemp, Warning, TEXT("애님 실행 발동!!!!"));
 	}
