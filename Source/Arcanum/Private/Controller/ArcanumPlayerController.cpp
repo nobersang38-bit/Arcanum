@@ -9,6 +9,7 @@
 #include "InputActionValue.h"
 #include "EnhancedInputSubsystems.h"
 #include "Engine/LocalPlayer.h"
+#include "UI/PlayerHUD/PlayerHUD.h"
 #include "GameFramework/TouchInterface.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
@@ -38,6 +39,16 @@ void AArcanumPlayerController::BeginPlay()
 	if (DefaultTouchInterface)
 	{
 		ActivateTouchInterface(DefaultTouchInterface);
+	}
+
+	if (HUDWidgetClass)
+	{
+		PlayerHUD = CreateWidget<UPlayerHUD>(this, HUDWidgetClass);
+
+		if (PlayerHUD)
+		{
+			PlayerHUD->AddToViewport();
+		}
 	}
 
 	/*

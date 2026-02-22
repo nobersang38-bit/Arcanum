@@ -1,0 +1,50 @@
+[
+  {
+    "Name": "WeaponMap_GreatSword",
+    "WeaponTag": "Arcanum.Items.Weapon.Common.GreatSword",
+    "SkillPair": {
+      "BasicAttackSkillTag": "Arcanum.Skills.BasicAttack.GreatSword",
+      "WeaponSkillTag": "Arcanum.Skills.SkillName.Slash"
+    }
+  },
+  {
+    "Name": "WeaponMap_Staff",
+    "WeaponTag": "Arcanum.Items.Weapon.Common.Staff",
+    "SkillPair": {
+      "BasicAttackSkillTag": "Arcanum.Skills.BasicAttack.Staff",
+      "WeaponSkillTag": "Arcanum.Skills.SkillName.ChainBolt"
+    }
+  },
+  {
+    "Name": "WeaponMap_Bow",
+    "WeaponTag": "Arcanum.Items.Weapon.Common.Bow",
+    "SkillPair": {
+      "BasicAttackSkillTag": "Arcanum.Skills.BasicAttack.Bow",
+      "WeaponSkillTag": "Arcanum.Skills.SkillName.PiercingShot"
+    }
+  },
+  {
+    "Name": "WeaponMap_Shield",
+    "WeaponTag": "Arcanum.Items.Weapon.Common.Shield",
+    "SkillPair": {
+      "BasicAttackSkillTag": "Arcanum.Skills.BasicAttack.Shield",
+      "WeaponSkillTag": "Arcanum.Skills.SkillName.ShockWave"
+    }
+  },
+  {
+    "Name": "WeaponMap_Legendary_Scythe",
+    "WeaponTag": "Arcanum.Items.Weapon.Legendary.Scythe",
+    "SkillPair": {
+      "BasicAttackSkillTag": "Arcanum.Skills.BasicAttack.None",
+      "WeaponSkillTag": "Arcanum.Skills.SkillName.VoidEclipse"
+    }
+  },
+  {
+    "Name": "WeaponMap_Legendary_Scepter",
+    "WeaponTag": "Arcanum.Items.Weapon.Legendary.Scepter",
+    "SkillPair": {
+      "BasicAttackSkillTag": "Arcanum.Skills.BasicAttack.None",
+      "WeaponSkillTag": "Arcanum.Skills.SkillName.SolarFlare"
+    }
+  }
+]

@@ -504,20 +504,26 @@ namespace Arcanum {
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(PiercingShot, "Arcanum.Skills.SkillName.PiercingShot", "관통 사격");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(ShockWave, "Arcanum.Skills.SkillName.ShockWave", "충격파");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(VoidEclipse, "Arcanum.Skills.SkillName.VoidEclipse", "보이드");
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(SolarFlare, "Arcanum.Skills.SkillName.SolarFlare", "솔라");	
-
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(GreatSword, "Arcanum.Skills.SkillName.GreatSword", "기본 공격: 대검");
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Shield, "Arcanum.Skills.SkillName.Shield", "기본 공격: 방패");
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Staff, "Arcanum.Skills.SkillName.Staff", "기본 공격: 지팡이");
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Bow, "Arcanum.Skills.SkillName.Bow", "기본 공격: 활");
-
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Fury, "Arcanum.Skills.SkillName.Fury", "각성 오라: 분노");
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Focus, "Arcanum.Skills.SkillName.Focus", "각성 오라: 집중");
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Holy, "Arcanum.Skills.SkillName.Holy", "각성 오라: 신성");
-
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(BloodBurst, "Arcanum.Skills.SkillName.BloodBurst", "트리거: 혈폭");
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Execution, "Arcanum.Skills.SkillName.Execution", "트리거: 처단");
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Purification, "Arcanum.Skills.SkillName.Purification", "트리거: 정화");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(SolarFlare, "Arcanum.Skills.SkillName.SolarFlare", "솔라");
+		}
+		namespace BasicAttack {
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(None, "Arcanum.Skills.BasicAttack.None", "Null");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(GreatSword, "Arcanum.Skills.BasicAttack.GreatSword", "기본 공격: 대검");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Shield, "Arcanum.Skills.BasicAttack.Shield", "기본 공격: 방패");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Staff, "Arcanum.Skills.BasicAttack.Staff", "기본 공격: 지팡이");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Bow, "Arcanum.Skills.BasicAttack.Bow", "기본 공격: 활");
+		}
+		namespace Awaken {
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(None, "Arcanum.Skills.Awaken.None", "Null");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Fury, "Arcanum.Skills.Awaken.Fury", "각성 오라: 분노");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Focus, "Arcanum.Skills.Awaken.Focus", "각성 오라: 집중");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Holy, "Arcanum.Skills.Awaken.Holy", "각성 오라: 신성");
+		}
+		namespace Trigger {
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(None, "Arcanum.Skills.Trigger.None", "Null");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(BloodBurst, "Arcanum.Skills.Trigger.BloodBurst", "트리거: 혈폭");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Execution, "Arcanum.Skills.Trigger.Execution", "트리거: 처단");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Purification, "Arcanum.Skills.Trigger.Purification", "트리거: 정화");
 		}
 		namespace SkillTypes {
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(None,	"Arcanum.Skills.SkillTypes.None", "Null");
@@ -563,7 +569,6 @@ namespace Arcanum {
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Shield, "Arcanum.Items.Weapon.Common.Shield", "일반 무기: 방패");
 			}
 			namespace Legendary {
-				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Spear, "Arcanum.Items.Weapon.Legendary.Spear", "전설 무기: 창");
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Scepter, "Arcanum.Items.Weapon.Legendary.Scepter", "전설 무기: 셉터");
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Scythe, "Arcanum.Items.Weapon.Legendary.Scythe", "전설 무기: 낫");
 			}

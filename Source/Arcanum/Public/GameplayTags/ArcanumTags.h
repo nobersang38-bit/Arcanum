@@ -514,16 +514,22 @@ namespace Arcanum {
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(ShockWave);		// 무기 스킬: 충격파
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(VoidEclipse);	// 무기 스킬: 보이드
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(SolarFlare);		// 무기 스킬: 솔라
-
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(GreatSword);     // 기본 공격: 대검
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shield);         // 기본 공격: 방패
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Staff);          // 기본 공격: 지팡이
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Bow);            // 기본 공격: 활
-
+		}
+		namespace BasicAttack {
+	    	ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(None);
+		    ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(GreatSword);     // 기본 공격: 대검
+	    	ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shield);         // 기본 공격: 방패
+	    	ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Staff);          // 기본 공격: 지팡이
+	    	ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Bow);            // 기본 공격: 활
+	    }
+		namespace Awaken {
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(None);
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Fury);           // 각성 오라: 분노
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Focus);          // 각성 오라: 집중
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Holy);           // 각성 오라: 신성
-
+		}
+		namespace Trigger {
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(None);
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(BloodBurst);     // 트리거: 혈폭
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Execution);      // 트리거: 처단
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Purification);   // 트리거: 정화
@@ -572,7 +578,6 @@ namespace Arcanum {
 				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shield);
 			}
 			namespace Legendary {   // 전설 무기
-				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Spear);
 				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Scepter);
 				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Scythe);
 			}

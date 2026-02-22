@@ -190,6 +190,8 @@ bool UEquipmentComponent::SwapCommonWeapon()
 					CurrentCommonWeaponIndex = nextIndex;
 					SetEquippedTag(EEquipSlot::Weapon, nextWeaponTag, true);
 
+					OnEquipmentStateChanged.Broadcast();
+
 					return true;
 				}
 			}
@@ -214,6 +216,7 @@ bool UEquipmentComponent::ActivateLegendaryMode()
 				CachedWeaponTagBeforeLegendary = FGameplayTag();
 
 				CurrentSetMode = EWeaponSetMode::Legendary;
+
 				return true;
 			}
 		}
@@ -229,17 +232,10 @@ bool UEquipmentComponent::DeactivateLegendaryMode()
 	{
 		if (bHasWeaponBackup)
 		{
-			if (RestoreCommonWeapon())
-			{
-				return true;
-			}
-
-			return false;
+			return RestoreCommonWeapon();
 		}
 
-		CurrentSetMode = EWeaponSetMode::Common;
-
-		return true;
+		return false;
 	}
 
 	return false;
@@ -264,6 +260,8 @@ bool UEquipmentComponent::ApplyLegendaryWeapon()
 
 					SetEquippedTag(EEquipSlot::Weapon, LoadoutData.LegendaryWeaponTag, true);
 
+					OnEquipmentStateChanged.Broadcast();
+
 					return true;
 				}
 			}
@@ -281,6 +279,8 @@ bool UEquipmentComponent::RestoreCommonWeapon()
 		if (CachedWeaponTagBeforeLegendary.IsValid())
 		{
 			SetEquippedTag(EEquipSlot::Weapon, CachedWeaponTagBeforeLegendary, true);
+
+			OnEquipmentStateChanged.Broadcast();
 		}
 
 		bHasWeaponBackup = false;
@@ -439,12 +439,12 @@ bool UEquipmentComponent::ValidateLoadoutForStart() const
 
 	for (const TPair<EWeaponPickSlot, const FGameplayTag*>& pair : requiredWeapons)
 	{
-		if (CanPickWeapon(pair.Key, *pair.Value) == false)
+		if (!CanPickWeapon(pair.Key, *pair.Value))
 		{
 			return false;
 		}
 	}
-
+	/*
 	// 방어구 검사
 	const TPair<EEquipSlot, const FGameplayTag*> requiredArmors[] =
 	{
@@ -456,16 +456,16 @@ bool UEquipmentComponent::ValidateLoadoutForStart() const
 
 	for (const TPair<EEquipSlot, const FGameplayTag*>& pair : requiredArmors)
 	{
-		if (CanPickArmor(pair.Key, *pair.Value) == false)
+		if (!CanPickArmor(pair.Key, *pair.Value))
 		{
 			return false;
 		}
 	}
-
+	*/
 	// 전설 무기 (선택 사항)
 	if (LoadoutData.LegendaryWeaponTag.IsValid())
 	{
-		if (CanPickWeapon(EWeaponPickSlot::Legendary, LoadoutData.LegendaryWeaponTag) == false)
+		if (!CanPickWeapon(EWeaponPickSlot::Legendary, LoadoutData.LegendaryWeaponTag))
 		{
 			return false;
 		}

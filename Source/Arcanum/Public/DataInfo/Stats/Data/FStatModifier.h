@@ -50,11 +50,17 @@ struct FDerivedStatModifier
     FGameplayTag StatTag; // 대상 태그 (예: Stat.Combat.HP.Max)
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FGameplayTag ApplyTargetFilterTag;  // 이 모디파이어를 누구에게 적용할지
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FExternalStatModifier Value; // Flat과 Mul 정보를 담은 구조체
 
     /** true면 Duration 무시하고 영구 적용 (아이템, 트레잇 등) */
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     bool bIsPermanent = false;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    bool bAllowRefresh = true; // false면 동일 SourceTag/StatTag여도 남은시간 갱신 안함(스턴/넉백)
 
     /** bIsPermanent가 false일 때만 작동하는 지속 시간 */
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -82,9 +88,11 @@ struct FDerivedStatModifier
     {
         Ar << Data.ModifierId;
         Ar << Data.SourceTag;
+        Ar << Data.ApplyTargetFilterTag;
         Ar << Data.StatTag;
         Ar << Data.Value;
         Ar << Data.bIsPermanent;
+        Ar << Data.bAllowRefresh;
         Ar << Data.Duration;
         Ar << Data.ModifierPolicy;
         Ar << Data.MaxStack;

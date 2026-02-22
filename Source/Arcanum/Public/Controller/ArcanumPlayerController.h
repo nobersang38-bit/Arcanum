@@ -7,7 +7,8 @@
 
 class UNiagaraSystem;
 class UInputMappingContext;
-class UInputAction;
+class UInputAction; 
+class UPlayerHUD;
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
@@ -62,6 +63,18 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> IA_Move = nullptr;
+
+
+#pragma region Player HUD
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
+	TSubclassOf<UPlayerHUD> HUDWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<UPlayerHUD> PlayerHUD = nullptr;
+#pragma endregion
+
+
 };
 
 

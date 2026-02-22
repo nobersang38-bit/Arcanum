@@ -9,6 +9,9 @@
 /**
  * 스킬의 공통 로직을 담당하는 베이스 클래스 (UObject)
  */
+
+class USkillComponent;
+
 UCLASS(Abstract, Blueprintable, BlueprintType)
 class ARCANUM_API USkillBase : public UObject
 {
@@ -50,6 +53,36 @@ protected:
 #endif
 	UPROPERTY(EditDefaultsOnly, Category = "0_Base") FDataTableRowHandle DTSkillsDataRowHandle;
 	UPROPERTY(VisibleAnywhere, Category = "1_RunTimeDebug") FDTSkillsDataRow	DTSkillsDataRow;
+#pragma endregion
+
+#pragma region 디버프/트리거 공통 처리
+protected:
+	/* 대상 필터 검사 (Enemy/Ally/Self) */
+	bool CanAffectTarget(AActor* InInstigator, AActor* InTarget, const FGameplayTag& InTargetFilterTag) const;
+
+	/* 대상에게 모디파이어 배열 적용 (데미지/디버프 공통) */
+	bool ApplyModifiersToTarget(AActor* InInstigator, AActor* InTarget, const TArray<FDerivedStatModifier>& InModifiers);
+
+	/* 단일 모디파이어 적용 (데미지/디버프 분기) */
+	bool ApplySingleModifierToTarget(AActor* InInstigator, AActor* InTarget, const FDerivedStatModifier& InModifier);
+
+	/* 무기스킬 적중 시 트리거 발동 체크 (디버프 최대스택 + 트리거스킬) */
+	void TryExecuteTriggerSkill(AActor* InInstigator, AActor* InTarget);
+
+	/* 체력 데미지용 태그 판별 */
+	bool IsHealthValueTag(const FGameplayTag& InStatTag) const;
+#pragma endregion
+
+#pragma region 각성 디버프 결합
+protected:
+	/* 기본 모디파이어 + 현재 각성 디버프를 합침 */
+	bool BuildHitModifiersWithAwaken(const TArray<FDerivedStatModifier>& InBaseModifiers, TArray<FDerivedStatModifier>& OutFinalModifiers) const;
+
+	/* 현재 각성 태그 기준 디버프 모디파이어를 DT에서 꺼내서 추가 */
+	void AddAwakenDebuffModifiers(TArray<FDerivedStatModifier>& InOutModifiers) const;
+
+	/* 소유자 SkillComponent에서 현재 각성 태그 조회 */
+	FGameplayTag GetCurrentAwakenTagFromOwner() const;
 #pragma endregion
 
 public:

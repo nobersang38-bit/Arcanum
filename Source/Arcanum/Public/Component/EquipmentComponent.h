@@ -54,7 +54,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEquipmentStateChanged);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLoadoutChanged);
 #pragma endregion
 
-UCLASS(ClassGroup = (Arcanum), meta = (BlueprintSpawnableComponent))
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class ARCANUM_API UEquipmentComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -67,20 +67,20 @@ public:
 	 * =============================== */
 
 	/* SaveGame/ 로비 진입 시 로드아웃 반영 (로비 UI/스탯 갱신) */
-	UFUNCTION(BlueprintCallable, Category = "Arcanum|Equipment|Loadout")
+	UFUNCTION(BlueprintCallable, Category = "Equipment|Loadout")
 	bool SetLoadoutData(const FLoadoutData& InLoadoutData);
 	
 	/* 로비: 무기 슬롯(슬롯1/슬롯2/전설) 선택값 1개 교체 */
-	UFUNCTION(BlueprintCallable, Category = "Arcanum|Equipment|Loadout")
+	UFUNCTION(BlueprintCallable, Category = "Equipment|Loadout")
 	bool SetWeaponPick(EWeaponPickSlot InSlot, const FGameplayTag& InWeaponTag);
 
 	/* 로비: 방어구 4부위 선택값 교체 (각 슬롯 전용 태그만 허용) */
-	UFUNCTION(BlueprintCallable, Category = "Arcanum|Equipment|Loadout")
+	UFUNCTION(BlueprintCallable, Category = "Equipment|Loadout")
 	bool SetArmorPick(EEquipSlot InSlot, const FGameplayTag& InArmorTag);
 
 	// Getters
 	/* 로비 선택값 반환 */
-	UFUNCTION(BlueprintPure, Category = "Arcanum|Equipment|Loadout")
+	UFUNCTION(BlueprintPure, Category = "Equipment|Loadout")
 	const FLoadoutData& GetLoadoutData() const { return LoadoutData; }
 
 	/*
@@ -88,7 +88,7 @@ public:
 	 * - 필수 슬롯(일반무기 2 + 방어구 4) 검증 실패 시 false(게임 시작 불가)
 	 * - 전설은 선택(있으면 전설 루트 태그만 허용)
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Arcanum|Equipment|Loadout")
+	UFUNCTION(BlueprintCallable, Category = "Equipment|Loadout")
 	bool CommitLoadoutToEquipped();
 
 	/* ===============================
@@ -96,23 +96,23 @@ public:
 	 * =============================== */
 
     /* 인게임: 슬롯1 <-> 슬롯2 스왑 (전설 중 금지, 실패 시 인덱스/장착 상태 변경 없음) */
-	UFUNCTION(BlueprintCallable, Category = "Arcanum|Equipment|Weapon")
+	UFUNCTION(BlueprintCallable, Category = "Equipment|Weapon")
 	bool SwapCommonWeapon();
 
 	/* 인게임: 전설 모드 진입 요청 (태그 없으면 false, 실제 교체는 ApplyLegendaryWeapon에서) */
-	UFUNCTION(BlueprintCallable, Category = "Arcanum|Equipment|Weapon")
+	UFUNCTION(BlueprintCallable, Category = "Equipment|Weapon")
 	bool ActivateLegendaryMode();
 
 	/* 인게임: 전설 모드 종료 요청 (백업이 있으면 복구 성공해야 true) */
-	UFUNCTION(BlueprintCallable, Category = "Arcanum|Equipment|Weapon")
+	UFUNCTION(BlueprintCallable, Category = "Equipment|Weapon")
 	bool DeactivateLegendaryMode();
 
 	/* 노티파이: 전설 무기 적용 (복구용 백업 저장 후 무기 슬롯 교체) */
-	UFUNCTION(BlueprintCallable, Category = "Arcanum|Equipment|Weapon")
+	UFUNCTION(BlueprintCallable, Category = "Equipment|Weapon")
 	bool ApplyLegendaryWeapon();
 
 	/* 노티파이: 전설 종료 후 백업된 일반 무기로 복구 (전설 모드 종료 포함) */
-	UFUNCTION(BlueprintCallable, Category = "Arcanum|Equipment|Weapon")
+	UFUNCTION(BlueprintCallable, Category = "Equipment|Weapon")
 	bool RestoreCommonWeapon();
 
 	/* ===============================
@@ -120,31 +120,31 @@ public:
 	 * =============================== */
 
 	/* 현재 선택된 일반 무기 인덱스(0=슬롯1, 1=슬롯2) */
-	UFUNCTION(BlueprintPure, Category = "Arcanum|Equipment|Weapon")
+	UFUNCTION(BlueprintPure, Category = "Equipment|Weapon")
 	int32 GetCurrentCommonWeaponIndex() const { return CurrentCommonWeaponIndex; }
 
 	/* 전설 모드 활성 여부 */
-	UFUNCTION(BlueprintPure, Category = "Arcanum|Equipment|Weapon")
+	UFUNCTION(BlueprintPure, Category = "Equipment|Weapon")
 	bool IsLegendaryActive() const { return (CurrentSetMode == EWeaponSetMode::Legendary); }
 
 	/* 현재 무기 모드(Common/Legendary) */
-	UFUNCTION(BlueprintPure, Category = "Arcanum|Equipment|Weapon")
+	UFUNCTION(BlueprintPure, Category = "Equipment|Weapon")
 	EWeaponSetMode GetCurrentWeaponMode() const { return CurrentSetMode; }
 
 	/* 현재 장착 무기 태그(무기 외형/스킬 분기/기본공격 분기용) */
-	UFUNCTION(BlueprintPure, Category = "Arcanum|Equipment")
+	UFUNCTION(BlueprintPure, Category = "Equipment")
 	FGameplayTag GetCurrentWeaponTag() const { return GetEquippedTag(EEquipSlot::Weapon); }
 
 	/* 특정 슬롯의 현재 장착 태그를 반환 */
-	UFUNCTION(BlueprintPure, Category = "Arcanum|Equipment")
+	UFUNCTION(BlueprintPure, Category = "Equipment")
 	FGameplayTag GetEquippedTag(EEquipSlot InSlot) const { return EquipmentMap.FindRef(InSlot); }
 
 	/* 현재 세트 4셋 활성 여부 */
-	UFUNCTION(BlueprintPure, Category = "Arcanum|Equipment|Set")
+	UFUNCTION(BlueprintPure, Category = "Equipment|Set")
 	bool HasArmorSet(const FGameplayTag& InSetTag) const { return ActiveArmorSets.Contains(InSetTag); }
 
 	/* 방어구 4부위의 현재 장착 태그를 한번에 반환 */
-	UFUNCTION(BlueprintPure, Category = "Arcanum|Equipment")
+	UFUNCTION(BlueprintPure, Category = "Equipment")
 	void GetEquippedArmorState(FGameplayTag& OutHelmet, FGameplayTag& OutArmor, FGameplayTag& OutGlove, FGameplayTag& OutBoot) const
 	{
 		OutHelmet = GetEquippedTag(EEquipSlot::Helmet);
@@ -174,46 +174,46 @@ private:
 	void InitPickRules();
 
 public:
-	UPROPERTY(BlueprintAssignable, Category = "Arcanum|Equipment")
+	UPROPERTY(BlueprintAssignable, Category = "Equipment")
 	FOnEquipChanged OnEquipChanged;
 
-	UPROPERTY(BlueprintAssignable, Category = "Arcanum|Equipment")
+	UPROPERTY(BlueprintAssignable, Category = "Equipment")
 	FOnEquipmentStateChanged OnEquipmentStateChanged;
 
-	UPROPERTY(BlueprintAssignable, Category = "Arcanum|Equipment|Set")
+	UPROPERTY(BlueprintAssignable, Category = "Equipment|Set")
 	FOnArmorSetChanged OnArmorSetChanged;
 
-	UPROPERTY(BlueprintAssignable, Category = "Arcanum|Equipment|Loadout")
+	UPROPERTY(BlueprintAssignable, Category = "Equipment|Loadout")
 	FOnWeaponSlotChanged OnWeaponSlotChanged;
 
-	UPROPERTY(BlueprintAssignable, Category = "Arcanum|Equipment|Loadout")
+	UPROPERTY(BlueprintAssignable, Category = "Equipment|Loadout")
 	FOnLoadoutChanged OnLoadoutChanged;
 
 private:
 	/* 로비(UI): 출전 세팅(선택값) */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Arcanum|Equipment|Loadout", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Equipment|Loadout", meta = (AllowPrivateAccess = "true"))
 	FLoadoutData LoadoutData;
 
 	/* 인게임: 현재 장착 상태(무기 외형/스킬 분기용) */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Arcanum|Equipment", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Equipment", meta = (AllowPrivateAccess = "true"))
 	TMap<EEquipSlot, FGameplayTag> EquipmentMap;
 
 	/* 인게임: 일반 무기 인덱스(0=슬롯1, 1=슬롯2) */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Arcanum|Equipment|Weapon", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Equipment|Weapon", meta = (AllowPrivateAccess = "true"))
 	int32 CurrentCommonWeaponIndex = 0;
 
 	/* 인게임: 무기 모드 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Arcanum|Equipment|Weapon", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Equipment|Weapon", meta = (AllowPrivateAccess = "true"))
 	EWeaponSetMode CurrentSetMode = EWeaponSetMode::Common;
 
 	/* 전설 복구용 백업(캐시) */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Arcanum|Equipment|Weapon", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Equipment|Weapon", meta = (AllowPrivateAccess = "true"))
 	FGameplayTag CachedWeaponTagBeforeLegendary;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Arcanum|Equipment|Weapon", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Equipment|Weapon", meta = (AllowPrivateAccess = "true"))
 	bool bHasWeaponBackup = false;
 
 	/* 세트(4셋) 루트 태그들 */
-	UPROPERTY(VisibleAnywhere, Category = "Arcanum|Equipment|Set")
+	UPROPERTY(EditDefaultsOnly, Category = "Equipment|Set")
 	TSet<FGameplayTag> ActiveArmorSets;
 
 	/* 검증 루트 태그(캐시) */

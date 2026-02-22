@@ -1,8 +1,8 @@
 [
   {
-    "Name": "GreatSword",
+    "Name": "BasicAttack_GreatSword",
     "SkillData": {
-      "SkillNameTag": "Arcanum.Skills.SkillName.GreatSword",
+      "SkillNameTag": "Arcanum.Skills.BasicAttack.GreatSword",
       "DisplayName": "대검 기본 공격",
       "SkillTypeTag": "Arcanum.Skills.SkillTypes.Active",
       "TargetTypeTag": "Arcanum.Skills.TargetingType.Unit",
@@ -13,7 +13,7 @@
       "LevelModifiers": [
         {
           "Level": 0,
-          "CastTime": 0.0,
+          "CastTime": 0.4,
           "Cooldown": 0.0,
           "Cost": [],
           "Effect": "",
@@ -25,41 +25,25 @@
                 "C": 0,
                 "D": 0
               },
-              "SourceTag": "Arcanum.Skills.SkillName.GreatSword",
+              "SourceTag": "Arcanum.Skills.BasicAttack.GreatSword",
               "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
               "Value": {
-                "Flat": 0.0,
-                "Mul": -1.0
+                "Flat": -10.0,
+                "Mul": 0.0
               },
               "bIsPermanent": false,
+              "bAllowRefresh": true,
               "Duration": 0.0,
               "ModifierPolicy": "Refresh",
               "MaxStack": 1
             }
           ],
           "TargetEffect": ""
-        }
-      ]
-    }
-  },
-  {
-    "Name": "Shield",
-    "SkillData": {
-      "SkillNameTag": "Arcanum.Skills.SkillName.Shield",
-      "DisplayName": "방패 기본 공격",
-      "SkillTypeTag": "Arcanum.Skills.SkillTypes.Active",
-      "TargetTypeTag": "Arcanum.Skills.TargetingType.Unit",
-      "TargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
-      "SkillVFXTag": [ "Arcanum.Skills.SkillVFX.None" ],
-      "Icon": "",
-      "CurrLevel": 0,
-      "LevelModifiers": [
+        },
         {
-          "Level": 0,
-          "CastTime": 0.0,
-          "Cooldown": 0.0,
-          "Cost": [],
-          "Effect": "",
+          "Level": 1,
+          "CastTime": 0.4,
           "OtherCharacterModifiers": [
             {
               "ModifierId": {
@@ -68,27 +52,146 @@
                 "C": 0,
                 "D": 0
               },
-              "SourceTag": "Arcanum.Skills.SkillName.Shield",
+              "SourceTag": "Arcanum.Skills.BasicAttack.GreatSword",
               "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
               "Value": {
-                "Flat": 0.0,
-                "Mul": -1.0
+                "Flat": -14.0,
+                "Mul": 0.0
               },
               "bIsPermanent": false,
+              "bAllowRefresh": true,
               "Duration": 0.0,
               "ModifierPolicy": "Refresh",
               "MaxStack": 1
             }
-          ],
-          "TargetEffect": ""
+          ]
+        },
+        {
+          "Level": 2,
+          "CastTime": 0.4,
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.BasicAttack.GreatSword",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "Value": {
+                "Flat": -19.0,
+                "Mul": 0.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ]
+        },
+        {
+          "Level": 3,
+          "CastTime": 0.4,
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.BasicAttack.GreatSword",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "Value": {
+                "Flat": -25.0,
+                "Mul": 0.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ]
+        },
+        {
+          "Level": 4,
+          "CastTime": 0.4,
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.BasicAttack.GreatSword",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "Value": {
+                "Flat": -32.0,
+                "Mul": 0.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ]
+        },
+        {
+          "Level": 5,
+          "CastTime": 0.4,
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.BasicAttack.GreatSword",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "Value": {
+                "Flat": -40.0,
+                "Mul": 0.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ]
         }
-      ]
-    }
+      ],
+      "Targeting": {
+        "IndicatorDecal": "",
+        "MaxRange": 180.0,
+        "Radius": 0.0,
+        "Width": 0.0
+      },
+      "Control": {
+        "KnockbackStrength": 0.0,
+        "PullStrength": 0.0
+      },
+      "Awaken": {
+        "MaxGauge": 100.0,
+        "GainOnBasicHit": 1.0,
+        "GainOnWeaponSkillHit": 5.0,
+        "DurationSec": 15.0,
+        "AuraRadius": 0.0
+      },
+      "Trigger": { "TriggerSkillTag": "Arcanum.Skills.SkillName.None" }
+    },
+    "SkillClass": ""
   },
   {
-    "Name": "Staff",
+    "Name": "BasicAttack_Staff",
     "SkillData": {
-      "SkillNameTag": "Arcanum.Skills.SkillName.Staff",
+      "SkillNameTag": "Arcanum.Skills.BasicAttack.Staff",
       "DisplayName": "지팡이 기본 공격",
       "SkillTypeTag": "Arcanum.Skills.SkillTypes.Active",
       "TargetTypeTag": "Arcanum.Skills.TargetingType.Unit",
@@ -99,10 +202,7 @@
       "LevelModifiers": [
         {
           "Level": 0,
-          "CastTime": 0.0,
-          "Cooldown": 0.0,
-          "Cost": [],
-          "Effect": "",
+          "CastTime": 0.4,
           "OtherCharacterModifiers": [
             {
               "ModifierId": {
@@ -111,32 +211,555 @@
                 "C": 0,
                 "D": 0
               },
-              "SourceTag": "Arcanum.Skills.SkillName.Staff",
+              "SourceTag": "Arcanum.Skills.BasicAttack.Staff",
               "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
               "Value": {
-                "Flat": 0.0,
-                "Mul": -1.0
+                "Flat": -10.0,
+                "Mul": 0.0
               },
               "bIsPermanent": false,
+              "bAllowRefresh": true,
               "Duration": 0.0,
               "ModifierPolicy": "Refresh",
               "MaxStack": 1
             }
-          ],
-          "TargetEffect": ""
+          ]
+        },
+        {
+          "Level": 1,
+          "CastTime": 0.4,
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.BasicAttack.Staff",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "Value": {
+                "Flat": -14.0,
+                "Mul": 0.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ]
+        },
+        {
+          "Level": 2,
+          "CastTime": 0.4,
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.BasicAttack.Staff",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "Value": {
+                "Flat": -19.0,
+                "Mul": 0.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ]
+        },
+        {
+          "Level": 3,
+          "CastTime": 0.4,
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.BasicAttack.Staff",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "Value": {
+                "Flat": -25.0,
+                "Mul": 0.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ]
+        },
+        {
+          "Level": 4,
+          "CastTime": 0.4,
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.BasicAttack.Staff",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "Value": {
+                "Flat": -32.0,
+                "Mul": 0.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ]
+        },
+        {
+          "Level": 5,
+          "CastTime": 0.4,
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.BasicAttack.Staff",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "Value": {
+                "Flat": -40.0,
+                "Mul": 0.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ]
         }
-      ]
-    }
+      ],
+      "Targeting": {
+        "IndicatorDecal": "",
+        "MaxRange": 700.0,
+        "Radius": 0.0,
+        "Width": 0.0
+      },
+      "Control": {
+        "KnockbackStrength": 0.0,
+        "PullStrength": 0.0
+      },
+      "Awaken": {
+        "MaxGauge": 100.0,
+        "GainOnBasicHit": 1.0,
+        "GainOnWeaponSkillHit": 5.0,
+        "DurationSec": 15.0,
+        "AuraRadius": 0.0
+      },
+      "Trigger": { "TriggerSkillTag": "Arcanum.Skills.SkillName.None" }
+    },
+    "SkillClass": ""
   },
   {
-    "Name": "Bow",
+    "Name": "BasicAttack_Bow",
     "SkillData": {
-      "SkillNameTag": "Arcanum.Skills.SkillName.Bow",
+      "SkillNameTag": "Arcanum.Skills.BasicAttack.Bow",
       "DisplayName": "활 기본 공격",
       "SkillTypeTag": "Arcanum.Skills.SkillTypes.Active",
       "TargetTypeTag": "Arcanum.Skills.TargetingType.Unit",
       "TargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
       "SkillVFXTag": [ "Arcanum.Skills.SkillVFX.None" ],
+      "Icon": "",
+      "CurrLevel": 0,
+      "LevelModifiers": [
+        {
+          "Level": 0,
+          "CastTime": 0.4,
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.BasicAttack.Bow",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -10.0,
+                "Mul": 0.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ]
+        },
+        {
+          "Level": 1,
+          "CastTime": 0.4,
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.BasicAttack.Bow",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "Value": {
+                "Flat": -14.0,
+                "Mul": 0.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ]
+        },
+        {
+          "Level": 2,
+          "CastTime": 0.4,
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.BasicAttack.Bow",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "Value": {
+                "Flat": -19.0,
+                "Mul": 0.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ]
+        },
+        {
+          "Level": 3,
+          "CastTime": 0.4,
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.BasicAttack.Bow",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "Value": {
+                "Flat": -25.0,
+                "Mul": 0.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ]
+        },
+        {
+          "Level": 4,
+          "CastTime": 0.4,
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.BasicAttack.Bow",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "Value": {
+                "Flat": -32.0,
+                "Mul": 0.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ]
+        },
+        {
+          "Level": 5,
+          "CastTime": 0.4,
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.BasicAttack.Bow",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "Value": {
+                "Flat": -40.0,
+                "Mul": 0.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ]
+        }
+      ],
+      "Targeting": {
+        "IndicatorDecal": "",
+        "MaxRange": 800.0,
+        "Radius": 0.0,
+        "Width": 0.0
+      },
+      "Control": {
+        "KnockbackStrength": 0.0,
+        "PullStrength": 0.0
+      },
+      "Awaken": {
+        "MaxGauge": 100.0,
+        "GainOnBasicHit": 1.0,
+        "GainOnWeaponSkillHit": 5.0,
+        "DurationSec": 15.0,
+        "AuraRadius": 0.0
+      },
+      "Trigger": { "TriggerSkillTag": "Arcanum.Skills.SkillName.None" }
+    },
+    "SkillClass": ""
+  },
+  {
+    "Name": "BasicAttack_Shield",
+    "SkillData": {
+      "SkillNameTag": "Arcanum.Skills.BasicAttack.Shield",
+      "DisplayName": "방패 기본 공격",
+      "SkillTypeTag": "Arcanum.Skills.SkillTypes.Active",
+      "TargetTypeTag": "Arcanum.Skills.TargetingType.Unit",
+      "TargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+      "SkillVFXTag": [ "Arcanum.Skills.SkillVFX.None" ],
+      "Icon": "",
+      "CurrLevel": 0,
+      "LevelModifiers": [
+        {
+          "Level": 0,
+          "CastTime": 0.4,
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.BasicAttack.Shield",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -10.0,
+                "Mul": 0.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ]
+        },
+        {
+          "Level": 1,
+          "CastTime": 0.4,
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.BasicAttack.Shield",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "Value": {
+                "Flat": -14.0,
+                "Mul": 0.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ]
+        },
+        {
+          "Level": 2,
+          "CastTime": 0.4,
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.BasicAttack.Shield",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "Value": {
+                "Flat": -19.0,
+                "Mul": 0.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ]
+        },
+        {
+          "Level": 3,
+          "CastTime": 0.4,
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.BasicAttack.Shield",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "Value": {
+                "Flat": -25.0,
+                "Mul": 0.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ]
+        },
+        {
+          "Level": 4,
+          "CastTime": 0.4,
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.BasicAttack.Shield",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "Value": {
+                "Flat": -32.0,
+                "Mul": 0.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ]
+        },
+        {
+          "Level": 5,
+          "CastTime": 0.4,
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.BasicAttack.Shield",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "Value": {
+                "Flat": -40.0,
+                "Mul": 0.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ]
+        }
+      ],
+      "Targeting": {
+        "IndicatorDecal": "",
+        "MaxRange": 180.0,
+        "Radius": 0.0,
+        "Width": 0.0
+      },
+      "Control": {
+        "KnockbackStrength": 0.0,
+        "PullStrength": 0.0
+      },
+      "Awaken": {
+        "MaxGauge": 100.0,
+        "GainOnBasicHit": 1.0,
+        "GainOnWeaponSkillHit": 5.0,
+        "DurationSec": 15.0,
+        "AuraRadius": 0.0
+      },
+      "Trigger": { "TriggerSkillTag": "Arcanum.Skills.SkillName.None" }
+    },
+    "SkillClass": ""
+  },
+
+
+
+
+
+
+
+
+  {
+    "Name": "Slash",
+    "SkillData": {
+      "SkillNameTag": "Arcanum.Skills.SkillName.Slash",
+      "DisplayName": "슬래시",
+      "SkillTypeTag": "Arcanum.Skills.SkillTypes.Active",
+      "TargetTypeTag": "Arcanum.Skills.TargetingType.Direction",
+      "TargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+      "SkillVFXTag": [ "Arcanum.Skills.SkillVFX.Knockback" ],
       "Icon": "",
       "CurrLevel": 0,
       "LevelModifiers": [
@@ -154,125 +777,18 @@
                 "C": 0,
                 "D": 0
               },
-              "SourceTag": "Arcanum.Skills.SkillName.Bow",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "SourceTag": "Arcanum.Skills.SkillName.Slash",
+              "StatTag": "Arcanum.Skills.SkillVFX.Knockback",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
               "Value": {
                 "Flat": 0.0,
-                "Mul": -1.0
+                "Mul": 1.0
               },
               "bIsPermanent": false,
-              "Duration": 0.0,
+              "bAllowRefresh": false,
+              "Duration": 3.0,
               "ModifierPolicy": "Refresh",
               "MaxStack": 1
-            }
-          ],
-          "TargetEffect": ""
-        }
-      ]
-    }
-  },
-  {
-    "Name": "Slash",
-    "SkillData": {
-      "SkillNameTag": "Arcanum.Skills.SkillName.Slash",
-      "DisplayName": "슬래시를 방출?",
-      "SkillTypeTag": "Arcanum.Skills.SkillTypes.Active",
-      "TargetTypeTag": "Arcanum.Skills.TargetingType.Unit",
-      "TargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
-      "SkillVFXTag": [ "Arcanum.Skills.SkillVFX.None" ],
-      "Icon": "",
-      "CurrLevel": 0,
-      "LevelModifiers": [
-        {
-          "Level": 1,
-          "CastTime": 3.0,
-          "Cooldown": 15.0,
-          "Cost": [
-            {
-              "ModifierId": {
-                "A": 0,
-                "B": 0,
-                "C": 0,
-                "D": 0
-              },
-              "SourceTag": "Arcanum.Skills.SkillName.Slash",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Value",
-              "Value": {
-                "Flat": -10.0,
-                "Mul": 1.0
-              },
-              "bIsPermanent": false,
-              "Duration": 0.0,
-              "ModifierPolicy": "Refresh",
-              "MaxStack": 5
-            }
-          ],
-          "Effect": "",
-          "OtherCharacterModifiers": [
-            {
-              "ModifierId": {
-                "A": 0,
-                "B": 0,
-                "C": 0,
-                "D": 0
-              },
-              "SourceTag": "Arcanum.Skills.SkillName.Slash",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
-              "Value": {
-                "Flat": -30.0,
-                "Mul": 1.0
-              },
-              "bIsPermanent": false,
-              "Duration": 0.0,
-              "ModifierPolicy": "Refresh",
-              "MaxStack": 5
-            }
-          ],
-          "TargetEffect": ""
-        },
-        {
-          "Level": 2,
-          "CastTime": 2.8,
-          "Cooldown": 15.0,
-          "Cost": [
-            {
-              "ModifierId": {
-                "A": 0,
-                "B": 0,
-                "C": 0,
-                "D": 0
-              },
-              "SourceTag": "Arcanum.Skills.SkillName.Slash",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Value",
-              "Value": {
-                "Flat": -10.0,
-                "Mul": 1.0
-              },
-              "bIsPermanent": false,
-              "Duration": 0.0,
-              "ModifierPolicy": "Refresh",
-              "MaxStack": 5
-            }
-          ],
-          "Effect": "",
-          "OtherCharacterModifiers": [
-            {
-              "ModifierId": {
-                "A": 0,
-                "B": 0,
-                "C": 0,
-                "D": 0
-              },
-              "SourceTag": "Arcanum.Skills.SkillName.Slash",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
-              "Value": {
-                "Flat": -50.0,
-                "Mul": 1.0
-              },
-              "bIsPermanent": false,
-              "Duration": 0.0,
-              "ModifierPolicy": "Refresh",
-              "MaxStack": 5
             }
           ],
           "TargetEffect": ""
@@ -284,7 +800,7 @@
     "Name": "ChainBolt",
     "SkillData": {
       "SkillNameTag": "Arcanum.Skills.SkillName.ChainBolt",
-      "DisplayName": "체인볼트를 시전",
+      "DisplayName": "체인 볼트",
       "SkillTypeTag": "Arcanum.Skills.SkillTypes.Active",
       "TargetTypeTag": "Arcanum.Skills.TargetingType.Unit",
       "TargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
@@ -293,29 +809,10 @@
       "CurrLevel": 0,
       "LevelModifiers": [
         {
-          "Level": 1,
-          "CastTime": 3.0,
-          "Cooldown": 15.0,
-          "Cost": [
-            {
-              "ModifierId": {
-                "A": 0,
-                "B": 0,
-                "C": 0,
-                "D": 0
-              },
-              "SourceTag": "Arcanum.Skills.SkillName.ChainBolt",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Value",
-              "Value": {
-                "Flat": -10.0,
-                "Mul": 1.0
-              },
-              "bIsPermanent": false,
-              "Duration": 0.0,
-              "ModifierPolicy": "Refresh",
-              "MaxStack": 5
-            }
-          ],
+          "Level": 0,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
           "Effect": "",
           "OtherCharacterModifiers": [
             {
@@ -326,61 +823,41 @@
                 "D": 0
               },
               "SourceTag": "Arcanum.Skills.SkillName.ChainBolt",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "StatTag": "Arcanum.Skills.SkillVFX.Shock",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
               "Value": {
-                "Flat": -30.0,
+                "Flat": 0.0,
                 "Mul": 1.0
               },
               "bIsPermanent": false,
-              "Duration": 0.0,
-              "ModifierPolicy": "Refresh",
-              "MaxStack": 5
-            },
-            {
-              "ModifierId": {
-                "A": 0,
-                "B": 0,
-                "C": 0,
-                "D": 0
-              },
-              "SourceTag": "Arcanum.Skills.SkillName.ChainBolt",
-              "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.Value",
-              "Value": {
-                "Flat": -10.0,
-                "Mul": 1.0
-              },
-              "bIsPermanent": false,
-              "Duration": 0.0,
+              "bAllowRefresh": true,
+              "Duration": 5.0,
               "ModifierPolicy": "Refresh",
               "MaxStack": 5
             }
           ],
           "TargetEffect": ""
-        },
+        }
+      ]
+    }
+  },
+  {
+    "Name": "PiercingShot",
+    "SkillData": {
+      "SkillNameTag": "Arcanum.Skills.SkillName.PiercingShot",
+      "DisplayName": "관통 사격",
+      "SkillTypeTag": "Arcanum.Skills.SkillTypes.Active",
+      "TargetTypeTag": "Arcanum.Skills.TargetingType.Direction",
+      "TargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+      "SkillVFXTag": [ "Arcanum.Skills.SkillVFX.MoveSpeed" ],
+      "Icon": "",
+      "CurrLevel": 0,
+      "LevelModifiers": [
         {
-          "Level": 2,
-          "CastTime": 2.8,
-          "Cooldown": 15.0,
-          "Cost": [
-            {
-              "ModifierId": {
-                "A": 0,
-                "B": 0,
-                "C": 0,
-                "D": 0
-              },
-              "SourceTag": "Arcanum.Skills.SkillName.ChainBolt",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Value",
-              "Value": {
-                "Flat": -10.0,
-                "Mul": 1.0
-              },
-              "bIsPermanent": false,
-              "Duration": 0.0,
-              "ModifierPolicy": "Refresh",
-              "MaxStack": 5
-            }
-          ],
+          "Level": 0,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
           "Effect": "",
           "OtherCharacterModifiers": [
             {
@@ -390,17 +867,44 @@
                 "C": 0,
                 "D": 0
               },
-              "SourceTag": "Arcanum.Skills.SkillName.ChainBolt",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "SourceTag": "Arcanum.Skills.SkillName.PiercingShot",
+              "StatTag": "Arcanum.Skills.SkillVFX.MoveSpeed",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
               "Value": {
-                "Flat": -30.0,
+                "Flat": 0.0,
                 "Mul": 1.0
               },
               "bIsPermanent": false,
-              "Duration": 0.0,
+              "bAllowRefresh": true,
+              "Duration": 5.0,
               "ModifierPolicy": "Refresh",
               "MaxStack": 5
-            },
+            }
+          ],
+          "TargetEffect": ""
+        }
+      ]
+    }
+  },
+  {
+    "Name": "ShockWave",
+    "SkillData": {
+      "SkillNameTag": "Arcanum.Skills.SkillName.ShockWave",
+      "DisplayName": "충격파",
+      "SkillTypeTag": "Arcanum.Skills.SkillTypes.Active",
+      "TargetTypeTag": "Arcanum.Skills.TargetingType.Self",
+      "TargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+      "SkillVFXTag": [ "Arcanum.Skills.SkillVFX.Stun" ],
+      "Icon": "",
+      "CurrLevel": 0,
+      "LevelModifiers": [
+        {
+          "Level": 0,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
             {
               "ModifierId": {
                 "A": 0,
@@ -408,14 +912,85 @@
                 "C": 0,
                 "D": 0
               },
-              "SourceTag": "Arcanum.Skills.SkillName.ChainBolt",
-              "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.Value",
+              "SourceTag": "Arcanum.Skills.SkillName.ShockWave",
+              "StatTag": "Arcanum.Skills.SkillVFX.Stun",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
               "Value": {
-                "Flat": -10.0,
+                "Flat": 0.0,
                 "Mul": 1.0
               },
               "bIsPermanent": false,
-              "Duration": 0.0,
+              "bAllowRefresh": false,
+              "Duration": 3.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ],
+          "TargetEffect": ""
+        }
+      ]
+    }
+  },
+  {
+    "Name": "VoidEclipse",
+    "SkillData": {
+      "SkillNameTag": "Arcanum.Skills.SkillName.VoidEclipse",
+      "DisplayName": "보이드 이클립스",
+      "SkillTypeTag": "Arcanum.Skills.SkillTypes.Active",
+      "TargetTypeTag": "Arcanum.Skills.TargetingType.Ground",
+      "TargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+      "SkillVFXTag": [ "Arcanum.Skills.SkillVFX.None" ],
+      "Icon": "",
+      "CurrLevel": 0,
+      "LevelModifiers": [
+        {
+          "Level": 0,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [],
+          "TargetEffect": ""
+        }
+      ]
+    }
+  },
+  {
+    "Name": "SolarFlare",
+    "SkillData": {
+      "SkillNameTag": "Arcanum.Skills.SkillName.SolarFlare",
+      "DisplayName": "솔라 플레어",
+      "SkillTypeTag": "Arcanum.Skills.SkillTypes.Active",
+      "TargetTypeTag": "Arcanum.Skills.TargetingType.Ground",
+      "TargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+      "SkillVFXTag": [ "Arcanum.Skills.SkillVFX.Burn" ],
+      "Icon": "",
+      "CurrLevel": 0,
+      "LevelModifiers": [
+        {
+          "Level": 0,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.SkillName.SolarFlare",
+              "StatTag": "Arcanum.Skills.SkillVFX.Burn",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": 0.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 5.0,
               "ModifierPolicy": "Refresh",
               "MaxStack": 5
             }
