@@ -2,12 +2,73 @@
   {
     "Name": "Elara",
     "CharacterTag": "Arcanum.Player.ID.Elara",
-    "DefaultDialogue": "안녕, 나는 엘라라야.",
-    "AttackDialogue": "차앗! 받아라!",
-    "HitDialogue": "윽... 아파...",
-    "DeathDialogue": "여기까지인가...",
+	"CharacterIcon":"",
+    "DefaultDialogue": "안녕하세요, 저는 엘라라입니다. 반갑습니다!",
+    "AttackDialogue": "이것으로 끝낼 거야! 받아라!",
+    "HitDialogue": "아... 조금 더 버텨야 해!",
+    "DeathDialogue": "아... 여기서 끝인가...",
     "DefaultGrade": "Arcanum.Player.Grade.Common.0",
+    "MaxGrade": "Arcanum.Player.Grade.Common.0",
+    "RequiredShardCount": [10,20,30]
+  },
+  {
+    "Name": "Iris",
+    "CharacterTag": "Arcanum.Player.ID.Iris",
+	"CharacterIcon":"",
+    "DefaultDialogue": "안녕하세요, 저는 아이리스에요. 최선을 다할게요!",
+    "AttackDialogue": "이게 끝이다! 받아라!",
+    "HitDialogue": "윽... 잠깐만, 버텨야 해!",
+    "DeathDialogue": "이제 끝인가... 더 강해질 거야...",
+    "DefaultGrade": "Arcanum.Player.Grade.Common.0",
+    "MaxGrade": "Arcanum.Player.Grade.Common.0",
+    "RequiredShardCount": [10,20,30]
+  },
+  {
+    "Name": "Celestia",
+    "CharacterTag": "Arcanum.Player.ID.Celestia",
+	"CharacterIcon":"",
+    "DefaultDialogue": "셀레스티아입니다. 천상의 힘을 보여줄게요.",
+    "AttackDialogue": "이것이 천상의 힘! 받아라!",
+    "HitDialogue": "윽... 이 정도로는 끝내지 못해!",
+    "DeathDialogue": "내가 지다니... 하지만 이 세상은 끝나지 않았어.",
+    "DefaultGrade": "Arcanum.Player.Grade.Rare.1",
+    "MaxGrade": "Arcanum.Player.Grade.Rare.1",
+    "RequiredShardCount": [10,20,30]
+  },
+  {
+    "Name": "Lynette",
+    "CharacterTag": "Arcanum.Player.ID.Lynette",
+	"CharacterIcon":"",
+    "DefaultDialogue": "리넷이야. 전투에 나서면 물러서지 않지.",
+    "AttackDialogue": "이건 너에게 주는 마지막 기회! 받아라!",
+    "HitDialogue": "이 정도쯤이야! 아직 끝나지 않았어!",
+    "DeathDialogue": "이게... 내 끝인가... 다음에는 내가 이길 거야.",
+    "DefaultGrade": "Arcanum.Player.Grade.Rare.1",
+    "MaxGrade": "Arcanum.Player.Grade.Rare.1",
+    "RequiredShardCount": [10,20,30]
+  },
+  {
+    "Name": "Arna",
+    "CharacterTag": "Arcanum.Player.ID.Arna",
+	"CharacterIcon":"",
+    "DefaultDialogue": "안녕, 나는 아르나야. 난 언제나 강해.",
+    "AttackDialogue": "내 힘을 보여줄 차례야! 받아라!",
+    "HitDialogue": "으... 당했군...",
+    "DeathDialogue": "끝났다고...? 아냐, 나의 이야기는 아직 끝나지 않았어.",
+    "DefaultGrade": "Arcanum.Player.Grade.Epic.2",
     "MaxGrade": "Arcanum.Player.Grade.Epic.2",
-    "RequiredShardCount": 10
+    "RequiredShardCount": [10,20,30]
+  },
+  {
+    "Name": "Aiden",
+    "CharacterTag": "Arcanum.Player.ID.Aiden",
+	"CharacterIcon":"",
+    "DefaultDialogue": "안녕하세요, 저는 에이든입니다. 같이 힘내 봅시다.",
+    "AttackDialogue": "이 기회다! 받아라!",
+    "HitDialogue": "앗, 예상보다 강하군...",
+    "DeathDialogue": "이럴 수가... 하지만 다시 일어날 거야.",
+    "DefaultGrade": "Arcanum.Player.Grade.Epic.2",
+    "MaxGrade": "Arcanum.Player.Grade.Epic.2",
+    "RequiredShardCount": [10,20,30]
   }
 ]
