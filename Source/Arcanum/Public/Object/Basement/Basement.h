@@ -68,10 +68,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Basement|Spawn")
 	TArray<TSubclassOf<APawn>> SpawnableUnits;
 
-	UPROPERTY(EditAnywhere, Category = "Spawning")
+	UPROPERTY(EditAnywhere, Category = "Spawning|Common")
 	float SpawnCommonInterval = 3.0f;
 
-	UPROPERTY(EditAnywhere, Category = "Spawning")
+	UPROPERTY(EditAnywhere, Category = "Spawning|Common")
 	TSubclassOf<ACharacter> CommonEnemyClass;
 
 	UPROPERTY(EditAnywhere, Category = "Spawning")
@@ -80,7 +80,7 @@ protected:
 	FTimerHandle SpawnTimerHandle;
 
 	int32 SpawnCommonCount = 0;
-	int32 MaxSpawnCommonCount = 10;
+	int32 MaxSpawnCommonCount = 4;
 
 public: // ===== Behavior =====
 	UFUNCTION(BlueprintCallable)
