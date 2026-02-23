@@ -1,0 +1,292 @@
+[
+	{
+		"Name": "Macaron",
+		"Health":
+		{
+			"ParentTag":
+			{
+				"TagName": "Arcanum.BattleStat.Character.Regen.Health"
+			},
+			"Current": 100,
+			"BaseMax": 100,
+			"BaseTick": 0,
+			"BonusMax": 0,
+			"ModifierMax": 0,
+			"ModifierTick": 0
+		},
+		"Mana":
+		{
+			"ParentTag":
+			{
+				"TagName": "Arcanum.BattleStat.Character.Regen.Mana"
+			},
+			"Current": 0,
+			"BaseMax": 0,
+			"BaseTick": 0,
+			"BonusMax": 0,
+			"ModifierMax": 0,
+			"ModifierTick": 0
+		}
+	},
+	{
+		"Name": "Leech",
+		"Health":
+		{
+			"ParentTag":
+			{
+				"TagName": "Arcanum.BattleStat.Character.Regen.Health"
+			},
+			"Current": 100,
+			"BaseMax": 100,
+			"BaseTick": 0,
+			"BonusMax": 0,
+			"ModifierMax": 0,
+			"ModifierTick": 0
+		},
+		"Mana":
+		{
+			"ParentTag":
+			{
+				"TagName": "Arcanum.BattleStat.Character.Regen.Mana"
+			},
+			"Current": 0,
+			"BaseMax": 0,
+			"BaseTick": 0,
+			"BonusMax": 0,
+			"ModifierMax": 0,
+			"ModifierTick": 0
+		}
+	},
+	{
+		"Name": "GhostMacaron",
+		"Health":
+		{
+			"ParentTag":
+			{
+				"TagName": "Arcanum.BattleStat.Character.Regen.Health"
+			},
+			"Current": 100,
+			"BaseMax": 100,
+			"BaseTick": 0,
+			"BonusMax": 0,
+			"ModifierMax": 0,
+			"ModifierTick": 0
+		},
+		"Mana":
+		{
+			"ParentTag":
+			{
+				"TagName": "Arcanum.BattleStat.Character.Regen.Mana"
+			},
+			"Current": 0,
+			"BaseMax": 0,
+			"BaseTick": 0,
+			"BonusMax": 0,
+			"ModifierMax": 0,
+			"ModifierTick": 0
+		}
+	},
+	{
+		"Name": "Bat",
+		"Health":
+		{
+			"ParentTag":
+			{
+				"TagName": "Arcanum.BattleStat.Character.Regen.Health"
+			},
+			"Current": 100,
+			"BaseMax": 100,
+			"BaseTick": 0,
+			"BonusMax": 0,
+			"ModifierMax": 0,
+			"ModifierTick": 0
+		},
+		"Mana":
+		{
+			"ParentTag":
+			{
+				"TagName": "Arcanum.BattleStat.Character.Regen.Mana"
+			},
+			"Current": 0,
+			"BaseMax": 0,
+			"BaseTick": 0,
+			"BonusMax": 0,
+			"ModifierMax": 0,
+			"ModifierTick": 0
+		}
+	},
+	{
+		"Name": "Cell",
+		"Health":
+		{
+			"ParentTag":
+			{
+				"TagName": "Arcanum.BattleStat.Character.Regen.Health"
+			},
+			"Current": 100,
+			"BaseMax": 100,
+			"BaseTick": 0,
+			"BonusMax": 0,
+			"ModifierMax": 0,
+			"ModifierTick": 0
+		},
+		"Mana":
+		{
+			"ParentTag":
+			{
+				"TagName": "Arcanum.BattleStat.Character.Regen.Mana"
+			},
+			"Current": 0,
+			"BaseMax": 0,
+			"BaseTick": 0,
+			"BonusMax": 0,
+			"ModifierMax": 0,
+			"ModifierTick": 0
+		}
+	},
+	{
+		"Name": "Mask",
+		"Health":
+		{
+			"ParentTag":
+			{
+				"TagName": "Arcanum.BattleStat.Character.Regen.Health"
+			},
+			"Current": 100,
+			"BaseMax": 100,
+			"BaseTick": 0,
+			"BonusMax": 0,
+			"ModifierMax": 0,
+			"ModifierTick": 0
+		},
+		"Mana":
+		{
+			"ParentTag":
+			{
+				"TagName": "Arcanum.BattleStat.Character.Regen.Mana"
+			},
+			"Current": 0,
+			"BaseMax": 0,
+			"BaseTick": 0,
+			"BonusMax": 0,
+			"ModifierMax": 0,
+			"ModifierTick": 0
+		}
+	},
+	{
+		"Name": "Wolfron",
+		"Health":
+		{
+			"ParentTag":
+			{
+				"TagName": "Arcanum.BattleStat.Character.Regen.Health"
+			},
+			"Current": 100,
+			"BaseMax": 100,
+			"BaseTick": 0,
+			"BonusMax": 0,
+			"ModifierMax": 0,
+			"ModifierTick": 0
+		},
+		"Mana":
+		{
+			"ParentTag":
+			{
+				"TagName": "Arcanum.BattleStat.Character.Regen.Mana"
+			},
+			"Current": 0,
+			"BaseMax": 0,
+			"BaseTick": 0,
+			"BonusMax": 0,
+			"ModifierMax": 0,
+			"ModifierTick": 0
+		}
+	},
+	{
+		"Name": "MageMacaron",
+		"Health":
+		{
+			"ParentTag":
+			{
+				"TagName": "Arcanum.BattleStat.Character.Regen.Health"
+			},
+			"Current": 100,
+			"BaseMax": 100,
+			"BaseTick": 0,
+			"BonusMax": 0,
+			"ModifierMax": 0,
+			"ModifierTick": 0
+		},
+		"Mana":
+		{
+			"ParentTag":
+			{
+				"TagName": "Arcanum.BattleStat.Character.Regen.Mana"
+			},
+			"Current": 0,
+			"BaseMax": 0,
+			"BaseTick": 0,
+			"BonusMax": 0,
+			"ModifierMax": 0,
+			"ModifierTick": 0
+		}
+	},
+	{
+		"Name": "Felice",
+		"Health":
+		{
+			"ParentTag":
+			{
+				"TagName": "Arcanum.BattleStat.Character.Regen.Health"
+			},
+			"Current": 100,
+			"BaseMax": 100,
+			"BaseTick": 0,
+			"BonusMax": 0,
+			"ModifierMax": 0,
+			"ModifierTick": 0
+		},
+		"Mana":
+		{
+			"ParentTag":
+			{
+				"TagName": "Arcanum.BattleStat.Character.Regen.Mana"
+			},
+			"Current": 0,
+			"BaseMax": 0,
+			"BaseTick": 0,
+			"BonusMax": 0,
+			"ModifierMax": 0,
+			"ModifierTick": 0
+		}
+	},
+	{
+		"Name": "CupFelice",
+		"Health":
+		{
+			"ParentTag":
+			{
+				"TagName": "Arcanum.BattleStat.Character.Regen.Health"
+			},
+			"Current": 100,
+			"BaseMax": 100,
+			"BaseTick": 0,
+			"BonusMax": 0,
+			"ModifierMax": 0,
+			"ModifierTick": 0
+		},
+		"Mana":
+		{
+			"ParentTag":
+			{
+				"TagName": "Arcanum.BattleStat.Character.Regen.Mana"
+			},
+			"Current": 0,
+			"BaseMax": 0,
+			"BaseTick": 0,
+			"BonusMax": 0,
+			"ModifierMax": 0,
+			"ModifierTick": 0
+		}
+	}
+]

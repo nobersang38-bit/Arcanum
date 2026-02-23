@@ -277,3 +277,67 @@ namespace Arcanum {
 		}
 	}
 }
+
+
+// 김유진
+namespace Arcanum
+{
+	namespace Unit
+	{
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Unit.Root", "유닛 루트");
+
+		namespace Faction
+		{
+			// 아군
+			namespace Ally {
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Unit.Ally", "아군유닛");
+				namespace Army {
+					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Unit.Ally.Army", "아미");
+				}
+				namespace Bard {
+					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Unit.Ally.Bard", "바드");
+				}
+				namespace Maid {
+					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Unit.Ally.Maid", "메이드");
+				}
+				namespace Tinker {
+					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Unit.Ally.Tinker", "팅커");
+				}
+			}
+			// 적군
+			namespace Enemy {
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Unit.Enemy", "적군유닛");
+				namespace Macaron {
+					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Unit.Enemy.Macaron", "마카롱");
+				}
+				namespace Leech {
+					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Unit.Enemy.Leech", "리치");
+				}
+				namespace GhostMacaron {
+					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Unit.Enemy.GhostMacaron", "유령 마카롱");
+				}
+				namespace Bat {
+					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Unit.Enemy.Bat", "배트");
+				}
+				namespace Cell {
+					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Unit.Enemy.Cell", "셀");
+				}
+				namespace Mask {
+					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Unit.Enemy.Mask", "마스크");
+				}
+				namespace Wolfron {
+					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Unit.Enemy.Wolfron", "울프론");
+				}
+				namespace MageMacaron {
+					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Unit.Enemy.MageMacaron", "마법사 마카롱");
+				}
+				namespace Felice {
+					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Unit.Enemy.Felice", "펠리스");
+				}
+				namespace CupFelice {
+					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Unit.Enemy.CupFelice", "컵 펠리스");
+				}
+			}
+		}
+	}
+}

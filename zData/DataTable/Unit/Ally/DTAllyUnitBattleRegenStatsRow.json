@@ -1,0 +1,118 @@
+[
+	{
+		"Name": "Army",
+		"Health":
+		{
+			"ParentTag":
+			{
+				"TagName": "Arcanum.BattleStat.Character.Regen.Health"
+			},
+			"Current": 100,
+			"BaseMax": 100,
+			"BaseTick": 0,
+			"BonusMax": 0,
+			"ModifierMax": 0,
+			"ModifierTick": 0
+		},
+		"Mana":
+		{
+			"ParentTag":
+			{
+				"TagName": "Arcanum.BattleStat.Character.Regen.Mana"
+			},
+			"Current": 0,
+			"BaseMax": 0,
+			"BaseTick": 0,
+			"BonusMax": 0,
+			"ModifierMax": 0,
+			"ModifierTick": 0
+		}
+	},
+	{
+		"Name": "Bard",
+		"Health":
+		{
+			"ParentTag":
+			{
+				"TagName": "Arcanum.BattleStat.Character.Regen.Health"
+			},
+			"Current": 100,
+			"BaseMax": 100,
+			"BaseTick": 0,
+			"BonusMax": 0,
+			"ModifierMax": 0,
+			"ModifierTick": 0
+		},
+		"Mana":
+		{
+			"ParentTag":
+			{
+				"TagName": "Arcanum.BattleStat.Character.Regen.Mana"
+			},
+			"Current": 0,
+			"BaseMax": 0,
+			"BaseTick": 0,
+			"BonusMax": 0,
+			"ModifierMax": 0,
+			"ModifierTick": 0
+		}
+	},
+	{
+		"Name": "Maid",
+		"Health":
+		{
+			"ParentTag":
+			{
+				"TagName": "Arcanum.BattleStat.Character.Regen.Health"
+			},
+			"Current": 100,
+			"BaseMax": 100,
+			"BaseTick": 0,
+			"BonusMax": 0,
+			"ModifierMax": 0,
+			"ModifierTick": 0
+		},
+		"Mana":
+		{
+			"ParentTag":
+			{
+				"TagName": "Arcanum.BattleStat.Character.Regen.Mana"
+			},
+			"Current": 0,
+			"BaseMax": 0,
+			"BaseTick": 0,
+			"BonusMax": 0,
+			"ModifierMax": 0,
+			"ModifierTick": 0
+		}
+	},
+	{
+		"Name": "Tinker",
+		"Health":
+		{
+			"ParentTag":
+			{
+				"TagName": "Arcanum.BattleStat.Character.Regen.Health"
+			},
+			"Current": 100,
+			"BaseMax": 100,
+			"BaseTick": 0,
+			"BonusMax": 0,
+			"ModifierMax": 0,
+			"ModifierTick": 0
+		},
+		"Mana":
+		{
+			"ParentTag":
+			{
+				"TagName": "Arcanum.BattleStat.Character.Regen.Mana"
+			},
+			"Current": 0,
+			"BaseMax": 0,
+			"BaseTick": 0,
+			"BonusMax": 0,
+			"ModifierMax": 0,
+			"ModifierTick": 0
+		}
+	}
+]
