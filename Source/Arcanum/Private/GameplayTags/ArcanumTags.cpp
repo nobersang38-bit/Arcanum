@@ -125,7 +125,6 @@ namespace Arcanum {
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Boot, "Arcanum.Items.ItemSlot.Armor.Boot", "발");
 			}
 		}
-
 		namespace Rarity {
 			namespace Common {
 				namespace Weapon {
@@ -135,10 +134,10 @@ namespace Arcanum {
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Shield, "Arcanum.Items.Rarity.Common.Weapon.Shield", "방패");
 				}
 				namespace Armor {
-					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Helmet, "Arcanum.Items.Rarity.Common.Weapon.Helmet", "투구");
-					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Chest, "Arcanum.Items.Rarity.Common.Weapon.Chest", "갑옷");
-					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Glove, "Arcanum.Items.Rarity.Common.Weapon.Glove", "장갑");
-					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Boot, "Arcanum.Items.Rarity.Common.Weapon.Boot", "신발");
+					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Helmet, "Arcanum.Items.Rarity.Common.Armor.Helmet", "투구");
+					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Chest, "Arcanum.Items.Rarity.Common.Armor.Chest", "갑옷");
+					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Glove, "Arcanum.Items.Rarity.Common.Armor.Glove", "장갑");
+					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Boot, "Arcanum.Items.Rarity.Common.Armor.Boot", "신발");
 				}
 			}
 			namespace SetItem {
@@ -150,21 +149,27 @@ namespace Arcanum {
 						UE_DEFINE_GAMEPLAY_TAG_COMMENT(Boot, "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Boot", "신발");
 					}
 				}
-			}
-			namespace Legendary {
-				namespace Weapon {
-					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Spear, "Arcanum.Items.Rarity.Legendary.Weapon.Spear", "창");
-					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Scepter, "Arcanum.Items.Rarity.Legendary.Weapon.Scepter", "셉터");
-					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Scythe, "Arcanum.Items.Rarity.Legendary.Weapon.Scythe", "낫");
+				namespace Sigon {
+					namespace Armor {
+						UE_DEFINE_GAMEPLAY_TAG_COMMENT(Helmet, "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Helmet", "투구");
+						UE_DEFINE_GAMEPLAY_TAG_COMMENT(Chest, "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Chest", "갑옷");
+						UE_DEFINE_GAMEPLAY_TAG_COMMENT(Glove, "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Glove", "장갑");
+						UE_DEFINE_GAMEPLAY_TAG_COMMENT(Boot, "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Boot", "신발");
+					}
+					namespace Legendary {
+						namespace Weapon {
+							UE_DEFINE_GAMEPLAY_TAG_COMMENT(Scepter, "Arcanum.Items.Rarity.Legendary.Weapon.Scepter", "셉터");
+							UE_DEFINE_GAMEPLAY_TAG_COMMENT(Scythe, "Arcanum.Items.Rarity.Legendary.Weapon.Scythe", "낫");
+						}
+						namespace Armor {
+						}
+					}
 				}
-				namespace Armor {
+				namespace SetBonus {
+					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Surge, "Arcanum.Items.SetBonus.Surge", "역류");
+					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Avarice, "Arcanum.Items.SetBonus.Avarice", "탐욕");
 				}
 			}
-		}
-		namespace SetBonus {
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Surge, "Arcanum.Items.SetBonus.Surge", "역류");
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Majesty, "Arcanum.Items.SetBonus.Majesty", "위엄");
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Avarice, "Arcanum.Items.SetBonus.Avarice", "탐욕");
 		}
 	}
 }
@@ -258,7 +263,7 @@ namespace Arcanum {
 				}
 			}
 			namespace NonRegen {
-				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.PlayerData.NonRegen", "플레이어 논리젠 재화 루트");
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.PlayerData.Currencies.NonRegen", "플레이어 논리젠 재화 루트");
 				namespace Gold {
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.PlayerData.Currencies.NonRegen.Gold", "골드");
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Value, "Arcanum.PlayerData.Currencies.NonRegen.Gold.Value", "현재 골드");
