@@ -1,0 +1,32 @@
+[
+  {
+    "Name": "Elara",
+    "Health": {  "ParentTag" : "Arcanum.BattleStat.Character.Regen.Health" , "Current": 100, "BaseMax": 100, "BaseTick": 0.1,"BonusMax": 0.0,"ModifierMax": 0.0,"ModifierTick": 0.0},
+    "Mana":   {  "ParentTag" : "Arcanum.BattleStat.Character.Regen.Mana" , "Current": 50, "BaseMax": 50, "BaseTick": 0.1,"BonusMax": 0.0,"ModifierMax": 0.0,"ModifierTick": 0.0}
+  },
+  {
+    "Name": "Iris",
+    "Health": {  "ParentTag" : "Arcanum.BattleStat.Character.Regen.Health" , "Current": 100, "BaseMax": 100, "BaseTick": 0.1,"BonusMax": 0.0,"ModifierMax": 0.0,"ModifierTick": 0.0},
+    "Mana":   {  "ParentTag" : "Arcanum.BattleStat.Character.Regen.Mana" , "Current": 50, "BaseMax": 50, "BaseTick": 0.1,"BonusMax": 0.0,"ModifierMax": 0.0,"ModifierTick": 0.0}
+  },
+  {
+    "Name": "Celestia",
+    "Health": {  "ParentTag" : "Arcanum.BattleStat.Character.Regen.Health" , "Current": 100, "BaseMax": 100, "BaseTick": 0.1,"BonusMax": 0.0,"ModifierMax": 0.0,"ModifierTick": 0.0},
+    "Mana":   {  "ParentTag" : "Arcanum.BattleStat.Character.Regen.Mana" , "Current": 50, "BaseMax": 50, "BaseTick": 0.1,"BonusMax": 0.0,"ModifierMax": 0.0,"ModifierTick": 0.0}
+  },
+  {
+    "Name": "Lynette",
+    "Health": {  "ParentTag" : "Arcanum.BattleStat.Character.Regen.Health" , "Current": 100, "BaseMax": 100, "BaseTick": 0.1,"BonusMax": 0.0,"ModifierMax": 0.0,"ModifierTick": 0.0},
+    "Mana":   {  "ParentTag" : "Arcanum.BattleStat.Character.Regen.Mana" , "Current": 50, "BaseMax": 50, "BaseTick": 0.1,"BonusMax": 0.0,"ModifierMax": 0.0,"ModifierTick": 0.0}
+  },
+  {
+    "Name": "Arna",
+    "Health": {  "ParentTag" : "Arcanum.BattleStat.Character.Regen.Health" , "Current": 100, "BaseMax": 100, "BaseTick": 0.1,"BonusMax": 0.0,"ModifierMax": 0.0,"ModifierTick": 0.0},
+    "Mana":   {  "ParentTag" : "Arcanum.BattleStat.Character.Regen.Mana" , "Current": 50, "BaseMax": 50, "BaseTick": 0.1,"BonusMax": 0.0,"ModifierMax": 0.0,"ModifierTick": 0.0}
+  },
+  {
+    "Name": "Enemy1",
+    "Health": {  "ParentTag" : "Arcanum.BattleStat.Character.Regen.Health" , "Current": 100, "BaseMax": 100, "BaseTick": 0.1,"BonusMax": 0.0,"ModifierMax": 0.0,"ModifierTick": 0.0},
+    "Mana":   {  "ParentTag" : "Arcanum.BattleStat.Character.Regen.Mana" , "Current": 50, "BaseMax": 50, "BaseTick": 0.1,"BonusMax": 0.0,"ModifierMax": 0.0,"ModifierTick": 0.0}
+  }
+]

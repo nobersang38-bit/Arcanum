@@ -1,0 +1,61 @@
+[
+  {
+    "Name": "NormalGreatSword",
+    "ItemTag": "Arcanum.Items.Rarity.Common.Weapon.GreatSword",
+    "SlotTag": "Arcanum.Items.ItemSlot.Weapon.TwoHand",
+    "Desc": "평범한 대검입니다.",
+    "Icon": "",
+    "BuyPrice": "200",
+    "SellPrice": "50",
+    "BaseInfoSteps": [
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [
+          { "ModifierId": "00000000000000000000000000000000",
+            "SourceTag": "Arcanum.Items.Rarity.Common.Weapon.GreatSword",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "Value": { "Flat": -10.0, "Mul": 1.0 },
+            "bIsPermanent": true,
+            "Duration" : 0,
+            "ModifierPolicy" : "Refresh",
+            "MaxStack" : 0
+          }
+        ],
+        "RandomStatRanges": [
+          { "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "MinValue": { "Flat": -7.0, "Mul": 1.0 },
+            "MaxValue": { "Flat": -15.0, "Mul": 1.0 }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": [
+          "Arcanum.Skills.SkillName.None"
+        ]
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [
+          { "ModifierId": "00000000000000000000000000000000",
+            "SourceTag": "Arcanum.Items.Rarity.Common.Weapon.GreatSword",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "Value": { "Flat": -20.0, "Mul": 1.0 },
+            "bIsPermanent": true,
+            "Duration" : 0,
+            "ModifierPolicy" : "Refresh",
+            "MaxStack" : 0
+          }
+        ],
+        "RandomStatRanges": [
+          { "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "MinValue": { "Flat": -10.0, "Mul": 1.0 },
+            "MaxValue": { "Flat": -30.0, "Mul": 1.0 }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": [
+          "Arcanum.Skills.SkillName.None"
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,13 @@
+[
+  {
+    "Name": "Elara",
+    "CharacterTag": "Arcanum.Player.ID.Elara",
+    "DefaultDialogue": "안녕, 나는 엘라라야.",
+    "AttackDialogue": "차앗! 받아라!",
+    "HitDialogue": "윽... 아파...",
+    "DeathDialogue": "여기까지인가...",
+    "DefaultGrade": "Arcanum.Player.Grade.Common.0",
+    "MaxGrade": "Arcanum.Player.Grade.Epic.2",
+    "RequiredShardCount": 10
+  }
+]

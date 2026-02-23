@@ -1,0 +1,36 @@
+[
+  {
+    "Name": "Elara",
+    "BattleCharacterTag": "Arcanum.Player.ID.Elara",
+    "GradeDataSteps": [
+      { 
+        "RegenStats": [ 
+          {  "ParentTag" : "Arcanum.BattleStat.Character.Regen.Health" , "Current": 100, "BaseMax": 100, "BaseTick": 0.1,"BonusMax": 0.0,"ModifierMax": 0.0,"ModifierTick": 0.0},
+          {  "ParentTag" : "Arcanum.BattleStat.Character.Regen.Mana" , "Current": 50, "BaseMax": 50, "BaseTick": 0.1,"BonusMax": 0.0,"ModifierMax": 0.0,"ModifierTick": 0.0}
+        ],
+        "NonRegenStats": [
+          { "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackPower",     "BaseValue": 10, "BonusValue": 0, "ModifierValue": 0 },
+          { "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed",     "BaseValue": 5, "BonusValue": 0 , "ModifierValue": 0 },
+          { "TagName": "Arcanum.BattleStat.Character.NonRegen.Evasion",         "BaseValue": 5, "BonusValue": 0, "ModifierValue": 0 },
+          { "TagName": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed",       "BaseValue": 3, "BonusValue": 0, "ModifierValue": 0 },
+          { "TagName": "Arcanum.BattleStat.Character.NonRegen.CritChance",      "BaseValue": 0.05, "BonusValue": 0, "ModifierValue": 0 },
+          { "TagName": "Arcanum.BattleStat.Character.NonRegen.DamageReduction", "BaseValue": 0.1, "BonusValue": 0, "ModifierValue": 0 }
+        ]
+      },
+      {
+        "RegenStats": [ 
+          {  "ParentTag" : "Arcanum.BattleStat.Character.Regen.Health" , "Current": 100, "BaseMax": 100, "BaseTick": 0.1,"BonusMax": 0.0,"ModifierMax": 0.0,"ModifierTick": 0.0},
+          {  "ParentTag" : "Arcanum.BattleStat.Character.Regen.Mana" , "Current": 50, "BaseMax": 50, "BaseTick": 0.1,"BonusMax": 0.0,"ModifierMax": 0.0,"ModifierTick": 0.0}
+        ],
+        "NonRegenStats": [
+          { "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackPower",     "BaseValue": 10, "BonusValue": 0, "ModifierValue": 0 },
+          { "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed",     "BaseValue": 5, "BonusValue": 0 , "ModifierValue": 0 },
+          { "TagName": "Arcanum.BattleStat.Character.NonRegen.Evasion",         "BaseValue": 5, "BonusValue": 0, "ModifierValue": 0 },
+          { "TagName": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed",       "BaseValue": 3, "BonusValue": 0, "ModifierValue": 0 },
+          { "TagName": "Arcanum.BattleStat.Character.NonRegen.CritChance",      "BaseValue": 0.05, "BonusValue": 0, "ModifierValue": 0 },
+          { "TagName": "Arcanum.BattleStat.Character.NonRegen.DamageReduction", "BaseValue": 0.1, "BonusValue": 0, "ModifierValue": 0 }
+        ]
+      }
+    ]
+  }
+]
