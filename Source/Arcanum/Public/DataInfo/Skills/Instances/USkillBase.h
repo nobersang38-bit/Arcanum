@@ -76,13 +76,10 @@ protected:
 #pragma region 각성 디버프 결합
 protected:
 	/* 기본 모디파이어 + 현재 각성 디버프를 합침 */
-	bool BuildHitModifiersWithAwaken(const TArray<FDerivedStatModifier>& InBaseModifiers, TArray<FDerivedStatModifier>& OutFinalModifiers) const;
+	bool BuildHitModifiersWithAwaken(AActor* InInstigator, const TArray<FDerivedStatModifier>& InBaseModifiers, TArray<FDerivedStatModifier>& OutFinalModifiers) const;
 
 	/* 현재 각성 태그 기준 디버프 모디파이어를 DT에서 꺼내서 추가 */
-	void AddAwakenDebuffModifiers(TArray<FDerivedStatModifier>& InOutModifiers) const;
-
-	/* 소유자 SkillComponent에서 현재 각성 태그 조회 */
-	FGameplayTag GetCurrentAwakenTagFromOwner() const;
+	void AddAwakenDebuffModifiers(AActor* InInstigator, TArray<FDerivedStatModifier>& InOutModifiers) const;
 #pragma endregion
 
 public:

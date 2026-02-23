@@ -1,7 +1,11 @@
 #include "DataInfo/Skills/Instances/USkillBase.h"
 #include "Component/Stats/CharacterBattleStatsComponent.h"
+#include "Character/BaseUnitCharacter.h"
 #include "Component/SkillComponent.h"
 #include "GameplayTags/ArcanumTags.h"
+#include "Interface/TeamInterface.h"
+#include "Kismet/KismetSystemLibrary.h"
+
 
 USkillBase::USkillBase()
 {
@@ -56,38 +60,47 @@ void USkillBase::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEv
 
 bool USkillBase::CanAffectTarget(AActor* InInstigator, AActor* InTarget, const FGameplayTag& InTargetFilterTag) const
 {
-	if (!InInstigator || !InTarget) { return false; }
+	if (!InInstigator || !InTarget)	{ return false; }
 
-	// 자기 자신
-	if (InTargetFilterTag == Arcanum::Skills::TargetFilter::Self)
+	// 인터페이스 체크
+	const bool bHasInstigatorInterface = InInstigator->GetClass()->ImplementsInterface(UTeamInterface::StaticClass());
+	const bool bHasTargetInterface = InTarget->GetClass()->ImplementsInterface(UTeamInterface::StaticClass());
+
+	if (!bHasInstigatorInterface || !bHasTargetInterface) {	return false; }
+
+	ITeamInterface* instigatorTeamInterface = Cast<ITeamInterface>(InInstigator);
+	ITeamInterface* targetTeamInterface = Cast<ITeamInterface>(InTarget);
+
+	if (!instigatorTeamInterface || !targetTeamInterface) {	return false; }
+
+	const FGameplayTag instigatorTeam = instigatorTeamInterface->GetTeamTag();
+	const FGameplayTag targetTeam = targetTeamInterface->GetTeamTag();
+
+	// 팀 태그가 비어있으면 판정 불가
+	if (!instigatorTeam.IsValid() || !targetTeam.IsValid()) { return false; }
+
+	const bool bIsSameActor = (InInstigator == InTarget);
+	const bool bIsSameTeam = (instigatorTeam == targetTeam);
+
+	// 필더 로직
+	using namespace Arcanum::Skills::TargetFilter;
+	if (InTargetFilterTag == Self)
 	{
-		if (InInstigator == InTarget)
-		{
-			return true;
-		}
-
-		return false;
+		return bIsSameActor;
 	}
 
-	// TODO : 팀 판정 로직 Enemy / Ally 분기
-	// 테스트라 Self만 제외하고 통과
-	if (InTargetFilterTag == Arcanum::Skills::TargetFilter::Enemy)
+	if (InTargetFilterTag == Enemy)
 	{
-		if (InInstigator != InTarget)
-		{
-			return true;
-		}
-
-		return false;
+		return !bIsSameActor && !bIsSameTeam;
 	}
 
-	if (InTargetFilterTag == Arcanum::Skills::TargetFilter::Ally)
+	if (InTargetFilterTag == Ally)
 	{
-		// 팀 판정 전이라 임시 false
-		return false;
+		// Self는 위에서 별도 처리하므로 여기서는 자기 자신 제외
+		return !bIsSameActor && bIsSameTeam;
 	}
 
-	return true;
+	return false;
 }
 
 bool USkillBase::ApplyModifiersToTarget(AActor* InInstigator, AActor* InTarget, const TArray<FDerivedStatModifier>& InModifiers)
@@ -127,8 +140,6 @@ bool USkillBase::ApplySingleModifierToTarget(AActor* InInstigator, AActor* InTar
 				// 지속 효과(버프/디버프)
 				targetStats->ApplyDurationModifier(InModifier);
 			}
-			// 적중 시 트리거 체크
-			TryExecuteTriggerSkill(InInstigator, InTarget);
 
 			return true;
 		}
@@ -157,36 +168,98 @@ bool USkillBase::IsHealthValueTag(const FGameplayTag& InStatTag) const
 	return false;
 }
 
-bool USkillBase::BuildHitModifiersWithAwaken(const TArray<FDerivedStatModifier>& InBaseModifiers, TArray<FDerivedStatModifier>& OutFinalModifiers) const
+bool USkillBase::BuildHitModifiersWithAwaken(AActor* InInstigator, const TArray<FDerivedStatModifier>& InBaseModifiers, TArray<FDerivedStatModifier>& OutFinalModifiers) const
 {
 	OutFinalModifiers = InBaseModifiers;
 
-	AddAwakenDebuffModifiers(OutFinalModifiers);
+	AddAwakenDebuffModifiers(InInstigator, OutFinalModifiers);
 
 	return (OutFinalModifiers.Num() > 0);
 }
 
-void USkillBase::AddAwakenDebuffModifiers(TArray<FDerivedStatModifier>& InOutModifiers) const
+void USkillBase::AddAwakenDebuffModifiers(AActor* InInstigator, TArray<FDerivedStatModifier>& InOutModifiers) const
 {
-	const FGameplayTag awakenTag = GetCurrentAwakenTagFromOwner();
-
-	if (!awakenTag.IsValid())
+	if (InInstigator)
 	{
-		return;
+		if (USkillComponent* skillComponent = InInstigator->FindComponentByClass<USkillComponent>())
+		{
+			FGameplayTag awakenTag = skillComponent->GetCurrentAwakenTag();
+			if (awakenTag.IsValid())
+			{
+				// 현재 선택된 각성 가져오기
+				USkillBase* awakenSkill = skillComponent->GetSkill(awakenTag);
+
+				if (!awakenSkill)
+				{
+					// 아직 안 들고 있으면 획득 시도
+					if (skillComponent->AcquireSkill(awakenTag))
+					{
+						awakenSkill = skillComponent->GetSkill(awakenTag);
+					}
+				}
+
+				if (awakenSkill)
+				{
+					const FLevelModifierEntry* awakenEntry = awakenSkill->GetCurrentLevelEntry();
+
+					if (awakenEntry)
+					{
+						// 각성 스킬 DT의 OtherCharacterModifiers를 기본공격 시 묻히는 디버프로 사용
+						for (const FDerivedStatModifier& modifier : awakenEntry->OtherCharacterModifiers)
+						{
+							InOutModifiers.Add(modifier);
+						}
+					}
+				}
+			}
+		}
 	}
 }
 
-FGameplayTag USkillBase::GetCurrentAwakenTagFromOwner() const
+void USkillBase::CollectTargetsInRange(AActor* InInstigator, float InRange, TArray<AActor*>& OutTargets) const
 {
-	if (OwnerActor)
-	{
-		USkillComponent* skillComponent = OwnerActor->FindComponentByClass<USkillComponent>();
+	OutTargets.Reset();
 
-		if (skillComponent)
+	if (InInstigator)
+	{
+		if (UWorld* world = InInstigator->GetWorld())
 		{
-			return skillComponent->GetCurrentAwakenTag();
+			TArray<TEnumAsByte<EObjectTypeQuery>> objectTypes;
+			objectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Pawn));
+
+			TArray<AActor*> actorsToIgnore;
+			actorsToIgnore.Add(InInstigator);
+
+			TArray<AActor*> overlappedActors;
+
+			const bool bHit = UKismetSystemLibrary::SphereOverlapActors(
+				world,
+				InInstigator->GetActorLocation(),
+				InRange,
+				objectTypes,
+				ABaseUnitCharacter::StaticClass(),
+				actorsToIgnore,
+				overlappedActors
+			);
+
+			if (bHit)
+			{
+				for (AActor* actor : overlappedActors)
+				{
+					if (actor)
+					{
+						// 적만 후보로 넣음 (Self/Ally 제외)
+						if (CanAffectTarget(InInstigator, actor, Arcanum::Skills::TargetFilter::Enemy))
+						{
+							// 죽은 대상 제외
+							if (IsAliveTarget(actor))
+							{
+								OutTargets.Add(actor);
+							}
+						}
+					}
+				}
+			}
 		}
 	}
-
-	return FGameplayTag();
 }

@@ -18,7 +18,7 @@ public:
 
 private:
 	/* 사거리 내 가장 가까운 대상 1명 찾기 */
-	AActor* FindNearestTarget(AActor* InInstigator, float InRange) const;
+	AActor* FindFrontTarget(AActor* InInstigator, float InRange) const;
 
 	/* 기본공격 데미지 적용 */
 	bool ApplyBasicAttackDamage(AActor* InInstigator, AActor* InTarget, const FLevelModifierEntry& InEntry);

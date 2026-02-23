@@ -13,30 +13,43 @@ void UMeleeBasicAttack::ActivateSkill(AActor* Instigator)
 
 	if (Instigator)
 	{
-		const FLevelModifierEntry* entry = GetCurrentLevelEntry();
-
-		if (entry)
+		if (const FLevelModifierEntry* entry = GetCurrentLevelEntry())
 		{
-			AActor* nearestTarget = FindNearestTarget(Instigator, SkillData.Targeting.MaxRange);
+			/*
+			// 기본공격 범위
+			DrawDebugSphere(
+				GetWorld(),
+				Instigator->GetActorLocation(),
+				SkillData.Targeting.MaxRange,
+				24,
+				FColor::Green,
+				false,
+				0.5f,
+				0,
+				2.0f
+			);
+			*/
 
-			UE_LOG(LogTemp, Warning, TEXT("NearestTarget = %s"), nearestTarget ? *nearestTarget->GetName() : TEXT("None"));
+			AActor* frontTarget = FindFrontTarget(Instigator, SkillData.Targeting.MaxRange);
 
-			if (nearestTarget)
+			UE_LOG(LogTemp, Warning, TEXT("FrontTarget = %s"), frontTarget ? *frontTarget->GetName() : TEXT("None"));
+
+			if (frontTarget)
 			{
-				const bool bHitApplied = ApplyBasicAttackDamage(Instigator, nearestTarget, *entry);
+				const bool bHitApplied = ApplyBasicAttackDamage(Instigator, frontTarget, *entry);
 
 				UE_LOG(LogTemp, Warning, TEXT("ApplyBasicAttackDamage = %s"), bHitApplied ? TEXT("true") : TEXT("false"));
 
 				if (bHitApplied)
 				{
-					NotifyBasicAttackHitToSkillComponent(Instigator, nearestTarget);
+					NotifyBasicAttackHitToSkillComponent(Instigator, frontTarget);
 				}
 			}
 		}
 	}
 }
 
-AActor* UMeleeBasicAttack::FindNearestTarget(AActor* InInstigator, float InRange) const
+AActor* UMeleeBasicAttack::FindFrontTarget(AActor* InInstigator, float InRange) const
 {
 	AActor* nearestTarget = nullptr;
 
@@ -57,7 +70,7 @@ AActor* UMeleeBasicAttack::FindNearestTarget(AActor* InInstigator, float InRange
 				InInstigator->GetActorLocation(),
 				InRange,
 				objectTypes,
-				ABaseUnitCharacter::StaticClass(),
+				ABaseUnitCharacter::StaticClass(),  // 테스트 캐릭터 (nullptr)
 				actorsToIgnore,
 				overlappedActors
 			);
@@ -72,7 +85,6 @@ AActor* UMeleeBasicAttack::FindNearestTarget(AActor* InInstigator, float InRange
 
 					if (targetStatsComponent)
 					{
-						// RegenStat에서 Health 루트 태그를 찾아서 현재 체력을 꺼냄
 						float currentHealthValue = -1.0f;
 
 						for (const FRegenStat& regenStat : targetStatsComponent->GetRegenStats())
@@ -80,7 +92,6 @@ AActor* UMeleeBasicAttack::FindNearestTarget(AActor* InInstigator, float InRange
 							if (regenStat.ParentTag == Arcanum::BattleStat::Character::Regen::Health::Root)
 							{
 								currentHealthValue = regenStat.Current;
-
 								break;
 							}
 						}
@@ -91,11 +102,11 @@ AActor* UMeleeBasicAttack::FindNearestTarget(AActor* InInstigator, float InRange
 							continue;
 						}
 
-						// TODO : 팀 판정 로직
-						// if (Team(InInstigator, actor))
-						// {
-						//    continue;
-						// }
+						// 적/아군 판정 추가 (기본공격은 Enemy만 타겟)
+						if (!CanAffectTarget(InInstigator, actor, Arcanum::Skills::TargetFilter::Enemy))
+						{
+							continue;
+						}
 
 						const float distanceSquared = FVector::DistSquared2D(InInstigator->GetActorLocation(), actor->GetActorLocation());
 
@@ -117,7 +128,13 @@ bool UMeleeBasicAttack::ApplyBasicAttackDamage(AActor* InInstigator, AActor* InT
 {
 	if (InTarget)
 	{
-		return ApplyModifiersToTarget(InInstigator, InTarget, InEntry.OtherCharacterModifiers);
+		// 기본공격 데미지 + 현재 각성 디버프를 합쳐서 적용
+		TArray<FDerivedStatModifier> finalModifiers;
+
+		if (BuildHitModifiersWithAwaken(InInstigator, InEntry.OtherCharacterModifiers, finalModifiers))
+		{
+			return ApplyModifiersToTarget(InInstigator, InTarget, finalModifiers);
+		}
 	}
 
 	return false;

@@ -750,6 +750,1337 @@
 
 
 
+  {
+    "Name": "Trigger_BloodBurst",
+    "SkillData": {
+      "SkillNameTag": "Arcanum.Skills.Trigger.BloodBurst",
+      "DisplayName": "혈폭",
+      "SkillTypeTag": "Arcanum.Skills.SkillTypes.Active",
+      "TargetTypeTag": "Arcanum.Skills.TargetingType.Unit",
+      "TargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+      "SkillVFXTag": [
+        "Arcanum.Skills.SkillVFX.None"
+      ],
+      "Icon": "",
+      "CurrLevel": 0,
+      "LevelModifiers": [
+        {
+          "Level": 0,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.Trigger.BloodBurst",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -30.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ],
+          "TargetEffect": ""
+        },
+        {
+          "Level": 1,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.Trigger.BloodBurst",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -42.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ],
+          "TargetEffect": ""
+        },
+        {
+          "Level": 2,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.Trigger.BloodBurst",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -56.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ],
+          "TargetEffect": ""
+        },
+        {
+          "Level": 3,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.Trigger.BloodBurst",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -72.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ],
+          "TargetEffect": ""
+        },
+        {
+          "Level": 4,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.Trigger.BloodBurst",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -90.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ],
+          "TargetEffect": ""
+        },
+        {
+          "Level": 5,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.Trigger.BloodBurst",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -110.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ],
+          "TargetEffect": ""
+        }
+      ],
+      "Targeting": {
+        "IndicatorDecal": "",
+        "MaxRange": 0.0,
+        "Radius": 250.0,
+        "Width": 0.0
+      },
+      "Control": {
+        "KnockbackStrength": 0.0,
+        "PullStrength": 0.0
+      },
+      "Awaken": {
+        "MaxGauge": 100.0,
+        "GainOnBasicHit": 1.0,
+        "GainOnWeaponSkillHit": 5.0,
+        "DurationSec": 15.0,
+        "AuraRadius": 0.0
+      },
+      "Trigger": {
+        "TriggerSkillTag": "Arcanum.Skills.SkillName.None"
+      }
+    },
+    "SkillClass": ""
+  },
+
+  {
+    "Name": "Trigger_Execution",
+    "SkillData": {
+      "SkillNameTag": "Arcanum.Skills.Trigger.Execution",
+      "DisplayName": "처단",
+      "SkillTypeTag": "Arcanum.Skills.SkillTypes.Active",
+      "TargetTypeTag": "Arcanum.Skills.TargetingType.Unit",
+      "TargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+      "SkillVFXTag": [
+        "Arcanum.Skills.SkillVFX.None"
+      ],
+      "Icon": "",
+      "CurrLevel": 0,
+      "LevelModifiers": [
+        {
+          "Level": 0,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.Trigger.Execution",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -35.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ],
+          "TargetEffect": ""
+        },
+        {
+          "Level": 1,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.Trigger.Execution",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -49.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ],
+          "TargetEffect": ""
+        },
+        {
+          "Level": 2,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.Trigger.Execution",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -65.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ],
+          "TargetEffect": ""
+        },
+        {
+          "Level": 3,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.Trigger.Execution",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -83.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ],
+          "TargetEffect": ""
+        },
+        {
+          "Level": 4,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.Trigger.Execution",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -103.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ],
+          "TargetEffect": ""
+        },
+        {
+          "Level": 5,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.Trigger.Execution",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -125.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ],
+          "TargetEffect": ""
+        }
+      ],
+      "Targeting": {
+        "IndicatorDecal": "",
+        "MaxRange": 0.0,
+        "Radius": 0.0,
+        "Width": 0.0
+      },
+      "Control": {
+        "KnockbackStrength": 0.0,
+        "PullStrength": 0.0
+      },
+      "Awaken": {
+        "MaxGauge": 100.0,
+        "GainOnBasicHit": 1.0,
+        "GainOnWeaponSkillHit": 5.0,
+        "DurationSec": 15.0,
+        "AuraRadius": 0.0
+      },
+      "Trigger": {
+        "TriggerSkillTag": "Arcanum.Skills.SkillName.None"
+      }
+    },
+    "SkillClass": ""
+  },
+
+  {
+    "Name": "Trigger_Purification",
+    "SkillData": {
+      "SkillNameTag": "Arcanum.Skills.Trigger.Purification",
+      "DisplayName": "정화",
+      "SkillTypeTag": "Arcanum.Skills.SkillTypes.Active",
+      "TargetTypeTag": "Arcanum.Skills.TargetingType.Unit",
+      "TargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+      "SkillVFXTag": [
+        "Arcanum.Skills.SkillVFX.None"
+      ],
+      "Icon": "",
+      "CurrLevel": 0,
+      "LevelModifiers": [
+        {
+          "Level": 0,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.Trigger.Purification",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -32.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ],
+          "TargetEffect": ""
+        },
+        {
+          "Level": 1,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.Trigger.Purification",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -45.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ],
+          "TargetEffect": ""
+        },
+        {
+          "Level": 2,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.Trigger.Purification",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -60.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ],
+          "TargetEffect": ""
+        },
+        {
+          "Level": 3,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.Trigger.Purification",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -76.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ],
+          "TargetEffect": ""
+        },
+        {
+          "Level": 4,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.Trigger.Purification",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -94.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ],
+          "TargetEffect": ""
+        },
+        {
+          "Level": 5,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.Trigger.Purification",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -114.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 1
+            }
+          ],
+          "TargetEffect": ""
+        }
+      ],
+      "Targeting": {
+        "IndicatorDecal": "",
+        "MaxRange": 0.0,
+        "Radius": 0.0,
+        "Width": 0.0
+      },
+      "Control": {
+        "KnockbackStrength": 0.0,
+        "PullStrength": 0.0
+      },
+      "Awaken": {
+        "MaxGauge": 100.0,
+        "GainOnBasicHit": 1.0,
+        "GainOnWeaponSkillHit": 5.0,
+        "DurationSec": 15.0,
+        "AuraRadius": 0.0
+      },
+      "Trigger": {
+        "TriggerSkillTag": "Arcanum.Skills.SkillName.None"
+      }
+    },
+    "SkillClass": ""
+  },
+
+
+
+
+
+
+  {
+    "Name": "Debuff_Bleed",
+    "SkillData": {
+      "SkillNameTag": "Arcanum.Skills.SkillVFX.Bleed",
+      "DisplayName": "출혈",
+      "SkillTypeTag": "Arcanum.Skills.SkillTypes.Passive",
+      "TargetTypeTag": "Arcanum.Skills.TargetingType.Unit",
+      "TargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+      "SkillVFXTag": [
+        "Arcanum.Skills.SkillVFX.Bleed"
+      ],
+      "Icon": "",
+      "CurrLevel": 0,
+      "LevelModifiers": [
+        {
+          "Level": 0,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.SkillVFX.Bleed",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -3.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 5.0,
+              "ModifierPolicy": "Stack",
+              "MaxStack": 5
+            }
+          ],
+          "TargetEffect": ""
+        },
+        {
+          "Level": 1,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.SkillVFX.Bleed",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -4.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 5.0,
+              "ModifierPolicy": "Stack",
+              "MaxStack": 5
+            }
+          ],
+          "TargetEffect": ""
+        },
+        {
+          "Level": 2,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.SkillVFX.Bleed",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -5.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 5.0,
+              "ModifierPolicy": "Stack",
+              "MaxStack": 5
+            }
+          ],
+          "TargetEffect": ""
+        },
+        {
+          "Level": 3,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.SkillVFX.Bleed",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -6.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 5.0,
+              "ModifierPolicy": "Stack",
+              "MaxStack": 5
+            }
+          ],
+          "TargetEffect": ""
+        },
+        {
+          "Level": 4,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.SkillVFX.Bleed",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -7.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 5.0,
+              "ModifierPolicy": "Stack",
+              "MaxStack": 5
+            }
+          ],
+          "TargetEffect": ""
+        },
+        {
+          "Level": 5,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.SkillVFX.Bleed",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -8.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 5.0,
+              "ModifierPolicy": "Stack",
+              "MaxStack": 5
+            }
+          ],
+          "TargetEffect": ""
+        }
+      ],
+      "Targeting": {
+        "IndicatorDecal": "",
+        "MaxRange": 0.0,
+        "Radius": 0.0,
+        "Width": 0.0
+      },
+      "Control": {
+        "KnockbackStrength": 0.0,
+        "PullStrength": 0.0
+      },
+      "Awaken": {
+        "MaxGauge": 100.0,
+        "GainOnBasicHit": 1.0,
+        "GainOnWeaponSkillHit": 5.0,
+        "DurationSec": 15.0,
+        "AuraRadius": 0.0
+      },
+      "Trigger": {
+        "TriggerSkillTag": "Arcanum.Skills.Trigger.BloodBurst"
+      }
+    },
+    "SkillClass": ""
+  },
+
+  {
+    "Name": "Debuff_Mark",
+    "SkillData": {
+      "SkillNameTag": "Arcanum.Skills.SkillVFX.Mark",
+      "DisplayName": "표식",
+      "SkillTypeTag": "Arcanum.Skills.SkillTypes.Passive",
+      "TargetTypeTag": "Arcanum.Skills.TargetingType.Unit",
+      "TargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+      "SkillVFXTag": [
+        "Arcanum.Skills.SkillVFX.Mark"
+      ],
+      "Icon": "",
+      "CurrLevel": 0,
+      "LevelModifiers": [
+        {
+          "Level": 0,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.SkillVFX.Mark",
+              "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -5.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 5.0,
+              "ModifierPolicy": "Stack",
+              "MaxStack": 5
+            }
+          ],
+          "TargetEffect": ""
+        },
+        {
+          "Level": 1,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.SkillVFX.Mark",
+              "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -7.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 5.0,
+              "ModifierPolicy": "Stack",
+              "MaxStack": 5
+            }
+          ],
+          "TargetEffect": ""
+        },
+        {
+          "Level": 2,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.SkillVFX.Mark",
+              "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -9.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 5.0,
+              "ModifierPolicy": "Stack",
+              "MaxStack": 5
+            }
+          ],
+          "TargetEffect": ""
+        },
+        {
+          "Level": 3,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.SkillVFX.Mark",
+              "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -11.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 5.0,
+              "ModifierPolicy": "Stack",
+              "MaxStack": 5
+            }
+          ],
+          "TargetEffect": ""
+        },
+        {
+          "Level": 4,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.SkillVFX.Mark",
+              "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -13.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 5.0,
+              "ModifierPolicy": "Stack",
+              "MaxStack": 5
+            }
+          ],
+          "TargetEffect": ""
+        },
+        {
+          "Level": 5,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.SkillVFX.Mark",
+              "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -15.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 5.0,
+              "ModifierPolicy": "Stack",
+              "MaxStack": 5
+            }
+          ],
+          "TargetEffect": ""
+        }
+      ],
+      "Targeting": {
+        "IndicatorDecal": "",
+        "MaxRange": 0.0,
+        "Radius": 0.0,
+        "Width": 0.0
+      },
+      "Control": {
+        "KnockbackStrength": 0.0,
+        "PullStrength": 0.0
+      },
+      "Awaken": {
+        "MaxGauge": 100.0,
+        "GainOnBasicHit": 1.0,
+        "GainOnWeaponSkillHit": 5.0,
+        "DurationSec": 15.0,
+        "AuraRadius": 0.0
+      },
+      "Trigger": {
+        "TriggerSkillTag": "Arcanum.Skills.Trigger.Execution"
+      }
+    },
+    "SkillClass": ""
+  },
+
+  {
+    "Name": "Debuff_Aegis",
+    "SkillData": {
+      "SkillNameTag": "Arcanum.Skills.SkillVFX.Aegis",
+      "DisplayName": "수호",
+      "SkillTypeTag": "Arcanum.Skills.SkillTypes.Passive",
+      "TargetTypeTag": "Arcanum.Skills.TargetingType.Unit",
+      "TargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+      "SkillVFXTag": [
+        "Arcanum.Skills.SkillVFX.Aegis"
+      ],
+      "Icon": "",
+      "CurrLevel": 0,
+      "LevelModifiers": [
+        {
+          "Level": 0,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.SkillVFX.Aegis",
+              "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -3.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 5.0,
+              "ModifierPolicy": "Stack",
+              "MaxStack": 5
+            }
+          ],
+          "TargetEffect": ""
+        },
+        {
+          "Level": 1,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.SkillVFX.Aegis",
+              "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -4.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 5.0,
+              "ModifierPolicy": "Stack",
+              "MaxStack": 5
+            }
+          ],
+          "TargetEffect": ""
+        },
+        {
+          "Level": 2,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.SkillVFX.Aegis",
+              "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -5.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 5.0,
+              "ModifierPolicy": "Stack",
+              "MaxStack": 5
+            }
+          ],
+          "TargetEffect": ""
+        },
+        {
+          "Level": 3,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.SkillVFX.Aegis",
+              "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -6.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 5.0,
+              "ModifierPolicy": "Stack",
+              "MaxStack": 5
+            }
+          ],
+          "TargetEffect": ""
+        },
+        {
+          "Level": 4,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.SkillVFX.Aegis",
+              "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -7.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 5.0,
+              "ModifierPolicy": "Stack",
+              "MaxStack": 5
+            }
+          ],
+          "TargetEffect": ""
+        },
+        {
+          "Level": 5,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.SkillVFX.Aegis",
+              "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
+              "ApplyTargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
+              "Value": {
+                "Flat": -8.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "bAllowRefresh": true,
+              "Duration": 5.0,
+              "ModifierPolicy": "Stack",
+              "MaxStack": 5
+            }
+          ],
+          "TargetEffect": ""
+        }
+      ],
+      "Targeting": {
+        "IndicatorDecal": "",
+        "MaxRange": 0.0,
+        "Radius": 0.0,
+        "Width": 0.0
+      },
+      "Control": {
+        "KnockbackStrength": 0.0,
+        "PullStrength": 0.0
+      },
+      "Awaken": {
+        "MaxGauge": 100.0,
+        "GainOnBasicHit": 1.0,
+        "GainOnWeaponSkillHit": 5.0,
+        "DurationSec": 15.0,
+        "AuraRadius": 0.0
+      },
+      "Trigger": {
+        "TriggerSkillTag": "Arcanum.Skills.Trigger.Purification"
+      }
+    },
+    "SkillClass": ""
+  },
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   {
     "Name": "Slash",
