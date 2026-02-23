@@ -14,6 +14,7 @@ class UPlayerBattleStatsComponent;
 */
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBasementDestroyed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBasementHealthChanged, float, CurrentBasementHealth, float, MaxBasementHealth);
 
 
 class UCapsuleComponent;
@@ -33,6 +34,8 @@ public:
 	
 public:
 	ABasement();
+	FOnBasementHealthChanged OnBasementHealthChanged;
+	
 protected:
 	virtual void BeginPlay() override;
 
@@ -65,6 +68,20 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Basement|Spawn")
 	TArray<TSubclassOf<APawn>> SpawnableUnits;
 
+	UPROPERTY(EditAnywhere, Category = "Spawning")
+	float SpawnCommonInterval = 3.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Spawning")
+	TSubclassOf<ACharacter> CommonEnemyClass;
+
+	UPROPERTY(EditAnywhere, Category = "Spawning")
+	FVector SpawnLocation = FVector(-129.0f, 2704.0f, 100.0f);
+
+	FTimerHandle SpawnTimerHandle;
+
+	int32 SpawnCommonCount = 0;
+	int32 MaxSpawnCommonCount = 10;
+
 public: // ===== Behavior =====
 	UFUNCTION(BlueprintCallable)
 	void TakeDamageToBasement(float Damage);
@@ -82,8 +99,8 @@ public: // ===== Behavior =====
 	bool IsBaseDestroyed() const;
 
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision")
-	TObjectPtr<UCapsuleComponent> CapsuleComponent = nullptr;
+	/*UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision")
+	TObjectPtr<UCapsuleComponent> CapsuleComponent = nullptr;*/
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh")
 	TObjectPtr<UStaticMeshComponent> MeshComponent = nullptr;

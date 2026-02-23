@@ -18,7 +18,10 @@ UCLASS()
 class ARCANUM_API UBasementHealthBar : public UUserWidget
 {
 	GENERATED_BODY()
-	
+public:
+	UFUNCTION()
+	void UpdateBasementHealthBar(float CurrentHealth, float MaxHealth);
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UTextBlock> CurrentHealthText = nullptr;

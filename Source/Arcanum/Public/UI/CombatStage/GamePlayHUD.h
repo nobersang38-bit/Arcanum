@@ -21,6 +21,7 @@ class ARCANUM_API UGamePlayHUD : public UUserWidget
 {
 	GENERATED_BODY()
 	
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UBasementHealthBar> PlayerBasementHealthBar;
