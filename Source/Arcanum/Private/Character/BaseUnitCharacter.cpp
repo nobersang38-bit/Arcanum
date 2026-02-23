@@ -21,6 +21,7 @@
 #include "Components/HierarchicalInstancedStaticMeshComponent.h"
 #include "GameplayTagsManager.h"
 #include "Object/Actor/BattlefieldManagerActor.h"
+#include "Animation/BaseUnitAnimInstance.h"
 
 // Sets default values
 ABaseUnitCharacter::ABaseUnitCharacter()
@@ -134,6 +135,10 @@ void ABaseUnitCharacter::AnimSetting()
 		if (UnitData.Info.AnimSetting.AnimInstance) // 애님 인스턴스 설정
 		{
 			GetMesh()->SetAnimInstanceClass(UnitData.Info.AnimSetting.AnimInstance);
+			if (UBaseUnitAnimInstance* TemplateAnimInstance = Cast<UBaseUnitAnimInstance>(GetMesh()->GetAnimInstance()))
+			{
+				TemplateAnimInstance->SetAnimations(UnitData.Info.AnimSetting.Idle, UnitData.Info.AnimSetting.Run);
+			}
 		}
 		break;
 	case EAnimMode::AnimToTexture:

@@ -14,8 +14,14 @@ class ARCANUM_API UBaseUnitAnimInstance : public UAnimInstance
 	GENERATED_BODY()
 public:
 	UBaseUnitAnimInstance();
-
 	virtual void NativeInitializeAnimation() override;
+
+public:
+	FORCEINLINE void SetAnimations(UAnimSequenceBase* InAnimIdle, UAnimSequenceBase* InAnimRun)
+	{
+		Anim_Idle = InAnimIdle;
+		Anim_Run = InAnimRun;
+	}
 
 protected:
 	UFUNCTION()
@@ -27,6 +33,12 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Refrence")
 	float Velocity = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AnimSequence")
+	TObjectPtr<UAnimSequenceBase> Anim_Idle = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AnimSequence")
+	TObjectPtr<UAnimSequenceBase> Anim_Run = nullptr;
 
 private:
 	float Internal_UpdateInterval = 0.0f;

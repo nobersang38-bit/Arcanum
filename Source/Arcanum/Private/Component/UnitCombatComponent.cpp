@@ -311,21 +311,24 @@ void UUnitCombatComponent::Idle()
 void UUnitCombatComponent::Move()
 {
 	StateReset();
-
-	FCollisionShape MySphere = FCollisionShape::MakeSphere(TargetPriorityWeight->GetDetectDistance());
 	TArray<FOverlapResult> OutOverlaps;
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(GetOwner());
+	if (TargetPriorityWeight)
+	{
+		FCollisionShape MySphere = FCollisionShape::MakeSphere(TargetPriorityWeight->GetDetectDistance());
+		FCollisionQueryParams Params;
+		Params.AddIgnoredActor(GetOwner());
 
-	// 특정 위치(GetActorLocation)에서 한 프레임 즉시 검사
-	bool bHit = GetWorld()->OverlapMultiByChannel(
-		OutOverlaps,
-		GetOwner()->GetActorLocation(),
-		FQuat::Identity,
-		ECollisionChannel::ECC_Pawn, // 설정한 채널
-		MySphere,
-		Params
-	);
+		// 특정 위치(GetActorLocation)에서 한 프레임 즉시 검사
+		bool bHit = GetWorld()->OverlapMultiByChannel(
+			OutOverlaps,
+			GetOwner()->GetActorLocation(),
+			FQuat::Identity,
+			ECollisionChannel::ECC_Pawn, // 설정한 채널
+			MySphere,
+			Params
+		);
+	}
+	
 	DetectedCharacters.Empty();
 	for (int i = 0; i < OutOverlaps.Num(); i++)
 	{
@@ -353,6 +356,8 @@ void UUnitCombatComponent::Move()
 void UUnitCombatComponent::Attack()
 {
 	FTimerDelegate AttackDelegate;
+
+	
 	AttackDelegate.BindWeakLambda(this, [this]()
 		{
 			if (TargetCharacter.IsValid() && OwnerCharacter.IsValid() && UnitData.Info.AnimSetting.Attacks.Num() > 0)
@@ -360,6 +365,24 @@ void UUnitCombatComponent::Attack()
 				int32 IDX = FMath::RandRange(0, (UnitData.Info.AnimSetting.Attacks.Num() - 1) );
 				UAnimMontage* AttackMontage = UnitData.Info.AnimSetting.Attacks[IDX];
 				OwnerCharacter->PlayAnimMontage(AttackMontage);
+
+				RotateDelegate.Unbind();
+				RotateDelegate.BindWeakLambda(this, [this]()
+					{
+						if (TargetCharacter.IsValid() && OwnerCharacter.IsValid())
+						{
+							FVector Direction = TargetCharacter->GetActorLocation() - GetOwner()->GetActorLocation();
+							Direction = FVector(Direction.X, Direction.Y, 0);
+							GetOwner()->SetActorRotation(FMath::RInterpConstantTo(GetOwner()->GetActorRotation(), Direction.Rotation(), RotateInterval, RotateSpeed));
+						}
+						else
+						{
+							GetWorld()->GetTimerManager().ClearTimer(RotateTimerHandle);
+						}
+					});
+
+				GetWorld()->GetTimerManager().ClearTimer(RotateTimerHandle);
+				GetWorld()->GetTimerManager().SetTimer(RotateTimerHandle, RotateDelegate, RotateInterval, true, 0.0f);
 			}
 			else
 			{

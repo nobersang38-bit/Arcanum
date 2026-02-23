@@ -139,7 +139,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim", meta = (EditCondition = "AnimMode == EAnimMode::AnimBlueprint", EditConditionHides))
 	TSubclassOf<class UAnimInstance> AnimInstance = nullptr;
 
-#pragma region Idle
+#pragma region Loco
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim", meta = (EditCondition = "AnimMode == EAnimMode::AnimBlueprint", EditConditionHides))
+	TObjectPtr<UAnimSequenceBase> Idle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim", meta = (EditCondition = "AnimMode == EAnimMode::AnimBlueprint", EditConditionHides))
+	TObjectPtr<UAnimSequenceBase> Run;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim", meta = (EditCondition = "AnimMode == EAnimMode::AnimToTexture", EditConditionHides))
 	TObjectPtr<UATTAnimPlayData> IdleATTData;
 #pragma endregion

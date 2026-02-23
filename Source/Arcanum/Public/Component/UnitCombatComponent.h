@@ -100,6 +100,8 @@ private:
 	FTimerHandle AttackTimerHandle;
 	FTimerHandle DeathTimerHandle;
 
+	FTimerHandle RotateTimerHandle;
+
 	FBlackboard::FKey TargetActorKey;
 
 	// 현재 내가 공격중인 적이거나 공격해야하는 적
@@ -131,4 +133,8 @@ private:
 	TWeakObjectPtr<class UCapsuleComponent> OwnerCapsuleComponent = nullptr;
 
 	bool bIsDead = false;
+
+	float RotateInterval = 0.05f;
+	float RotateSpeed = 10.0f;
+	FTimerDelegate RotateDelegate;
 };
