@@ -2,8 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
-#include "GameplayTags/ArcanumTags.h"
-#include "DataInfo/BattleCharacter/FBattleCharacterData.h"
+#include "DataInfo/PlayerData/FPlayerData.h"
 #include "ArcanumSaveGame.generated.h"
 
 /**
@@ -19,10 +18,7 @@ class ARCANUM_API UArcanumSaveGame : public USaveGame
 	
 public:
 	/** ID와 PW를 저장할 맵 */
-	UPROPERTY()
-	TMap<FString, FString> UserDatabase;
-
-	/** 캐릭터 태그를 키로 하여 현재 진행 상태(등급, 조각 등)를 저장 */
-	UPROPERTY()
-	TMap<FGameplayTag, FBattleCharacterData> SavedCharacters;
+	UPROPERTY(SaveGame) TMap<FString, FString> UserDatabase;
+	/** 플레이어 데이터 */
+	UPROPERTY(SaveGame) FPlayerData PlayerData;
 };

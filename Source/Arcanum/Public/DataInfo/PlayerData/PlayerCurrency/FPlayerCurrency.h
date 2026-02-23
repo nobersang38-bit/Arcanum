@@ -16,6 +16,9 @@ struct FCurrencyData
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int64 TotalEarned = 0;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
+    FDateTime LastRegenTime;
 };
 
 USTRUCT(BlueprintType)

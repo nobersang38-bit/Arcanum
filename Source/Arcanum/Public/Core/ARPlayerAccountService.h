@@ -34,7 +34,11 @@ public:
 
 #pragma region Shop Widget 관련
 public:
+    /** DT의 장비목록을 반환하는 함수*/
+    TArray<FName> GetEquipmentList(UARGameInstance* GameInstance);
+    /** 상점에서 구매시 사용하는 함수*/
     static bool PurchaseEquipment(UARGameInstance* GameInstance, FName RowName);
+    /** */
     static const FDTEquipmentInfoRow* GetItemDefinition(UGameDataSubsystem* DataSubsystem, const FGameplayTag& ItemTag);
 #pragma endregion
 

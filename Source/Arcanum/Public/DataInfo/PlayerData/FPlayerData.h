@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "DataInfo/PlayerData/PlayerCurrency/FPlayerCurrency.h"
-#include "DataInfo/PlayerData/PlayerBattleData/FPlayerBattleData.h"
+#include "DataInfo/PlayerData/PlayerBattleData/Data/FPlayerBattleData.h"
 
 #include "DataInfo/BattleCharacter/FBattleCharacterData.h"
 #include "DataInfo/BattleCharacter/Equipment/Data/FEquipmentData.h"

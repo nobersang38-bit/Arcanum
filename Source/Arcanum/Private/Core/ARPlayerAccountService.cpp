@@ -16,6 +16,24 @@
 // ========================================================
 // Shop Widget 관련
 // ========================================================
+TArray<FName> FPlayerAccountService::GetEquipmentList(UARGameInstance* GameInstance)
+{
+    TArray<FName> Res;
+    if (!GameInstance) return Res;
+
+    UGameDataSubsystem* DataSubsystem = GameInstance->GetSubsystem<UGameDataSubsystem>();
+    if (!DataSubsystem) return Res;
+
+    UDataTable** TablePtr = DataSubsystem->MasterDataTables.Find(Arcanum::DataTable::Equipment);
+    if (!TablePtr) return Res;
+
+    UDataTable* Table = *TablePtr;
+    for (const auto& Pair : Table->GetRowMap()) {
+        Res.Add(Pair.Key);
+    }
+
+    return Res;
+}
 bool FPlayerAccountService::PurchaseEquipment(UARGameInstance* GameInstance, FName RowName)
 {
     if (!GameInstance) return false;
