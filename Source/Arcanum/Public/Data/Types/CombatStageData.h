@@ -12,7 +12,7 @@ USTRUCT(BlueprintType)
 struct FCombatStageData
 {
 	GENERATED_BODY()
-protected:
+public:
 
 	// Todo : 이 부분에 몬스터 웨이브 구조체나 데이터 에셋 같은거 들어가야 합니다
 

@@ -13,10 +13,10 @@ USTRUCT(BlueprintType)
 struct FUnitCombatStat
 {
 	GENERATED_BODY()
-protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FCommonCombatStat CommonStat;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float AttackPower = 10.0f;
 };
