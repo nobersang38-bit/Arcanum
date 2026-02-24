@@ -18,6 +18,7 @@ class ARCANUM_API UCurrencyWidget : public UUserWidget
 
 protected:
 	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
 
 #pragma region 재화 표시
 protected:
@@ -26,15 +27,15 @@ protected:
 	void RefreshCurrencyUI();
 
 protected:
-	/** 골드 텍스트 */
+	/* 골드 텍스트 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UTextBlock> GoldText;
 
-	/** 조각 텍스트 */
+	/* 조각 텍스트 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UTextBlock> ShardText;
 
-	/** 소울 텍스트 */
+	/* 소울 텍스트 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UTextBlock> SoulText;
 #pragma endregion

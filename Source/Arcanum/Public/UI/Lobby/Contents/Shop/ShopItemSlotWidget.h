@@ -71,6 +71,11 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Shop")
 	FOnShopItemSlotClicked OnShopItemSlotClicked;
 
+protected:
+	/* 불투명도 */
+	UPROPERTY(EditAnywhere, Category = "shop")
+	float SoldOutOpacity = 0.3f;
+
 private:
 	/* 슬롯 클릭 버튼 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget, AllowPrivateAccess = "true"))

@@ -55,7 +55,6 @@ class ARCANUM_API UGameTimeSubsystem : public UGameInstanceSubsystem, public FTi
 	FOnStageSecondChanged OnStageSecondChanged;
 
 private:
-
 	// Banner
 	bool bBannerActive = false;
 	FDateTime BannerEndTime;
@@ -65,4 +64,33 @@ private:
 	bool bIsBattleActive = false;
 	float CurrentStageTime = 0.f;
 	int32 LastStageSecond = -1;
+
+
+#pragma region 상점 타이머
+	// ---------------------------
+	// Shop Timer (UTC 기반)
+	// ---------------------------
+public:
+	/* 상점 카운트다운 시작 (절대 종료 시각 전달) */
+	UFUNCTION(BlueprintCallable, Category = "Time|Shop")
+	void StartShop(FDateTime InEndTime);
+
+	/* 상점 카운트다운 중지 */
+	UFUNCTION(BlueprintCallable, Category = "Time|Shop")
+	void StopShop();
+
+public:
+	/* 상점 남은 초 변경 알림 (UI 표시용) */
+	UPROPERTY(BlueprintAssignable, Category = "Time|Shop")
+	FOnBannerSecondChanged OnShopSecondChanged;
+
+	/* 상점 시간 주기 */
+	int32 ShopRefreshSeconds = 600;
+
+private:
+	bool bShopActive = false;
+	FDateTime ShopEndTime;
+	int32 LastShopSecond = -1;
+
+#pragma endregion
 };

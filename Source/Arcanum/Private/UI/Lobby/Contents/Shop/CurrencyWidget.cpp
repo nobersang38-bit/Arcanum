@@ -6,7 +6,22 @@ void UCurrencyWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	if (UARGameInstance* gameInstance = GetGameInstance<UARGameInstance>())
+	{
+		gameInstance->OnCurrencyChanged.AddDynamic(this, &UCurrencyWidget::RefreshCurrencyUI);
+	}
+
 	RefreshCurrencyUI();
+}
+
+void UCurrencyWidget::NativeDestruct()
+{
+	if (UARGameInstance* gameInstance = GetGameInstance<UARGameInstance>())
+	{
+		gameInstance->OnCurrencyChanged.RemoveDynamic(this, &UCurrencyWidget::RefreshCurrencyUI);
+	}
+
+	Super::NativeDestruct();
 }
 
 void UCurrencyWidget::RefreshCurrencyUI()
@@ -15,7 +30,7 @@ void UCurrencyWidget::RefreshCurrencyUI()
 	{
 		if (UARGameInstance* gameInstance = Cast<UARGameInstance>(world->GetGameInstance()))
 		{
-			FPlayerData& playerData = gameInstance->GetPlayerData();
+			const FPlayerData& playerData = gameInstance->GetPlayerData();
 
 			const FCurrencyData* goldData = playerData.PlayerCurrency.CurrencyDatas.Find(Arcanum::PlayerData::Currencies::NonRegen::Gold::Value);
 			const FCurrencyData* shardData = playerData.PlayerCurrency.CurrencyDatas.Find(Arcanum::PlayerData::Currencies::NonRegen::Shard::Value);

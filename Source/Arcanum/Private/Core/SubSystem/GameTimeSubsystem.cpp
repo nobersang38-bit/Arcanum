@@ -41,6 +41,27 @@ void UGameTimeSubsystem::Tick(float DeltaTime)
 			}
 		}
 	}
+
+	// 상점 타이머
+	if (bShopActive)
+	{
+		FDateTime CurrentTimeKST = FDateTime::UtcNow() + FTimespan(9, 0, 0);
+		FTimespan Diff = ShopEndTime - CurrentTimeKST;
+
+		int32 RemainingSeconds = FMath::Max(0, static_cast<int32>(Diff.GetTotalSeconds()));
+		if (RemainingSeconds != LastShopSecond)
+		{
+			LastShopSecond = RemainingSeconds;
+			OnShopSecondChanged.Broadcast(RemainingSeconds);
+
+			if (RemainingSeconds <= 0)
+			{
+				StopShop();
+				// 상점 갱신 로직 호출
+				// RefreshShop();
+			}
+		}
+	}
 }
 
 TStatId UGameTimeSubsystem::GetStatId() const
@@ -73,4 +94,16 @@ void UGameTimeSubsystem::StartStage(float DurationSeconds)
 void UGameTimeSubsystem::StopStage()
 {
 	bIsBattleActive = false;
+}
+
+void UGameTimeSubsystem::StartShop(FDateTime InEndTime)
+{
+	ShopEndTime = InEndTime;
+	bShopActive = true;
+	LastShopSecond = -1;
+}
+
+void UGameTimeSubsystem::StopShop()
+{
+	bShopActive = false;
 }

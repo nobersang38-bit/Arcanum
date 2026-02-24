@@ -10,6 +10,9 @@
 #include "Core/ARPlayerAccountService.h"
 #include "ARGameInstance.generated.h"
 
+/* 재화 변경 알림 */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCurrencyChanged); //
+
 /*
  * Version : 1.0.0.0 2026/02/03
  * 클래스 역할 :
@@ -54,7 +57,17 @@ public:
     void SaveAllData();
     void LoadAllData();
 
+#pragma region 재화 변경 알림
+public:
+    UPROPERTY(BlueprintAssignable)
+    FOnCurrencyChanged OnCurrencyChanged; // 델리게이트
+#pragma endregion
 
+#pragma region 상점 세이브 접근
+public:
+    UFUNCTION(BlueprintCallable)
+    UArcanumSaveGame* GetArSaveGame() const { return ArSaveGame; } // 상점 세이브
+#pragma endregion
 
 #pragma region 테스트 코드
     UFUNCTION(BlueprintCallable)
