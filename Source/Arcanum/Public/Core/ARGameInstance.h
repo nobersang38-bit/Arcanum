@@ -22,28 +22,51 @@ class ARCANUM_API UARGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 	
+#pragma region 블루플린트에서 변경 가능한 애들
+public:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "00-Global Setting")
+    float SupplyRegenTimer = 300.f;
+#pragma endregion
+	
+#pragma region 초기화 관련
 public:
     virtual void Init() override;
-protected:
-    UPROPERTY()
-    TObjectPtr<UArcanumSaveGame> ArSaveGame;
-
-    // 저장 파일 이름 고정
-    const FString SaveSlotName = TEXT("MainSaveSlot");
+private:
+    /** 플레이어 재화 관련 초기화*/
+    void InitializeNewPlayerData();
+#pragma endregion
 
 #pragma region ID/PW용
 public:
     bool AddIDPW(FString ID, FString PW);
     bool CheckLogin(FString ID, FString PW);
-    void SavePlayerData();
 #pragma endregion
 
+#pragma region 플레이어 데이터 저장/로드
 public:
     /* 필요하면 Getter만 제공 */
-    UFUNCTION(BlueprintCallable)
-    FPlayerData& GetPlayerData() { return PlayerData; }
+    UFUNCTION(BlueprintCallable) FPlayerData& GetPlayerData() { return PlayerData; }
+    
+    /** 플레이어 데이터 저장*/
+    void SavePlayerData();
+    /** 플레이어 데이터 로드*/
+    void LoadPlayerData();
 private:
+    /** 저장할 본체*/
     UPROPERTY() FPlayerData PlayerData;
+#pragma endregion
+
+
+#pragma region 고정
+protected:
+    /** 데이터 저장용 클래스*/
+    UPROPERTY() TObjectPtr<UArcanumSaveGame> ArSaveGame;
+    // 저장 파일 이름 고정
+    const FString SaveSlotName = TEXT("MainSaveSlot");
+#pragma endregion
+
+
+
 
 public:
     // 서버가 관리하는 전체 캐릭터 데이터 리스트(안쓸예정/PlayerData 안으로 들어감)
@@ -51,8 +74,6 @@ public:
     TMap<FGameplayTag, FBattleCharacterData> UserCharacterRegistry;
 
     void InitializeCharacter(FGameplayTag CharacterTag);
-    void SaveAllData();
-    void LoadAllData();
 
 
 

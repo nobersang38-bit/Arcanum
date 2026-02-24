@@ -15,7 +15,7 @@ struct FBattleCharacterDef
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Identity")
     FGameplayTag CharacterTag;
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    UTexture2D* CharacterIcon;
+    TSoftObjectPtr<UTexture2D> CharacterIcon;
 
     /* Start 다이얼로그 (추후 sound로 변경 가능) */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")

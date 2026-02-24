@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "Player",
+    "PlayerBattleRegenStat": [
+      {"ParentTag" : "Arcanum.BattleStat.Player.Regen.Meat" , "Current": 40, "BaseMax": 40, "BaseTick": 300,"BonusMax": 0.0,"ModifierMax": 0.0,"ModifierTick": 0.0}
+    ],
+    "PlayerBattleNonRegenStat": [
+      { "TagName": "Arcanum.BattleStat.Player.NonRegen.CommandCenterStamina.Value",     "BaseValue": 1500, "BonusValue": 0, "ModifierValue": 0 }
+    ],
+    "UpgradeValue": {
+      "Arcanum.BattleStat.Player.Regen.Meat": 1,
+      "Arcanum.BattleStat.Player.NonRegen.CommandCenterStamina.Value": 100
+    }
+  }
+]

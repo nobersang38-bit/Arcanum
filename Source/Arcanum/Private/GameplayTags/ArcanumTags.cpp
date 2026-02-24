@@ -6,6 +6,7 @@ namespace Arcanum {
 		UE_DEFINE_GAMEPLAY_TAG(CharacterInfo,		"Arcanum.DataTable.CharacterInfo");
 		UE_DEFINE_GAMEPLAY_TAG(BattleStats,			"Arcanum.DataTable.BattleStats");
 		UE_DEFINE_GAMEPLAY_TAG(Equipment,			"Arcanum.DataTable.Equipment");
+		UE_DEFINE_GAMEPLAY_TAG(PlayerBattleStats,	"Arcanum.DataTable.PlayerBattleStats");
 		//UE_DEFINE_GAMEPLAY_TAG(BattleRegenStats,	"Arcanum.DataTable.BattleRegenStats");
 		//UE_DEFINE_GAMEPLAY_TAG(BattleNonRegenStats, "Arcanum.DataTable.BattleNonRegenStats");
 	}

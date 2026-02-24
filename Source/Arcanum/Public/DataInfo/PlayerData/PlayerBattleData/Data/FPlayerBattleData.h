@@ -10,8 +10,8 @@ struct FPlayerBattleData
     GENERATED_BODY()
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    TArray<FRegenStat> Meat;
+    TArray<FRegenStat> PlayerBattleRegenStat;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    TArray<FNonRegenStat> CommandCenterStamina;
+    TArray<FNonRegenStat> PlayerBattleNonRegenStat;
 };
