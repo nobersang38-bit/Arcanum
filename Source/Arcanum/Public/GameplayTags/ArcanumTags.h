@@ -79,15 +79,20 @@ namespace Arcanum {
 
 namespace Arcanum {
 	namespace Gacha {
-		namespace Pickup {
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Slot1);
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Slot2);
-		}
-		namespace Always {
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Slot1); // 무조건 플레이어 아군 전체 뽑기(플레이어, 쫄병)
-		}
-		namespace Item {
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Slot1); // 무조건 아이템 전체 뽑기
+		namespace Type {
+			namespace Standard {
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Standard);
+			}
+			namespace CharacterPickup {
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(CharacterPickup);
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(PickUp2601);
+			}
+			namespace WeaponPickup {
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(WeaponPickup);
+			}
+			namespace EventLimited {
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(EventLimited);
+			}
 		}
 	}
 }

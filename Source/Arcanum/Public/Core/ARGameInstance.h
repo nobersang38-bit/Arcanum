@@ -44,8 +44,12 @@ public:
 
 #pragma region 플레이어 데이터 저장/로드
 public:
+    UFUNCTION(BlueprintCallable)
+    const FPlayerData& GetPlayerDataCopy() const { return PlayerData; }
+
     /* 필요하면 Getter만 제공 */
-    UFUNCTION(BlueprintCallable) FPlayerData& GetPlayerData() { return PlayerData; }
+    UFUNCTION(BlueprintCallable)
+    FPlayerData& GetPlayerData() { return PlayerData; }
     
     /** 플레이어 데이터 저장*/
     void SavePlayerData();
