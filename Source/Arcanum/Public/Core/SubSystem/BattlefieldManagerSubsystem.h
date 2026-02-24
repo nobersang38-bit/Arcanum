@@ -6,7 +6,18 @@
 #include "Subsystems/WorldSubsystem.h"
 #include "Data/Types/CombatStageData.h"
 #include "Data/Types/MatchData.h"
+#include "DataInfo/PlayerData/FPlayerData.h"
 #include "BattlefieldManagerSubsystem.generated.h"
+
+USTRUCT(BlueprintType)
+struct FInBattleData
+{
+	GENERATED_BODY()
+public:
+	FPlayerBattleData PlayerBattleData;
+	FBattleCharacterData BattleCharacterData;
+};
+
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnMatchEnded, const FMatchData&)
 
@@ -27,6 +38,7 @@ public:
 	FOnMatchEnded OnMatchEnded;
 
 public:
+#pragma region 스테이지 기본설정
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void SetStageData(const FCombatStageData& InData) { StageData = InData; }
 
@@ -47,15 +59,30 @@ public:
 
 	UFUNCTION()
 	void SetABattlefieldManagerActor(ABattlefieldManagerActor* InBattlefieldManagerActor);
+#pragma endregion
+
+#pragma region 중요정보 및 설정
 
 	// 현재 스테이지 플레이 정보(진행중인지, 종료했는지 종료됐다면 승리했는지)
 	FORCEINLINE const FMatchData& GetCurrentMatchData() { return CurrentMatchData; }
+
+	void SetPlayerData(const FPlayerData& InPlayerData, FInBattleData& OutInBattleData);
+	/*
+	필요한 정보
+	유닛들
+	플레이어 캐릭터
+	현재 스테이지
+	*/
+#pragma endregion
+
+	
 
 protected:
 	UFUNCTION()
 	void SetCurrentMatchData(const FMatchData& InData);
 
 protected:
+#pragma region 스테이지 기본설정
 	FCombatStageData StageData;
 
 	UPROPERTY()
@@ -67,4 +94,6 @@ protected:
 
 	UPROPERTY()
 	TWeakObjectPtr<ABattlefieldManagerActor> BattlefieldManagerActor = nullptr;
+#pragma endregion
+	FInBattleData InBattleData;
 };
