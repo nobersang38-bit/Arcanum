@@ -95,15 +95,12 @@ void FPlayerAccountService::RefreshShop(UARGameInstance* InGameInstance, int32 I
 		{
 			if (UArcanumSaveGame* saveGame = InGameInstance->GetArSaveGame())
 			{
-				// 슬롯 배열 크기 맞춤
-				saveGame->CurrentShopRowNames.SetNum(InShopSlotCount);
-				saveGame->CurrentShopSoldOutStates.SetNum(InShopSlotCount);
-
-				// 새 상점 4칸(또는 가변 슬롯 수) 생성
+				// 새 상점 아이템 생성
 				GenerateShopItems(InGameInstance, InShopSlotCount);
 
 				// 품절 상태 초기화
-				ResetShopSoldOutStates(InGameInstance, InShopSlotCount);
+				saveGame->CurrentShopSoldOutStates.SetNum(saveGame->CurrentShopRowNames.Num());
+				ResetShopSoldOutStates(InGameInstance, saveGame->CurrentShopRowNames.Num());
 
 				// 다음 갱신 시각 저장
 				SetNextShopRefreshTime(InGameInstance);
@@ -199,126 +196,133 @@ bool FPlayerAccountService::IsShopRefreshExpired(UARGameInstance* InGameInstance
 	return true;
 }
 
-// TODO : 확률 데이터 따로 만들어야 됨.
-//        함수 나누어야 됨. 
-//        오류 확인 안됨.
-//void FPlayerAccountService::GenerateShopItems(UARGameInstance* InGameInstance, int32 InShopSlotCount)
-//{
-//	if (InGameInstance)
-//	{
-//		if (InShopSlotCount > 0)
-//		{
-//			if (UArcanumSaveGame* saveGame = InGameInstance->GetArSaveGame())
-//			{
-//				if (UGameDataSubsystem* dataSubsystem = InGameInstance->GetSubsystem<UGameDataSubsystem>())
-//				{
-//					UDataTable* equipmentTable = nullptr;
-//
-//					if (UDataTable** tablePtr = dataSubsystem->MasterDataTables.Find(Arcanum::DataTable::Equipment))
-//					{
-//						if (equipmentTable = *tablePtr)
-//						{
-//							TArray<FName> commonRows;
-//							TArray<FName> setRows;
-//							TArray<FName> legendaryRows;
-//
-//							const FGameplayTag commonRootTag = UGameplayTagsManager::Get().RequestGameplayTag(FName("Arcanum.Items.Rarity.Common"), false);
-//							const FGameplayTag setRootTag = UGameplayTagsManager::Get().RequestGameplayTag(FName("Arcanum.Items.Rarity.SetItem"), false);
-//							const FGameplayTag legendaryRootTag = UGameplayTagsManager::Get().RequestGameplayTag(FName("Arcanum.Items.Rarity.Legendary"), false);
-//
-//							for (const TPair<FName, uint8*>& rowPair : equipmentTable->GetRowMap())
-//							{
-//								if (const FDTEquipmentInfoRow* row = reinterpret_cast<const FDTEquipmentInfoRow*>(rowPair.Value))
-//								{
-//									if (row->BaseInfoSteps.IsEmpty())
-//									{
-//										continue;
-//									}
-//
-//									// 노강 장비만
-//									const FGameplayTag itemTag = row->ItemTag;
-//
-//									if (itemTag.IsValid())
-//									{
-//										if (legendaryRootTag.IsValid() && itemTag.MatchesTag(legendaryRootTag))
-//										{
-//											legendaryRows.Add(rowPair.Key);
-//										}
-//										else if (setRootTag.IsValid() && itemTag.MatchesTag(setRootTag))
-//										{
-//											setRows.Add(rowPair.Key);
-//
-//										}
-//										else
-//										{
-//											commonRows.Add(rowPair.Key);
-//										}
-//									}
-//								}
-//							}
-//
-//							saveGame->CurrentShopRowNames.SetNum(InShopSlotCount);
-//
-//							auto pickAndRemove = [](TArray<FName>& InRows, FName& OutRowName) -> bool
-//								{
-//									if (InRows.Num() <= 0)
-//									{
-//										return false;
-//									}
-//
-//									const int32 randomIndex = FMath::RandRange(0, InRows.Num() - 1);
-//									OutRowName = InRows[randomIndex];
-//									InRows.RemoveAt(randomIndex);
-//									return true;
-//								};
-//
-//							for (int32 slotIndex = 0; slotIndex < InShopSlotCount; slotIndex++)
-//							{
-//								FName pickedRowName = NAME_None;
-//
-//								// 확률: 전설 5%, 세트 10%, 일반 85%
-//								const int32 roll = FMath::RandRange(1, 100);
-//
-//								if (roll <= 5)
-//								{
-//									if (!pickAndRemove(legendaryRows, pickedRowName))
-//									{
-//										if (!pickAndRemove(setRows, pickedRowName))
-//										{
-//											pickAndRemove(commonRows, pickedRowName);
-//										}
-//									}
-//								}
-//								else if (roll <= 15)
-//								{
-//									if (!pickAndRemove(setRows, pickedRowName))
-//									{
-//										if (!pickAndRemove(legendaryRows, pickedRowName))
-//										{
-//											pickAndRemove(commonRows, pickedRowName);
-//										}
-//									}
-//								}
-//								else
-//								{
-//									if (!pickAndRemove(commonRows, pickedRowName))
-//									{
-//										if (!pickAndRemove(setRows, pickedRowName))
-//										{
-//											pickAndRemove(legendaryRows, pickedRowName);
-//										}
-//									}
-//								}
-//
-//								saveGame->CurrentShopRowNames[slotIndex] = pickedRowName;
-//							}
-//						}
-//					}
-//				}
-//			}
-//		}
-//	}
-//}
+void FPlayerAccountService::GenerateShopItems(UARGameInstance* InGameInstance, int32 InShopSlotCount)
+{
+	if (InGameInstance)
+	{
+		if (UArcanumSaveGame* SaveGame = InGameInstance->GetArSaveGame())
+		{
+			if (InShopSlotCount > 0)
+			{
+				FShopItemPools ItemPools;
+				BuildShopItemPools(InGameInstance, ItemPools);
+
+				// 세이브 데이터 초기화
+				SaveGame->CurrentShopRowNames.Reset();
+
+				for (int32 i = 0; i < InShopSlotCount; ++i)
+				{
+					const EShopRarityType RarityType = PickShopRarityType(InGameInstance);
+					const FName PickedRow = PickShopItemRow(RarityType, ItemPools);
+
+					if (PickedRow != NAME_None)
+					{
+						SaveGame->CurrentShopRowNames.Add(PickedRow);
+					}
+				}
+			}
+		}
+	}
+}
+
+void FPlayerAccountService::BuildShopItemPools(UARGameInstance* InGameInstance, FShopItemPools& OutItemPools)
+{
+	OutItemPools.CommonRows.Reset();
+	OutItemPools.SetRows.Reset();
+	OutItemPools.LegendaryRows.Reset();
+
+	if (InGameInstance)
+	{
+		if (UGameDataSubsystem* dataSubsystem = InGameInstance->GetSubsystem<UGameDataSubsystem>())
+		{
+			UDataTable* equipmentTable = nullptr;
+
+			if (UDataTable** tablePtr = dataSubsystem->MasterDataTables.Find(Arcanum::DataTable::Equipment))
+			{
+				equipmentTable = *tablePtr;
+			}
+
+			if (equipmentTable)
+			{
+				const FGameplayTag setRootTag = UGameplayTagsManager::Get().RequestGameplayTag(FName("Arcanum.Items.Rarity.SetItem"), false);
+				const FGameplayTag legendaryRootTag = UGameplayTagsManager::Get().RequestGameplayTag(FName("Arcanum.Items.Rarity.Legendary"), false);
+
+				for (const TPair<FName, uint8*>& rowPair : equipmentTable->GetRowMap())
+				{
+					const FDTEquipmentInfoRow* row = reinterpret_cast<const FDTEquipmentInfoRow*>(rowPair.Value);
+
+					if (row && !row->BaseInfoSteps.IsEmpty() && row->ItemTag.IsValid())
+					{
+						if (legendaryRootTag.IsValid() && row->ItemTag.MatchesTag(legendaryRootTag))
+						{
+							OutItemPools.LegendaryRows.Add(rowPair.Key);
+						}
+						else if (setRootTag.IsValid() && row->ItemTag.MatchesTag(setRootTag))
+						{
+							OutItemPools.SetRows.Add(rowPair.Key);
+						}
+						else
+						{
+							OutItemPools.CommonRows.Add(rowPair.Key);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+EShopRarityType FPlayerAccountService::PickShopRarityType(UARGameInstance* InGameInstance)
+{
+	// TODO: 확률 DT 에서 가져올수도 있음
+	const int32 legendaryChancePercent = 5;
+	const int32 setChancePercent = 10;
+
+	const int32 roll = FMath::RandRange(1, 100);
+
+	if (roll <= legendaryChancePercent)
+	{
+		return EShopRarityType::Legendary;
+	}
+
+	if (roll <= (legendaryChancePercent + setChancePercent))
+	{
+		return EShopRarityType::Set;
+	}
+
+	return EShopRarityType::Common;
+}
+
+FName FPlayerAccountService::PickShopItemRow(EShopRarityType InRarityType, FShopItemPools& InOutItemPools)
+{
+	TArray<FName>* targetRows = nullptr;
+
+	if (InRarityType == EShopRarityType::Legendary)
+	{
+		targetRows = &InOutItemPools.LegendaryRows;
+	}
+	else if (InRarityType == EShopRarityType::Set)
+	{
+		targetRows = &InOutItemPools.SetRows;
+	}
+	else
+	{
+		targetRows = &InOutItemPools.CommonRows;
+	}
+
+	if (!targetRows || targetRows->Num() <= 0)
+	{
+		return NAME_None;
+	}
+
+	const int32 randomIndex = FMath::RandRange(0, targetRows->Num() - 1);
+	const FName pickedRowName = (*targetRows)[randomIndex];
+
+	targetRows->RemoveAt(randomIndex);
+
+	return pickedRowName;
+}
+
 
 void FPlayerAccountService::ResetShopSoldOutStates(UARGameInstance* InGameInstance, int32 InShopSlotCount)
 {

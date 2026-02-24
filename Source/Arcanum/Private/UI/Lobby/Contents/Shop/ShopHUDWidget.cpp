@@ -1,8 +1,14 @@
 #include "UI/Lobby/Contents/Shop/ShopHUDWidget.h"
 #include "UI/Lobby/Contents/Shop/CurrencyWidget.h"
 #include "UI/Lobby/Contents/Shop/ShopItemSlotWidget.h"
+#include "Core/ARPlayerAccountService.h"
+#include "Core/SubSystem/GameDataSubsystem.h"
+#include "Core/ARGameInstance.h"
+#include "Core/ArcanumSaveGame.h"
 #include "Components/WrapBox.h"
 #include "Components/WrapBoxSlot.h"
+#include "Components/TextBlock.h"
+
 
 void UShopHUDWidget::NativeConstruct()
 {
@@ -37,9 +43,13 @@ void UShopHUDWidget::BindShopSlotEvents()
 {
 	for (int32 slotIndex = 0; slotIndex < ShopSlotCount; slotIndex++)
 	{
-		if (UShopItemSlotWidget* shopSlot = ShopSlots[slotIndex])
+		if (ShopSlots.IsValidIndex(slotIndex))
 		{
-			shopSlot->OnShopItemSlotClicked.AddDynamic(this, &UShopHUDWidget::HandleShopSlotClicked);
+			if (UShopItemSlotWidget* shopSlot = ShopSlots[slotIndex])
+			{
+				shopSlot->OnShopItemSlotClicked.RemoveDynamic(this, &UShopHUDWidget::HandleShopSlotClicked);
+				shopSlot->OnShopItemSlotClicked.AddDynamic(this, &UShopHUDWidget::HandleShopSlotClicked);
+			}
 		}
 	}
 }
@@ -67,6 +77,96 @@ void UShopHUDWidget::RefreshShopSlotSelection()
 		if (ShopSlots.IsValidIndex(slotIndex))
 		{
 			ShopSlots[slotIndex]->SetSelected(slotIndex == SelectedShopSlotIndex);
+		}
+	}
+}
+
+void UShopHUDWidget::RefreshShopSlotsUI()
+{
+	if (UARGameInstance* gameInstance = GetGameInstance<UARGameInstance>())
+	{
+		if (UArcanumSaveGame* saveGame = gameInstance->GetArSaveGame())
+		{
+			if (UGameDataSubsystem* dataSubsystem = gameInstance->GetSubsystem<UGameDataSubsystem>())
+			{
+				for (int32 i = 0; i < ShopSlotCount; i++)
+				{
+					if (ShopSlots.IsValidIndex(i))
+					{
+						if (UShopItemSlotWidget* shopSlot = ShopSlots[i])
+						{
+							if (saveGame->CurrentShopRowNames.IsValidIndex(i))
+							{
+								const FName rowName = saveGame->CurrentShopRowNames[i];
+
+								if (rowName != NAME_None)
+								{
+									if (const FDTEquipmentInfoRow* row = dataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, rowName))
+									{
+										shopSlot->SetEquipmentData(*row, i, rowName);
+
+										if (saveGame->CurrentShopSoldOutStates.IsValidIndex(i))
+										{
+											shopSlot->SetSoldOut(saveGame->CurrentShopSoldOutStates[i]);
+										}
+										else
+										{
+											shopSlot->SetSoldOut(false);
+										}
+
+										shopSlot->SetSelected(i == SelectedShopSlotIndex);
+									}
+									else
+									{
+										shopSlot->ClearSlot();
+									}
+								}
+								else
+								{
+									shopSlot->ClearSlot();
+								}
+							}
+							else
+							{
+								shopSlot->ClearSlot();
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+void UShopHUDWidget::RefreshShopIfNeeded()
+{
+	if (UARGameInstance* gameInstance = GetGameInstance<UARGameInstance>())
+	{
+		if (FPlayerAccountService::IsShopRefreshExpired(gameInstance))
+		{
+			FPlayerAccountService::RefreshShop(gameInstance, ShopSlotCount);
+		}
+
+		RefreshShopSlotsUI();
+	}
+}
+
+void UShopHUDWidget::HandleShopSecondChanged(int32 InRemainingSeconds)
+{
+	if (ShopTimerText)
+	{
+		if (InRemainingSeconds >= 0)
+		{
+			const int32 minute = InRemainingSeconds / 60;
+			const int32 second = InRemainingSeconds % 60;
+
+			const FString timeText = FString::Printf(TEXT("%02d:%02d"), minute, second);
+			ShopTimerText->SetText(FText::FromString(timeText));
+
+			if (InRemainingSeconds == 0)
+			{
+				RefreshShopIfNeeded();
+			}
 		}
 	}
 }

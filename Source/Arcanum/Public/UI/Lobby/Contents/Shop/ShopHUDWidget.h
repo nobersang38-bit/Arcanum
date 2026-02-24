@@ -7,7 +7,7 @@
 class UCurrencyWidget;
 class UWrapBox;
 class UShopItemSlotWidget;
-
+class UTextBlock;
 
 /**
  * 추영호
@@ -65,6 +65,28 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	int32 SelectedShopSlotIndex = INDEX_NONE;
 #pragma endregion
+
+#pragma region 상점 데이터/UI 갱신
+protected:
+	/* 저장된 상점 데이터로 슬롯 UI 갱신 */
+	void RefreshShopSlotsUI();
+
+	/* 상점 만료 체크 후 갱신 + 슬롯 UI 갱신 */
+	void RefreshShopIfNeeded();
+#pragma endregion
+
+#pragma region 상점 타이머
+protected:
+	/* 상점 남은 시간 텍스트 갱신 */
+	UFUNCTION()
+	void HandleShopSecondChanged(int32 InRemainingSeconds);
+
+protected:
+	/* 상점 남은 시간 텍스트 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional, AllowPrivateAccess = "true"))
+	TObjectPtr<UTextBlock> ShopTimerText;
+#pragma endregion
+
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))

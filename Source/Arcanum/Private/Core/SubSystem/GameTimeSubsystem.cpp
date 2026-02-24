@@ -57,8 +57,6 @@ void UGameTimeSubsystem::Tick(float DeltaTime)
 			if (RemainingSeconds <= 0)
 			{
 				StopShop();
-				// 상점 갱신 로직 호출
-				// RefreshShop();
 			}
 		}
 	}

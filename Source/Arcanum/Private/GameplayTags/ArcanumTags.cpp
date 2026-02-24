@@ -156,23 +156,24 @@ namespace Arcanum {
 						UE_DEFINE_GAMEPLAY_TAG_COMMENT(Glove, "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Glove", "장갑");
 						UE_DEFINE_GAMEPLAY_TAG_COMMENT(Boot, "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Boot", "신발");
 					}
-					namespace Legendary {
-						namespace Weapon {
-							UE_DEFINE_GAMEPLAY_TAG_COMMENT(Scepter, "Arcanum.Items.Rarity.Legendary.Weapon.Scepter", "셉터");
-							UE_DEFINE_GAMEPLAY_TAG_COMMENT(Scythe, "Arcanum.Items.Rarity.Legendary.Weapon.Scythe", "낫");
-						}
-						namespace Armor {
-						}
-					}
 				}
-				namespace SetBonus {
-					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Surge, "Arcanum.Items.SetBonus.Surge", "역류");
-					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Avarice, "Arcanum.Items.SetBonus.Avarice", "탐욕");
+			}
+			namespace Legendary {
+				namespace Weapon {
+					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Scepter, "Arcanum.Items.Rarity.Legendary.Weapon.Scepter", "셉터");
+					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Scythe, "Arcanum.Items.Rarity.Legendary.Weapon.Scythe", "낫");
 				}
+				namespace Armor {
+				}
+			}
+			namespace SetBonus {
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Surge, "Arcanum.Items.SetBonus.Surge", "역류");
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Avarice, "Arcanum.Items.SetBonus.Avarice", "탐욕");
 			}
 		}
 	}
 }
+
 
 namespace Arcanum {
 	namespace BattleStat {

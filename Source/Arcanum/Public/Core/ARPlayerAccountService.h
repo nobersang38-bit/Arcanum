@@ -3,9 +3,31 @@
 #include "GameplayTags/ArcanumTags.h"
 #include "Core/SubSystem/GameDataSubsystem.h"
 #include "DataInfo/PlayerData/FPlayerData.h"
-
 #include "DataInfo/BattleCharacter/Equipment/DataTable/DTEquipment.h"
+#include "ARPlayerAccountService.generated.h"
 
+UENUM(BlueprintType)
+enum class EShopRarityType : uint8
+{
+	Common,
+	Set,
+	Legendary
+};
+
+USTRUCT(BlueprintType)
+struct FShopItemPools
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	TArray<FName> CommonRows;
+
+	UPROPERTY()
+	TArray<FName> SetRows;
+
+	UPROPERTY()
+	TArray<FName> LegendaryRows;
+};
 
 class UARGameInstance;
 
@@ -50,39 +72,24 @@ public:
 	/* 구매 성공 후 슬롯 품절 처리 */
 	static bool SetShopSlotSoldOut(UARGameInstance* InGameInstance, int32 InSlotIndex);
 
+	/* 저장된 상점 시간이 유효한지 확인 */
+	static bool IsShopRefreshExpired(UARGameInstance* InGameInstance);
+
 	/* 다음 갱신 시각 기준 남은 초 계산 (UI 타이머 표시용) */
 	static int32 GetShopRemainingSeconds(UARGameInstance* InGameInstance);
 
 private:
-	/* 저장된 상점 시간이 유효한지 확인 */
-	static bool IsShopRefreshExpired(UARGameInstance* InGameInstance);
-
-	/* 새 상점 아이템 뽑기 */
-	// static void GenerateShopItems(UARGameInstance* InGameInstance, int32 InShopSlotCount);
-	/* 상점 아이템 후보군 구성 (일반/세트/전설 분류) */
-	//static void BuildShopItemPools
-	/* 상점 등급 확률 판정 (전설/세트/일반) */
-	//static EShopRarityType PickShopRarityType(UARGameInstance* InGameInstance);
-	/* 상점 아이템 1개 선택 (fallback + 중복제거 포함) */
-	//static FName PickShopItemRow
 	/* 상점 슬롯 전체 생성 */
-	//static void GenerateShopItems(UARGameInstance* InGameInstance, int32 InShopSlotCount);
-	/*
-	USTRUCT()
-    struct FShopItemPools
-    {
-	GENERATED_BODY()
+	static void GenerateShopItems(UARGameInstance* InGameInstance, int32 InShopSlotCount);
 
-	UPROPERTY()
-	TArray<FName> CommonRows;
+	/* 상점 아이템 후보군 구성 (일반/세트/전설 분류) */
+	static void BuildShopItemPools(UARGameInstance* InGameInstance,	FShopItemPools& OutItemPools);
 
-	UPROPERTY()
-	TArray<FName> SetRows;
+	/* 상점 등급 확률 판정 (일반/세트/전설) */
+	static EShopRarityType PickShopRarityType(UARGameInstance* InGameInstance);
 
-	UPROPERTY()
-	TArray<FName> LegendaryRows;
-    };
-	*/
+	/* 상점 아이템 1개 선택 */
+	static FName PickShopItemRow(EShopRarityType InRarityType, FShopItemPools& InOutItemPools);
 
 	/* 상점 저장 데이터 초기화 */
 	static void ResetShopSoldOutStates(UARGameInstance* InGameInstance, int32 InShopSlotCount);
