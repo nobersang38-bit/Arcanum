@@ -114,15 +114,15 @@ namespace Arcanum {
 	namespace Items {
 		namespace ItemSlot {
 			namespace Weapon {
-				UE_DEFINE_GAMEPLAY_TAG_COMMENT(LeftHand, "Arcanum.Items.ItemSlot.Weapon.LeftHand",	"왼손");
-				UE_DEFINE_GAMEPLAY_TAG_COMMENT(RightHand,"Arcanum.Items.ItemSlot.Weapon.RightHand", "오른손");
-				UE_DEFINE_GAMEPLAY_TAG_COMMENT(TwoHand,  "Arcanum.Items.ItemSlot.Weapon.TwoHand",	"양손");
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Weapon1, "Arcanum.Items.ItemSlot.Weapon.Weapon1",	"무기1");
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Weapon2,"Arcanum.Items.ItemSlot.Weapon.Weapon2", "무기2");
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(LegendaryWeapon,  "Arcanum.Items.ItemSlot.Weapon.LegendaryWeapon",	"전설무기");
 			}
 			namespace Armor {
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Helmet,"Arcanum.Items.ItemSlot.Armor.Helmet", "머리");
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Chest, "Arcanum.Items.ItemSlot.Armor.Chest",  "몸통");
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Glove, "Arcanum.Items.ItemSlot.Armor.Glove",  "손");
-				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Boot,  "Arcanum.Items.ItemSlot.Armor.Boot",   "발");
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Boots,  "Arcanum.Items.ItemSlot.Armor.Boots",   "발");
 			}
 		}
 
@@ -138,7 +138,7 @@ namespace Arcanum {
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Helmet,"Arcanum.Items.Rarity.Common.Weapon.Helmet", "투구");
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Chest, "Arcanum.Items.Rarity.Common.Weapon.Chest", "갑옷");
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Glove, "Arcanum.Items.Rarity.Common.Weapon.Glove", "장갑");
-					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Boot,  "Arcanum.Items.Rarity.Common.Weapon.Boot", "신발");
+					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Boots,  "Arcanum.Items.Rarity.Common.Weapon.Boots", "신발");
 				}
 			}
 			namespace SetItem {

@@ -8,6 +8,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/HorizontalBox.h"
 #include "Components/BackgroundBlur.h"
+#include "Components/WidgetSwitcher.h"
 
 void ULobbyHUD::NativeConstruct()
 {
@@ -55,11 +56,32 @@ void ULobbyHUD::NativeConstruct()
 void ULobbyHUD::ClickBattleMenuBtn()
 {
 	/// TODO : 전투 위젯 띄우기
+	if (WidgetSwitcher)
+	{
+		WidgetSwitcher->SetActiveWidgetIndex(0);
+	}
 }
 
 void ULobbyHUD::ClickCharacterMenuBtn()
 {
 	/// TODO : 캐릭터 위젯 띄우기
+
+	/*if (CharacterWidgetClass)
+	{
+		if (!CharacterWidget)
+		{
+			CharacterWidget = CreateWidget<UCharacterHUDWidget>(GetWorld(), CharacterWidgetClass);
+			if (CharacterWidget)
+			{
+				CharacterWidget->AddToViewport();
+			}
+		}
+	}*/
+	if (WidgetSwitcher)
+	{
+		WidgetSwitcher->SetActiveWidgetIndex(1);
+	}
+
 }
 
 void ULobbyHUD::ClickEnhancementMenuBtn()
@@ -95,6 +117,11 @@ void ULobbyHUD::ClickQuitBtn()
 	// 종료확인창 띄우기
 	if (ExitCommonDialog)
 	{
+		if (WidgetSwitcher)
+		{
+			WidgetSwitcher->SetVisibility(ESlateVisibility::Hidden); // 위젯스위처 숨기기
+		}
+
 		ExitCommonDialog->SetVisibility(ESlateVisibility::Visible);
 		BackgroundBlur->SetVisibility(ESlateVisibility::Visible);
 
@@ -109,6 +136,10 @@ void ULobbyHUD::ClickQuitBtn()
 		if (SettingUHorizontalBox)
 		{
 			SettingUHorizontalBox->SetVisibility(ESlateVisibility::Hidden);
+		}
+		if (GoodsHorizontalBox)
+		{
+			GoodsHorizontalBox->SetVisibility(ESlateVisibility::Hidden);
 		}
 	}
 
@@ -130,7 +161,11 @@ void ULobbyHUD::OnExitCommonDialog(EDialogResult res)
 	}
 	else if (res == EDialogResult::Cancel)
 	{
-		//UE_LOG(LogTemp, Log, TEXT("cancel 클릭"));
+		//UE_LOG(LogTemp, Log, TEXT("cancel 클릭"));if (WidgetSwitcher)
+		{
+			WidgetSwitcher->SetVisibility(ESlateVisibility::Visible);
+		}
+
 		ExitCommonDialog->SetVisibility(ESlateVisibility::Hidden);
 		BackgroundBlur->SetVisibility(ESlateVisibility::Collapsed);
 
@@ -141,6 +176,10 @@ void ULobbyHUD::OnExitCommonDialog(EDialogResult res)
 		if (SettingUHorizontalBox)
 		{
 			SettingUHorizontalBox->SetVisibility(ESlateVisibility::Visible);
+		}
+		if (GoodsHorizontalBox)
+		{
+			GoodsHorizontalBox->SetVisibility(ESlateVisibility::Visible);
 		}
 	}
 }
