@@ -10,6 +10,7 @@
 #include "Components/HorizontalBox.h"
 #include "Components/BackgroundBlur.h"
 #include "Components/WidgetSwitcher.h"
+#include "UI/Lobby/Contents/Shop/CurrencyWidget.h"
 
 
 void ULobbyHUD::NativeConstruct()
@@ -145,9 +146,9 @@ void ULobbyHUD::ClickQuitBtn()
 		{
 			SettingUHorizontalBox->SetVisibility(ESlateVisibility::Hidden);
 		}
-		if (GoodsHorizontalBox)
+		if (CurrencyList)
 		{
-			GoodsHorizontalBox->SetVisibility(ESlateVisibility::Hidden);
+			CurrencyList->SetVisibility(ESlateVisibility::Hidden);
 		}
 	}
 
@@ -185,9 +186,9 @@ void ULobbyHUD::OnExitCommonDialog(EDialogResult res)
 		{
 			SettingUHorizontalBox->SetVisibility(ESlateVisibility::Visible);
 		}
-		if (GoodsHorizontalBox)
+		if (CurrencyList)
 		{
-			GoodsHorizontalBox->SetVisibility(ESlateVisibility::Visible);
+			CurrencyList->SetVisibility(ESlateVisibility::Visible);
 		}
 	}
 }

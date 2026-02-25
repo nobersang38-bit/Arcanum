@@ -23,7 +23,6 @@ class UHorizontalBox;
 class UBackgroundBlur;
 class UWidgetSwitcher;
 class UCurrencyWidget;
-class UShopHUDWidget;
 
 UCLASS()
 class ARCANUM_API ULobbyHUD : public UUserWidget
@@ -65,7 +64,7 @@ protected:
 	TObjectPtr<UHorizontalBox> MenuHorizontalBox;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UHorizontalBox> GoodsHorizontalBox;
+	TObjectPtr<UCurrencyWidget> CurrencyList;
 	
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UHorizontalBox> SettingUHorizontalBox;
@@ -101,10 +100,7 @@ private:
 #pragma endregion
 
 #pragma region 재화
-protected:
-	/* 상단 재화 위젯 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UCurrencyWidget> CurrencyWidget;
+
 #pragma endregion
 
 #pragma region 전투
@@ -125,9 +121,7 @@ protected:
 #pragma endregion
 
 #pragma region 상점
-protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
-	TObjectPtr<UShopHUDWidget> ShopHUDWidget;
+
 #pragma endregion
 
 #pragma region 가챠
