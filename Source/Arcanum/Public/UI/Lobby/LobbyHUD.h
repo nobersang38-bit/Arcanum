@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "UI/DataType/EDialogResult.h"
+#include "UI/Lobby/Contents/Character/CharacterHUDWidget.h"
 #include "LobbyHUD.generated.h"
 
 /*
@@ -20,7 +21,7 @@ class UCommonBtnWidget;
 class UCommonDialog;
 class UHorizontalBox;
 class UBackgroundBlur;
-class UCurrencyWidget;
+class UWidgetSwitcher;
 
 UCLASS()
 class ARCANUM_API ULobbyHUD : public UUserWidget
@@ -37,36 +38,42 @@ protected:
 	// 설정, 종료
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UCommonBtnWidget> BattleMenuBtn;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UCommonBtnWidget> CharacterMenuBtn;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UCommonBtnWidget> EnhancementMenuBtn;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UCommonBtnWidget> ShopMenuBtn;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UCommonBtnWidget> GachaMenuBtn;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UCommonBtnWidget> SettingBtn;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UCommonBtnWidget> QuitBtn;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UHorizontalBox> MenuHorizontalBox;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UHorizontalBox> GoodsHorizontalBox;
+	
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UHorizontalBox> SettingUHorizontalBox;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UBackgroundBlur> BackgroundBlur;
 
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UWidgetSwitcher> WidgetSwitcher;
+	
 private:
 	UFUNCTION()
 	void ClickBattleMenuBtn();
@@ -92,10 +99,7 @@ private:
 #pragma endregion
 
 #pragma region 재화
-protected:
-	/* 상단 재화 위젯 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UCurrencyWidget> CurrencyWidget;
+
 #pragma endregion
 
 #pragma region 전투
@@ -103,7 +107,12 @@ protected:
 #pragma endregion
 
 #pragma region 캐릭터
-
+//protected:
+//	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+//	TSubclassOf<UCharacterHUDWidget> CharacterWidgetClass;
+//
+//private:
+//	UCharacterHUDWidget* CharacterWidget = nullptr;
 #pragma endregion
 
 #pragma region 강화
@@ -124,7 +133,7 @@ protected:
 
 #pragma region 종료
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UCommonDialog> ExitCommonDialog;
 private:
 	UFUNCTION()

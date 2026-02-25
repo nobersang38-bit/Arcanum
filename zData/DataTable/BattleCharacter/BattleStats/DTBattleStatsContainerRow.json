@@ -1,34 +1,592 @@
 [
+  // Elara : 균형 잡힌 공격과 방어, 평균적인 능력치를 가진 캐릭터.
   {
     "Name": "Elara",
     "BattleCharacterTag": "Arcanum.Player.ID.Elara",
+    "bPlayableCharacter": true,
     "GradeDataSteps": [
-      { 
-        "RegenStats": [ 
-          {  "ParentTag" : "Arcanum.BattleStat.Character.Regen.Health" , "Current": 100, "BaseMax": 100, "BaseTick": 0.1,"BonusMax": 0.0,"ModifierMax": 0.0,"ModifierTick": 0.0},
-          {  "ParentTag" : "Arcanum.BattleStat.Character.Regen.Mana" , "Current": 50, "BaseMax": 50, "BaseTick": 0.1,"BonusMax": 0.0,"ModifierMax": 0.0,"ModifierTick": 0.0}
+      // 0성
+      {
+        "RegenStats": [
+          {
+            "ParentTag": "Arcanum.BattleStat.Character.Regen.Health",
+            "Current": 100,
+            "BaseMax": 100,
+            "BaseTick": 0.1,
+            "BonusMax": 0.0,
+            "ModifierMax": 0.0,
+            "ModifierTick": 0.0
+          },
+          {
+            "ParentTag": "Arcanum.BattleStat.Character.Regen.Mana",
+            "Current": 50,
+            "BaseMax": 50,
+            "BaseTick": 0.1,
+            "BonusMax": 0.0,
+            "ModifierMax": 0.0,
+            "ModifierTick": 0.0
+          }
         ],
         "NonRegenStats": [
-          { "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackPower",     "BaseValue": 10, "BonusValue": 0, "ModifierValue": 0 },
-          { "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed",     "BaseValue": 5, "BonusValue": 0 , "ModifierValue": 0 },
-          { "TagName": "Arcanum.BattleStat.Character.NonRegen.Evasion",         "BaseValue": 5, "BonusValue": 0, "ModifierValue": 0 },
-          { "TagName": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed",       "BaseValue": 3, "BonusValue": 0, "ModifierValue": 0 },
-          { "TagName": "Arcanum.BattleStat.Character.NonRegen.CritChance",      "BaseValue": 0.05, "BonusValue": 0, "ModifierValue": 0 },
-          { "TagName": "Arcanum.BattleStat.Character.NonRegen.DamageReduction", "BaseValue": 0.1, "BonusValue": 0, "ModifierValue": 0 }
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackPower",
+            "BaseValue": 10,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed",
+            "BaseValue": 5,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.Evasion",
+            "BaseValue": 5,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed",
+            "BaseValue": 3,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.CritChance",
+            "BaseValue": 0.05,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.DamageReduction",
+            "BaseValue": 0.1,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          }
         ]
       },
+      // 1성
       {
-        "RegenStats": [ 
-          {  "ParentTag" : "Arcanum.BattleStat.Character.Regen.Health" , "Current": 100, "BaseMax": 100, "BaseTick": 0.1,"BonusMax": 0.0,"ModifierMax": 0.0,"ModifierTick": 0.0},
-          {  "ParentTag" : "Arcanum.BattleStat.Character.Regen.Mana" , "Current": 50, "BaseMax": 50, "BaseTick": 0.1,"BonusMax": 0.0,"ModifierMax": 0.0,"ModifierTick": 0.0}
+        "RegenStats": [
+          {
+            "ParentTag": "Arcanum.BattleStat.Character.Regen.Health",
+            "Current": 105,
+            "BaseMax": 105,
+            "BaseTick": 0.105,
+            "BonusMax": 0.0,
+            "ModifierMax": 0.0,
+            "ModifierTick": 0.0
+          },
+          {
+            "ParentTag": "Arcanum.BattleStat.Character.Regen.Mana",
+            "Current": 55,
+            "BaseMax": 55,
+            "BaseTick": 0.105,
+            "BonusMax": 0.0,
+            "ModifierMax": 0.0,
+            "ModifierTick": 0.0
+          }
         ],
         "NonRegenStats": [
-          { "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackPower",     "BaseValue": 10, "BonusValue": 0, "ModifierValue": 0 },
-          { "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed",     "BaseValue": 5, "BonusValue": 0 , "ModifierValue": 0 },
-          { "TagName": "Arcanum.BattleStat.Character.NonRegen.Evasion",         "BaseValue": 5, "BonusValue": 0, "ModifierValue": 0 },
-          { "TagName": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed",       "BaseValue": 3, "BonusValue": 0, "ModifierValue": 0 },
-          { "TagName": "Arcanum.BattleStat.Character.NonRegen.CritChance",      "BaseValue": 0.05, "BonusValue": 0, "ModifierValue": 0 },
-          { "TagName": "Arcanum.BattleStat.Character.NonRegen.DamageReduction", "BaseValue": 0.1, "BonusValue": 0, "ModifierValue": 0 }
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackPower",
+            "BaseValue": 10.5,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed",
+            "BaseValue": 5.25,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.Evasion",
+            "BaseValue": 5.25,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed",
+            "BaseValue": 3.15,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.CritChance",
+            "BaseValue": 0.0525,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.DamageReduction",
+            "BaseValue": 0.105,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          }
+        ]
+      },
+      // 2성
+      {
+        "RegenStats": [
+          {
+            "ParentTag": "Arcanum.BattleStat.Character.Regen.Health",
+            "Current": 110,
+            "BaseMax": 110,
+            "BaseTick": 0.11,
+            "BonusMax": 0.0,
+            "ModifierMax": 0.0,
+            "ModifierTick": 0.0
+          },
+          {
+            "ParentTag": "Arcanum.BattleStat.Character.Regen.Mana",
+            "Current": 60,
+            "BaseMax": 60,
+            "BaseTick": 0.11,
+            "BonusMax": 0.0,
+            "ModifierMax": 0.0,
+            "ModifierTick": 0.0
+          }
+        ],
+        "NonRegenStats": [
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackPower",
+            "BaseValue": 11,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed",
+            "BaseValue": 5.5,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.Evasion",
+            "BaseValue": 5.5,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed",
+            "BaseValue": 3.3,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.CritChance",
+            "BaseValue": 0.06,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.DamageReduction",
+            "BaseValue": 0.11,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          }
+        ]
+      },
+      // 3성
+      {
+        "RegenStats": [
+          {
+            "ParentTag": "Arcanum.BattleStat.Character.Regen.Health",
+            "Current": 125,
+            "BaseMax": 125,
+            "BaseTick": 0.125,
+            "BonusMax": 0.0,
+            "ModifierMax": 0.0,
+            "ModifierTick": 0.0
+          },
+          {
+            "ParentTag": "Arcanum.BattleStat.Character.Regen.Mana",
+            "Current": 70,
+            "BaseMax": 70,
+            "BaseTick": 0.125,
+            "BonusMax": 0.0,
+            "ModifierMax": 0.0,
+            "ModifierTick": 0.0
+          }
+        ],
+        "NonRegenStats": [
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackPower",
+            "BaseValue": 13,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed",
+            "BaseValue": 6,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.Evasion",
+            "BaseValue": 6,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed",
+            "BaseValue": 3.6,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.CritChance",
+            "BaseValue": 0.075,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.DamageReduction",
+            "BaseValue": 0.13,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          }
+        ]
+      }
+    ]
+  },
+  // Iris : 빠른 공격 속도와 회피 능력을 강조하는 캐릭터.
+  {
+    "Name": "Iris",
+    "BattleCharacterTag": "Arcanum.Player.ID.Iris",
+    "bPlayableCharacter": true,
+    "GradeDataSteps": [
+      {
+        "RegenStats": [
+          {
+            "ParentTag": "Arcanum.BattleStat.Character.Regen.Health",
+            "Current": 90,
+            "BaseMax": 90,
+            "BaseTick": 0.15,
+            "BonusMax": 0.0,
+            "ModifierMax": 0.0,
+            "ModifierTick": 0.0
+          },
+          {
+            "ParentTag": "Arcanum.BattleStat.Character.Regen.Mana",
+            "Current": 60,
+            "BaseMax": 60,
+            "BaseTick": 0.1,
+            "BonusMax": 0.0,
+            "ModifierMax": 0.0,
+            "ModifierTick": 0.0
+          }
+        ],
+        "NonRegenStats": [
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackPower",
+            "BaseValue": 8,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed",
+            "BaseValue": 7,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.Evasion",
+            "BaseValue": 7,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed",
+            "BaseValue": 4,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.CritChance",
+            "BaseValue": 0.05,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.DamageReduction",
+            "BaseValue": 0.05,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          }
+        ]
+      }
+    ]
+  },
+  // Celestia : 강력한 공격력과 방어 능력을 갖춘 캐릭터, 지속적인 회복.
+  {
+    "Name": "Celestia",
+    "BattleCharacterTag": "Arcanum.Player.ID.Celestia",
+    "bPlayableCharacter": true,
+    "GradeDataSteps": [
+      {
+        "RegenStats": [
+          {
+            "ParentTag": "Arcanum.BattleStat.Character.Regen.Health",
+            "Current": 120,
+            "BaseMax": 120,
+            "BaseTick": 0.2,
+            "BonusMax": 0.0,
+            "ModifierMax": 0.0,
+            "ModifierTick": 0.0
+          },
+          {
+            "ParentTag": "Arcanum.BattleStat.Character.Regen.Mana",
+            "Current": 40,
+            "BaseMax": 40,
+            "BaseTick": 0.1,
+            "BonusMax": 0.0,
+            "ModifierMax": 0.0,
+            "ModifierTick": 0.0
+          }
+        ],
+        "NonRegenStats": [
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackPower",
+            "BaseValue": 12,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed",
+            "BaseValue": 4,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.Evasion",
+            "BaseValue": 4,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed",
+            "BaseValue": 3,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.CritChance",
+            "BaseValue": 0.1,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.DamageReduction",
+            "BaseValue": 0.15,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          }
+        ]
+      }
+    ]
+  },
+  // Lynette : 빠르고 치명적인 크리티컬, 높은 이동 속도와 공격 속도.
+  {
+    "Name": "Lynette",
+    "BattleCharacterTag": "Arcanum.Player.ID.Lynette",
+    "bPlayableCharacter": true,
+    "GradeDataSteps": [
+      {
+        "RegenStats": [
+          {
+            "ParentTag": "Arcanum.BattleStat.Character.Regen.Health",
+            "Current": 100,
+            "BaseMax": 100,
+            "BaseTick": 0.1,
+            "BonusMax": 0.0,
+            "ModifierMax": 0.0,
+            "ModifierTick": 0.0
+          },
+          {
+            "ParentTag": "Arcanum.BattleStat.Character.Regen.Mana",
+            "Current": 40,
+            "BaseMax": 40,
+            "BaseTick": 0.1,
+            "BonusMax": 0.0,
+            "ModifierMax": 0.0,
+            "ModifierTick": 0.0
+          }
+        ],
+        "NonRegenStats": [
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackPower",
+            "BaseValue": 9,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed",
+            "BaseValue": 6,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.Evasion",
+            "BaseValue": 6,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed",
+            "BaseValue": 5,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.CritChance",
+            "BaseValue": 0.2,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.DamageReduction",
+            "BaseValue": 0.05,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          }
+        ]
+      }
+    ]
+  },
+  // Arna : 높은 공격력과 크리티컬 확률, 공격에 특화된 캐릭터.
+  {
+    "Name": "Arna",
+    "BattleCharacterTag": "Arcanum.Player.ID.Arna",
+    "bPlayableCharacter": true,
+    "GradeDataSteps": [
+      {
+        "RegenStats": [
+          {
+            "ParentTag": "Arcanum.BattleStat.Character.Regen.Health",
+            "Current": 110,
+            "BaseMax": 110,
+            "BaseTick": 0.15,
+            "BonusMax": 0.0,
+            "ModifierMax": 0.0,
+            "ModifierTick": 0.0
+          },
+          {
+            "ParentTag": "Arcanum.BattleStat.Character.Regen.Mana",
+            "Current": 40,
+            "BaseMax": 40,
+            "BaseTick": 0.1,
+            "BonusMax": 0.0,
+            "ModifierMax": 0.0,
+            "ModifierTick": 0.0
+          }
+        ],
+        "NonRegenStats": [
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackPower",
+            "BaseValue": 14,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed",
+            "BaseValue": 4,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.Evasion",
+            "BaseValue": 4,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed",
+            "BaseValue": 3,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.CritChance",
+            "BaseValue": 0.15,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.DamageReduction",
+            "BaseValue": 0.1,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          }
+        ]
+      }
+    ]
+  },
+  // Aiden : 균형 잡힌 공격력, 회피 능력, 크리티컬 확률을 갖춘 다재다능한 캐릭터.
+  {
+    "Name": "Aiden",
+    "BattleCharacterTag": "Arcanum.Player.ID.Aiden",
+    "bPlayableCharacter": true,
+    "GradeDataSteps": [
+      {
+        "RegenStats": [
+          {
+            "ParentTag": "Arcanum.BattleStat.Character.Regen.Health",
+            "Current": 110,
+            "BaseMax": 110,
+            "BaseTick": 0.1,
+            "BonusMax": 0.0,
+            "ModifierMax": 0.0,
+            "ModifierTick": 0.0
+          },
+          {
+            "ParentTag": "Arcanum.BattleStat.Character.Regen.Mana",
+            "Current": 60,
+            "BaseMax": 60,
+            "BaseTick": 0.1,
+            "BonusMax": 0.0,
+            "ModifierMax": 0.0,
+            "ModifierTick": 0.0
+          }
+        ],
+        "NonRegenStats": [
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackPower",
+            "BaseValue": 12,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed",
+            "BaseValue": 5,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.Evasion",
+            "BaseValue": 6,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed",
+            "BaseValue": 4,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.CritChance",
+            "BaseValue": 0.1,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          },
+          {
+            "TagName": "Arcanum.BattleStat.Character.NonRegen.DamageReduction",
+            "BaseValue": 0.1,
+            "BonusValue": 0,
+            "ModifierValue": 0
+          }
         ]
       }
     ]
