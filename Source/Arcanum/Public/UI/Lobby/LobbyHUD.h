@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "UI/DataType/EDialogResult.h"
+#include "UI/Lobby/Contents/Character/CharacterHUDWidget.h"
+#include "DataInfo/PlayerData/FPlayerData.h"
 #include "LobbyHUD.generated.h"
 
 /*
@@ -13,13 +15,14 @@
  * 2. 설정, 종료 버튼 관리
  */
 
-/**
- * 
- */
 class UCommonBtnWidget;
 class UCommonDialog;
 class UHorizontalBox;
 class UBackgroundBlur;
+class UWidgetSwitcher;
+class UCurrencyWidget;
+class UShopHUDWidget;
+class UARGameInstance;
 
 UCLASS()
 class ARCANUM_API ULobbyHUD : public UUserWidget
@@ -31,40 +34,48 @@ protected:
 	virtual void NativeConstruct() override;
 #pragma endregion
 
+#pragma region 데이터 캐시
+public:
+	FPlayerData CachedPlayerData;
+#pragma endregion
+
 #pragma region 바인딩 메뉴 버튼
 	// 상단 메뉴 : 전투, 캐릭터, 강화, 상점, 가챠
 	// 설정, 종료
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UCommonBtnWidget> BattleMenuBtn;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UCommonBtnWidget> CharacterMenuBtn;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UCommonBtnWidget> EnhancementMenuBtn;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UCommonBtnWidget> ShopMenuBtn;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UCommonBtnWidget> GachaMenuBtn;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UCommonBtnWidget> SettingBtn;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UCommonBtnWidget> QuitBtn;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UHorizontalBox> MenuHorizontalBox;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UHorizontalBox> SettingUHorizontalBox;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UBackgroundBlur> BackgroundBlur;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UWidgetSwitcher> WidgetSwitcher;
 	
 private:
 	UFUNCTION()
@@ -91,7 +102,14 @@ private:
 #pragma endregion
 
 #pragma region 재화
+protected:
+	/* 재화 UI 갱신 */
+	void RefreshLobbyCurrencyUI();
 
+protected:
+	/* 재화 위젯 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UCurrencyWidget> CurrencyWidget;
 #pragma endregion
 
 #pragma region 전투
@@ -99,7 +117,12 @@ private:
 #pragma endregion
 
 #pragma region 캐릭터
-
+//protected:
+//	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+//	TSubclassOf<UCharacterHUDWidget> CharacterWidgetClass;
+//
+//private:
+//	UCharacterHUDWidget* CharacterWidget = nullptr;
 #pragma endregion
 
 #pragma region 강화
@@ -107,6 +130,8 @@ private:
 #pragma endregion
 
 #pragma region 상점
+	/* 선택 아이템 구매 */
+	void TryPurchaseSelectedItem(FName InItemRowName);
 
 #pragma endregion
 
@@ -120,7 +145,7 @@ private:
 
 #pragma region 종료
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UCommonDialog> ExitCommonDialog;
 private:
 	UFUNCTION()

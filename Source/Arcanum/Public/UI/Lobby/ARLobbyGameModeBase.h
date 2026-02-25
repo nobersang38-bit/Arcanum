@@ -9,4 +9,9 @@ class ARCANUM_API AARLobbyGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	
+public:
+	AARLobbyGameModeBase();
+
+protected:
+	virtual void BeginPlay() override;
 };

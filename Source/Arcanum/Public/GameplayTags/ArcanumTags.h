@@ -129,6 +129,7 @@ namespace Arcanum {
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Self);
 		}
 		namespace SkillVFX { // 이펙트 효과용 0을 기준으로 +버프, -디버프 => 추후 스킬컴포넌트에서 스택도 관리함
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(None);
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Bleed);       // 출혈
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Guard);       // 수호
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Mark);        // 표식
@@ -146,12 +147,17 @@ namespace Arcanum {
 	}
 	namespace Items {
 		namespace ItemSlot {
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(LeftHand);
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(RightHand);
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Helmet);
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Chest);
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Glove);
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Boot);
+			namespace Weapon {
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(LeftHand);
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(RightHand);
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TwoHand);
+			}
+			namespace Armor {
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Helmet);
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Chest);
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Glove);
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Boot);
+			}
 		}
 		namespace Rarity {
 			namespace Common {
@@ -162,17 +168,23 @@ namespace Arcanum {
 					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Shield);     // 방패
 				}
 				namespace Armor {
-					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Helmet); // 투구 
-					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Chest);  // 갑옷
-					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Glove);  // 장갑
-					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Boot);   // 신발
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Chest);      // 갑옷
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Helmet);     // 투구 
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Glove);      // 장갑
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Boot);       // 신발
 				}
 			}
 			namespace SetItem {
-				namespace Weapon {
+				namespace Talasha {
+					namespace Armor {
+						ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Helmet); // 투구 
+						ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Chest);  // 갑옷
+						ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Glove);  // 장갑
+						ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Boot);   // 신발
+					}
 				}
-				namespace Armor {
-					namespace Talasha {
+				namespace Sigon {
+					namespace Armor {
 						ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Helmet); // 투구 
 						ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Chest);  // 갑옷
 						ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Glove);  // 장갑
@@ -182,17 +194,13 @@ namespace Arcanum {
 			}
 			namespace Legendary {
 				namespace Weapon {
-					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Spear);      // 창
 					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Scepter);    // 셉터
 					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Scythe);     // 낫
-				}
-				namespace Armor {
 				}
 			}
 		}
 		namespace SetBonus {
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Surge);    // 역류
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Majesty);  // 위엄
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Avarice);  // 탐욕
 		}
 	}
@@ -212,6 +220,7 @@ namespace Arcanum {
 				}
 			}
 			namespace NonRegen {
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
 				namespace CommandCenterStamina {
 					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
 					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Value);
