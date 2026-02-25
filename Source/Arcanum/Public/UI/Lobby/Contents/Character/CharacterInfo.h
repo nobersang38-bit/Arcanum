@@ -23,10 +23,15 @@ class ARCANUM_API UCharacterInfo : public UUserWidget
 	
 #pragma region 언리얼 기본 생성
 protected:
+	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
 #pragma endregion
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FText CharactNameTxt;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FText CharacInfoTxt;
 
-#pragma region 바인딩 메뉴 버튼
 protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> CharacterNameText;
@@ -44,5 +49,4 @@ public:
 private:
 	UFUNCTION()
 	void ClickCharacterEnhanceBtn();
-#pragma endregion
 };
