@@ -22,6 +22,7 @@ class UCommonDialog;
 class UHorizontalBox;
 class UBackgroundBlur;
 class UWidgetSwitcher;
+class UCurrencyWidget;
 
 UCLASS()
 class ARCANUM_API ULobbyHUD : public UUserWidget
@@ -63,7 +64,7 @@ protected:
 	TObjectPtr<UHorizontalBox> MenuHorizontalBox;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UHorizontalBox> GoodsHorizontalBox;
+	TObjectPtr<UCurrencyWidget> CurrencyList;
 	
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UHorizontalBox> SettingUHorizontalBox;
