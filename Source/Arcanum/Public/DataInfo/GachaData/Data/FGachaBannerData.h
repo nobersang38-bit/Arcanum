@@ -38,27 +38,51 @@ struct FGachaGradePool
     float PickupRatio = 0.5f;
 };
 
-//USTRUCT(BlueprintType)
-//struct FGachaBannerData
-//{
-//    GENERATED_BODY()
-//    
-//    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-//    FText BannerName;
-//
-//    /** 레어도 등장 확률 */
-//    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-//    TArray<FGachaRarityProbability> RarityProbabilities;
-//
-//    /** 레어도별 풀 */
-//    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-//    TArray<FGachaGradePool> GradePools;
-//
-//    /** 5성 천장 */
-//    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-//    int32 FiveStarPityCount = 90;
-//
-//    /** 픽업 실패 시 다음 5성 확정 */
-//    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-//    bool bGuaranteePickupOnFail = true;
-//};
+USTRUCT(BlueprintType)
+struct FGachaBanner
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    FGameplayTag BannerTag;
+
+    /** 배너 이름 */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    FText BannerName;
+
+    /** 배너 타입 (Character / Weapon / Standard 등) */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    FGameplayTag BannerType;
+
+    /** 배너 이미지 */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TSoftObjectPtr<UTexture2D> BannerImage;
+
+    /** 배너 상세 이미지? */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TSoftObjectPtr<UTexture2D> DescriptionImage;
+
+    /** 시작 시간 */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    FDateTime StartTime;
+
+    /** 종료 시간 */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    FDateTime EndTime;
+
+    /** 등급별 확률 */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TArray<FGachaRarityProbability> RarityProbabilities;
+
+    /** 등급별 풀 */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TArray<FGachaGradePool> GradePools;
+
+    /** 5성 천장 */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    int32 FiveStarPityCount = 90;
+
+    /** 픽업 실패 시 다음 5성 확정 */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    bool bGuaranteePickupOnFail = true;
+};
