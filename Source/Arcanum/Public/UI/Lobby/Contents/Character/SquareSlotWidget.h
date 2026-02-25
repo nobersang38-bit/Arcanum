@@ -4,37 +4,34 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "RoundedSlotWidget.generated.h"
-
-/**
- * 
- */
+#include "SquareSlotWidget.generated.h"
 
 class UImage;
 class UBorder;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnWeaponSlotClicked,USquareSlotWidget*, ClickedSlot,int32, SlotIndex);
+
+/**
+ * 
+ */
 UCLASS()
-class ARCANUM_API URoundedSlotWidget : public UUserWidget
+class ARCANUM_API USquareSlotWidget : public UUserWidget
 {
 	GENERATED_BODY()
 protected:
 	virtual void NativePreConstruct() override;
 
 public:
-	UFUNCTION(BlueprintCallable)
-	void SetRoundBackgroundColor(FLinearColor NewColor);
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry,const FPointerEvent& InMouseEvent) override;
 
-	UFUNCTION(BlueprintCallable)
-	void SetIconImage(UTexture2D* Texture);
+	UPROPERTY(BlueprintAssignable, Category = "Slot")
+	FOnWeaponSlotClicked OnSlotClicked;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FLinearColor RoundColor = FLinearColor::White;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<UTexture2D> IconImg;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bShowEmptySlotOverlay = true;
+	TObjectPtr<UTexture2D> IconImg;
 
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
@@ -43,7 +40,8 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UImage> IconImage;
 
-	// 캐릭터 소지 안 하면 어둡게 표출되도록
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UImage> SlotDimOverlay;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slot")
+	int32 SlotIndex;
+
+
 };
