@@ -20,7 +20,6 @@ struct FEnemyUnitSpawnType
 	// 플레이어 캐릭터의 체력
 	// 플레이어의 건물 체력
 
-	// Todo : 나중에 베이스 유닛 클래스에 넣어야 합니다
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SpawnSet|Unit")
 	TSubclassOf<AActor> UnitClass = nullptr;
 

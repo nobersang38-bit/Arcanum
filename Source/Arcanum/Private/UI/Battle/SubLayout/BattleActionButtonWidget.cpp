@@ -16,6 +16,12 @@ void UBattleActionButtonWidget::NativeConstruct()
 	{
 		ActionButton->OnClicked.AddDynamic(this, &UBattleActionButtonWidget::OnActionButtonClick);
 	}
+	if (ActionText)
+	{
+		ActionText->SetText(IconText);
+		UE_LOG(LogTemp, Warning, TEXT("작동!!!!!!!!! %s"), *IconText.ToString());
+	}
+	SetProgressesVisible(false);
 }
 
 #if WITH_EDITOR

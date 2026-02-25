@@ -26,7 +26,18 @@ public:
 	UFUNCTION()
 	void SetManaCostProgress(float CurrentMana, float MaxMana);
 
+	// 맨 뒤에 슬롯 추가
+	UFUNCTION()
+	void AddUnitSlot();
+
+	// 인덱스 추가 안하면 마지막 제거, 첫번째 인덱스와 마지막 인덱스는 스페이서가 있어서 0을 넣으면 1부터 검사하고, -1을 넣으면 마지막 인덱스인 스페이서를 제외하여 제거함
+	UFUNCTION()
+	bool RemoveUnitSlot(int32 RemoveIDX = -1);
+
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UnitSlotClass")
+	TSubclassOf<class UBattleAllyUnitSlotWidget> UnitSlotWidgetClass = nullptr;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UBattleCostBarWidget> MeatCostBar = nullptr;
 

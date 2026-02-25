@@ -6,6 +6,9 @@
 #include "Blueprint/UserWidget.h"
 #include "InBattleHUDWidget.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnClickActionButton);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBattleToggle, bool, bIsChecked);
+
 /**
  * 김도현
  */
@@ -20,10 +23,78 @@ UCLASS()
 class ARCANUM_API UInBattleHUDWidget : public UUserWidget
 {
 	GENERATED_BODY()
+
 #pragma region 언리얼 기본 생성 및 초기화
 protected:
 	virtual void NativeConstruct() override;
 #pragma endregion
+
+
+#pragma region 플레이어, 보스 체력바(건물아님)
+public:
+	UFUNCTION()
+	void SetPlayerCharacterHealthBarProgress(float CurrentHealth, float MaxHealth);
+	UFUNCTION()
+	void SetBossHealthBarProgress(float CurrentHealth, float MaxHealth);
+
+	UFUNCTION()
+	void ShowBosHealthPBar(bool bIsShow);
+#pragma endregion
+
+
+#pragma region 스테이지 진행도
+	UFUNCTION()
+	void SetPlayerLocationProgress(const FVector& InAllyNexusLocation, const FVector& InEnemyNexusLocation, const FVector& InPlayerLocation);
+	UFUNCTION()
+	void SetTime(int32 TimeMS);
+#pragma endregion
+
+
+#pragma region 전투 관련 버튼들
+public:
+	FOnClickActionButton OnClickBasicAttack;
+	FOnClickActionButton OnClickUltimateSkill;
+	FOnClickActionButton OnClickBasicSkill;
+	FOnClickActionButton OnClickWeaponSwap;
+	FOnClickActionButton OnClickItem1;
+	FOnClickActionButton OnClickItem2;
+	FOnBattleToggle OnToggleAutoManualMode;
+
+protected:
+	UFUNCTION()
+	void ClickBasicAttack();
+
+	UFUNCTION()
+	void ClickUltimateSkill();
+
+	UFUNCTION()
+	void ClickBasicSkill();
+
+	UFUNCTION()
+	void ClickWeaponSwap();
+
+	UFUNCTION()
+	void ClickItem1();
+
+	UFUNCTION()
+	void ClickItem2();
+
+	UFUNCTION()
+	void ToggleAutoManualMode(bool bIsChecked);
+#pragma endregion
+
+#pragma region 플레이어 유닛, 코스트 패널
+public:
+	FORCEINLINE UBattleAllyUnitPanelWidget* GetPlayerInfoPanel() const { return PlayerInfoPanel; }
+#pragma endregion
+
+
+
+#pragma region 바인딩
+protected:
+	void BindCallbacks();
+
+protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UBattleHealthBarWidget> PlayerCharacterHealthBar = nullptr;
 
@@ -46,14 +117,16 @@ protected:
 	TObjectPtr<UBattleActionButtonWidget> WeaponSwap = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
-	TObjectPtr<UBattleActionButtonWidget> Item2 = nullptr;
+	TObjectPtr<UBattleActionButtonWidget> Item1 = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
-	TObjectPtr<UBattleActionButtonWidget> Item1 = nullptr;
+	TObjectPtr<UBattleActionButtonWidget> Item2 = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UBattleToggleWidget> AutoManualMode = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UBattleAllyUnitPanelWidget> PlayerInfoPanel = nullptr;
+#pragma endregion
+
 };

@@ -3,6 +3,7 @@
 
 #include "UI/Battle/SubLayout/BattleToggleWidget.h"
 #include "Components/CheckBox.h"
+#include "Components/WidgetSwitcher.h"
 
 // ========================================================
 // 언리얼 기본 생성
@@ -23,4 +24,5 @@ bool UBattleToggleWidget::IsAutoPlay()
 void UBattleToggleWidget::OnChangeToggle(bool IsChecked)
 {
 	OnToggle.Broadcast(IsChecked);
+	TextSwitcher->SetActiveWidgetIndex(static_cast<int32>(IsChecked));
 }
