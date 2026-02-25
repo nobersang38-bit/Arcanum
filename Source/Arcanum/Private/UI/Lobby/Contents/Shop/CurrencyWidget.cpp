@@ -1,59 +1,48 @@
 #include "UI/Lobby/Contents/Shop/CurrencyWidget.h"
-#include "Core/ARGameInstance.h"
+#include "GameplayTags/ArcanumTags.h"
 #include "Components/TextBlock.h"
 
 void UCurrencyWidget::NativeConstruct()
 {
-	Super::NativeConstruct();
-
-	if (UARGameInstance* gameInstance = GetGameInstance<UARGameInstance>())
+	// 초기값
+	if (GoldText)
 	{
-		gameInstance->OnCurrencyChanged.AddDynamic(this, &UCurrencyWidget::RefreshCurrencyUI);
+		GoldText->SetText(FText::AsNumber(0));
 	}
 
-	RefreshCurrencyUI();
-}
-
-void UCurrencyWidget::NativeDestruct()
-{
-	if (UARGameInstance* gameInstance = GetGameInstance<UARGameInstance>())
+	if (ShardText)
 	{
-		gameInstance->OnCurrencyChanged.RemoveDynamic(this, &UCurrencyWidget::RefreshCurrencyUI);
+		ShardText->SetText(FText::AsNumber(0));
 	}
 
-	Super::NativeDestruct();
+	if (SoulText)
+	{
+		SoulText->SetText(FText::AsNumber(0));
+	}
 }
 
-void UCurrencyWidget::RefreshCurrencyUI()
+void UCurrencyWidget::RefreshCurrencyUI(const FPlayerData& InPlayerData)
 {
-	if (UWorld* world = GetWorld())
+	const FCurrencyData* goldData = InPlayerData.PlayerCurrency.CurrencyDatas.Find(Arcanum::PlayerData::Currencies::NonRegen::Gold::Value);
+	const FCurrencyData* shardData = InPlayerData.PlayerCurrency.CurrencyDatas.Find(Arcanum::PlayerData::Currencies::NonRegen::Shard::Value);
+	const FCurrencyData* soulData = InPlayerData.PlayerCurrency.CurrencyDatas.Find(Arcanum::PlayerData::Currencies::NonRegen::Soul::Value);
+
+	const int64 goldAmount = (goldData) ? goldData->CurrAmount : 0;
+	const int64 shardAmount = (shardData) ? shardData->CurrAmount : 0;
+	const int64 soulAmount = (soulData) ? soulData->CurrAmount : 0;
+
+	if (GoldText)
 	{
-		if (UARGameInstance* gameInstance = Cast<UARGameInstance>(world->GetGameInstance()))
-		{
-			const FPlayerData& playerData = gameInstance->GetPlayerData();
+		GoldText->SetText(FText::AsNumber(goldAmount));
+	}
 
-			const FCurrencyData* goldData = playerData.PlayerCurrency.CurrencyDatas.Find(Arcanum::PlayerData::Currencies::NonRegen::Gold::Value);
-			const FCurrencyData* shardData = playerData.PlayerCurrency.CurrencyDatas.Find(Arcanum::PlayerData::Currencies::NonRegen::Shard::Value);
-			const FCurrencyData* soulData = playerData.PlayerCurrency.CurrencyDatas.Find(Arcanum::PlayerData::Currencies::NonRegen::Soul::Value);
+	if (ShardText)
+	{
+		ShardText->SetText(FText::AsNumber(shardAmount));
+	}
 
-			const int64 goldAmount = (goldData) ? goldData->CurrAmount : 0;
-			const int64 shardAmount = (shardData) ? shardData->CurrAmount : 0;
-			const int64 soulAmount = (soulData) ? soulData->CurrAmount : 0;
-
-			if (GoldText)
-			{
-				GoldText->SetText(FText::AsNumber(goldAmount));
-			}
-
-			if (ShardText)
-			{
-				ShardText->SetText(FText::AsNumber(shardAmount));
-			}
-
-			if (SoulText)
-			{
-				SoulText->SetText(FText::AsNumber(soulAmount));
-			}
-		}
+	if (SoulText)
+	{
+		SoulText->SetText(FText::AsNumber(soulAmount));
 	}
 }

@@ -5,6 +5,7 @@
 #include "Core/SubSystem/GameDataSubsystem.h"
 #include "Core/ARGameInstance.h"
 #include "Core/ArcanumSaveGame.h"
+#include "Core/SubSystem/GameTimeSubsystem.h"
 #include "Components/WrapBox.h"
 #include "Components/WrapBoxSlot.h"
 #include "Components/TextBlock.h"
@@ -19,13 +20,32 @@ void UShopHUDWidget::NativeConstruct()
 
 	SelectedShopSlotIndex = INDEX_NONE;
 	RefreshShopSlotSelection();
+
+	if (UARGameInstance* gameInstance = GetGameInstance<UARGameInstance>())
+	{
+		// 상점 저장 데이터 초기화
+		FPlayerAccountService::InitializeShop(gameInstance, ShopSlotCount);
+
+		// 슬롯 UI 채우기
+		RefreshShopSlotsUI();
+
+		// 상점 타이머 바인딩
+		if (UGameTimeSubsystem* gameTimeSubsystem = gameInstance->GetSubsystem<UGameTimeSubsystem>())
+		{
+			gameTimeSubsystem->OnShopSecondChanged.RemoveDynamic(this, &UShopHUDWidget::HandleShopSecondChanged);
+			gameTimeSubsystem->OnShopSecondChanged.AddDynamic(this, &UShopHUDWidget::HandleShopSecondChanged);
+
+			// 처음 1회 즉시 갱신
+			HandleShopSecondChanged(FPlayerAccountService::GetShopRemainingSeconds(gameInstance));
+		}
+	}
 }
 
 void UShopHUDWidget::CreateShopSlots()
 {
 	if (!ShopSlotContainer || !ShopItemSlotWidgetClass) { return; }
 
-	ShopSlotContainer->ClearChildren();
+	ShopSlotContainer->ClearChildren();	
 	ShopSlots.Reset();
 
 	for (int32 slotIndex = 0; slotIndex < ShopSlotCount; slotIndex++)
@@ -56,17 +76,19 @@ void UShopHUDWidget::BindShopSlotEvents()
 
 void UShopHUDWidget::HandleShopSlotClicked(int32 InSlotIndex)
 {
-	if (SelectedShopSlotIndex != InSlotIndex)
+	if (ShopSlots.IsValidIndex(InSlotIndex))
 	{
-		if (SelectedShopSlotIndex != INDEX_NONE && ShopSlots.IsValidIndex(SelectedShopSlotIndex))
+		if (SelectedShopSlotIndex != InSlotIndex)
 		{
-			ShopSlots[SelectedShopSlotIndex]->SetSelected(false);
+			if (SelectedShopSlotIndex != INDEX_NONE && ShopSlots.IsValidIndex(SelectedShopSlotIndex))
+			{
+				ShopSlots[SelectedShopSlotIndex]->SetSelected(false);
+			}
+
+			SelectedShopSlotIndex = InSlotIndex;
+
+			RefreshShopSlotSelection();
 		}
-
-		SelectedShopSlotIndex = InSlotIndex;
-		ShopSlots[InSlotIndex]->SetSelected(true);
-
-		RefreshShopSlotSelection();
 	}
 }
 

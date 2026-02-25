@@ -101,10 +101,6 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional, AllowPrivateAccess = "true"))
 	TObjectPtr<UBorder> SelectedBorder;
 
-	/* 품절 강조 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional, AllowPrivateAccess = "true"))
-	TObjectPtr<UBorder> SoldOutBorder;
-
 private:
 	/* 슬롯 번호 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))

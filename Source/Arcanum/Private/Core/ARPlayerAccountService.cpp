@@ -45,8 +45,6 @@ bool FPlayerAccountService::PurchaseEquipment(UARGameInstance* GameInstance, FNa
 	PlayerData.Inventory.Add(MoveTemp(NewEquip));
 	CurrencyData->CurrAmount -= Price;
 
-	GameInstance->OnCurrencyChanged.Broadcast(); // 재화 변경 알림
-
 	GameInstance->SavePlayerData();
 
 	return true;
@@ -200,25 +198,24 @@ void FPlayerAccountService::GenerateShopItems(UARGameInstance* InGameInstance, i
 {
 	if (InGameInstance)
 	{
-		if (UArcanumSaveGame* SaveGame = InGameInstance->GetArSaveGame())
+		if (UArcanumSaveGame* saveGame = InGameInstance->GetArSaveGame())
 		{
 			if (InShopSlotCount > 0)
 			{
-				FShopItemPools ItemPools;
-				BuildShopItemPools(InGameInstance, ItemPools);
+				FShopItemPools itemPools;
+				BuildShopItemPools(InGameInstance, itemPools);
 
 				// 세이브 데이터 초기화
-				SaveGame->CurrentShopRowNames.Reset();
+				saveGame->CurrentShopRowNames.Reset();
 
-				for (int32 i = 0; i < InShopSlotCount; ++i)
+				saveGame->CurrentShopRowNames.Reserve(InShopSlotCount);
+
+				for (int32 i = 0; i < InShopSlotCount; i++)
 				{
-					const EShopRarityType RarityType = PickShopRarityType(InGameInstance);
-					const FName PickedRow = PickShopItemRow(RarityType, ItemPools);
+					const EShopRarityType rarityType = PickShopRarityType(InGameInstance);
+					const FName pickedRow = PickShopItemRow(rarityType, itemPools);
 
-					if (PickedRow != NAME_None)
-					{
-						SaveGame->CurrentShopRowNames.Add(PickedRow);
-					}
+					saveGame->CurrentShopRowNames.Add(pickedRow);
 				}
 			}
 		}

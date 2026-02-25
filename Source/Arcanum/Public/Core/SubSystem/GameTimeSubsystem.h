@@ -85,7 +85,7 @@ public:
 	FOnBannerSecondChanged OnShopSecondChanged;
 
 	/* 상점 시간 주기 */
-	int32 ShopRefreshSeconds = 600;
+	int32 ShopRefreshSeconds = 6;
 
 private:
 	bool bShopActive = false;

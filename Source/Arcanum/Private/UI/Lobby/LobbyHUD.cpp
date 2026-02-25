@@ -1,16 +1,16 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "UI/Lobby/LobbyHUD.h"
 #include "UI/Common/CommonBtnWidget.h"
 #include "UI/Common/CommonDialog.h"
 #include "UI/Lobby/Contents/Shop/ShopHUDWidget.h"
+#include "UI/Lobby/Contents/Shop/CurrencyWidget.h"
 //#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/HorizontalBox.h"
 #include "Components/BackgroundBlur.h"
 #include "Components/WidgetSwitcher.h"
-#include "UI/Lobby/Contents/Shop/CurrencyWidget.h"
+#include "DataInfo/PlayerData/FPlayerData.h"
+#include "Core/ARPlayerAccountService.h"
+#include "Core/ARGameInstance.h"
 
 
 void ULobbyHUD::NativeConstruct()
@@ -39,10 +39,6 @@ void ULobbyHUD::NativeConstruct()
 		ShopMenuBtn->OnClicked.RemoveDynamic(this, &ULobbyHUD::ClickShopMenuBtn);
 		ShopMenuBtn->OnClicked.AddDynamic(this, &ULobbyHUD::ClickShopMenuBtn);
 	}
-	if (ShopHUDWidget)
-	{
-		ShopHUDWidget->SetVisibility(ESlateVisibility::Collapsed);
-	}
 
 	if (GachaMenuBtn) {
 		GachaMenuBtn->OnClicked.RemoveDynamic(this, &ULobbyHUD::ClickGachaMenuBtn);
@@ -57,6 +53,13 @@ void ULobbyHUD::NativeConstruct()
 	if (QuitBtn) {
 		QuitBtn->OnClicked.RemoveDynamic(this, &ULobbyHUD::ClickQuitBtn);
 		QuitBtn->OnClicked.AddDynamic(this, &ULobbyHUD::ClickQuitBtn);
+	}
+
+	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+	{
+		CachedPlayerData = gameInstance->GetPlayerDataCopy();
+
+		RefreshLobbyCurrencyUI();
 	}
 }
 
@@ -93,14 +96,17 @@ void ULobbyHUD::ClickCharacterMenuBtn()
 
 void ULobbyHUD::ClickEnhancementMenuBtn()
 {
-	/// TODO : 강화 위젯 띄우기
+	if (WidgetSwitcher)
+	{
+		WidgetSwitcher->SetActiveWidgetIndex(2);
+	}
 }
 
 void ULobbyHUD::ClickShopMenuBtn()
 {
-	if (ShopHUDWidget)
+	if (WidgetSwitcher)
 	{
-		ShopHUDWidget->SetVisibility(ESlateVisibility::Visible);
+		WidgetSwitcher->SetActiveWidgetIndex(3);
 	}
 }
 
@@ -146,14 +152,38 @@ void ULobbyHUD::ClickQuitBtn()
 		{
 			SettingUHorizontalBox->SetVisibility(ESlateVisibility::Hidden);
 		}
-		if (CurrencyList)
+		if (CurrencyWidget)
 		{
-			CurrencyList->SetVisibility(ESlateVisibility::Hidden);
+			CurrencyWidget->SetVisibility(ESlateVisibility::Hidden);
 		}
 	}
+}
 
+void ULobbyHUD::RefreshLobbyCurrencyUI()
+{
+	if (CurrencyWidget)
+	{
+		CurrencyWidget->RefreshCurrencyUI(CachedPlayerData);
+	}
+}
 
+void ULobbyHUD::TryPurchaseSelectedItem(FName InItemRowName)
+{
+	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+	{
+		if (FPlayerAccountService::PurchaseEquipment(gameInstance, InItemRowName))
+		{
+			CachedPlayerData = gameInstance->GetPlayerDataCopy();
 
+			RefreshLobbyCurrencyUI();
+
+			UE_LOG(LogTemp, Log, TEXT("구매 성공: %s"), *InItemRowName.ToString());
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("구매 실패: %s"), *InItemRowName.ToString());
+		}
+	}
 }
 
 void ULobbyHUD::OnExitCommonDialog(EDialogResult res)
@@ -186,9 +216,9 @@ void ULobbyHUD::OnExitCommonDialog(EDialogResult res)
 		{
 			SettingUHorizontalBox->SetVisibility(ESlateVisibility::Visible);
 		}
-		if (CurrencyList)
+		if (CurrencyWidget)
 		{
-			CurrencyList->SetVisibility(ESlateVisibility::Visible);
+			CurrencyWidget->SetVisibility(ESlateVisibility::Visible);
 		}
 	}
 }

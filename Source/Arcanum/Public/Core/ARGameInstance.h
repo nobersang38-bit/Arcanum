@@ -42,6 +42,9 @@ public:
 #pragma endregion
 
 public:
+    UFUNCTION(BlueprintCallable)
+    const FPlayerData& GetPlayerDataCopy() const { return PlayerData; }
+
     /* 필요하면 Getter만 제공 */
     UFUNCTION(BlueprintCallable)
     FPlayerData& GetPlayerData() { return PlayerData; }

@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "UI/DataType/EDialogResult.h"
 #include "UI/Lobby/Contents/Character/CharacterHUDWidget.h"
+#include "DataInfo/PlayerData/FPlayerData.h"
 #include "LobbyHUD.generated.h"
 
 /*
@@ -14,15 +15,14 @@
  * 2. 설정, 종료 버튼 관리
  */
 
-/**
- * 
- */
 class UCommonBtnWidget;
 class UCommonDialog;
 class UHorizontalBox;
 class UBackgroundBlur;
 class UWidgetSwitcher;
 class UCurrencyWidget;
+class UShopHUDWidget;
+class UARGameInstance;
 
 UCLASS()
 class ARCANUM_API ULobbyHUD : public UUserWidget
@@ -32,6 +32,11 @@ class ARCANUM_API ULobbyHUD : public UUserWidget
 #pragma region 언리얼 기본 생성
 protected:
 	virtual void NativeConstruct() override;
+#pragma endregion
+
+#pragma region 데이터 캐시
+public:
+	FPlayerData CachedPlayerData;
 #pragma endregion
 
 #pragma region 바인딩 메뉴 버튼
@@ -63,9 +68,6 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UHorizontalBox> MenuHorizontalBox;
 
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UCurrencyWidget> CurrencyList;
-	
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UHorizontalBox> SettingUHorizontalBox;
 
@@ -100,7 +102,14 @@ private:
 #pragma endregion
 
 #pragma region 재화
+protected:
+	/* 재화 UI 갱신 */
+	void RefreshLobbyCurrencyUI();
 
+protected:
+	/* 재화 위젯 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UCurrencyWidget> CurrencyWidget;
 #pragma endregion
 
 #pragma region 전투
@@ -121,6 +130,8 @@ private:
 #pragma endregion
 
 #pragma region 상점
+	/* 선택 아이템 구매 */
+	void TryPurchaseSelectedItem(FName InItemRowName);
 
 #pragma endregion
 

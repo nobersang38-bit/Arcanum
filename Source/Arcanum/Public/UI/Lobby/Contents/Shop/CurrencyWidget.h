@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "DataInfo/PlayerData/FPlayerData.h"
 #include "CurrencyWidget.generated.h"
 
 class UTextBlock;
@@ -18,13 +19,12 @@ class ARCANUM_API UCurrencyWidget : public UUserWidget
 
 protected:
 	virtual void NativeConstruct() override;
-	virtual void NativeDestruct() override;
 
 #pragma region 재화 표시
-protected:
+public:
 	/* 재화 표시 갱신 */
 	UFUNCTION()
-	void RefreshCurrencyUI();
+	void RefreshCurrencyUI(const FPlayerData& InPlayerData);
 
 protected:
 	/* 골드 텍스트 */

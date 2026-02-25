@@ -61,7 +61,7 @@ void UShopItemSlotWidget::SetSoldOut(bool InSoldOut)
 {
 	if (!bEmpty)
 	{
-		bSoldOut = InSoldOut;
+		//bSoldOut = InSoldOut;
 	}
 
 	RefreshSlotUI();
@@ -87,20 +87,13 @@ void UShopItemSlotWidget::RefreshSlotUI()
         SlotButton->SetIsEnabled(IsPurchasable());
     }
 
-    // 선택 강조
-    if (SelectedBorder)
-    {
-        SelectedBorder->SetVisibility((!bEmpty && bSelected) ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
-    }
+    // float opacity = bSoldOut ? SoldOutOpacity : 1.0f;
 
-    // 품절 처리 불투명도
-    float opacity = bSoldOut ? SoldOutOpacity : 1.0f;
-
-    if (SoldOutBorder)
+    // 선택 강조 (품절이면 강조 숨김)
+  /*  if (SelectedBorder)
     {
-        SoldOutBorder->SetVisibility((!bEmpty && bSoldOut) ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
-        SoldOutBorder->SetRenderOpacity(opacity);
-    }
+        SelectedBorder->SetVisibility((!bEmpty && bSelected && !bSoldOut) ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+    }*/
 
     // 아이템명
     if (ItemNameText)
@@ -113,7 +106,7 @@ void UShopItemSlotWidget::RefreshSlotUI()
         {
             ItemNameText->SetText(FText::FromName(RowName));
         }
-        ItemNameText->SetOpacity(opacity);
+        //ItemNameText->SetOpacity(opacity);
     }
 
     // 설명
@@ -127,7 +120,7 @@ void UShopItemSlotWidget::RefreshSlotUI()
         {
             DescText->SetText(EquipmentRow.Desc);
         }
-        DescText->SetOpacity(opacity);
+        //DescText->SetOpacity(opacity);
     }
 
     // 가격
@@ -141,7 +134,7 @@ void UShopItemSlotWidget::RefreshSlotUI()
         {
             PriceText->SetText(FText::AsNumber(EquipmentRow.BuyPrice));
         }
-        PriceText->SetOpacity(opacity);
+        //PriceText->SetOpacity(opacity);
     }
 
     // 아이콘
@@ -164,7 +157,7 @@ void UShopItemSlotWidget::RefreshSlotUI()
             {
                 ItemIconImage->SetBrushFromSoftTexture(EquipmentRow.Icon);
             }
-            ItemIconImage->SetRenderOpacity(opacity);
+            //ItemIconImage->SetRenderOpacity(opacity);
         }
     }
 }

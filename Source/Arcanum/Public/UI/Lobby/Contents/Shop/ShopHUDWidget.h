@@ -4,7 +4,6 @@
 #include "Blueprint/UserWidget.h"
 #include "ShopHUDWidget.generated.h"
 
-class UCurrencyWidget;
 class UWrapBox;
 class UShopItemSlotWidget;
 class UTextBlock;
@@ -86,10 +85,4 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional, AllowPrivateAccess = "true"))
 	TObjectPtr<UTextBlock> ShopTimerText;
 #pragma endregion
-
-
-protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
-    TObjectPtr<class UCurrencyWidget> CurrencyWidget;
-	
 };
