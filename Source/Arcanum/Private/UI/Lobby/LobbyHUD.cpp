@@ -4,11 +4,13 @@
 #include "UI/Lobby/LobbyHUD.h"
 #include "UI/Common/CommonBtnWidget.h"
 #include "UI/Common/CommonDialog.h"
+#include "UI/Lobby/Contents/Shop/ShopHUDWidget.h"
 //#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/HorizontalBox.h"
 #include "Components/BackgroundBlur.h"
 #include "Components/WidgetSwitcher.h"
+
 
 void ULobbyHUD::NativeConstruct()
 {
@@ -35,6 +37,10 @@ void ULobbyHUD::NativeConstruct()
 	if (ShopMenuBtn) {
 		ShopMenuBtn->OnClicked.RemoveDynamic(this, &ULobbyHUD::ClickShopMenuBtn);
 		ShopMenuBtn->OnClicked.AddDynamic(this, &ULobbyHUD::ClickShopMenuBtn);
+	}
+	if (ShopHUDWidget)
+	{
+		ShopHUDWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
 
 	if (GachaMenuBtn) {
@@ -91,8 +97,10 @@ void ULobbyHUD::ClickEnhancementMenuBtn()
 
 void ULobbyHUD::ClickShopMenuBtn()
 {
-	/// TODO : 상점 위젯 띄우기
-	UE_LOG(LogTemp, Log, TEXT("상점 메뉴 클릭"));
+	if (ShopHUDWidget)
+	{
+		ShopHUDWidget->SetVisibility(ESlateVisibility::Visible);
+	}
 }
 
 void ULobbyHUD::ClickGachaMenuBtn()

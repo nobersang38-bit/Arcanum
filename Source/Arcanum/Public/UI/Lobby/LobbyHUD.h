@@ -22,6 +22,8 @@ class UCommonDialog;
 class UHorizontalBox;
 class UBackgroundBlur;
 class UWidgetSwitcher;
+class UCurrencyWidget;
+class UShopHUDWidget;
 
 UCLASS()
 class ARCANUM_API ULobbyHUD : public UUserWidget
@@ -99,7 +101,10 @@ private:
 #pragma endregion
 
 #pragma region 재화
-
+protected:
+	/* 상단 재화 위젯 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UCurrencyWidget> CurrencyWidget;
 #pragma endregion
 
 #pragma region 전투
@@ -120,7 +125,9 @@ private:
 #pragma endregion
 
 #pragma region 상점
-
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional))
+	TObjectPtr<UShopHUDWidget> ShopHUDWidget;
 #pragma endregion
 
 #pragma region 가챠
