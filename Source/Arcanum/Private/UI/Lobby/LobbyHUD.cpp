@@ -9,8 +9,8 @@
 #include "Components/BackgroundBlur.h"
 #include "Components/WidgetSwitcher.h"
 #include "DataInfo/PlayerData/FPlayerData.h"
-#include "Core/ARPlayerAccountService.h"
 #include "Core/ARGameInstance.h"
+#include "Core/ARPlayerAccountService.h"
 
 
 void ULobbyHUD::NativeConstruct()
@@ -55,12 +55,13 @@ void ULobbyHUD::NativeConstruct()
 		QuitBtn->OnClicked.AddDynamic(this, &ULobbyHUD::ClickQuitBtn);
 	}
 
-	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
-	{
-		CachedPlayerData = gameInstance->GetPlayerDataCopy();
-
-		RefreshLobbyCurrencyUI();
-	}
+	/// 02/26 수정 : 서비스레이어 거치도록
+	CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
+	RefreshLobbyCurrencyUI();
+	//if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance())) {
+	//	CachedPlayerData = gameInstance->GetPlayerDataCopy();
+	//	RefreshLobbyCurrencyUI();
+	//}
 }
 
 void ULobbyHUD::ClickBattleMenuBtn()
@@ -112,7 +113,7 @@ void ULobbyHUD::ClickShopMenuBtn()
 
 void ULobbyHUD::ClickGachaMenuBtn()
 {
-	/// TODO : 가챠 위젯 띄우기
+	if (WidgetSwitcher) WidgetSwitcher->SetActiveWidgetIndex(4);
 }
 
 void ULobbyHUD::ClickSettingBtn()
@@ -169,11 +170,14 @@ void ULobbyHUD::RefreshLobbyCurrencyUI()
 
 void ULobbyHUD::TryPurchaseSelectedItem(FName InItemRowName)
 {
+
 	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
 	{
 		if (FPlayerAccountService::PurchaseEquipment(gameInstance, InItemRowName))
 		{
-			CachedPlayerData = gameInstance->GetPlayerDataCopy();
+			/// 02/26 수정 : 서비스레이어 거치도록
+			CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
+			//CachedPlayerData = gameInstance->GetPlayerDataCopy();
 
 			RefreshLobbyCurrencyUI();
 

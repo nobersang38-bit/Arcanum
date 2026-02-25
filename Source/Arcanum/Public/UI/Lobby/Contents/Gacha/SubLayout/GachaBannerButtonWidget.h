@@ -49,6 +49,6 @@ public:
 
 protected:
     UPROPERTY(meta = (BindWidget)) TObjectPtr<UButton> BannerButton;
-    UPROPERTY(meta = (BindWidget)) TObjectPtr<UBorder> SelectionBorder;
+    //UPROPERTY(meta = (BindWidget)) TObjectPtr<UBorder> SelectionBorder;
 #pragma endregion
 };

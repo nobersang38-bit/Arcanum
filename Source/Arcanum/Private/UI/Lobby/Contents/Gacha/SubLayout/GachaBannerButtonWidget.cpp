@@ -31,7 +31,7 @@ void UGachaBannerButtonWidget::NativeConstruct()
         BannerButton->SetStyle(NewStyle);
     }
 
-    if (SelectionBorder) SelectionBorder->SetVisibility(ESlateVisibility::Hidden);
+    //if (SelectionBorder) SelectionBorder->SetVisibility(ESlateVisibility::Hidden);
     SetSelected(false);
 }
 // ========================================================
@@ -39,10 +39,8 @@ void UGachaBannerButtonWidget::NativeConstruct()
 // ========================================================
 void UGachaBannerButtonWidget::SetSelected(bool bSelected)
 {
-    if (SelectionBorder) {
-        SelectionBorder->SetVisibility(bSelected ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
-        SetRenderScale(bSelected ? FVector2D(1.05f, 1.05f) : FVector2D(1.0f, 1.0f));
-    }
+    float ScaleValue = bSelected ? 1.1f : 1.f;
+    SetRenderScale(FVector2D(ScaleValue, ScaleValue));
 }
 void UGachaBannerButtonWidget::SetBannerTexture(UTexture2D* InTexture)
 {

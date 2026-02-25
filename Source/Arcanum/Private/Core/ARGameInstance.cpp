@@ -1,5 +1,6 @@
 #include "Core/ARGameInstance.h"
 #include "Kismet/GameplayStatics.h"
+#include "Core/ArcanumSaveGame.h"
 #include "Core/SubSystem/GameDataSubsystem.h"
 
 #include "DataInfo/BattleCharacter/BattleStats/DataTable/DTBattleStats.h"
@@ -12,15 +13,16 @@
 void UARGameInstance::Init()
 {
     Super::Init();
+}
+void UARGameInstance::InitializeGameData()
+{
     /// Todo : 추후 SaveSlot으로 저장이름 변경해줘야함. 지금 변경하면 테스트 불가.
     ArSaveGame = Cast<UArcanumSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("PlayerSlot"), 0));
-
     if (!ArSaveGame) {
         ArSaveGame = Cast<UArcanumSaveGame>(UGameplayStatics::CreateSaveGameObject(UArcanumSaveGame::StaticClass()));
         AddIDPW(TEXT("Admin"), TEXT("12345"));
 
         InitializeNewPlayerData();
-        /// Todo : Supply갱신 로직(델리게이트 관련 만들어야함)
 
         SavePlayerData();
     }
@@ -91,15 +93,18 @@ void UARGameInstance::InitializeNewPlayerData()
             NewCharacter.CharacterInfo.BattleCharacterInitData = Row->BattleCharacterInfo;
             NewCharacter.CharacterInfo.CurrShardCount = 0;
             NewCharacter.CharacterInfo.CurrGrade = Row->BattleCharacterInfo.DefaultGrade;
-            //NewCharacter.CharacterInfo.CurrentGrade = GetGradePriority(Row->BattleCharacterInfo.DefaultGrade);
             NewCharacter.CharacterInfo.CurrentGrade = 0;
             NewCharacter.CharacterInfo.CurrentLevel = 1;
 
             PlayerData.OwnedCharacters.Add(NewCharacter);
         }
     }
-}
 
+    if (!PlayerData.OwnedCharacters.IsEmpty()) {
+        PlayerData.OwnedCharacters[0].bSelection = true;
+        PlayerData.OwnedCharacters[0].CharacterInfo.CurrentGrade = 1;
+    }
+}
 // ========================================================
 // ID/PW용
 // ========================================================
@@ -122,20 +127,47 @@ bool UARGameInstance::CheckLogin(FString ID, FString PW)
 // ========================================================
 // 플레이어 데이터 저장/로드
 // ========================================================
-void UARGameInstance::SavePlayerData()
+bool UARGameInstance::SavePlayerData()
 {
-    if (!ArSaveGame) return;
+    if (!ArSaveGame) ArSaveGame = Cast<UArcanumSaveGame>(UGameplayStatics::CreateSaveGameObject(UArcanumSaveGame::StaticClass()));
+    if (ArSaveGame) {
+        ArSaveGame->PlayerData = PlayerData;
+        return UGameplayStatics::SaveGameToSlot(ArSaveGame, SaveSlotName, 0);
+    }
 
-    ArSaveGame->PlayerData = PlayerData;
-    UGameplayStatics::SaveGameToSlot(ArSaveGame, SaveSlotName, 0);
+    return false;
 }
-void UARGameInstance::LoadPlayerData()
+bool UARGameInstance::LoadPlayerData()
 {
-    if (!ArSaveGame) return;
-
-    PlayerData = ArSaveGame->PlayerData;
+    if (UGameplayStatics::DoesSaveGameExist(SaveSlotName, 0)) {
+        ArSaveGame = Cast<UArcanumSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, 0));
+        if (ArSaveGame) {
+            PlayerData = ArSaveGame->PlayerData;
+            return true;
+        }
+    }
+    else InitializeGameData();
+    
+    return false;
 }
+void UARGameInstance::AddCurrency(FGameplayTag CurrencyValueTag, int64 Amount)
+{ 
+    if (!CurrencyValueTag.IsValid() || Amount == 0) return;
 
+    FCurrencyData& CurrencyData = PlayerData.PlayerCurrency.CurrencyDatas.FindOrAdd(CurrencyValueTag);
+    CurrencyData.CurrAmount += Amount;
+
+    if (CurrencyData.MaxAmount > 0) CurrencyData.CurrAmount = FMath::Clamp(CurrencyData.CurrAmount, int64(0), CurrencyData.MaxAmount);
+    if (Amount > 0)  CurrencyData.TotalEarned += Amount;
+}
+bool UARGameInstance::DeletePlayerData()
+{
+    int32 UserIndex = 0;
+    if (UGameplayStatics::DoesSaveGameExist(SaveSlotName, UserIndex))
+        return UGameplayStatics::DeleteGameInSlot(SaveSlotName, UserIndex);
+
+    return false;
+}
 
 
 
