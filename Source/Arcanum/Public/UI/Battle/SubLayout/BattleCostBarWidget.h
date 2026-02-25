@@ -20,11 +20,14 @@ class ARCANUM_API UBattleCostBarWidget : public UUserWidget
 protected:
 	virtual void NativeConstruct() override;
 #pragma endregion
+
 	
 public:
 	UFUNCTION()
 	void SetCostProgress(float CurrentHealth, float MaxHealth);
 
+
+#pragma region 위젯 바인딩
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UImage> Icon = nullptr;
@@ -34,4 +37,5 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UTextBlock> CostText = nullptr;
+#pragma endregion
 };

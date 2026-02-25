@@ -6,21 +6,19 @@
 #include "Blueprint/UserWidget.h"
 #include "BattleActionButtonWidget.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FOnButtonClick);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnButtonClick);
+
 /**
  * 김도현
  */
 class UTextBlock;
 class UButton;
 class UProgressBar;
+class UImage;
 UCLASS()
 class ARCANUM_API UBattleActionButtonWidget : public UUserWidget
 {
 	GENERATED_BODY()
-public:
-	//버튼 누르면 호출됩니다
-	FOnButtonClick OnButtonClick;
-
 #pragma region 언리얼 기본 생성
 protected:
 	virtual void NativeConstruct() override;
@@ -30,16 +28,29 @@ protected:
 #endif
 #pragma endregion
 
+
 public:
-	void SetProgress(float CurrentProgress, float MaxProgress);
+	FOnButtonClick OnButtonClick;
+
+	UFUNCTION()
+	void SetActivateCost(bool InIsDisable);
+
+	UFUNCTION()
+	void SetCoolTimeProgress(float CurrentProgress, float MaxProgress);
+
+	UFUNCTION()
 	void SetImage(UTexture2D* InImage);
 
+
+#pragma region 내부 함수
 protected:
 	UFUNCTION()
 	void OnActionButtonClick();
 
 	UFUNCTION()
 	void SetProgressesVisible(bool IsVisible);
+#pragma endregion
+
 
 #pragma region 위젯 바인딩
 protected:
@@ -50,8 +61,10 @@ protected:
 	TObjectPtr<UTextBlock> ActionText = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
-	TObjectPtr<UProgressBar> CoolTimeProgress = nullptr;
+	TObjectPtr<UImage> DisabledImage = nullptr;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UProgressBar> CoolTimeProgress = nullptr;
 #pragma endregion
 
 
@@ -59,6 +72,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "에디터 변경용")
 	FText IconText = FText::FromString(TEXT("버튼"));
 #pragma endregion
+
 
 #pragma region 디버그
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Debug|CoolTime")
@@ -69,8 +83,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Debug|CoolTime")
 	float DebugMaxCoolTime = 5.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Debug|Cost")
+	bool bIsDebugCostDisableImage = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Debug|Cost")
+	bool bIsSetDebugCostDisableImage = false;
 #pragma endregion
-
-
 };
 

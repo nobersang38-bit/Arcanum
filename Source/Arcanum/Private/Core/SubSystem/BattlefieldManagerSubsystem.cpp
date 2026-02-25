@@ -17,28 +17,31 @@ void UBattlefieldManagerSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 	GameInstance = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	if (GameInstance)
 	{
-		SetPlayerData(GameInstance->GetPlayerData(), InBattleData);
+		SetInBattleData(GameInstance->GetPlayerData(), InBattleData);
 	}
 }
 
-ACharacter* UBattlefieldManagerSubsystem::GetAllyNexus() const
+AActor* UBattlefieldManagerSubsystem::GetBasement(FGameplayTag InTeamTag) const
 {
-	return AllyNexus.Get();
+	if (AActor* Basement = Basements.FindRef(InTeamTag).Get())
+	{
+		return Basement;
+	}
+	return nullptr;
 }
 
-ACharacter* UBattlefieldManagerSubsystem::GetEnemyNexus() const
+void UBattlefieldManagerSubsystem::AddBasement(AActor* InNexus, FGameplayTag InTeamTag)
 {
-	return EnemyNexus.Get();
-}
+	if (!InNexus || !InTeamTag.IsValid()) return;
 
-void UBattlefieldManagerSubsystem::SetAllyNexus(ACharacter* InNexus)
-{
-	AllyNexus = InNexus;
-}
-
-void UBattlefieldManagerSubsystem::SetEnemyNexus(ACharacter* InNexus)
-{
-	EnemyNexus = InNexus;
+	if (Basements.Contains(InTeamTag))
+	{
+		UE_LOG(LogTemp, Error, TEXT("같은 팀의 기지가 하나 더 있습니다"));
+	}
+	else
+	{
+		Basements.Add(InTeamTag, InNexus);
+	}
 }
 
 void UBattlefieldManagerSubsystem::SetABattlefieldManagerActor(ABattlefieldManagerActor* InBattlefieldManagerActor)
@@ -51,7 +54,7 @@ void UBattlefieldManagerSubsystem::SetCurrentMatchData(const FMatchData& InData)
 	CurrentMatchData = InData;
 }
 
-void UBattlefieldManagerSubsystem::SetPlayerData(const FPlayerData& InPlayerData, FInBattleData& OutInBattleData)
+void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerData, FInBattleData& OutInBattleData)
 {
 	for (int i = 0; i < InPlayerData.OwnedCharacters.Num(); i++)
 	{

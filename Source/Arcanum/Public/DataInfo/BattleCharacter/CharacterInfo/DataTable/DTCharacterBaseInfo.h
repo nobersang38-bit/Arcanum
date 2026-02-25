@@ -11,5 +11,6 @@ struct FDTCharacterBaseInfoRow : public FTableRowBase
     GENERATED_BODY()
 
 public:
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
     FBattleCharacterDef BattleCharacterInfo;
 };
