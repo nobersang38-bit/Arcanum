@@ -18,6 +18,36 @@ class UARGameInstance;
 
 class FPlayerAccountService
 {
+#pragma region PlayerData Getter
+public:
+    // 플레이어 전체 데이터 카피
+    static const FPlayerData GetPlayerDataCopy(const UARGameInstance* GameInstance);
+
+    // 재화
+    UFUNCTION(BlueprintCallable)
+    const FPlayerCurrency& GetPlayerCurrency(const UARGameInstance* GameInstance) const;
+    // 전투 기본 데이터
+    UFUNCTION(BlueprintCallable)
+    const FPlayerBattleData& GetPlayerBattleData(const UARGameInstance* GameInstance) const;
+    // 보유 캐릭터
+    UFUNCTION(BlueprintCallable)
+    const TArray<FBattleCharacterData>& GetOwnedCharacters(const UARGameInstance* GameInstance) const;
+    // 인벤토리
+    UFUNCTION(BlueprintCallable)
+    const TArray<FEquipmentInfo>& GetInventory(const UARGameInstance* GameInstance) const;
+    // 스테이지 진행도
+    UFUNCTION(BlueprintCallable)
+    const TMap<FGameplayTag, FStageProgressData>& GetStageProgressMap(const UARGameInstance* GameInstance) const;
+    // 가챠 상태
+    UFUNCTION(BlueprintCallable)
+    const FGachaData& GetGachaState(const UARGameInstance* GameInstance) const;
+    // 퀘스트 상태
+    UFUNCTION(BlueprintCallable)
+    const FPlayerQuest& GetQuestState(const UARGameInstance* GameInstance) const;
+#pragma endregion
+
+
+
 #pragma region Battle Widget 관련
 public:
 

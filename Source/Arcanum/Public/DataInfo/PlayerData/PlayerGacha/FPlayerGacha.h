@@ -4,8 +4,6 @@
 #include "NativeGameplayTags.h"
 #include "FPlayerGacha.generated.h"
 
-
-
 USTRUCT(BlueprintType)
 struct FGachaData
 {

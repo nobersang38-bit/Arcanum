@@ -51,15 +51,19 @@ namespace Arcanum
 
 namespace Arcanum {
 	namespace Gacha {
-		namespace Pickup { // 만일 필요하면 Slotx로 필요한 만큼 추가해서 사용하면 됨
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Slot1, "Arcanum.Gacha.Pickup.Slot1", "픽업 첫번째");
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Slot2, "Arcanum.Gacha.Pickup.Slot2", "픽업 두번째");
-		}
-		namespace Always {
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Slot1, "Arcanum.Gacha.Always.Slot1", "아군 전체 뽑기");
-		}
-		namespace Item {
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Slot1, "Arcanum.Gacha.Item.Slot1", "아이템 전체 뽑기");
+		namespace Type { 
+			namespace Standard {
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Standard, "Arcanum.Gacha.Type.Standard", "상시 캐릭터 뽑기 루트");
+			}
+			namespace CharacterPickup {
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterPickup, "Arcanum.Gacha.Type.CharacterPickup", "픽업 캐릭터 뽑기 루트");
+			}
+			namespace WeaponPickup {
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(WeaponPickup, "Arcanum.Gacha.Type.WeaponPickup", "모든 아이템 뽑기 루트");
+			}
+			namespace EventLimited {
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(EventLimited, "Arcanum.Gacha.Type.EventLimited", "이벤트 뽑기(캐릭터든 아이템이던)");
+			}
 		}
 	}
 }
