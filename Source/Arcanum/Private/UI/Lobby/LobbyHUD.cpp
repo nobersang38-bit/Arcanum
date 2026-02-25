@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "UI/Lobby/LobbyHUD.h"
 #include "UI/Common/CommonBtnWidget.h"
 #include "UI/Common/CommonDialog.h"
@@ -8,6 +5,8 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/HorizontalBox.h"
 #include "Components/BackgroundBlur.h"
+#include "UI/Lobby/Contents/Shop/CurrencyWidget.h"
+
 
 void ULobbyHUD::NativeConstruct()
 {
