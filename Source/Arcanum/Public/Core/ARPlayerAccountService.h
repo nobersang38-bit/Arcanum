@@ -3,9 +3,31 @@
 #include "GameplayTags/ArcanumTags.h"
 #include "Core/SubSystem/GameDataSubsystem.h"
 #include "DataInfo/PlayerData/FPlayerData.h"
-
 #include "DataInfo/BattleCharacter/Equipment/DataTable/DTEquipment.h"
+#include "ARPlayerAccountService.generated.h"
 
+UENUM(BlueprintType)
+enum class EShopRarityType : uint8
+{
+	Common,
+	Set,
+	Legendary
+};
+
+USTRUCT(BlueprintType)
+struct FShopItemPools
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	TArray<FName> CommonRows;
+
+	UPROPERTY()
+	TArray<FName> SetRows;
+
+	UPROPERTY()
+	TArray<FName> LegendaryRows;
+};
 
 class UARGameInstance;
 
@@ -15,6 +37,7 @@ class UARGameInstance;
  * - UI 또는 외부 시스템은 PlayerData를 직접 수정하지 않는다.
  * - 추후 해당 로직 및 GameInstance(DB)는 서버로 그대로 옮기면 됨.
  */
+
 
 class FPlayerAccountService
 {
@@ -70,6 +93,46 @@ public:
     static bool PurchaseEquipment(UARGameInstance* GameInstance, FName RowName);
     /** */
     static const FDTEquipmentInfoRow* GetItemDefinition(UGameDataSubsystem* DataSubsystem, const FGameplayTag& ItemTag);
+
+	/* 상점 진입 시 초기화 (저장시간 확인 후 유지/갱신 판정) */
+	static void InitializeShop(UARGameInstance* InGameInstance, int32 InShopSlotCount);
+
+	/* 상점 강제 갱신 (10분 만료시) */
+	static void RefreshShop(UARGameInstance* InGameInstance, int32 InShopSlotCount);
+
+	/* 상점 슬롯 데이터 조회 (UI 표시용) */
+	static bool GetShopSlotData(UARGameInstance* InGameInstance, int32 InSlotIndex, FName& OutRowName, bool& OutSoldOut);
+
+	/* 구매 성공 후 슬롯 품절 처리 */
+	static bool SetShopSlotSoldOut(UARGameInstance* InGameInstance, int32 InSlotIndex);
+
+	/* 저장된 상점 시간이 유효한지 확인 */
+	static bool IsShopRefreshExpired(UARGameInstance* InGameInstance);
+
+	/* 다음 갱신 시각 기준 남은 초 계산 (UI 타이머 표시용) */
+	static int32 GetShopRemainingSeconds(UARGameInstance* InGameInstance);
+
+private:
+	/* 상점 슬롯 전체 생성 */
+	static void GenerateShopItems(UARGameInstance* InGameInstance, int32 InShopSlotCount);
+
+	/* 상점 아이템 후보군 구성 (일반/세트/전설 분류) */
+	static void BuildShopItemPools(UARGameInstance* InGameInstance,	FShopItemPools& OutItemPools);
+
+	/* 상점 등급 확률 판정 (일반/세트/전설) */
+	static EShopRarityType PickShopRarityType(UARGameInstance* InGameInstance);
+
+	/* 상점 아이템 1개 선택 */
+	static FName PickShopItemRow(EShopRarityType InRarityType, FShopItemPools& InOutItemPools);
+
+	/* 상점 저장 데이터 초기화 */
+	static void ResetShopSoldOutStates(UARGameInstance* InGameInstance, int32 InShopSlotCount);
+
+	/* 다음 갱신 시각 설정 (현재시간 + 10분) */
+	static void SetNextShopRefreshTime(UARGameInstance* InGameInstance);
+
+	/* 현재 시간 반환 */
+	static FDateTime GetCurrentTimeKST();
 #pragma endregion
 
 #pragma region Gacha Widget 관련

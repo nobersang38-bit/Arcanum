@@ -23,6 +23,10 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FText Desc;
 
+    /** 스켈레톤 메시 */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TSoftObjectPtr<USkeletalMesh> SkeletalMesh;
+
     /** 아이콘, 설명 등 변하지 않는 연출용 데이터 */
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TSoftObjectPtr<UTexture2D> Icon;
