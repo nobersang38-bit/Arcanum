@@ -4,11 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "UI/DataType/EDialogResult.h"
 #include "CharacterHUDWidget.generated.h"
 
 class URoundedSlotWidget;
 class UUniformGridPanel;
+class UCommonDialog;
+class UCharacterInfo;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnOkCharacterEnhance);
 /**
  * 
  */
@@ -30,9 +34,26 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UUniformGridPanel>UnitGridPanel;
-#pragma endregion
 
-protected:
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UCharacterInfo>CharacterInfo;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UCommonDialog>EnhancementConfirm;
+
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Slot")
 	TSubclassOf<URoundedSlotWidget> RoundedSlotWidgetClass;
+
+	UFUNCTION()
+	void ShowEnhancementConfirm();
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnOkCharacterEnhance OnOkCharacterEnhance;
+
+private:
+	UFUNCTION()
+	void OnEnhancementCommonDialog(EDialogResult res);
+#pragma endregion
+
 };
