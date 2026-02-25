@@ -44,7 +44,6 @@ void UUnitCombatComponent::BeginPlay()
 	Super::BeginPlay();
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UUnitCombatComponent::DeferredBeginPlay);
 
-	//Todo KDH : Cast없애야함
 	// Dead바인딩
 	if (ABaseUnitCharacter* TempOwner = Cast<ABaseUnitCharacter>(GetOwner()))
 	{

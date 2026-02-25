@@ -35,7 +35,6 @@ public:
 public:
 	virtual FGameplayTag GetTeamTag() override;
 
-	// Todo : 연결 느슨하게 변경해야함
 	//class UCharacterBattleStatsComponent* GetCharacterBattleStatsComponent() { return CharacterBattleStatsComponent; }
 
 protected:

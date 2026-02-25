@@ -16,7 +16,5 @@ void UATTAnimPlayData::PlayAnim(TArray<UMaterialInstanceDynamic*> InMaterials)
 
 		InMaterials[i]->SetScalarParameterValueByInfo(StartFrameParameterInfo, FrameRange.X);
 		InMaterials[i]->SetScalarParameterValueByInfo(EndFrameParameterInfo, FrameRange.Y);
-		// Todo : AnimToTexture테스트
-		UE_LOG(LogTemp, Warning, TEXT("애님 실행 발동!!!!"));
 	}
 }

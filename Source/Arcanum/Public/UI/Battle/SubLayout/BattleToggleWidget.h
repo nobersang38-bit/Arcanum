@@ -1,0 +1,39 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Blueprint/UserWidget.h"
+#include "BattleToggleWidget.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnToggle, bool, bIsChecked);
+/**
+ * 김도현
+ */
+class UCheckBox;
+class UWidgetSwitcher;
+UCLASS()
+class ARCANUM_API UBattleToggleWidget : public UUserWidget
+{
+	GENERATED_BODY()
+#pragma region 언리얼 기본 생성
+protected:
+	virtual void NativeConstruct() override;
+#pragma endregion
+public:
+	FOnToggle OnToggle;
+
+	UFUNCTION()
+	bool IsAutoPlay();
+
+protected:
+	UFUNCTION()
+	void OnChangeToggle(bool IsChecked);
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UCheckBox> Toggle = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UWidgetSwitcher> TextSwitcher = nullptr;
+};
