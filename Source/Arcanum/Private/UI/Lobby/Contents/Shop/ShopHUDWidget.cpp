@@ -105,7 +105,7 @@ void UShopHUDWidget::RefreshShopSlotSelection()
 
 void UShopHUDWidget::RefreshShopSlotsUI()
 {
-	if (UARGameInstance* gameInstance = GetGameInstance<UARGameInstance>())
+	/*if (UARGameInstance* gameInstance = GetGameInstance<UARGameInstance>())
 	{
 		if (UArcanumSaveGame* saveGame = gameInstance->GetArSaveGame())
 		{
@@ -157,7 +157,7 @@ void UShopHUDWidget::RefreshShopSlotsUI()
 				}
 			}
 		}
-	}
+	}*/
 }
 
 void UShopHUDWidget::RefreshShopIfNeeded()
