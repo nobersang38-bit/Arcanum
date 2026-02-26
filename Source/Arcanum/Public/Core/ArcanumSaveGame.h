@@ -25,17 +25,4 @@ public:
 	/** 캐릭터 태그를 키로 하여 현재 진행 상태(등급, 조각 등)를 저장 */
 	UPROPERTY()
 	TMap<FGameplayTag, FBattleCharacterData> SavedCharacters;
-
-#pragma region 상점 아이템 저장
-public:
-	/* 상점 다음 갱신 시각 */
-	UPROPERTY()
-	FDateTime NextShopRefreshTime;
-	/* 현재 상점 슬롯 아이템 RowName 목록 */
-	UPROPERTY()
-	TArray<FName> CurrentShopRowNames;
-	/* 현재 상점 슬롯 품절 여부 목록 */
-	UPROPERTY()
-	TArray<bool> CurrentShopSoldOutStates;
-#pragma endregion
 };

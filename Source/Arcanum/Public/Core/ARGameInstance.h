@@ -66,10 +66,19 @@ public:
     FOnCurrencyChanged OnCurrencyChanged; // 델리게이트
 #pragma endregion
 
-#pragma region 상점 세이브 접근
+#pragma region 런타임 상점 상태
 public:
-    UFUNCTION(BlueprintCallable)
-    UArcanumSaveGame* GetArSaveGame() const { return ArSaveGame; } // 상점 세이브
+    /* 상점 다음 갱신 시각 */
+    UPROPERTY()
+    FDateTime NextShopRefreshTime;
+
+    /* 현재 상점 슬롯 아이템 RowName 목록 */
+    UPROPERTY()
+    TArray<FName> CurrentShopRowNames;
+
+    /* 현재 상점 슬롯 품절 여부 목록 */
+    UPROPERTY()
+    TArray<bool> CurrentShopSoldOutStates;
 #pragma endregion
 
 #pragma region 테스트 코드
@@ -106,8 +115,9 @@ public:
 
         if (Amount > 0) {
             CurrencyData.TotalEarned += Amount;
-        }
 
+            OnCurrencyChanged.Broadcast();
+        }
     }
 #pragma endregion
 };

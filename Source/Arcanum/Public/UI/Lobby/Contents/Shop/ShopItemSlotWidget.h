@@ -74,7 +74,7 @@ public:
 protected:
 	/* 불투명도 */
 	UPROPERTY(EditAnywhere, Category = "shop")
-	float SoldOutOpacity = 0.3f;
+	float SoldOutOpacity = 0.5f;
 
 private:
 	/* 슬롯 클릭 버튼 */
@@ -97,7 +97,11 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional, AllowPrivateAccess = "true"))
 	TObjectPtr<UTextBlock> PriceText;
 
-	/* 선택 강조 */
+	/* 슬롯 보더 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional, AllowPrivateAccess = "true"))
+	TObjectPtr<UBorder> SlotBorder;
+
+	/* 선택 강조 보더 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional, AllowPrivateAccess = "true"))
 	TObjectPtr<UBorder> SelectedBorder;
 

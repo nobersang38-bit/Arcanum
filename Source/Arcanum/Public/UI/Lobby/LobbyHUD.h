@@ -28,14 +28,26 @@ UCLASS()
 class ARCANUM_API ULobbyHUD : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
 #pragma region 언리얼 기본 생성
 protected:
 	virtual void NativeConstruct() override;
 #pragma endregion
 
 #pragma region 데이터 캐시
+protected:
+	/* 로비 공통 UI 갱신 (재화/인벤/상점 등) */
+	void RefreshAllLobbyUI();
+
+	/* GameInstance 델리게이트 바인딩 */
+	void BindGameInstanceEvents();
+
+	/* 재화 변경 알림 수신 */
+	UFUNCTION()
+	void HandleCurrencyChanged();
+
 public:
+	/* 로비에서만 쓰는 플레이어 데이터 캐시 */
 	FPlayerData CachedPlayerData;
 #pragma endregion
 
@@ -76,7 +88,7 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UWidgetSwitcher> WidgetSwitcher;
-	
+
 private:
 	UFUNCTION()
 	void ClickBattleMenuBtn();
@@ -117,12 +129,12 @@ protected:
 #pragma endregion
 
 #pragma region 캐릭터
-//protected:
-//	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
-//	TSubclassOf<UCharacterHUDWidget> CharacterWidgetClass;
-//
-//private:
-//	UCharacterHUDWidget* CharacterWidget = nullptr;
+	//protected:
+	//	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	//	TSubclassOf<UCharacterHUDWidget> CharacterWidgetClass;
+	//
+	//private:
+	//	UCharacterHUDWidget* CharacterWidget = nullptr;
 #pragma endregion
 
 #pragma region 강화
@@ -130,9 +142,33 @@ protected:
 #pragma endregion
 
 #pragma region 상점
-	/* 선택 아이템 구매 */
-	void TryPurchaseSelectedItem(FName InItemRowName);
+protected:
+	/* 상점 초기화 */
+	void InitShop();
 
+	/* 상점 UI 갱신 */
+	void RefreshShopUI();
+
+	/* 상점 타이머 델리게이트 바인딩 */
+	void BindShopTimer();
+
+	/* 상점 타이머 수신 */
+	UFUNCTION()
+	void HandleShopSecondChanged(int32 InRemainingSeconds);
+
+protected:
+	/* 상점 위젯 */
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UShopHUDWidget> ShopHUDWidget;
+
+	/* 상점 슬롯 개수 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shop")
+	int32 ShopSlotCount = 4;
+
+protected:
+	// 선택 아이템 구매
+	UFUNCTION()
+	void TryPurchaseSelectedItem(FName InItemRowName);
 #pragma endregion
 
 #pragma region 가챠

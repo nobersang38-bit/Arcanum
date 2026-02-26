@@ -61,7 +61,7 @@ void UShopItemSlotWidget::SetSoldOut(bool InSoldOut)
 {
 	if (!bEmpty)
 	{
-		//bSoldOut = InSoldOut;
+		bSoldOut = InSoldOut;
 	}
 
 	RefreshSlotUI();
@@ -87,77 +87,51 @@ void UShopItemSlotWidget::RefreshSlotUI()
         SlotButton->SetIsEnabled(IsPurchasable());
     }
 
-    // float opacity = bSoldOut ? SoldOutOpacity : 1.0f;
+    float opacity = bSoldOut ? SoldOutOpacity : 1.0f;
 
-    // 선택 강조 (품절이면 강조 숨김)
-  /*  if (SelectedBorder)
-    {
-        SelectedBorder->SetVisibility((!bEmpty && bSelected && !bSoldOut) ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
-    }*/
+	if (SlotBorder)
+	{
+		SlotBorder->SetVisibility(!bEmpty ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+	}
+	if (SelectedBorder)
+	{
+		SelectedBorder->SetVisibility((!bEmpty && bSelected && !bSoldOut) ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+	}
 
-    // 아이템명
-    if (ItemNameText)
-    {
-        if (bEmpty)
-        {
-            ItemNameText->SetText(FText::GetEmpty());
-        }
-        else
-        {
-            ItemNameText->SetText(FText::FromName(RowName));
-        }
-        //ItemNameText->SetOpacity(opacity);
-    }
+	// 아이템명
+	if (ItemNameText)
+	{
+		ItemNameText->SetText(bEmpty ? FText::GetEmpty() : FText::FromName(RowName));
+		ItemNameText->SetRenderOpacity(opacity);
+	}
 
-    // 설명
-    if (DescText)
-    {
-        if (bEmpty)
-        {
-            DescText->SetText(FText::GetEmpty());
-        }
-        else
-        {
-            DescText->SetText(EquipmentRow.Desc);
-        }
-        //DescText->SetOpacity(opacity);
-    }
+	// 설명
+	if (DescText)
+	{
+		DescText->SetText(bEmpty ? FText::GetEmpty() : EquipmentRow.Desc);
+		DescText->SetRenderOpacity(opacity);
+	}
 
-    // 가격
-    if (PriceText)
-    {
-        if (bEmpty)
-        {
-            PriceText->SetText(FText::GetEmpty());
-        }
-        else
-        {
-            PriceText->SetText(FText::AsNumber(EquipmentRow.BuyPrice));
-        }
-        //PriceText->SetOpacity(opacity);
-    }
+	// 가격
+	if (PriceText)
+	{
+		PriceText->SetText(bEmpty ? FText::GetEmpty() : FText::AsNumber(EquipmentRow.BuyPrice));
+		PriceText->SetRenderOpacity(opacity);
+	}
 
-    // 아이콘
-    if (ItemIconImage)
-    {
-        if (bEmpty)
-        {
-            ItemIconImage->SetVisibility(ESlateVisibility::Collapsed);
-            ItemIconImage->SetBrushFromSoftTexture(nullptr);
-        }
-        else
-        {
-            ItemIconImage->SetVisibility(ESlateVisibility::Visible);
-
-            if (EquipmentRow.Icon.IsNull())
-            {
-                ItemIconImage->SetBrushFromSoftTexture(nullptr);
-            }
-            else
-            {
-                ItemIconImage->SetBrushFromSoftTexture(EquipmentRow.Icon);
-            }
-            //ItemIconImage->SetRenderOpacity(opacity);
-        }
-    }
+	// 아이콘
+	if (ItemIconImage)
+	{
+		if (bEmpty)
+		{
+			ItemIconImage->SetVisibility(ESlateVisibility::Collapsed);
+			ItemIconImage->SetBrushFromSoftTexture(nullptr);
+		}
+		else
+		{
+			ItemIconImage->SetVisibility(ESlateVisibility::Visible);
+			ItemIconImage->SetBrushFromSoftTexture(EquipmentRow.Icon.IsNull() ? nullptr : EquipmentRow.Icon);
+			ItemIconImage->SetRenderOpacity(opacity);
+		}
+	}
 }

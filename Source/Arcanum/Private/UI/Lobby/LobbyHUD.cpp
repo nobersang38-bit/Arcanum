@@ -11,6 +11,7 @@
 #include "DataInfo/PlayerData/FPlayerData.h"
 #include "Core/ARPlayerAccountService.h"
 #include "Core/ARGameInstance.h"
+#include "Core/SubSystem/GameTimeSubsystem.h"
 
 
 void ULobbyHUD::NativeConstruct()
@@ -54,13 +55,46 @@ void ULobbyHUD::NativeConstruct()
 		QuitBtn->OnClicked.RemoveDynamic(this, &ULobbyHUD::ClickQuitBtn);
 		QuitBtn->OnClicked.AddDynamic(this, &ULobbyHUD::ClickQuitBtn);
 	}
+	
+	if (ShopHUDWidget)
+	{
+		ShopHUDWidget->InitShopSlots(ShopSlotCount);
+		ShopHUDWidget->OnBuyRequested.RemoveDynamic(this, &ULobbyHUD::TryPurchaseSelectedItem);
+		ShopHUDWidget->OnBuyRequested.AddDynamic(this, &ULobbyHUD::TryPurchaseSelectedItem);
+	}
 
+	BindGameInstanceEvents();
+	RefreshAllLobbyUI();
+
+	InitShop();
+	BindShopTimer();
+	RefreshShopUI();
+}
+
+void ULobbyHUD::RefreshAllLobbyUI()
+{
 	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
 	{
 		CachedPlayerData = gameInstance->GetPlayerDataCopy();
 
+		// TODO: 로비 갱신
 		RefreshLobbyCurrencyUI();
+
 	}
+}
+
+void ULobbyHUD::BindGameInstanceEvents()
+{
+	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+	{
+		gameInstance->OnCurrencyChanged.RemoveDynamic(this, &ULobbyHUD::HandleCurrencyChanged);
+		gameInstance->OnCurrencyChanged.AddDynamic(this, &ULobbyHUD::HandleCurrencyChanged);
+	}
+}
+
+void ULobbyHUD::HandleCurrencyChanged()
+{
+	RefreshAllLobbyUI();
 }
 
 void ULobbyHUD::ClickBattleMenuBtn()
@@ -121,7 +155,105 @@ void ULobbyHUD::ClickSettingBtn()
 }
 
 
+// ========================================================
+// 재화
+// ========================================================
+void ULobbyHUD::RefreshLobbyCurrencyUI()
+{
+	if (CurrencyWidget)
+	{
+		CurrencyWidget->RefreshCurrencyUI(CachedPlayerData);
+	}
+}
 
+// ========================================================
+// 상점
+// ========================================================
+void ULobbyHUD::InitShop()
+{
+	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+	{
+		FPlayerAccountService::InitializeShop(gameInstance, ShopSlotCount);
+	}
+}
+
+void ULobbyHUD::RefreshShopUI()
+{
+	if (ShopHUDWidget)
+	{
+		ShopHUDWidget->RefreshShopSlotsUI();
+
+		if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+		{
+			const int32 remaining = FPlayerAccountService::GetShopRemainingSeconds(gameInstance);
+
+			HandleShopSecondChanged(remaining);
+		}
+	}
+}
+
+void ULobbyHUD::BindShopTimer()
+{
+	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+	{
+		if (UGameTimeSubsystem* gameTimeSubsystem = gameInstance->GetSubsystem<UGameTimeSubsystem>())
+		{
+			gameTimeSubsystem->OnShopSecondChanged.RemoveDynamic(this, &ULobbyHUD::HandleShopSecondChanged);
+			gameTimeSubsystem->OnShopSecondChanged.AddDynamic(this, &ULobbyHUD::HandleShopSecondChanged);
+		}
+
+		const int32 remaining = FPlayerAccountService::GetShopRemainingSeconds(gameInstance);
+		HandleShopSecondChanged(remaining);
+	}
+}
+
+void ULobbyHUD::HandleShopSecondChanged(int32 InRemainingSeconds)
+{
+	if (InRemainingSeconds == 0)
+	{
+		if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+		{
+			FPlayerAccountService::RefreshShop(gameInstance, ShopSlotCount);
+
+			InRemainingSeconds = FPlayerAccountService::GetShopRemainingSeconds(gameInstance);
+		}
+
+		if (ShopHUDWidget)
+		{
+			ShopHUDWidget->RefreshShopSlotsUI();
+			ShopHUDWidget->ClearShopSelection();
+		}
+	}
+
+	if (ShopHUDWidget)
+	{
+		ShopHUDWidget->SetShopRemainingSeconds(InRemainingSeconds);
+	}
+}
+
+void ULobbyHUD::TryPurchaseSelectedItem(FName InItemRowName)
+{
+	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+	{
+		if (FPlayerAccountService::PurchaseEquipment(gameInstance, InItemRowName))
+		{
+			// 구매한 RowName이 들어있는 슬롯을 찾아 품절 처리
+			const int32 slotIndex = gameInstance->CurrentShopRowNames.IndexOfByKey(InItemRowName);
+			if (slotIndex != INDEX_NONE && gameInstance->CurrentShopSoldOutStates.IsValidIndex(slotIndex))
+			{
+				gameInstance->CurrentShopSoldOutStates[slotIndex] = true;
+			}
+
+			// UI 갱신
+			gameInstance->OnCurrencyChanged.Broadcast();
+
+			if (ShopHUDWidget)
+			{
+				ShopHUDWidget->RefreshShopSlotsUI();
+			}
+		}
+	}
+}
 
 // ========================================================
 // 종료
@@ -142,9 +274,9 @@ void ULobbyHUD::ClickQuitBtn()
 
 		ExitCommonDialog->OnResult.RemoveDynamic(this, &ULobbyHUD::OnExitCommonDialog);
 		ExitCommonDialog->OnResult.AddDynamic(this, &ULobbyHUD::OnExitCommonDialog);
-	
+
 		// 팝업 떠있을때는 다른 버튼 숨기기
-		if (MenuHorizontalBox )
+		if (MenuHorizontalBox)
 		{
 			MenuHorizontalBox->SetVisibility(ESlateVisibility::Hidden);
 		}
@@ -159,33 +291,6 @@ void ULobbyHUD::ClickQuitBtn()
 	}
 }
 
-void ULobbyHUD::RefreshLobbyCurrencyUI()
-{
-	if (CurrencyWidget)
-	{
-		CurrencyWidget->RefreshCurrencyUI(CachedPlayerData);
-	}
-}
-
-void ULobbyHUD::TryPurchaseSelectedItem(FName InItemRowName)
-{
-	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
-	{
-		if (FPlayerAccountService::PurchaseEquipment(gameInstance, InItemRowName))
-		{
-			CachedPlayerData = gameInstance->GetPlayerDataCopy();
-
-			RefreshLobbyCurrencyUI();
-
-			UE_LOG(LogTemp, Log, TEXT("구매 성공: %s"), *InItemRowName.ToString());
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("구매 실패: %s"), *InItemRowName.ToString());
-		}
-	}
-}
-
 void ULobbyHUD::OnExitCommonDialog(EDialogResult res)
 {
 	if (res == EDialogResult::OK)
@@ -195,7 +300,7 @@ void ULobbyHUD::OnExitCommonDialog(EDialogResult res)
 
 		if (PC)
 		{
-			UKismetSystemLibrary::QuitGame(GetWorld(),PC, EQuitPreference::Quit, true);
+			UKismetSystemLibrary::QuitGame(GetWorld(), PC, EQuitPreference::Quit, true);
 		}
 	}
 	else if (res == EDialogResult::Cancel)
