@@ -2,7 +2,8 @@
 #include "UI/Common/CommonBtnWidget.h"
 #include "UI/Common/CommonDialog.h"
 #include "UI/Lobby/Contents/Shop/ShopHUDWidget.h"
-#include "UI/Lobby/Contents/Shop/CurrencyWidget.h"
+#include "UI/Lobby/Contents/Currency/CurrencyWidget.h"
+#include "DataInfo/BattleCharacter/Equipment/DataTable/DTEquipment.h"
 //#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/HorizontalBox.h"
@@ -55,7 +56,7 @@ void ULobbyHUD::NativeConstruct()
 		QuitBtn->OnClicked.RemoveDynamic(this, &ULobbyHUD::ClickQuitBtn);
 		QuitBtn->OnClicked.AddDynamic(this, &ULobbyHUD::ClickQuitBtn);
 	}
-	
+
 	if (ShopHUDWidget)
 	{
 		ShopHUDWidget->InitShopSlots(ShopSlotCount);
@@ -69,6 +70,8 @@ void ULobbyHUD::NativeConstruct()
 	InitShop();
 	BindShopTimer();
 	RefreshShopUI();
+
+	// 로비로 돌아올떄(무조건 들오올떄) 스타트 하는거 넣어놈
 }
 
 void ULobbyHUD::RefreshAllLobbyUI()
@@ -179,9 +182,11 @@ void ULobbyHUD::InitShop()
 
 void ULobbyHUD::RefreshShopUI()
 {
+	BuildShopRuntimeCache();
+
 	if (ShopHUDWidget)
 	{
-		ShopHUDWidget->RefreshShopSlotsUI();
+		ShopHUDWidget->ApplyShopData(CachedShopRowNames, CachedShopSoldOutStates, CachedShopRowPtrs);
 
 		if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
 		{
@@ -214,13 +219,13 @@ void ULobbyHUD::HandleShopSecondChanged(int32 InRemainingSeconds)
 		if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
 		{
 			FPlayerAccountService::RefreshShop(gameInstance, ShopSlotCount);
-
+			BuildShopRuntimeCache();
 			InRemainingSeconds = FPlayerAccountService::GetShopRemainingSeconds(gameInstance);
 		}
 
 		if (ShopHUDWidget)
 		{
-			ShopHUDWidget->RefreshShopSlotsUI();
+			ShopHUDWidget->ApplyShopData(CachedShopRowNames, CachedShopSoldOutStates, CachedShopRowPtrs);
 			ShopHUDWidget->ClearShopSelection();
 		}
 	}
@@ -246,13 +251,68 @@ void ULobbyHUD::TryPurchaseSelectedItem(FName InItemRowName)
 
 			// UI 갱신
 			gameInstance->OnCurrencyChanged.Broadcast();
+			BuildShopRuntimeCache();
 
 			if (ShopHUDWidget)
 			{
-				ShopHUDWidget->RefreshShopSlotsUI();
+				ShopHUDWidget->ApplyShopData(CachedShopRowNames, CachedShopSoldOutStates, CachedShopRowPtrs);
 			}
 		}
 	}
+}
+
+void ULobbyHUD::BuildShopRuntimeCache()
+{
+	CachedShopRowNames.Reset();
+	CachedShopSoldOutStates.Reset();
+	CachedShopRowPtrs.Reset();
+
+	int32 slotCount = FMath::Max(0, ShopSlotCount);
+
+	CachedShopRowNames.SetNum(slotCount);
+	CachedShopSoldOutStates.SetNum(slotCount);
+	CachedShopRowPtrs.SetNum(slotCount);
+
+	for (int32 i = 0; i < slotCount; i++)
+	{
+		CachedShopRowNames[i] = NAME_None;
+		CachedShopSoldOutStates[i] = false;
+		CachedShopRowPtrs[i] = nullptr;
+	}
+
+	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+	{
+		if (UGameDataSubsystem* dataSubsystem = gameInstance->GetSubsystem<UGameDataSubsystem>())
+		{
+			for (int32 slotIndex = 0; slotIndex < slotCount; slotIndex++)
+			{
+				if (gameInstance->CurrentShopRowNames.IsValidIndex(slotIndex))
+				{
+					CachedShopRowNames[slotIndex] = gameInstance->CurrentShopRowNames[slotIndex];
+				}
+
+				if (gameInstance->CurrentShopSoldOutStates.IsValidIndex(slotIndex))
+				{
+					CachedShopSoldOutStates[slotIndex] = gameInstance->CurrentShopSoldOutStates[slotIndex];
+				}
+
+				const FName rowName = CachedShopRowNames[slotIndex];
+				if (rowName == NAME_None)
+				{
+					continue;
+				}
+
+				const FDTEquipmentInfoRow* rowPtr = dataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, rowName);
+				CachedShopRowPtrs[slotIndex] = rowPtr;
+
+				UE_LOG(LogTemp, Warning, TEXT("[ShopCache] GI=%d Row0=%s Ptr0=%d"),
+					gameInstance ? 1 : 0,
+					(CachedShopRowNames.Num() > 0 ? *CachedShopRowNames[0].ToString() : TEXT("NONE")),
+					(CachedShopRowPtrs.Num() > 0 && CachedShopRowPtrs[0] != nullptr) ? 1 : 0);
+			}
+		}
+	}
+
 }
 
 // ========================================================

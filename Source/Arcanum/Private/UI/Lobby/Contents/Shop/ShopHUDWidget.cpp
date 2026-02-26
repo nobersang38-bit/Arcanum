@@ -1,6 +1,6 @@
 #include "UI/Lobby/Contents/Shop/ShopHUDWidget.h"
-#include "UI/Lobby/Contents/Shop/CurrencyWidget.h"
-#include "UI/Lobby/Contents/Shop/ShopItemSlotWidget.h"
+#include "UI/Lobby/Contents/Currency/CurrencyWidget.h"
+#include "UI/Lobby/Contents/Shop/SubLayout/ShopItemSlotWidget.h"
 #include "UI/Common/CommonBtnWidget.h"
 #include "Core/ARPlayerAccountService.h"
 #include "Core/SubSystem/GameDataSubsystem.h"
@@ -38,6 +38,46 @@ void UShopHUDWidget::InitShopSlots(int32 InShopSlotCount)
 
 	SelectedShopSlotIndex = INDEX_NONE;
 	RefreshShopSlotSelection();
+}
+
+void UShopHUDWidget::ApplyShopData(const TArray<FName>& InRowNames, const TArray<bool>& InSoldOutStates, const TArray<const FDTEquipmentInfoRow*>& InRowPtrs)
+{
+	for (int32 slotIndex = 0; slotIndex < ShopSlotCount; slotIndex++)
+	{
+		if (!ShopSlots.IsValidIndex(slotIndex))
+		{
+			continue;
+		}
+
+		UShopItemSlotWidget* slot = ShopSlots[slotIndex];
+		if (!slot)
+		{
+			continue;
+		}
+
+		// 데이터 부족/비정상이면 빈 슬롯 처리
+		if (!InRowNames.IsValidIndex(slotIndex) || !InSoldOutStates.IsValidIndex(slotIndex) || !InRowPtrs.IsValidIndex(slotIndex))
+		{
+			slot->ClearSlot();
+			continue;
+		}
+
+		const FName rowName = InRowNames[slotIndex];
+		const bool bSoldOut = InSoldOutStates[slotIndex];
+		const FDTEquipmentInfoRow* rowPtr = InRowPtrs[slotIndex];
+
+		if (!rowPtr || rowName == NAME_None)
+		{
+			slot->ClearSlot();
+			continue;
+		}
+
+		// 슬롯 위젯은 "표시만" 하게, RowPtr로 세팅
+		slot->SetViewData(slotIndex, rowName, rowPtr, bSoldOut);
+
+		// 선택 강조
+		slot->SetSelected(slotIndex == SelectedShopSlotIndex);
+	}
 }
 
 
@@ -101,60 +141,6 @@ void UShopHUDWidget::ClearShopSelection()
 {
 	SelectedShopSlotIndex = INDEX_NONE;
 	RefreshShopSlotSelection();
-}
-
-void UShopHUDWidget::RefreshShopSlotsUI()
-{
-	if (UARGameInstance* gameInstance = GetGameInstance<UARGameInstance>())
-	{
-		if (UGameDataSubsystem* dataSubsystem = gameInstance->GetSubsystem<UGameDataSubsystem>())
-		{
-			for (int32 i = 0; i < ShopSlotCount; i++)
-			{
-				if (!ShopSlots.IsValidIndex(i))
-				{
-					continue;
-				}
-
-				UShopItemSlotWidget* shopSlot = ShopSlots[i];
-				if (!shopSlot)
-				{
-					continue;
-				}
-
-				if (!gameInstance->CurrentShopRowNames.IsValidIndex(i))
-				{
-					shopSlot->ClearSlot();
-					continue;
-				}
-
-				const FName rowName = gameInstance->CurrentShopRowNames[i];
-				if (rowName == NAME_None)
-				{
-					shopSlot->ClearSlot();
-					continue;
-				}
-
-				const FDTEquipmentInfoRow* row = dataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, rowName);
-				if (!row)
-				{
-					shopSlot->ClearSlot();
-					continue;
-				}
-
-				shopSlot->SetEquipmentData(*row, i, rowName);
-
-				bool bSoldOut = false;
-				if (gameInstance->CurrentShopSoldOutStates.IsValidIndex(i))
-				{
-					bSoldOut = gameInstance->CurrentShopSoldOutStates[i];
-				}
-				shopSlot->SetSoldOut(bSoldOut);
-
-				shopSlot->SetSelected(i == SelectedShopSlotIndex);
-			}
-		}
-	}
 }
 
 void UShopHUDWidget::SetShopRemainingSeconds(int32 InRemainingSeconds)

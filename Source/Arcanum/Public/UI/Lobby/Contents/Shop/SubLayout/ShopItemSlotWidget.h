@@ -9,6 +9,7 @@ class UButton;
 class UImage;
 class UTextBlock;
 class UBorder;
+struct FDTEquipmentInfoRow;
 
 /* 슬롯 클릭 시 슬롯 인덱스 전달 */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnShopItemSlotClicked, int32, InSlotIndex);
@@ -26,6 +27,9 @@ protected:
 	virtual void NativeConstruct() override;
 
 public:
+	/* 로비HUD가 만든 DT RowPtr로 슬롯 표시만 세팅 */
+	void SetViewData(int32 InSlotIndex, FName InRowName, const FDTEquipmentInfoRow* InRowPtr, bool InSoldOut);
+
 	/* 장비 슬롯 표시 데이터 세팅 */
 	UFUNCTION(BlueprintCallable)
 	void SetEquipmentData(const FDTEquipmentInfoRow& InRow, int32 InSlotIndex, FName InRowName);

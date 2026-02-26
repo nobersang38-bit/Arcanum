@@ -23,6 +23,8 @@ class UWidgetSwitcher;
 class UCurrencyWidget;
 class UShopHUDWidget;
 class UARGameInstance;
+struct FDTEquipmentInfoRow;
+
 
 UCLASS()
 class ARCANUM_API ULobbyHUD : public UUserWidget
@@ -156,6 +158,14 @@ protected:
 	UFUNCTION()
 	void HandleShopSecondChanged(int32 InRemainingSeconds);
 
+	// 선택 아이템 구매
+	UFUNCTION()
+	void TryPurchaseSelectedItem(FName InItemRowName);
+
+private:
+	/* DT 조회로 상점 표시 캐시 */
+	void BuildShopRuntimeCache();
+
 protected:
 	/* 상점 위젯 */
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
@@ -165,10 +175,17 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shop")
 	int32 ShopSlotCount = 4;
 
-protected:
-	// 선택 아이템 구매
-	UFUNCTION()
-	void TryPurchaseSelectedItem(FName InItemRowName);
+private:
+	/* 상점 UI 표시용 RowName 카피 */ 
+	UPROPERTY()
+	TArray<FName> CachedShopRowNames;
+
+	/* 상점 UI 표시용 품절 카피 */ 
+	UPROPERTY()
+	TArray<bool> CachedShopSoldOutStates;
+
+	/* 상점 UI 표시용 DT row 포인터 캐시 */ 
+	TArray<const FDTEquipmentInfoRow*> CachedShopRowPtrs;
 #pragma endregion
 
 #pragma region 가챠

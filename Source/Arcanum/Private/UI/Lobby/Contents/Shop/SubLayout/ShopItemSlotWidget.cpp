@@ -1,4 +1,4 @@
-#include "UI/Lobby/Contents/Shop/ShopItemSlotWidget.h"
+#include "UI/Lobby/Contents/Shop/SubLayout/ShopItemSlotWidget.h"
 #include "Components/Button.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
@@ -15,6 +15,20 @@ void UShopItemSlotWidget::NativeConstruct()
 	}
 
 	RefreshSlotUI();
+}
+
+void UShopItemSlotWidget::SetViewData(int32 InSlotIndex, FName InRowName, const FDTEquipmentInfoRow* InRowPtr, bool InSoldOut)
+{
+	if (InRowPtr && !InRowName.IsNone())
+	{
+		SetEquipmentData(*InRowPtr, InSlotIndex, InRowName);
+
+		SetSoldOut(InSoldOut);
+	}
+	else
+	{
+		ClearSlot();
+	}
 }
 
 void UShopItemSlotWidget::SetEquipmentData(const FDTEquipmentInfoRow& InRow, int32 InSlotIndex, FName InRowName)
@@ -80,14 +94,15 @@ void UShopItemSlotWidget::HandleSlotButtonClicked()
 	}
 }
 
+
 void UShopItemSlotWidget::RefreshSlotUI()
 {
-    if (SlotButton)
-    {
-        SlotButton->SetIsEnabled(IsPurchasable());
-    }
+	if (SlotButton)
+	{
+		SlotButton->SetIsEnabled(IsPurchasable());
+	}
 
-    float opacity = bSoldOut ? SoldOutOpacity : 1.0f;
+	float opacity = bSoldOut ? SoldOutOpacity : 1.0f;
 
 	if (SlotBorder)
 	{

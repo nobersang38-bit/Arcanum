@@ -1,4 +1,4 @@
-#include "UI/Lobby/Contents/Shop/CurrencyWidget.h"
+#include "UI/Lobby/Contents/Currency/CurrencyWidget.h"
 #include "GameplayTags/ArcanumTags.h"
 #include "Components/TextBlock.h"
 

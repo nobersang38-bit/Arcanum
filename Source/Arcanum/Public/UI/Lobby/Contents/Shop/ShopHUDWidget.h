@@ -9,6 +9,7 @@ class UShopItemSlotWidget;
 class UTextBlock;
 class UButton;
 class UCommonBtnWidget;
+struct FDTEquipmentInfoRow;
 
 /* 구입 요청 */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnShopBuyRequested, FName, InRowName);
@@ -35,8 +36,11 @@ public:
 	UFUNCTION()
 	void InitShopSlots(int32 InShopSlotCount);
 
-	/* 저장된 상점 데이터로 슬롯 UI 갱신 */
-	void RefreshShopSlotsUI();
+	/* 로비 HUD가 만든 상점 캐시 */
+	void ApplyShopData(
+		const TArray<FName>& InRowNames,
+		const TArray<bool>& InSoldOutStates,
+		const TArray<const FDTEquipmentInfoRow*>& InRowPtrs);
 
 	/* 상점 갱신될 때 선택 초기화*/
 	void ClearShopSelection();
