@@ -17,7 +17,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Interface/CombatInterface.h"
 #include "Character/BaseUnitCharacter.h"
-//#include "Component/Stats/CharacterBattleStatsComponent.h"
+#include "Component/Stats/CharacterBattleStatsComponent.h"
 #include "Engine/OverlapResult.h"
 
 // Sets default values for this component's properties
@@ -32,9 +32,9 @@ UUnitCombatComponent::UUnitCombatComponent()
 
 void UUnitCombatComponent::SendDamage(float InDamage)
 {
-	if (TargetCharacter.IsValid())
+	if (TargetActor.IsValid())
 	{
-		UGameplayStatics::ApplyDamage(TargetCharacter.Get(), InDamage, nullptr, GetOwner(), nullptr);
+		UGameplayStatics::ApplyDamage(TargetActor.Get(), InDamage, nullptr, GetOwner(), nullptr);
 	}
 }
 
@@ -47,7 +47,7 @@ void UUnitCombatComponent::BeginPlay()
 	// Dead바인딩
 	if (ABaseUnitCharacter* TempOwner = Cast<ABaseUnitCharacter>(GetOwner()))
 	{
-		//TempOwner->GetCharacterBattleStatsComponent()->OnCharacterRegenStatChanged.AddUObject(this, &UUnitCombatComponent::Death);
+		TempOwner->GetCharacterBattleStatsComponent()->OnCharacterRegenStatChanged.AddUObject(this, &UUnitCombatComponent::Death);
 	}
 }
 
@@ -72,10 +72,7 @@ void UUnitCombatComponent::DeferredBeginPlay()
 		auto Interface = Cast<IUnitDataInterface>(GetOwner());
 		UnitAISetting = Interface->GetUnitData().Info.AISetting;
 		UnitData = Interface->GetUnitData();
-		if (UDATargetPriorityWeight* TempTargetPriorityWeight = UnitAISetting.TargetPriorityWeight.LoadSynchronous())
-		{
-			TargetPriorityWeight = TempTargetPriorityWeight;
-		}
+		TargetPriorityWeight = UnitAISetting.TargetPriorityWeightData;
 		AIInitialize();
 	}
 
@@ -90,9 +87,9 @@ void UUnitCombatComponent::TickUpdate()
 {
 	if (!bDebug_StopAI)
 	{
-		if (bDebug_DrawMoveTargeLine && TargetCharacter.IsValid())
+		if (bDebug_DrawMoveTargeLine && TargetActor.IsValid())
 		{
-			DrawDebugLine(GetWorld(), GetOwner()->GetActorLocation(), TargetCharacter->GetActorLocation(), FColor::Red, false, 2.0f);
+			DrawDebugLine(GetWorld(), GetOwner()->GetActorLocation(), TargetActor->GetActorLocation(), FColor::Red, false, 2.0f);
 		}
 		switch (CurrentState)
 		{
@@ -124,8 +121,7 @@ void UUnitCombatComponent::TickUpdate()
 
 void UUnitCombatComponent::AIInitialize()
 {
-	/*if (!OwnerAIC.IsValid()) return;
-
+	if (!OwnerAIC.IsValid()) return;
 	if (!UnitAISetting.BehaviorTree.IsNull())
 	{
 		if (UBehaviorTree* BehaviorTree = UnitAISetting.BehaviorTree.LoadSynchronous())
@@ -143,26 +139,26 @@ void UUnitCombatComponent::AIInitialize()
 
 	if (UBattlefieldManagerSubsystem* BattlefieldManager = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
 	{
-		if (BattlefieldManager->GetAllyNexus() && BattlefieldManager->GetEnemyNexus() && GetOwner()->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()))
+		if (BattlefieldManager->GetBasement(AllyTeamTag) && BattlefieldManager->GetBasement(EnemyTeamTag) && GetOwner()->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()))
 		{
 			auto Interface = Cast<ITeamInterface>(GetOwner());
 			FGameplayTag MyTeamID = Interface->GetTeamTag();
-			if (MyTeamID.MatchesTag(InRoleTag))
+			if (MyTeamID.MatchesTag(AllyTeamTag))
 			{
-				TargetNexus = BattlefieldManager->GetEnemyNexus();
+				TargetBasement = BattlefieldManager->GetBasement(EnemyTeamTag);
 			}
-			else if (MyTeamID.MatchesTag(InRoleTag))
+			else if (MyTeamID.MatchesTag(EnemyTeamTag))
 			{
-				TargetNexus = BattlefieldManager->GetAllyNexus();
+				TargetBasement = BattlefieldManager->GetBasement(AllyTeamTag);
 			}
-			RoleTag = InRoleTag;
+			TeamTag = MyTeamID;
 
-			if (TargetNexus.IsValid())
+			if (TargetBasement.IsValid())
 			{
-				TargetAssigned(TargetNexus.Get());
+				TargetAssigned(TargetBasement.Get());
 			}
 		}
-	}*/
+	}
 }
 
 void UUnitCombatComponent::Onhit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -175,11 +171,11 @@ void UUnitCombatComponent::Onhit(UPrimitiveComponent* HitComponent, AActor* Othe
 	}
 }
 
-void UUnitCombatComponent::TargetAssigned(ACharacter* Target)
+void UUnitCombatComponent::TargetAssigned(AActor* Target)
 {
 	if (!Target) return;
 
-	TargetCharacter = Target;
+	TargetActor = Target;
 
 	if (OwnerAIC.IsValid())
 	{
@@ -189,7 +185,7 @@ void UUnitCombatComponent::TargetAssigned(ACharacter* Target)
 			{
 				OwnerAIC->StopMovement();
 			}
-			BBComp->SetValue<UBlackboardKeyType_Object>(TargetActorKey, TargetCharacter.Get());
+			BBComp->SetValue<UBlackboardKeyType_Object>(TargetActorKey, TargetActor.Get());
 			CurrentState = EUnitState::Move;
 		}
 	}
@@ -198,7 +194,6 @@ void UUnitCombatComponent::TargetAssigned(ACharacter* Target)
 void UUnitCombatComponent::OnBeginDetected(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor == GetOwner()) return;					// 자신이면 제외
-	if (!OtherActor->IsA<ACharacter>()) return;
 	if (!OtherActor->Implements<UTeamInterface>()) return;	// 팀 아이디 인터페이스가 없으면 제외
 
 	// 같은 팀이면 제외
@@ -219,25 +214,24 @@ void UUnitCombatComponent::OnBeginDetected(UPrimitiveComponent* OverlappedCompon
 	}
 
 	// 캐릭터로 변환가능하면 추가
-	ACharacter* DetectedCharacter = Cast<ACharacter>(OtherActor);
-	if (DetectedCharacter && DetectedCharacters.Num() < UnitAISetting.MaxTargetCount)
+	if (DetectedActors.Num() < UnitAISetting.MaxTargetCount)
 	{
-		if (DetectedCharacter->GetClass()->ImplementsInterface(UUnitDataInterface::StaticClass()))
+		if (OtherActor->GetClass()->ImplementsInterface(UUnitDataInterface::StaticClass()))
 		{
-			auto Interface = Cast<IUnitDataInterface>(DetectedCharacter);
+			auto Interface = Cast<IUnitDataInterface>(OtherActor);
 			if (Interface->GetUnitData().Info.AISetting.bIsElite)
 			{
-				UnitRuntimeData.Elites.Add(DetectedCharacter);
+				UnitRuntimeData.Elites.Add(OtherActor);
 			}
 		}
-		DetectedCharacters.Add(DetectedCharacter);
+		DetectedActors.Add(OtherActor);
 	}
 }
 
 // 타겟 찾는 함수
-void UUnitCombatComponent::SelectBestTarget(const TSet<TWeakObjectPtr<ACharacter>>& InDetectedCharacters)
+void UUnitCombatComponent::SelectBestTarget(const TSet<TWeakObjectPtr<AActor>>& InDetectedCharacters)
 {
-	ACharacter* ResultTarget = nullptr;
+	AActor* ResultTarget = nullptr;
 
 	int32 WinScore = 0;
 
@@ -249,10 +243,10 @@ void UUnitCombatComponent::SelectBestTarget(const TSet<TWeakObjectPtr<ACharacter
 	if (ResultTarget &&
 		ResultTarget->GetClass()->ImplementsInterface(URuntimeUnitDataInterface::StaticClass()))
 	{
-		if (TargetCharacter.IsValid() &&
-			TargetCharacter->GetClass()->ImplementsInterface(URuntimeUnitDataInterface::StaticClass()))
+		if (TargetActor.IsValid() &&
+			TargetActor->GetClass()->ImplementsInterface(URuntimeUnitDataInterface::StaticClass()))
 		{
-			auto RevertInterface = Cast<IRuntimeUnitDataInterface>(TargetCharacter.Get());
+			auto RevertInterface = Cast<IRuntimeUnitDataInterface>(TargetActor.Get());
 			if (OwnerCharacter.IsValid())
 			{
 				RevertInterface->GetUnitRuntimeData().AttackingTargets.Remove(OwnerCharacter);
@@ -264,21 +258,19 @@ void UUnitCombatComponent::SelectBestTarget(const TSet<TWeakObjectPtr<ACharacter
 		{
 			Interface->GetUnitRuntimeData().AttackingTargets.Add(OwnerCharacter);
 		}
-		TargetCharacter = ResultTarget;
-		TargetAssigned(TargetCharacter.Get());
+		TargetActor = ResultTarget;
+		TargetAssigned(TargetActor.Get());
 	}
 }
 
-ACharacter* UUnitCombatComponent::GetHigherPriorityTarget(ACharacter* CurrentTarget, ACharacter* WinTarget, int32& WinScore)
+AActor* UUnitCombatComponent::GetHigherPriorityTarget(AActor* CurrentTarget, AActor* WinTarget, int32& WinScore)
 {
-	if (!TargetPriorityWeight) return nullptr;
-
-	ACharacter* ResultCharacter = nullptr;
+	AActor* ResultCharacter = nullptr;
 	float CurrentTargetScore = 0;
 
 	if (OwnerCharacter.IsValid())
 	{
-		CurrentTargetScore = TargetPriorityWeight->CalculateScore(OwnerCharacter.Get(), CurrentTarget);
+		CurrentTargetScore = TargetPriorityWeight.CalculateScore(OwnerCharacter.Get(), CurrentTarget);
 	}
 
 	if (!WinTarget) // 처음실행이라면 무조건 CurrentTarget값 냅보내기
@@ -303,7 +295,7 @@ ACharacter* UUnitCombatComponent::GetHigherPriorityTarget(ACharacter* CurrentTar
 void UUnitCombatComponent::Idle()
 {
 	StateReset();
-	TargetAssigned(TargetNexus.Get());
+	TargetAssigned(TargetBasement.Get());
 	CurrentState = EUnitState::Move;
 }
 
@@ -311,40 +303,37 @@ void UUnitCombatComponent::Move()
 {
 	StateReset();
 	TArray<FOverlapResult> OutOverlaps;
-	if (TargetPriorityWeight)
-	{
-		FCollisionShape MySphere = FCollisionShape::MakeSphere(TargetPriorityWeight->GetDetectDistance());
-		FCollisionQueryParams Params;
-		Params.AddIgnoredActor(GetOwner());
+	FCollisionShape MySphere = FCollisionShape::MakeSphere(TargetPriorityWeight.GetDetectDistance());
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(GetOwner());
 
-		// 특정 위치(GetActorLocation)에서 한 프레임 즉시 검사
-		bool bHit = GetWorld()->OverlapMultiByChannel(
-			OutOverlaps,
-			GetOwner()->GetActorLocation(),
-			FQuat::Identity,
-			ECollisionChannel::ECC_Pawn, // 설정한 채널
-			MySphere,
-			Params
-		);
-	}
+	// 특정 위치(GetActorLocation)에서 한 프레임 즉시 검사
+	bool bHit = GetWorld()->OverlapMultiByChannel(
+		OutOverlaps,
+		GetOwner()->GetActorLocation(),
+		FQuat::Identity,
+		ECollisionChannel::ECC_Pawn, // 설정한 채널
+		MySphere,
+		Params
+	);
 	
-	DetectedCharacters.Empty();
+	DetectedActors.Empty();
 	for (int i = 0; i < OutOverlaps.Num(); i++)
 	{
 		OnBeginDetected(nullptr, OutOverlaps[i].GetActor(), nullptr, 0, false, FHitResult());
 	}
-	if (DetectedCharacters.Num() > 0)
+	if (DetectedActors.Num() > 0)
 	{
-		SelectBestTarget(DetectedCharacters);
+		SelectBestTarget(DetectedActors);
 	}
 	else
 	{
-		TargetAssigned(TargetNexus.Get());
+		TargetAssigned(TargetBasement.Get());
 	}
 
-	if (TargetCharacter.IsValid())
+	if (TargetActor.IsValid())
 	{
-		float Distance = (TargetCharacter->GetActorLocation() - GetOwner()->GetActorLocation()).SquaredLength();
+		float Distance = (TargetActor->GetActorLocation() - GetOwner()->GetActorLocation()).SquaredLength();
 		if (Distance <= UnitAISetting.AttackRange)
 		{
 			CurrentState = EUnitState::Attack;
@@ -356,21 +345,21 @@ void UUnitCombatComponent::Attack()
 {
 	FTimerDelegate AttackDelegate;
 
-	
+
 	AttackDelegate.BindWeakLambda(this, [this]()
 		{
-			if (TargetCharacter.IsValid() && OwnerCharacter.IsValid() && UnitData.Info.AnimSetting.Attacks.Num() > 0)
+			if (TargetActor.IsValid() && OwnerCharacter.IsValid() && UnitData.Info.AnimSetting.Attacks.Num() > 0)
 			{
-				int32 IDX = FMath::RandRange(0, (UnitData.Info.AnimSetting.Attacks.Num() - 1) );
+				int32 IDX = FMath::RandRange(0, (UnitData.Info.AnimSetting.Attacks.Num() - 1));
 				UAnimMontage* AttackMontage = UnitData.Info.AnimSetting.Attacks[IDX];
 				OwnerCharacter->PlayAnimMontage(AttackMontage);
 
 				RotateDelegate.Unbind();
 				RotateDelegate.BindWeakLambda(this, [this]()
 					{
-						if (TargetCharacter.IsValid() && OwnerCharacter.IsValid())
+						if (TargetActor.IsValid() && OwnerCharacter.IsValid())
 						{
-							FVector Direction = TargetCharacter->GetActorLocation() - GetOwner()->GetActorLocation();
+							FVector Direction = TargetActor->GetActorLocation() - GetOwner()->GetActorLocation();
 							Direction = FVector(Direction.X, Direction.Y, 0);
 							GetOwner()->SetActorRotation(FMath::RInterpConstantTo(GetOwner()->GetActorRotation(), Direction.Rotation(), RotateInterval, RotateSpeed));
 						}
@@ -388,7 +377,7 @@ void UUnitCombatComponent::Attack()
 				GetWorld()->GetTimerManager().ClearTimer(AttackTimerHandle);
 				CurrentState = EUnitState::Idle;
 			}
-		}); 
+		});
 	if (!AttackTimerHandle.IsValid())
 	{
 		GetWorld()->GetTimerManager().SetTimer(AttackTimerHandle, AttackDelegate, UnitAISetting.AttackRate, true, 0.0f);
@@ -434,7 +423,7 @@ void UUnitCombatComponent::StateReset()
 	}
 	GetWorld()->GetTimerManager().ClearTimer(AttackTimerHandle);
 
-	for (auto It = DetectedCharacters.CreateIterator(); It; ++It)
+	for (auto It = DetectedActors.CreateIterator(); It; ++It)
 	{
 		if (!It->IsValid())
 		{

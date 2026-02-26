@@ -91,5 +91,5 @@ protected:
 	FInBattleData InBattleData;
 
 	UPROPERTY()
-	TMap<FGameplayTag, TWeakObjectPtr<AActor>> Basements;
+	TMap<FGameplayTag, AActor*> Basements;
 };

@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
-#include "Data/Types/BaseUnitData.h"
-#include "Data/Types/UnitData.h"
 #include "DATargetPriorityWeight.generated.h"
 
+struct FUnitData;
+struct FUnitRuntimeData;
 // 김도현
 // AI 우선순위 하위 구조체
 USTRUCT(BlueprintType)
@@ -22,10 +22,8 @@ public:
 	float TargetWeight = 0.5f;
 };
 
-// 김도현
-// AI 우선순위 데이터
-UCLASS()
-class ARCANUM_API UDATargetPriorityWeight : public UDataAsset
+USTRUCT(BlueprintType)
+struct FTargetPriorityWeightData
 {
 	GENERATED_BODY()
 public:
@@ -52,7 +50,7 @@ public:
 
 
 	//점수 계산 함수
-	float CalculateScore(ACharacter* MyCharacter, ACharacter* TargetCharacter) const;
+	float CalculateScore(AActor* MyCharacter, AActor* TargetCharacter) const;
 
 protected:
 	// 플레이어 캐릭터 인가
@@ -82,7 +80,7 @@ protected:
 	// 해당 적의 체력이 적으면 점수가 높음(백분율)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FTargetPriorityWeightSetting LowHealthWeightSet;
-	
+
 	// 엘리트일수록 점수가 높음
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FTargetPriorityWeightSetting EliteWeightSet;
@@ -95,10 +93,10 @@ private:
 	float CalculateScoreAttackingTargetNumWeight(const FUnitRuntimeData& TargetUnitRuntimeData) const;
 
 	// 나와 적의 거리가 가까울 수록 점수가 높음
-	float CalculateScoreDistanceWeight(ACharacter* MyCharacter, ACharacter* TargetCharacter) const;
+	float CalculateScoreDistanceWeight(AActor* MyCharacter, AActor* TargetCharacter) const;
 
 	// 나를 공격하는 대상에게 점수를 줌
-	float CalculateScoreAggroWeight(const FUnitRuntimeData& MyUnitRuntimeData, ACharacter* TargetCharacter) const;
+	float CalculateScoreAggroWeight(const FUnitRuntimeData& MyUnitRuntimeData, AActor* TargetCharacter) const;
 
 	// 해당 적의 체력이 적으면 점수가 높음(백분율)
 	float CalculateScoreLowHealthWeight() const;

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "GameplayTagContainer.h"
+#include "Data/DataAssets/DATargetPriorityWeight.h"
 #include "BaseUnitData.generated.h"
 
 class UATTAnimPlayData;
@@ -18,11 +19,11 @@ struct FUnitRuntimeData
 public:
 	// 나를 때리려고하는 적은 누구누구인가
 	UPROPERTY()
-	TSet<TWeakObjectPtr<ACharacter>> AttackingTargets;
+	TSet<TWeakObjectPtr<AActor>> AttackingTargets;
 
 	// 내가 발견한 엘리트 적, 엘리트 적이 없다면 비어있음
 	UPROPERTY()
-	TSet<TWeakObjectPtr<ACharacter>> Elites;
+	TSet<TWeakObjectPtr<AActor>> Elites;
 };
 
 // 김도현
@@ -204,7 +205,7 @@ public:
 	TSoftObjectPtr<class UBehaviorTree> BehaviorTree = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
-	TSoftObjectPtr<class UDATargetPriorityWeight> TargetPriorityWeight = nullptr;
+	FTargetPriorityWeightData TargetPriorityWeightData;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
 	FName BBTargetActorName = FName(TEXT("TargetActor"));

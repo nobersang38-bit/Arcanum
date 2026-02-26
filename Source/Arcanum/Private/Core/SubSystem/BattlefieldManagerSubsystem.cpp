@@ -23,11 +23,7 @@ void UBattlefieldManagerSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 
 AActor* UBattlefieldManagerSubsystem::GetBasement(FGameplayTag InTeamTag) const
 {
-	if (AActor* Basement = Basements.FindRef(InTeamTag).Get())
-	{
-		return Basement;
-	}
-	return nullptr;
+	return Basements.FindRef(InTeamTag);
 }
 
 void UBattlefieldManagerSubsystem::AddBasement(AActor* InNexus, FGameplayTag InTeamTag)

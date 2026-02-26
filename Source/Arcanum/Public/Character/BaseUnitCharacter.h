@@ -20,12 +20,6 @@ class ARCANUM_API ABaseUnitCharacter : public ACharacter, public ITeamInterface,
 	GENERATED_BODY()
 public:
 #pragma region Debug
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "00_Test")
-	//float Speed = 400.0f;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "00_Test")
-	//float Range = 200.0f;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "00_Test")
 	bool RandomRvoWeight = false;
 #pragma endregion
@@ -35,7 +29,7 @@ public:
 public:
 	virtual FGameplayTag GetTeamTag() override;
 
-	//class UCharacterBattleStatsComponent* GetCharacterBattleStatsComponent() { return CharacterBattleStatsComponent; }
+	class UCharacterBattleStatsComponent* GetCharacterBattleStatsComponent() { return CharacterBattleStatsComponent; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -51,8 +45,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<class UUnitCombatComponent> UnitCombatComponent = nullptr;
 
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	//TObjectPtr<class UCharacterBattleStatsComponent> CharacterBattleStatsComponent = nullptr;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<class UCharacterBattleStatsComponent> CharacterBattleStatsComponent = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<class UWidgetComponent> HealthBarComponent = nullptr;

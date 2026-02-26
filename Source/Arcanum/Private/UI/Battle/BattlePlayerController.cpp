@@ -5,6 +5,9 @@
 #include "Blueprint/UserWidget.h"
 #include "UI/Battle/Contents/InBattleHUDWidget.h"
 #include "UI/Battle/SubLayout/BattleAllyUnitPanelWidget.h"
+#include "EnhancedInputSubsystems.h"
+#include "EnhancedInputComponent.h"
+#include "InputActionValue.h"
 
 // ========================================================
 // 언리얼 기본 생성
@@ -23,6 +26,37 @@ void ABattlePlayerController::BeginPlay()
 	}
 	SetupMainHUDWidget();
 	SetupInputMode();
+}
+
+void ABattlePlayerController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+
+	if (UEnhancedInputLocalPlayerSubsystem* SubSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
+	{
+		SubSystem->AddMappingContext(InputMappingContext, 0);
+	}
+
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
+	{
+		EnhancedInputComponent->BindAction(IA_Move, ETriggerEvent::Triggered, this, &ABattlePlayerController::Move);
+		//EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &ABattlePlayerController::OnInputStarted);
+		//EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Triggered, this, &ABattlePlayerController::OnSetDestinationTriggered);
+		//EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Completed, this, &ABattlePlayerController::OnSetDestinationReleased);
+		//EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Canceled, this, &ABattlePlayerController::OnSetDestinationReleased);
+
+		//EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Started, this, &ABattlePlayerController::OnInputStarted);
+		//EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Triggered, this, &ABattlePlayerController::OnTouchTriggered);
+		//EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Completed, this, &ABattlePlayerController::OnTouchReleased);
+		//EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Canceled, this, &ABattlePlayerController::OnTouchReleased);
+
+		//EnhancedInputComponent->BindAction(IA_Move, ETriggerEvent::Triggered, this, &AArcanumPlayerController::OnMove);
+		//EnhancedInputComponent->BindAction(IA_Move, ETriggerEvent::Completed, this, &AArcanumPlayerController::OnMove);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("'%s' Failed to find an Enhanced Input Component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
+	}
 }
 
 // ========================================================
@@ -130,4 +164,13 @@ void ABattlePlayerController::SetupInputMode()
 
 	FInputModeGameAndUI InputMode;
 	SetInputMode(InputMode);
+}
+
+
+// ========================================================
+// 입력 관련
+// ========================================================
+void ABattlePlayerController::Move(const FInputActionValue& InputValue)
+{
+	UE_LOG(LogTemp, Warning, TEXT("무야호야무야호"));
 }

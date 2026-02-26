@@ -6,8 +6,10 @@
 #include "GameFramework/PlayerController.h"
 #include "BattlePlayerController.generated.h"
 
-//김도현
+class UInputMappingContext;
+class UInputAction;
 class UInBattleHUDWidget;
+struct FInputActionValue;
 UCLASS()
 class ARCANUM_API ABattlePlayerController : public APlayerController
 {
@@ -15,6 +17,7 @@ class ARCANUM_API ABattlePlayerController : public APlayerController
 #pragma region 언리얼 기본생성
 protected:
 	virtual void BeginPlay() override;
+	virtual void SetupInputComponent() override;
 #pragma endregion
 
 
@@ -88,4 +91,19 @@ protected:
 protected:
 	void SetupInputMode();
 #pragma endregion
+
+
+#pragma region 입력 관련
+protected:
+	UFUNCTION()
+	void Move(const FInputActionValue& InputValue);
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputMappingContext> InputMappingContext = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_Move = nullptr;
+#pragma endregion
+
 };
