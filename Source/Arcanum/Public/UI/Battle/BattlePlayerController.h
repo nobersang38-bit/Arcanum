@@ -62,28 +62,34 @@ protected:
 #pragma region 메인HUD
 protected:
 	void SetupMainHUDWidget();
+#pragma endregion
 
+
+#pragma region 메인
 protected:
 	UFUNCTION()
-	void ClickBasicAttack();
+	void BasicAttack();
 
 	UFUNCTION()
-	void ClickUltimateSkill();
+	void UltimateSkill();
 
 	UFUNCTION()
-	void ClickBasicSkill();
+	void BasicSkill();
 
 	UFUNCTION()
-	void ClickWeaponSwap();
+	void WeaponSwap();
 
 	UFUNCTION()
-	void ClickItem1();
+	void Item1();
 
 	UFUNCTION()
-	void ClickItem2();
+	void Item2();
 
 	UFUNCTION()
-	void ToggleAutoManualMode(bool bIsChecked);
+	void AutoManualModeMobile(bool bIsChecked);
+
+	UFUNCTION()
+	void AutoManualModePC();
 #pragma endregion
 
 
@@ -96,7 +102,7 @@ protected:
 #pragma region 입력 관련
 protected:
 	UFUNCTION()
-	void Move(const FInputActionValue& InputValue);
+	void InputMove(const FInputActionValue& InputValue);
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
@@ -104,6 +110,29 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> IA_Move = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_BasicAttack = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_BasicSkill = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_UltimateSkill = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_Item1 = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_Item2 = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_WeaponSwap = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_AutoManual = nullptr;
 #pragma endregion
 
+private:
+	bool bIsAutoManual = false;
 };

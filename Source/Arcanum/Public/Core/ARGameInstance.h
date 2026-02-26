@@ -68,6 +68,13 @@ private:
 #pragma endregion
 
 
+#pragma region 비저장
+public:
+    UPROPERTY(Transient)
+    FGameplayTag CurrentStageTag;
+#pragma endregion
+
+
 #pragma region 고정
 protected:
     /** 데이터 저장용 클래스*/

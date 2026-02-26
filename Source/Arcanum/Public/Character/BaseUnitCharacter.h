@@ -27,6 +27,8 @@ public:
 	ABaseUnitCharacter();
 
 public:
+	void SetUnit(FUnitData InUnitData);
+
 	virtual FGameplayTag GetTeamTag() override;
 
 	class UCharacterBattleStatsComponent* GetCharacterBattleStatsComponent() { return CharacterBattleStatsComponent; }
@@ -55,6 +57,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MainData")
 	FDataTableRowHandle DTUnitDataRowHandle;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MainData")
+	TObjectPtr<UDataTable> DTUnitDataTable = nullptr;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MainData")
 	FUnitData UnitData;
 
@@ -73,5 +78,5 @@ private:
 	UFUNCTION()
 	void RecievedDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
-
+	void UpdateUnitData();
 };

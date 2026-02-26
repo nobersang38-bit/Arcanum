@@ -43,6 +43,12 @@ ABaseUnitCharacter::ABaseUnitCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 }
 
+void ABaseUnitCharacter::SetUnit(FUnitData InUnitData)
+{
+	UnitData = InUnitData;
+	DataInitialize();
+}
+
 FGameplayTag ABaseUnitCharacter::GetTeamTag()
 {
 	UGameplayTagsManager& TagManager = UGameplayTagsManager::Get();
@@ -107,17 +113,7 @@ void ABaseUnitCharacter::PostEditChangeProperty(FPropertyChangedEvent& PropertyC
 
 	if (MemberPropertyName == GET_MEMBER_NAME_CHECKED(ABaseUnitCharacter, DTUnitDataRowHandle))
 	{
-		if (DTUnitDataRowHandle.DataTable && !DTUnitDataRowHandle.RowName.IsNone()) 
-		{
-			if (const FAllyUnitsDataRow* AllyRow = DTUnitDataRowHandle.DataTable->FindRow<FAllyUnitsDataRow>(DTUnitDataRowHandle.RowName, TEXT("Load")))
-			{
-				if (AllyRow) UnitData = (*AllyRow).UnitData;
-			}
-			else if(const FEnemyUnitsDataRow* EnemyRow = DTUnitDataRowHandle.DataTable->FindRow<FEnemyUnitsDataRow>(DTUnitDataRowHandle.RowName, TEXT("Load")))
-			{
-				if (EnemyRow) UnitData = (*EnemyRow).UnitData;
-			}
-		}
+		UpdateUnitData();
 	}
 }
 #endif
@@ -174,6 +170,7 @@ float ABaseUnitCharacter::GetAttackPower()
 
 void ABaseUnitCharacter::DataInitialize()
 {
+	UpdateUnitData();
 	AnimSetting();
 }
 
@@ -191,6 +188,21 @@ void ABaseUnitCharacter::OnAttackNotifyTriggered()
 void ABaseUnitCharacter::RecievedDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
 	GetCharacterBattleStatsComponent()->ChangeStatValue(Arcanum::BattleStat::Character::Regen::Health::Root, -(FMath::Abs(Damage)), DamageCauser);
+}
+
+void ABaseUnitCharacter::UpdateUnitData()
+{
+	if (DTUnitDataRowHandle.DataTable && !DTUnitDataRowHandle.RowName.IsNone())
+	{
+		if (const FAllyUnitsDataRow* AllyRow = DTUnitDataRowHandle.DataTable->FindRow<FAllyUnitsDataRow>(DTUnitDataRowHandle.RowName, TEXT("Load")))
+		{
+			if (AllyRow) UnitData = (*AllyRow).UnitData;
+		}
+		else if (const FEnemyUnitsDataRow* EnemyRow = DTUnitDataRowHandle.DataTable->FindRow<FEnemyUnitsDataRow>(DTUnitDataRowHandle.RowName, TEXT("Load")))
+		{
+			if (EnemyRow) UnitData = (*EnemyRow).UnitData;
+		}
+	}
 }
 
 const FUnitData& ABaseUnitCharacter::GetUnitData()

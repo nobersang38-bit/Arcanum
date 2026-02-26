@@ -295,6 +295,14 @@ AActor* UUnitCombatComponent::GetHigherPriorityTarget(AActor* CurrentTarget, AAc
 void UUnitCombatComponent::Idle()
 {
 	StateReset();
+	if (!TargetBasement.IsValid())
+	{
+		UBattlefieldManagerSubsystem* BattlefieldManagerSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+		if (BattlefieldManagerSubsystem)
+		{
+			BattlefieldManagerSubsystem->G
+		}
+	}
 	TargetAssigned(TargetBasement.Get());
 	CurrentState = EUnitState::Move;
 }

@@ -8,6 +8,7 @@
 #include "Data/Types/MatchData.h"
 #include "DataInfo/PlayerData/FPlayerData.h"
 #include "Data/DataAssets/EnemyWaveData.h"
+#include "Data/Types/UnitData.h"
 #include "BattlefieldManagerSubsystem.generated.h"
 
 USTRUCT(BlueprintType)
@@ -55,6 +56,12 @@ public:
 
 	UFUNCTION()
 	void SetABattlefieldManagerActor(ABattlefieldManagerActor* InBattlefieldManagerActor);
+
+	UFUNCTION()
+	FUnitData GetAllyUnitData(FGameplayTag InUnitTag, bool& OutResult) const;
+	UFUNCTION()
+	FUnitData GetEnemyUnitData(FGameplayTag InUnitTag, bool& OutResult) const;
+
 #pragma endregion
 
 #pragma region 중요정보 및 설정
@@ -78,6 +85,11 @@ protected:
 	UFUNCTION()
 	void SetCurrentMatchData(const FMatchData& InData);
 
+#pragma region 디버그
+	void SetupUnits();
+#pragma endregion
+
+
 protected:
 #pragma region 스테이지 기본설정
 	FCombatStageData StageData;
@@ -92,4 +104,12 @@ protected:
 
 	UPROPERTY()
 	TMap<FGameplayTag, AActor*> Basements;
+
+	// 전투맵에서 사용하는 아군 유닛
+	UPROPERTY()
+	TMap<FGameplayTag, FUnitData> AllyUnitDatas;
+
+	// 전투맵에서 사용하는 적군 유닛
+	UPROPERTY()
+	TMap<FGameplayTag, FUnitData> EnemyUnitDatas;
 };

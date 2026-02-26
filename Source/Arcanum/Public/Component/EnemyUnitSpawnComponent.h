@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Data/DataAssets/EnemyWaveData.h"
+#include "GameplayTags/ArcanumTags.h"
+#include "Data/Types/UnitData.h"
 #include "EnemyUnitSpawnComponent.generated.h"
 
 // 김도현
@@ -29,13 +31,49 @@ public:
 #pragma endregion
 	
 protected:
+	UFUNCTION()
 	void WaveStart();
+
+	FGameplayTag CalculateEnemyUnitStartSpawnTime(const FEnemyUnitStartSpawnTimeData& InEnemyUnitStartSpawnTimeData, float InTime, float& OutPassedTime);
+
+#pragma region 디버그
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bUseDebugStageInfoTag = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FGameplayTag DebugStageInfoTag = Arcanum::BattleStage::Normal::Stage1;
+#pragma endregion
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
-	float EnemyWaveStartTime = 3.0f;
+	TObjectPtr<UDataTable> UnitInfoDataTable = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
+	TObjectPtr<UDataTable> StageInfoDataTable = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
+	FGameplayTag StageInfoTag = Arcanum::DataTable::StageInfo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
+	FGameplayTag EnemyUnitInfoTag = Arcanum::DataTable::EnemyUnitInfo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
+	TSubclassOf<class ABaseUnitCharacter> EnemyUnitClass = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting", meta = (MakeEditWidget = "true"))
+	FVector SpawnLocation = FVector::ZeroVector;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
+	float TickInterval = 0.1f;
 	// 적 웨이브 데이터
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Data")
 	FEnemyWaveDataInfo EnemyWaveData;
+
+private:
+	FTimerHandle WaveTimer;
+
+	float InternalTime = 0.0f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TMap<FGameplayTag, FUnitData> UsingUnits;
 };
