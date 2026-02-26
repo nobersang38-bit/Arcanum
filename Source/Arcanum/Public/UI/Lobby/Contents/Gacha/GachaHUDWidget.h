@@ -7,7 +7,7 @@
 
 class UImage;
 class UButton;
-class UScrollBox;
+class UVerticalBox;
 class UGachaPullButtonWidget;
 class UGachaProbabilityWidget;
 class UGachaBannerButtonWidget;
@@ -27,9 +27,8 @@ private:
 
 #pragma region 배너 버튼 관련
 protected:
-    /** 배너 버튼들이 들어갈 컨테이너 (UMG에서 ScrollBox 배치 후 IsVariable 체크) */
-    UPROPERTY(meta = (BindWidget))
-    TObjectPtr<UScrollBox> BannerScrollBox;
+    UPROPERTY(meta = (BindWidget)) TObjectPtr<UVerticalBox> BannerVerticalBox;
+    
     /** 버튼 위젯 클래스 (에디터에서 할당) */
     UPROPERTY(EditAnywhere, Category = "Gacha|Settings")
     TSubclassOf<UGachaBannerButtonWidget> BannerButtonClass;

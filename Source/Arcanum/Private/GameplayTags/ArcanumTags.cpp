@@ -7,6 +7,7 @@ namespace Arcanum {
 		UE_DEFINE_GAMEPLAY_TAG(BattleStats, "Arcanum.DataTable.BattleStats");
 		UE_DEFINE_GAMEPLAY_TAG(PlayerBattleStats, "Arcanum.DataTable.PlayerBattleStats");
 		UE_DEFINE_GAMEPLAY_TAG(Equipment, "Arcanum.DataTable.Equipment");
+		UE_DEFINE_GAMEPLAY_TAG(GachaTable, "Arcanum.DataTable.GachaTable");
 		//UE_DEFINE_GAMEPLAY_TAG(BattleRegenStats,	"Arcanum.DataTable.BattleRegenStats");
 		//UE_DEFINE_GAMEPLAY_TAG(BattleNonRegenStats, "Arcanum.DataTable.BattleNonRegenStats");
 	}
@@ -37,6 +38,7 @@ namespace Arcanum
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Celestia, "Arcanum.Player.ID.Celestia", "셀레스티아");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Lynette, "Arcanum.Player.ID.Lynette", "리넷");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Arna, "Arcanum.Player.ID.Arna", "아르나");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Aiden, "Arcanum.Player.ID.Aiden", "Aiden");
 		}
 
 		namespace Grade
@@ -51,15 +53,20 @@ namespace Arcanum
 
 namespace Arcanum {
 	namespace Gacha {
-		namespace Pickup { // 만일 필요하면 Slotx로 필요한 만큼 추가해서 사용하면 됨
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Slot1, "Arcanum.Gacha.Pickup.Slot1", "픽업 첫번째");
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Slot2, "Arcanum.Gacha.Pickup.Slot2", "픽업 두번째");
-		}
-		namespace Always {
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Slot1, "Arcanum.Gacha.Always.Slot1", "아군 전체 뽑기");
-		}
-		namespace Item {
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Slot1, "Arcanum.Gacha.Item.Slot1", "아이템 전체 뽑기");
+		namespace Type {
+			namespace Standard {
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Standard, "Arcanum.Gacha.Type.Standard", "상시 캐릭터 뽑기(전체)");
+			}
+			namespace CharacterPickup {
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterPickup, "Arcanum.Gacha.Type.CharacterPickup", "픽업 캐릭터 뽑기");
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(PickUp2601, "Arcanum.Gacha.Type.CharacterPickup.PickUp2601", "픽업 캐릭터 뽑기(26년 1주차)");
+			}
+			namespace WeaponPickup {
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(WeaponPickup, "Arcanum.Gacha.Type.WeaponPickup", "무기/장비 뽑기");
+			}
+			namespace EventLimited {
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(EventLimited, "Arcanum.Gacha.Type.EventLimited", "이벤트 뽑기(다시는 안나옴)");
+			}
 		}
 	}
 }

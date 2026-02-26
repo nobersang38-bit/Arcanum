@@ -60,4 +60,11 @@ struct FPlayerData
      * ============================== */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
     FPlayerQuest QuestState;
+
+    bool operator==(const FPlayerData& Other) const
+    {
+        if (!(PlayerCurrency == Other.PlayerCurrency)) return false;
+
+        return true;
+    }
 };

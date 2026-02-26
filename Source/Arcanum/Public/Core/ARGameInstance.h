@@ -34,8 +34,10 @@ public:
 #pragma region 초기화 관련
 public:
     virtual void Init() override;
+    /** 처음 플레이시 필요한 게임 데이터 초기화*/
+    void InitializeGameData();
 private:
-    /** 플레이어 재화 관련 초기화*/
+    /** 플레이어 관련 초기화*/
     void InitializeNewPlayerData();
 #pragma endregion
 
@@ -47,18 +49,20 @@ public:
 
 #pragma region 플레이어 데이터 저장/로드
 public:
-    UFUNCTION(BlueprintCallable)
-    const FPlayerData& GetPlayerDataCopy() const { return PlayerData; }
-
-    /* 필요하면 Getter만 제공 */
-    UFUNCTION(BlueprintCallable)
-    FPlayerData& GetPlayerData() { return PlayerData; }
-    
     /** 플레이어 데이터 저장*/
-    void SavePlayerData();
+    bool SavePlayerData();
     /** 플레이어 데이터 로드*/
-    void LoadPlayerData();
+    bool LoadPlayerData();
+
+    friend class FPlayerAccountService;
 private:
+    /** 플레이어 재화 변경시 */
+    void AddCurrency(FGameplayTag CurrencyValueTag, int64 Amount);
+    /** 치트 발견시 기존 세이브 데이터 삭제 */
+    bool DeletePlayerData();
+    const FPlayerData& GetPlayerDataCopy() const { return PlayerData; }
+    /* 필요하면 Getter만 제공 */
+    FPlayerData& GetPlayerData() { return PlayerData; }
     /** 저장할 본체*/
     UPROPERTY() FPlayerData PlayerData;
 #pragma endregion
@@ -111,25 +115,6 @@ public:
         }
 
         return bSuccess;
-    }
-
-    UFUNCTION(BlueprintCallable)
-    void AddCurrency(FGameplayTag CurrencyValueTag, int64 Amount)
-    {
-        if (!CurrencyValueTag.IsValid() || Amount == 0) return;
-
-        FCurrencyData& CurrencyData = PlayerData.PlayerCurrency.CurrencyDatas.FindOrAdd(CurrencyValueTag);
-
-        CurrencyData.CurrAmount += Amount;
-
-        if (CurrencyData.MaxAmount > 0) {
-            CurrencyData.CurrAmount = FMath::Clamp(CurrencyData.CurrAmount, int64(0), CurrencyData.MaxAmount);
-        }
-
-        if (Amount > 0) {
-            CurrencyData.TotalEarned += Amount;
-        }
-
     }
 #pragma endregion
 };

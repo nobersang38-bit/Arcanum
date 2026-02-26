@@ -8,17 +8,22 @@
 #include "Kismet/GameplayStatics.h"
 #include "Core/ARGameInstance.h"
 
+#include "Core/ARPlayerAccountService.h"
+
 void UBattlefieldManagerSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
 	OnMatchEnded.AddUObject(this, &UBattlefieldManagerSubsystem::SetCurrentMatchData);
 
-	UARGameInstance* GameInstance = nullptr;
-	GameInstance = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-	if (GameInstance)
-	{
-		SetPlayerData(GameInstance->GetPlayerData(), InBattleData);
-	}
+	/// 02/26 수정 : 서비스레이어 거치도록
+	SetPlayerData(FPlayerAccountService::GetPlayerDataCopy(this), InBattleData);
+
+	//UARGameInstance* GameInstance = nullptr;
+	//GameInstance = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	//if (GameInstance)
+	//{
+	//	SetPlayerData(GameInstance->GetPlayerData(), InBattleData);
+	//}
 }
 
 ACharacter* UBattlefieldManagerSubsystem::GetAllyNexus() const

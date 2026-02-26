@@ -4,7 +4,8 @@
 #include "UI/Lobby/Contents/Gacha/SubLayout/GachaBannerButtonWidget.h"
 #include "Components/Image.h"
 #include "Components/Button.h"
-#include "Components/ScrollBox.h"
+#include "Components/VerticalBox.h"
+#include "Components/VerticalBoxSlot.h"
 
 // ========================================================
 // 언리얼 기본생성 / 초기화
@@ -17,20 +18,22 @@ void UGachaHUDWidget::NativeConstruct()
 }
 void UGachaHUDWidget::InitBannerList()
 {
-    if (!BannerScrollBox || !BannerButtonClass) return;
+    if (!BannerVerticalBox || !BannerButtonClass) return;
+    BannerVerticalBox->ClearChildren();
 
-    BannerScrollBox->ClearChildren();
-
-    // TODO: 배너 데이터 테이블을 순회하며 버튼 생성
-    // 임시로 루프 예시만 작성
-    for (int32 i = 0; i < 3; ++i)
-    {
+    /// Todo : 추후 DT에서 받아와야 함.
+    for (int32 i = 0; i < 3; ++i) {
         UGachaBannerButtonWidget* NewButton = CreateWidget<UGachaBannerButtonWidget>(this, BannerButtonClass);
         if (NewButton) {
             NewButton->BannerClicked.RemoveAll(this);
             NewButton->BannerClicked.AddUObject(this, &UGachaHUDWidget::OnBannerSelected);
-
-            BannerScrollBox->AddChild(NewButton);
+            UVerticalBoxSlot* ButtonSlot = BannerVerticalBox->AddChildToVerticalBox(NewButton);
+            if (ButtonSlot) {
+                ButtonSlot->SetPadding(FMargin(0.f, 0.f, 0.f, 20.f));
+                ButtonSlot->SetSize(FSlateChildSize(ESlateSizeRule::Automatic));
+                ButtonSlot->SetHorizontalAlignment(HAlign_Fill);
+                ButtonSlot->SetVerticalAlignment(VAlign_Top);
+            }
             if (i == 0) OnBannerSelected(NewButton->BannerTag);
         }
     }
@@ -56,7 +59,7 @@ void UGachaHUDWidget::OnBannerSelected(FGameplayTag SelectedBannerTag)
 {
     if (CurrentSelectedButton) CurrentSelectedButton->SetSelected(false);
 
-    TArray<UWidget*> AllButtons = BannerScrollBox->GetAllChildren();
+    TArray<UWidget*> AllButtons = BannerVerticalBox->GetAllChildren();
     for (UWidget* Widget : AllButtons) {
         if (UGachaBannerButtonWidget* Btn = Cast<UGachaBannerButtonWidget>(Widget)) {
             if (Btn->BannerTag == SelectedBannerTag) {

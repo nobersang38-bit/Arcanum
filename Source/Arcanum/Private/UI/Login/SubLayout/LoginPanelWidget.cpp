@@ -6,6 +6,7 @@
 #include "UI/Login/SubLayout/SyncLoginUserWidget.h"
 
 #include "Core/ARGameInstance.h"
+#include "Core/ARPlayerAccountService.h"
 
 #include "Components/Image.h"
 #include "Components/Overlay.h"
@@ -96,6 +97,7 @@ void ULoginPanelWidget::OnPostLoginFinished(bool bSuccess, const FString& ErrorM
 	SyncLoginWidget->SetVisibility(ESlateVisibility::Collapsed);
 
 	if (bSuccess) {
+		FPlayerAccountService::LoadPlayerData(this);
 		LoginUserWidget->SetVisibility(ESlateVisibility::Collapsed);
 		HandleIDLoginState(true);
 	}
