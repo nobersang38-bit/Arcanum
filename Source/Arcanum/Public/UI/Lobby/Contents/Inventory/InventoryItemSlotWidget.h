@@ -9,6 +9,7 @@ class UButton;
 class UImage;
 class UTextBlock;
 class UBorder;
+struct FDTEquipmentInfoRow;
 
 /* 슬롯 클릭시 슬롯 인덱스 전달 */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInventorySlotClicked, int32, InSlotIndex);
@@ -28,7 +29,7 @@ protected:
 public:
 	/* 슬롯 데이터 세팅 (장비 1개) */ 
 	UFUNCTION()
-	void SetItemData(const FEquipmentInfo& InItem, int32 InSlotIndex);
+	void SetItemData(const FEquipmentInfo& InItem, const FDTEquipmentInfoRow& InRow, int32 InSlotIndex);
 
 	/* 빈 슬롯 처리 */
 	UFUNCTION()

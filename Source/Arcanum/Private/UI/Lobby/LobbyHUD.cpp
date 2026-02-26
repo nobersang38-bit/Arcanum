@@ -304,15 +304,9 @@ void ULobbyHUD::BuildShopRuntimeCache()
 
 				const FDTEquipmentInfoRow* rowPtr = dataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, rowName);
 				CachedShopRowPtrs[slotIndex] = rowPtr;
-
-				UE_LOG(LogTemp, Warning, TEXT("[ShopCache] GI=%d Row0=%s Ptr0=%d"),
-					gameInstance ? 1 : 0,
-					(CachedShopRowNames.Num() > 0 ? *CachedShopRowNames[0].ToString() : TEXT("NONE")),
-					(CachedShopRowPtrs.Num() > 0 && CachedShopRowPtrs[0] != nullptr) ? 1 : 0);
 			}
 		}
 	}
-
 }
 
 // ========================================================
