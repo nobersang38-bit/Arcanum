@@ -1,13 +1,86 @@
 [
   {
     "Name": "Elara",
+    "BattleCharacterInfo": {
     "CharacterTag": "Arcanum.Player.ID.Elara",
-    "DefaultDialogue": "안녕, 나는 엘라라야.",
-    "AttackDialogue": "차앗! 받아라!",
-    "HitDialogue": "윽... 아파...",
-    "DeathDialogue": "여기까지인가...",
+	  "CharacterIcon":"/Game/Assets/UI/Character/AvatarThumb.Icon_Merry",
+    "DefaultDialogue": "눈송이처럼 가벼운 발걸음으로, 당신을 도와줄게요~",
+    "AttackDialogue": "차가운 바람 한 줌, 이리 와요~! 쿵!",
+    "HitDialogue": "찡~! 아프진 않지만... 더 조심해야겠어요…",
+    "DeathDialogue": "아아… 다시 얼음처럼 돌아올게요!",
     "DefaultGrade": "Arcanum.Player.Grade.Common.0",
+    "MaxGrade": "Arcanum.Player.Grade.Common.0",
+    "RequiredShardCount": [10,20,30]
+    }
+  },
+  {
+    "Name": "Iris",
+    "BattleCharacterInfo": {
+    "CharacterTag": "Arcanum.Player.ID.Iris",
+	"CharacterIcon":"/Game/Assets/UI/Character/AvatarThumb.Icon_Nurse",
+    "DefaultDialogue": "어떤 일이라도 제게 맡겨 주세요! 다 치료해 드릴게요!",
+    "AttackDialogue": "이건 고통을 덜어주는 한방이에요! 받으세요!",
+    "HitDialogue": "으음... 아프지만, 그래도 괜찮아요! 힘낼 수 있어요!",
+    "DeathDialogue": "저... 죄송해요... 다시 일어날 수 있을까요?",
+    "DefaultGrade": "Arcanum.Player.Grade.Common.0",
+    "MaxGrade": "Arcanum.Player.Grade.Common.0",
+    "RequiredShardCount": [10,20,30]
+    }
+  },
+  {
+    "Name": "Celestia",
+    "BattleCharacterInfo": {
+    "CharacterTag": "Arcanum.Player.ID.Celestia",
+	"CharacterIcon":"/Game/Assets/UI/Character/AvatarThumb.Icon_Demonia",
+    "DefaultDialogue": "내가 나타났다면, 이미 끝난 게임이지.",
+    "AttackDialogue": "내 힘을 느껴라!",
+    "HitDialogue": "이게 전부냐? 더 강하게 와라.",
+    "DeathDialogue": "내가 진다고…? 웃기는 군.",
+    "DefaultGrade": "Arcanum.Player.Grade.Rare.1",
+    "MaxGrade": "Arcanum.Player.Grade.Rare.1",
+    "RequiredShardCount": [10,20,30]
+    }
+  },
+  {
+    "Name": "Lynette",
+    "BattleCharacterInfo": {
+    "CharacterTag": "Arcanum.Player.ID.Lynette",
+	"CharacterIcon":"/Game/Assets/UI/Character/AvatarThumb.Icon_Anubis",
+    "DefaultDialogue": "내가 존재하는 한, 균형은 유지된다.",
+    "AttackDialogue": "너에게 보여줄 건, 내가 다스리는 힘이다.",
+    "HitDialogue": "이 작은 상처쯤은 아무것도 아니다.",
+    "DeathDialogue": "하하… 잠깐 쉬어가겠다.",
+    "DefaultGrade": "Arcanum.Player.Grade.Rare.1",
+    "MaxGrade": "Arcanum.Player.Grade.Rare.1",
+    "RequiredShardCount": [10,20,30]
+    }
+  },
+  {
+    "Name": "Arna",
+    "BattleCharacterInfo": {
+    "CharacterTag": "Arcanum.Player.ID.Arna",
+	"CharacterIcon":"/Game/Assets/UI/Character/AvatarThumb.Icon_Outsider",
+    "DefaultDialogue": "나를 바라보지 마… 나는 그렇게 강하지 않아…",
+    "AttackDialogue": "내가 원하는 건… 너를 완전히… 끝내는 거야!",
+    "HitDialogue": "아파… 아프다고…",
+    "DeathDialogue": "하하… 결국… 나도 끝인가 보네…",
+    "DefaultGrade": "Arcanum.Player.Grade.Epic.2",
     "MaxGrade": "Arcanum.Player.Grade.Epic.2",
-    "RequiredShardCount": 10
+    "RequiredShardCount": [10,20,30]
+    }
+  },
+  {
+    "Name": "Aiden",
+    "BattleCharacterInfo": {
+    "CharacterTag": "Arcanum.Player.ID.Aiden",
+	"CharacterIcon":"",
+    "DefaultDialogue": "나와 함께라면 두려울 것이 없다.",
+    "AttackDialogue": "내가 여기 있는 이유는… 싸우기 위해서다.",
+    "HitDialogue": "한 번 맞았다고 물러서지 않는다!",
+    "DeathDialogue": "이 싸움… 반드시 끝을 보겠어…",
+    "DefaultGrade": "Arcanum.Player.Grade.Epic.2",
+    "MaxGrade": "Arcanum.Player.Grade.Epic.2",
+    "RequiredShardCount": [10,20,30]
+    }
   }
 ]

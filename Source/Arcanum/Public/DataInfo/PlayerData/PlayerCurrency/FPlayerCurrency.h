@@ -16,6 +16,16 @@ struct FCurrencyData
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int64 TotalEarned = 0;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
+    FDateTime LastRegenTime;
+
+    bool operator==(const FCurrencyData& Other) const
+    {
+        return CurrAmount == Other.CurrAmount && 
+               MaxAmount == Other.MaxAmount && 
+               TotalEarned == Other.TotalEarned;
+    }
 };
 
 USTRUCT(BlueprintType)
@@ -25,4 +35,15 @@ struct FPlayerCurrency
 
     UPROPERTY(SaveGame)
     TMap<FGameplayTag, FCurrencyData> CurrencyDatas;
+
+    bool operator==(const FPlayerCurrency& Other) const
+    {
+        if (CurrencyDatas.Num() != Other.CurrencyDatas.Num()) return false;
+        for (const auto& Pair : CurrencyDatas) {
+            const FCurrencyData* OtherValue = Other.CurrencyDatas.Find(Pair.Key);
+            if (!OtherValue || !(*OtherValue == Pair.Value)) return false;
+        }
+
+        return true;
+    }
 };

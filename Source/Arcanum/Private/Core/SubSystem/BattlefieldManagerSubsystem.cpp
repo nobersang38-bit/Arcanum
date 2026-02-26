@@ -8,36 +8,42 @@
 #include "Kismet/GameplayStatics.h"
 #include "Core/ARGameInstance.h"
 
+#include "Core/ARPlayerAccountService.h"
+
 void UBattlefieldManagerSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
 	OnMatchEnded.AddUObject(this, &UBattlefieldManagerSubsystem::SetCurrentMatchData);
 
-	UARGameInstance* GameInstance = nullptr;
-	GameInstance = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-	if (GameInstance)
-	{
-		SetInBattleData(GameInstance->GetPlayerData(), InBattleData);
-	}
+	/// 02/26 수정 : 서비스레이어 거치도록
+	SetPlayerData(FPlayerAccountService::GetPlayerDataCopy(this), InBattleData);
+
+	//UARGameInstance* GameInstance = nullptr;
+	//GameInstance = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	//if (GameInstance)
+	//{
+	//	SetPlayerData(GameInstance->GetPlayerData(), InBattleData);
+	//}
 }
 
-AActor* UBattlefieldManagerSubsystem::GetBasement(FGameplayTag InTeamTag) const
+ACharacter* UBattlefieldManagerSubsystem::GetAllyNexus() const
 {
-	return Basements.FindRef(InTeamTag);
+	return AllyNexus.Get();
 }
 
-void UBattlefieldManagerSubsystem::AddBasement(AActor* InNexus, FGameplayTag InTeamTag)
+ACharacter* UBattlefieldManagerSubsystem::GetEnemyNexus() const
 {
-	if (!InNexus || !InTeamTag.IsValid()) return;
+	return EnemyNexus.Get();
+}
 
-	if (Basements.Contains(InTeamTag))
-	{
-		UE_LOG(LogTemp, Error, TEXT("같은 팀의 기지가 하나 더 있습니다"));
-	}
-	else
-	{
-		Basements.Add(InTeamTag, InNexus);
-	}
+void UBattlefieldManagerSubsystem::SetAllyNexus(ACharacter* InNexus)
+{
+	AllyNexus = InNexus;
+}
+
+void UBattlefieldManagerSubsystem::SetEnemyNexus(ACharacter* InNexus)
+{
+	EnemyNexus = InNexus;
 }
 
 void UBattlefieldManagerSubsystem::SetABattlefieldManagerActor(ABattlefieldManagerActor* InBattlefieldManagerActor)
@@ -50,7 +56,7 @@ void UBattlefieldManagerSubsystem::SetCurrentMatchData(const FMatchData& InData)
 	CurrentMatchData = InData;
 }
 
-void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerData, FInBattleData& OutInBattleData)
+void UBattlefieldManagerSubsystem::SetPlayerData(const FPlayerData& InPlayerData, FInBattleData& OutInBattleData)
 {
 	for (int i = 0; i < InPlayerData.OwnedCharacters.Num(); i++)
 	{

@@ -10,6 +10,9 @@
 #include "Core/ARPlayerAccountService.h"
 #include "ARGameInstance.generated.h"
 
+/* 재화 변경 알림 */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCurrencyChanged); //
+
 /*
  * Version : 1.0.0.0 2026/02/03
  * 클래스 역할 :
@@ -22,28 +25,59 @@ class ARCANUM_API UARGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 	
+#pragma region 블루플린트에서 변경 가능한 애들
+public:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "00-Global Setting")
+    float SupplyRegenTimer = 300.f;
+#pragma endregion
+	
+#pragma region 초기화 관련
 public:
     virtual void Init() override;
-protected:
-    UPROPERTY()
-    TObjectPtr<UArcanumSaveGame> ArSaveGame;
-
-    // 저장 파일 이름 고정
-    const FString SaveSlotName = TEXT("MainSaveSlot");
+    /** 처음 플레이시 필요한 게임 데이터 초기화*/
+    void InitializeGameData();
+private:
+    /** 플레이어 관련 초기화*/
+    void InitializeNewPlayerData();
+#pragma endregion
 
 #pragma region ID/PW용
 public:
     bool AddIDPW(FString ID, FString PW);
     bool CheckLogin(FString ID, FString PW);
-    void SavePlayerData();
 #pragma endregion
 
+#pragma region 플레이어 데이터 저장/로드
 public:
-    /* 필요하면 Getter만 제공 */
-    UFUNCTION(BlueprintCallable)
-    FPlayerData& GetPlayerData() { return PlayerData; }
+    /** 플레이어 데이터 저장*/
+    bool SavePlayerData();
+    /** 플레이어 데이터 로드*/
+    bool LoadPlayerData();
+
+    friend class FPlayerAccountService;
 private:
+    /** 플레이어 재화 변경시 */
+    void AddCurrency(FGameplayTag CurrencyValueTag, int64 Amount);
+    /** 치트 발견시 기존 세이브 데이터 삭제 */
+    bool DeletePlayerData();
+    const FPlayerData& GetPlayerDataCopy() const { return PlayerData; }
+    /* 필요하면 Getter만 제공 */
+    FPlayerData& GetPlayerData() { return PlayerData; }
+    /** 저장할 본체*/
     UPROPERTY() FPlayerData PlayerData;
+#pragma endregion
+
+
+#pragma region 고정
+protected:
+    /** 데이터 저장용 클래스*/
+    UPROPERTY() TObjectPtr<UArcanumSaveGame> ArSaveGame;
+    // 저장 파일 이름 고정
+    const FString SaveSlotName = TEXT("MainSaveSlot");
+#pragma endregion
+
+
+
 
 public:
     // 서버가 관리하는 전체 캐릭터 데이터 리스트(안쓸예정/PlayerData 안으로 들어감)
@@ -51,10 +85,18 @@ public:
     TMap<FGameplayTag, FBattleCharacterData> UserCharacterRegistry;
 
     void InitializeCharacter(FGameplayTag CharacterTag);
-    void SaveAllData();
-    void LoadAllData();
 
+#pragma region 재화 변경 알림
+public:
+    UPROPERTY(BlueprintAssignable)
+    FOnCurrencyChanged OnCurrencyChanged; // 델리게이트
+#pragma endregion
 
+#pragma region 상점 세이브 접근
+public:
+    UFUNCTION(BlueprintCallable)
+    UArcanumSaveGame* GetArSaveGame() const { return ArSaveGame; } // 상점 세이브
+#pragma endregion
 
 #pragma region 테스트 코드
     UFUNCTION(BlueprintCallable)
@@ -73,25 +115,6 @@ public:
         }
 
         return bSuccess;
-    }
-
-    UFUNCTION(BlueprintCallable)
-    void AddCurrency(FGameplayTag CurrencyValueTag, int64 Amount)
-    {
-        if (!CurrencyValueTag.IsValid() || Amount == 0) return;
-
-        FCurrencyData& CurrencyData = PlayerData.PlayerCurrency.CurrencyDatas.FindOrAdd(CurrencyValueTag);
-
-        CurrencyData.CurrAmount += Amount;
-
-        if (CurrencyData.MaxAmount > 0) {
-            CurrencyData.CurrAmount = FMath::Clamp(CurrencyData.CurrAmount, int64(0), CurrencyData.MaxAmount);
-        }
-
-        if (Amount > 0) {
-            CurrencyData.TotalEarned += Amount;
-        }
-
     }
 #pragma endregion
 };

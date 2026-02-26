@@ -1,13 +1,17 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "UI/Lobby/LobbyHUD.h"
 #include "UI/Common/CommonBtnWidget.h"
 #include "UI/Common/CommonDialog.h"
+#include "UI/Lobby/Contents/Shop/ShopHUDWidget.h"
+#include "UI/Lobby/Contents/Shop/CurrencyWidget.h"
 //#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/HorizontalBox.h"
 #include "Components/BackgroundBlur.h"
+#include "Components/WidgetSwitcher.h"
+#include "DataInfo/PlayerData/FPlayerData.h"
+#include "Core/ARGameInstance.h"
+#include "Core/ARPlayerAccountService.h"
+
 
 void ULobbyHUD::NativeConstruct()
 {
@@ -50,32 +54,66 @@ void ULobbyHUD::NativeConstruct()
 		QuitBtn->OnClicked.RemoveDynamic(this, &ULobbyHUD::ClickQuitBtn);
 		QuitBtn->OnClicked.AddDynamic(this, &ULobbyHUD::ClickQuitBtn);
 	}
+
+	/// 02/26 수정 : 서비스레이어 거치도록
+	CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
+	RefreshLobbyCurrencyUI();
+	//if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance())) {
+	//	CachedPlayerData = gameInstance->GetPlayerDataCopy();
+	//	RefreshLobbyCurrencyUI();
+	//}
 }
 
 void ULobbyHUD::ClickBattleMenuBtn()
 {
 	/// TODO : 전투 위젯 띄우기
+	if (WidgetSwitcher)
+	{
+		WidgetSwitcher->SetActiveWidgetIndex(0);
+	}
 }
 
 void ULobbyHUD::ClickCharacterMenuBtn()
 {
 	/// TODO : 캐릭터 위젯 띄우기
+
+	/*if (CharacterWidgetClass)
+	{
+		if (!CharacterWidget)
+		{
+			CharacterWidget = CreateWidget<UCharacterHUDWidget>(GetWorld(), CharacterWidgetClass);
+			if (CharacterWidget)
+			{
+				CharacterWidget->AddToViewport();
+			}
+		}
+	}*/
+	if (WidgetSwitcher)
+	{
+		WidgetSwitcher->SetActiveWidgetIndex(1);
+	}
+
 }
 
 void ULobbyHUD::ClickEnhancementMenuBtn()
 {
-	/// TODO : 강화 위젯 띄우기
+	if (WidgetSwitcher)
+	{
+		WidgetSwitcher->SetActiveWidgetIndex(2);
+	}
 }
 
 void ULobbyHUD::ClickShopMenuBtn()
 {
-	/// TODO : 상점 위젯 띄우기
-	UE_LOG(LogTemp, Log, TEXT("상점 메뉴 클릭"));
+	if (WidgetSwitcher)
+	{
+		WidgetSwitcher->SetActiveWidgetIndex(3);
+	}
 }
 
 void ULobbyHUD::ClickGachaMenuBtn()
 {
-	/// TODO : 가챠 위젯 띄우기
+	if (WidgetSwitcher) WidgetSwitcher->SetActiveWidgetIndex(4);
 }
 
 void ULobbyHUD::ClickSettingBtn()
@@ -95,6 +133,11 @@ void ULobbyHUD::ClickQuitBtn()
 	// 종료확인창 띄우기
 	if (ExitCommonDialog)
 	{
+		if (WidgetSwitcher)
+		{
+			WidgetSwitcher->SetVisibility(ESlateVisibility::Hidden); // 위젯스위처 숨기기
+		}
+
 		ExitCommonDialog->SetVisibility(ESlateVisibility::Visible);
 		BackgroundBlur->SetVisibility(ESlateVisibility::Visible);
 
@@ -110,10 +153,41 @@ void ULobbyHUD::ClickQuitBtn()
 		{
 			SettingUHorizontalBox->SetVisibility(ESlateVisibility::Hidden);
 		}
+		if (CurrencyWidget)
+		{
+			CurrencyWidget->SetVisibility(ESlateVisibility::Hidden);
+		}
 	}
+}
 
+void ULobbyHUD::RefreshLobbyCurrencyUI()
+{
+	if (CurrencyWidget)
+	{
+		CurrencyWidget->RefreshCurrencyUI(CachedPlayerData);
+	}
+}
 
+void ULobbyHUD::TryPurchaseSelectedItem(FName InItemRowName)
+{
 
+	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+	{
+		if (FPlayerAccountService::PurchaseEquipment(gameInstance, InItemRowName))
+		{
+			/// 02/26 수정 : 서비스레이어 거치도록
+			CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
+			//CachedPlayerData = gameInstance->GetPlayerDataCopy();
+
+			RefreshLobbyCurrencyUI();
+
+			UE_LOG(LogTemp, Log, TEXT("구매 성공: %s"), *InItemRowName.ToString());
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("구매 실패: %s"), *InItemRowName.ToString());
+		}
+	}
 }
 
 void ULobbyHUD::OnExitCommonDialog(EDialogResult res)
@@ -130,7 +204,11 @@ void ULobbyHUD::OnExitCommonDialog(EDialogResult res)
 	}
 	else if (res == EDialogResult::Cancel)
 	{
-		//UE_LOG(LogTemp, Log, TEXT("cancel 클릭"));
+		//UE_LOG(LogTemp, Log, TEXT("cancel 클릭"));if (WidgetSwitcher)
+		{
+			WidgetSwitcher->SetVisibility(ESlateVisibility::Visible);
+		}
+
 		ExitCommonDialog->SetVisibility(ESlateVisibility::Hidden);
 		BackgroundBlur->SetVisibility(ESlateVisibility::Collapsed);
 
@@ -141,6 +219,10 @@ void ULobbyHUD::OnExitCommonDialog(EDialogResult res)
 		if (SettingUHorizontalBox)
 		{
 			SettingUHorizontalBox->SetVisibility(ESlateVisibility::Visible);
+		}
+		if (CurrencyWidget)
+		{
+			CurrencyWidget->SetVisibility(ESlateVisibility::Visible);
 		}
 	}
 }
