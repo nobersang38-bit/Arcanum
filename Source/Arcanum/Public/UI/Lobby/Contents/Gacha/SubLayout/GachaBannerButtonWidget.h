@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "NativeGameplayTags.h"
+#include "DataInfo/GachaData/DataTable/DTGachaBannerData.h"
 #include "GachaBannerButtonWidget.generated.h"
 
 class UImage;
@@ -39,6 +40,7 @@ public:
     void SetSelected(bool bSelected);
     void SetBannerTexture(UTexture2D* InTexture);
     void SetBannerTexture(UTexture2D* InNormal, UTexture2D* InHover, UTexture2D* InClick);
+    void UpdateBannerData(const FDTGachaBannerDataRow* InData);
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Button Settings", meta = (ExposeOnSpawn = "true"))
     TSoftObjectPtr<UTexture2D> NormalTexture;
@@ -49,6 +51,5 @@ public:
 
 protected:
     UPROPERTY(meta = (BindWidget)) TObjectPtr<UButton> BannerButton;
-    //UPROPERTY(meta = (BindWidget)) TObjectPtr<UBorder> SelectionBorder;
 #pragma endregion
 };

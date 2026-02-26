@@ -56,6 +56,8 @@ public:
 
     friend class FPlayerAccountService;
 private:
+    /** 해당 태그 재화 있는지 가져오는 게터*/
+    int64 GetCurrencyAmount(FGameplayTag InTag) const;
     /** 플레이어 재화 변경시 */
     void AddCurrency(FGameplayTag CurrencyValueTag, int64 Amount);
     /** 치트 발견시 기존 세이브 데이터 삭제 */

@@ -36,8 +36,6 @@ protected:
 
 #pragma region 데이터 캐시
 public:
-
-private:
 	FPlayerData CachedPlayerData;
 #pragma endregion
 
