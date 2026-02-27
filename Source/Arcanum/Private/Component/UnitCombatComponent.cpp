@@ -300,7 +300,7 @@ void UUnitCombatComponent::Idle()
 		UBattlefieldManagerSubsystem* BattlefieldManagerSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 		if (BattlefieldManagerSubsystem)
 		{
-			BattlefieldManagerSubsystem->G
+			//BattlefieldManagerSubsystem->G
 		}
 	}
 	TargetAssigned(TargetBasement.Get());
