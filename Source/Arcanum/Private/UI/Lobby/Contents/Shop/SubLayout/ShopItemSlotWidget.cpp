@@ -21,9 +21,15 @@ void UShopItemSlotWidget::SetViewData(int32 InSlotIndex, FName InRowName, const 
 {
 	if (InRowPtr && !InRowName.IsNone())
 	{
-		SetEquipmentData(*InRowPtr, InSlotIndex, InRowName);
+		SlotIndex = InSlotIndex;
+		RowName = InRowName;
+		EquipmentRowPtr = InRowPtr;
 
-		SetSoldOut(InSoldOut);
+		bEmpty = false;
+		bSoldOut = InSoldOut;
+		bSelected = false;
+
+		RefreshSlotUI();
 	}
 	else
 	{
@@ -35,9 +41,9 @@ void UShopItemSlotWidget::SetEquipmentData(const FDTEquipmentInfoRow& InRow, int
 {
 	SlotIndex = InSlotIndex;
 	RowName = InRowName;
-	EquipmentRow = InRow;
+	EquipmentRowPtr = &InRow;
 
-	bEmpty = false;
+	bEmpty = (!EquipmentRowPtr || RowName == NAME_None);;
 	bSoldOut = false;
 	bSelected = false;
 
@@ -48,7 +54,7 @@ void UShopItemSlotWidget::ClearSlot()
 {
 	SlotIndex = INDEX_NONE;
 	RowName = NAME_None;
-	EquipmentRow = FDTEquipmentInfoRow();
+	EquipmentRowPtr = nullptr;
 
 	bEmpty = true;
 	bSoldOut = false;
@@ -123,21 +129,35 @@ void UShopItemSlotWidget::RefreshSlotUI()
 	// 설명
 	if (DescText)
 	{
-		DescText->SetText(bEmpty ? FText::GetEmpty() : EquipmentRow.Desc);
+		if (!bEmpty && EquipmentRowPtr)
+		{
+			DescText->SetText(EquipmentRowPtr->Desc);
+		}
+		else
+		{
+			DescText->SetText(FText::GetEmpty());
+		}
+
 		DescText->SetRenderOpacity(opacity);
 	}
 
-	// 가격
 	if (PriceText)
 	{
-		PriceText->SetText(bEmpty ? FText::GetEmpty() : FText::AsNumber(EquipmentRow.BuyPrice));
+		if (!bEmpty && EquipmentRowPtr)
+		{
+			PriceText->SetText(FText::AsNumber(EquipmentRowPtr->BuyPrice));
+		}
+		else
+		{
+			PriceText->SetText(FText::GetEmpty());
+		}
+
 		PriceText->SetRenderOpacity(opacity);
 	}
 
-	// 아이콘
 	if (ItemIconImage)
 	{
-		if (bEmpty)
+		if (bEmpty || !EquipmentRowPtr)
 		{
 			ItemIconImage->SetVisibility(ESlateVisibility::Collapsed);
 			ItemIconImage->SetBrushFromSoftTexture(nullptr);
@@ -145,7 +165,7 @@ void UShopItemSlotWidget::RefreshSlotUI()
 		else
 		{
 			ItemIconImage->SetVisibility(ESlateVisibility::Visible);
-			ItemIconImage->SetBrushFromSoftTexture(EquipmentRow.Icon.IsNull() ? nullptr : EquipmentRow.Icon);
+			ItemIconImage->SetBrushFromSoftTexture(EquipmentRowPtr->Icon.IsNull() ? nullptr : EquipmentRowPtr->Icon);
 			ItemIconImage->SetRenderOpacity(opacity);
 		}
 	}

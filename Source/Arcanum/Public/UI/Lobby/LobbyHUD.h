@@ -23,8 +23,8 @@ class UWidgetSwitcher;
 class UCurrencyWidget;
 class UShopHUDWidget;
 class UARGameInstance;
+class UInventoryHUDWidget;
 struct FDTEquipmentInfoRow;
-
 
 UCLASS()
 class ARCANUM_API ULobbyHUD : public UUserWidget
@@ -126,6 +126,25 @@ protected:
 	TObjectPtr<UCurrencyWidget> CurrencyWidget;
 #pragma endregion
 
+#pragma region 인벤토리
+	/* 인벤토리 선택 알림 수신 */
+	UFUNCTION()
+	void HandleInventorySlotSelected(FGuid InItemGuid);
+
+protected:
+	/* 인벤토리 위젯 */
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UInventoryHUDWidget> InventoryHUDWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shop")
+	int32 InventorySlotCount = 50;
+
+	/* 현재 선택된 인벤 아이템 */
+	UPROPERTY()
+	FGuid SelectedInventoryItemGuid;
+
+#pragma endregion
+
 #pragma region 전투
 
 #pragma endregion
@@ -176,15 +195,15 @@ protected:
 	int32 ShopSlotCount = 4;
 
 private:
-	/* 상점 UI 표시용 RowName 카피 */ 
+	/* 상점 UI 표시용 RowName 카피 */
 	UPROPERTY()
 	TArray<FName> CachedShopRowNames;
 
-	/* 상점 UI 표시용 품절 카피 */ 
+	/* 상점 UI 표시용 품절 카피 */
 	UPROPERTY()
 	TArray<bool> CachedShopSoldOutStates;
 
-	/* 상점 UI 표시용 DT row 포인터 캐시 */ 
+	/* 상점 UI 표시용 DT row 포인터 캐시 */
 	TArray<const FDTEquipmentInfoRow*> CachedShopRowPtrs;
 #pragma endregion
 

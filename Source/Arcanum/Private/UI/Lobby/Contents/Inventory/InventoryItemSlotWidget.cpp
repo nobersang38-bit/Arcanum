@@ -1,5 +1,6 @@
 #include "UI/Lobby/Contents/Inventory/InventoryItemSlotWidget.h"
-#include "DataInfo\BattleCharacter\Equipment\Data\FEquipmentData.h"
+#include "DataInfo/BattleCharacter/Equipment/DataTable/DTEquipment.h"
+#include "DataInfo/BattleCharacter/Equipment/Data/FEquipmentData.h"
 #include "Components/Button.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
@@ -18,7 +19,7 @@ void UInventoryItemSlotWidget::NativeConstruct()
 	RefreshSlotUI();
 }
 
-void UInventoryItemSlotWidget::SetItemData(const FEquipmentInfo& InItem, const FDTEquipmentInfoRow& InRowPtr, int32 InSlotIndex)
+void UInventoryItemSlotWidget::SetItemData(const FEquipmentInfo& InItem, const FDTEquipmentInfoRow* InRowPtr, int32 InSlotIndex)
 {
 	SlotIndex = InSlotIndex;
 
@@ -26,23 +27,10 @@ void UInventoryItemSlotWidget::SetItemData(const FEquipmentInfo& InItem, const F
 	ItemGuid = InItem.ItemGuid;
 	CurrUpgradeLevel = InItem.CurrUpgradeLevel;
 
-	bEmpty = false;
-	bSelected = false;
+	CachedRowPtr = InRowPtr;
+	bEmpty = !ItemGuid.IsValid();
 
-	// 아이콘 const 오류인듯
-	if (ItemIconImage)
-	{
-		if (!InRowPtr || InRowPtr->Icon.IsNull())
-		{
-			ItemIconImage->SetVisibility(ESlateVisibility::Collapsed);
-			ItemIconImage->SetBrushFromSoftTexture(nullptr);
-		}
-		else
-		{
-			ItemIconImage->SetVisibility(ESlateVisibility::Visible);
-			ItemIconImage->SetBrushFromSoftTexture(InRowPtr->Icon.Get());
-		}
-	}
+	bSelected = false;
 
 	RefreshSlotUI();
 }
@@ -51,25 +39,20 @@ void UInventoryItemSlotWidget::ClearSlot(int32 InSlotIndex)
 	SlotIndex = InSlotIndex;
 
 	ItemTag = FGameplayTag();
-	ItemGuid = FGuid();
+	ItemGuid.Invalidate();
 	CurrUpgradeLevel = 0;
 
 	bEmpty = true;
 	bSelected = false;
+
+	CachedRowPtr = nullptr;
 
 	RefreshSlotUI();
 }
 
 void UInventoryItemSlotWidget::SetSelected(bool InSelected)
 {
-	if (!bEmpty)
-	{
-		bSelected = InSelected;
-	}
-	else
-	{
-		bSelected = false;
-	}
+	bSelected = InSelected;
 
 	RefreshSlotUI();
 }
@@ -78,7 +61,7 @@ void UInventoryItemSlotWidget::HandleSlotClicked()
 {
 	if (!bEmpty)
 	{
-		OnInventorySlotClicked.Broadcast(SlotIndex);
+		OnInventorySlotClicked.Broadcast(ItemGuid);
 	}
 }
 
@@ -86,24 +69,48 @@ void UInventoryItemSlotWidget::RefreshSlotUI()
 {
 	if (SlotButton)
 	{
-		SlotButton->SetIsEnabled(!bEmpty);
+		SlotButton->SetIsEnabled(!bEmpty && CachedRowPtr);
 	}
 
 	if (SelectedBorder)
 	{
-		SelectedBorder->SetVisibility((!bEmpty && bSelected) ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+		SelectedBorder->SetVisibility(bSelected ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 	}
 
-	// 강화 표시 텍스트
+	if (bEmpty || !CachedRowPtr)
+	{
+		if (ItemIconImage)
+		{
+			ItemIconImage->SetBrushFromSoftTexture(nullptr);
+			ItemIconImage->SetVisibility(ESlateVisibility::Collapsed);
+		}
+
+		if (UpgradeText)
+		{
+			UpgradeText->SetText(FText::GetEmpty());
+			UpgradeText->SetVisibility(ESlateVisibility::Collapsed);
+		}
+
+		return;
+	}
+
+	if (ItemIconImage)
+	{
+		ItemIconImage->SetVisibility(ESlateVisibility::Visible);
+		ItemIconImage->SetBrushFromSoftTexture(CachedRowPtr->Icon.IsNull() ? nullptr : CachedRowPtr->Icon);
+	}
+
 	if (UpgradeText)
 	{
-		if (!bEmpty && CurrUpgradeLevel > 0)
+		if (CurrUpgradeLevel > 0)
 		{
+			UpgradeText->SetVisibility(ESlateVisibility::Visible);
 			UpgradeText->SetText(FText::FromString(FString::Printf(TEXT("+%d"), CurrUpgradeLevel)));
 		}
 		else
 		{
 			UpgradeText->SetText(FText::GetEmpty());
+			UpgradeText->SetVisibility(ESlateVisibility::Collapsed);
 		}
 	}
 }

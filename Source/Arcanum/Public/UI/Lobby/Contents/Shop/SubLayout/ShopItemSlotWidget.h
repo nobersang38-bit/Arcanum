@@ -2,7 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "DataInfo/BattleCharacter/Equipment/DataTable/DTEquipment.h"
+#include "GameplayTagContainer.h"
+#include "DataInfo\BattleCharacter\Equipment\DataTable\DTEquipment.h"
 #include "ShopItemSlotWidget.generated.h"
 
 class UButton;
@@ -60,7 +61,7 @@ public:
 
 	/* 장비 태그 반환 */
 	UFUNCTION(BlueprintCallable)
-	FGameplayTag GetItemTag() const { return EquipmentRow.ItemTag; }
+	FGameplayTag GetItemTag() const { return EquipmentRowPtr ? EquipmentRowPtr->ItemTag : FGameplayTag(); }
 
 private:
 	/* 슬롯 버튼 클릭 처리 */
@@ -110,6 +111,9 @@ private:
 	TObjectPtr<UBorder> SelectedBorder;
 
 private:
+	/* 장비 데이터 캐시 */
+	const FDTEquipmentInfoRow* EquipmentRowPtr = nullptr;
+
 	/* 슬롯 번호 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	int32 SlotIndex = INDEX_NONE;
@@ -117,10 +121,6 @@ private:
 	/* DT RowName */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	FName RowName = NAME_None;
-
-	/* 장비 데이터 캐시 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	FDTEquipmentInfoRow EquipmentRow;
 
 	/* 빈 슬롯 여부 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))

@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "DataInfo/BattleCharacter/Equipment/Data/FEquipmentData.h"
+#include "GameplayTagContainer.h"
 #include "InventoryItemSlotWidget.generated.h"
 
 class UButton;
@@ -10,9 +10,10 @@ class UImage;
 class UTextBlock;
 class UBorder;
 struct FDTEquipmentInfoRow;
+struct FEquipmentInfo;
 
 /* 슬롯 클릭시 슬롯 인덱스 전달 */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInventorySlotClicked, int32, InSlotIndex);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInventorySlotClicked, FGuid, InItemGuid);
 
 /**
  * 추영호
@@ -28,8 +29,7 @@ protected:
 
 public:
 	/* 슬롯 데이터 세팅 (장비 1개) */ 
-	UFUNCTION()
-	void SetItemData(const FEquipmentInfo& InItem, const FDTEquipmentInfoRow& InRow, int32 InSlotIndex);
+	void SetItemData(const FEquipmentInfo& InItem, const FDTEquipmentInfoRow* InRow, int32 InSlotIndex);
 
 	/* 빈 슬롯 처리 */
 	UFUNCTION()
@@ -46,6 +46,7 @@ public:
 	UFUNCTION()
 	int32 GetSlotIndex() const { return SlotIndex;  } 
 
+	UFUNCTION()
 	/* 장비 인스턴스 식별자(동일 ItemTag 여러 개 구분용) */
 	FGuid GetItemGuid() const { return ItemGuid;  } 
 
@@ -58,7 +59,7 @@ private:
 	void RefreshSlotUI();
 
 public:
-	UPROPERTY(BlueprintAssignable, Category = "Inventroy")
+	UPROPERTY(BlueprintAssignable, Category = "Inventory")
 	FOnInventorySlotClicked OnInventorySlotClicked;
 
 private:
@@ -67,9 +68,6 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional, AllowPrivateAccess = "true"))
 	TObjectPtr<UImage> ItemIconImage;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional, AllowPrivateAccess = "true"))
-	TObjectPtr<UTextBlock> ItemNameText;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional, AllowPrivateAccess = "true"))
 	TObjectPtr<UTextBlock> UpgradeText;
@@ -78,6 +76,9 @@ private:
 	TObjectPtr<UBorder> SelectedBorder;
 
 private:
+	/* 슬롯 UI 표시용 DT 장비 Row 캐시(아이콘/이름) */
+	const FDTEquipmentInfoRow* CachedRowPtr = nullptr;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	int32 SlotIndex = INDEX_NONE;
 

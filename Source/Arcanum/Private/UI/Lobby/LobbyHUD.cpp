@@ -3,6 +3,8 @@
 #include "UI/Common/CommonDialog.h"
 #include "UI/Lobby/Contents/Shop/ShopHUDWidget.h"
 #include "UI/Lobby/Contents/Currency/CurrencyWidget.h"
+#include "UI/Lobby/Contents/Inventory/InventoryItemSlotWidget.h"
+#include "UI/Lobby/Contents/Inventory/InventoryHUDWidget.h"
 #include "DataInfo/BattleCharacter/Equipment/DataTable/DTEquipment.h"
 //#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -64,6 +66,14 @@ void ULobbyHUD::NativeConstruct()
 		ShopHUDWidget->OnBuyRequested.AddDynamic(this, &ULobbyHUD::TryPurchaseSelectedItem);
 	}
 
+	if (InventoryHUDWidget)
+	{
+		InventoryHUDWidget->InitInventorySlots(InventorySlotCount);
+		InventoryHUDWidget->OnInventorySlotSelected.RemoveDynamic(this, &ULobbyHUD::HandleInventorySlotSelected);
+		InventoryHUDWidget->OnInventorySlotSelected.AddDynamic(this, &ULobbyHUD::HandleInventorySlotSelected);
+	}
+
+
 	BindGameInstanceEvents();
 	RefreshAllLobbyUI();
 
@@ -82,7 +92,6 @@ void ULobbyHUD::RefreshAllLobbyUI()
 
 		// TODO: 로비 갱신
 		RefreshLobbyCurrencyUI();
-
 	}
 }
 
@@ -167,6 +176,11 @@ void ULobbyHUD::RefreshLobbyCurrencyUI()
 	{
 		CurrencyWidget->RefreshCurrencyUI(CachedPlayerData);
 	}
+}
+
+void ULobbyHUD::HandleInventorySlotSelected(FGuid InItemGuid)
+{
+	SelectedInventoryItemGuid = InItemGuid;
 }
 
 // ========================================================
