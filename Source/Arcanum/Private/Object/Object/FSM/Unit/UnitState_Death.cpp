@@ -2,9 +2,12 @@
 
 
 #include "Object/Object/FSM/Unit/UnitState_Death.h"
+#include "Component/UnitCombatComponent.h"
 
 void UUnitState_Death::OnEnter(UUnitCombatComponent* UnitCombatComponent)
 {
+	if (!UnitCombatComponent) return;
+	Internal_UnitCombatComponent = UnitCombatComponent;
 }
 
 void UUnitState_Death::OnTick(float DeltaTime)

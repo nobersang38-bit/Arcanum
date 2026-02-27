@@ -72,7 +72,6 @@ void ABaseUnitCharacter::BeginPlay()
 	{
 		if (UUnitHealthWidget* TempHealthWidget = Cast<UUnitHealthWidget>(TempHealthWidgetUser))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("된다!!!"));
 			CharacterBattleStatsComponent->OnCharacterRegenStatChanged.AddUObject(TempHealthWidget, &UUnitHealthWidget::SetPercent);
 			float CurrentHealth = 0.0f;
 			float MaxHealth = 0.0f;

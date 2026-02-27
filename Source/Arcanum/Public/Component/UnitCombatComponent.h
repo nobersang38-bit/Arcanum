@@ -28,6 +28,7 @@ enum class EUnitState : uint8
 // 김도현
 // 자동 전투 컴포넌트(AI컴포넌트)
 class USphereComponent;
+class UUnitStateBase;
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ARCANUM_API UUnitCombatComponent : public UActorComponent
 {
@@ -68,8 +69,6 @@ protected:
 	void SelectBestTarget(const TSet<TWeakObjectPtr<AActor>>& InDetectedCharacters);
 	AActor* GetHigherPriorityTarget(AActor* CurrentTarget, AActor* WinTarget, int32& WinScore);
 
-#pragma region 테스트
-	class UUnitStateBase;
 	UPROPERTY()
 	TWeakObjectPtr<UUnitStateBase> CurrentUnitState = nullptr;
 
@@ -81,9 +80,9 @@ protected:
 
 	UFUNCTION()
 	void SetupStates();
-#pragma endregion
 
-
+	UFUNCTION()
+	void SetupTick();
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FUnitAISetting UnitAISetting;
@@ -114,15 +113,8 @@ private:
 	UFUNCTION()
 	void AIInitialize();
 
-	UFUNCTION()
-	void Onhit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-
-	void Idle();
-	void Move();
-	void Attack();
-	void HitReaction(FGameplayTag InActionRestrictedTag);
+	void LightHitReaction();
 	void Death(const FRegenStat& InData);
-
 	void StateReset();
 
 private:
@@ -152,9 +144,6 @@ private:
 	int32 AttackerCount = 0;
 
 	FGameplayTag TeamID;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Debug");
-	EUnitState CurrentState = EUnitState::Idle;
 
 	UPROPERTY()
 	TWeakObjectPtr<AActor> TargetBasement = nullptr;

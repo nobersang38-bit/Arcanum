@@ -10,6 +10,7 @@
  * 김도현
  * 유닛 전용 상태머신
  */
+class UUnitCombatComponent;
 UCLASS(Abstract, BlueprintType)
 class ARCANUM_API UUnitStateBase : public UObject
 {
@@ -18,4 +19,7 @@ public:
 	virtual void OnEnter(class UUnitCombatComponent* UnitCombatComponent) {};
 	virtual void OnTick(float DeltaTime) {};
 	virtual void OnExit() {};
+
+protected:
+	TWeakObjectPtr<UUnitCombatComponent> Internal_UnitCombatComponent = nullptr;
 };

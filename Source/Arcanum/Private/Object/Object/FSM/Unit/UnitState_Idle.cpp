@@ -8,21 +8,26 @@
 void UUnitState_Idle::OnEnter(UUnitCombatComponent* UnitCombatComponent)
 {
 	if (!UnitCombatComponent) return;
+	Internal_UnitCombatComponent = UnitCombatComponent;
+	UE_LOG(LogTemp, Warning, TEXT("UUnitState_Idle::OnEnter"));
+}
 
-	UnitCombatComponent->StateReset();
-	if (!UnitCombatComponent->TargetBasement.IsValid())
+void UUnitState_Idle::OnTick(float DeltaTime)
+{
+	if (!Internal_UnitCombatComponent.IsValid()) return;
+
+	Internal_UnitCombatComponent->StateReset();
+	if (!Internal_UnitCombatComponent->TargetBasement.IsValid())
 	{
-		UBattlefieldManagerSubsystem* BattlefieldManagerSubsystem = UnitCombatComponent->GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+		UBattlefieldManagerSubsystem* BattlefieldManagerSubsystem = Internal_UnitCombatComponent->GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 		if (BattlefieldManagerSubsystem)
 		{
 			//BattlefieldManagerSubsystem->G
 		}
 	}
-	UnitCombatComponent->TargetAssigned(UnitCombatComponent->TargetBasement.Get());
-}
 
-void UUnitState_Idle::OnTick(float DeltaTime)
-{
+	Internal_UnitCombatComponent->TargetAssigned(Internal_UnitCombatComponent->TargetBasement.Get());
+	Internal_UnitCombatComponent->StateChange(EUnitState::Move);
 }
 
 void UUnitState_Idle::OnExit()
