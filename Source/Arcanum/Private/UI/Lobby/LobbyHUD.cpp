@@ -2,7 +2,7 @@
 #include "UI/Common/CommonBtnWidget.h"
 #include "UI/Common/CommonDialog.h"
 #include "UI/Lobby/Contents/Shop/ShopHUDWidget.h"
-#include "UI/Lobby/Contents/Shop/CurrencyWidget.h"
+#include "UI/Lobby/Contents/Currency/CurrencyWidget.h"
 //#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/HorizontalBox.h"
