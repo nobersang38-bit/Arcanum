@@ -98,12 +98,12 @@ void UInBattleHUDWidget::ToggleAutoManualMode(bool bIsChecked)
 // ========================================================
 void UInBattleHUDWidget::BindCallbacks()
 {
-	BasicAttack->OnButtonClick.AddUObject(this, &UInBattleHUDWidget::ClickBasicAttack);
-	UltimateSkill->OnButtonClick.AddUObject(this, &UInBattleHUDWidget::ClickUltimateSkill);
-	BasicSkill->OnButtonClick.AddUObject(this, &UInBattleHUDWidget::ClickBasicSkill);
-	WeaponSwap->OnButtonClick.AddUObject(this, &UInBattleHUDWidget::ClickWeaponSwap);
-	Item1->OnButtonClick.AddUObject(this, &UInBattleHUDWidget::ClickItem1);
-	Item2->OnButtonClick.AddUObject(this, &UInBattleHUDWidget::ClickItem2);
+	BasicAttack->OnButtonClick.AddDynamic(this, &UInBattleHUDWidget::ClickBasicAttack);
+	UltimateSkill->OnButtonClick.AddDynamic(this, &UInBattleHUDWidget::ClickUltimateSkill);
+	BasicSkill->OnButtonClick.AddDynamic(this, &UInBattleHUDWidget::ClickBasicSkill);
+	WeaponSwap->OnButtonClick.AddDynamic(this, &UInBattleHUDWidget::ClickWeaponSwap);
+	Item1->OnButtonClick.AddDynamic(this, &UInBattleHUDWidget::ClickItem1);
+	Item2->OnButtonClick.AddDynamic(this, &UInBattleHUDWidget::ClickItem2);
 	AutoManualMode->OnToggle.AddDynamic(this, &UInBattleHUDWidget::ToggleAutoManualMode);
 }
 

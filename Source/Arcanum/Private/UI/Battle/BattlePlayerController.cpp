@@ -5,6 +5,9 @@
 #include "Blueprint/UserWidget.h"
 #include "UI/Battle/Contents/InBattleHUDWidget.h"
 #include "UI/Battle/SubLayout/BattleAllyUnitPanelWidget.h"
+#include "EnhancedInputSubsystems.h"
+#include "EnhancedInputComponent.h"
+#include "InputActionValue.h"
 
 // ========================================================
 // 언리얼 기본 생성
@@ -23,6 +26,33 @@ void ABattlePlayerController::BeginPlay()
 	}
 	SetupMainHUDWidget();
 	SetupInputMode();
+}
+
+void ABattlePlayerController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+
+	if (UEnhancedInputLocalPlayerSubsystem* SubSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
+	{
+		SubSystem->AddMappingContext(InputMappingContext, 0);
+		UE_LOG(LogTemp, Warning, TEXT("이동 작동-1"));
+	}
+
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
+	{
+		EnhancedInputComponent->BindAction(IA_Move, ETriggerEvent::Triggered, this, &ABattlePlayerController::InputMove);
+		EnhancedInputComponent->BindAction(IA_BasicAttack, ETriggerEvent::Completed, this, &ABattlePlayerController::BasicAttack);
+		EnhancedInputComponent->BindAction(IA_BasicSkill, ETriggerEvent::Completed, this, &ABattlePlayerController::BasicSkill);
+		EnhancedInputComponent->BindAction(IA_UltimateSkill, ETriggerEvent::Completed, this, &ABattlePlayerController::UltimateSkill);
+		EnhancedInputComponent->BindAction(IA_Item1, ETriggerEvent::Completed, this, &ABattlePlayerController::Item1);
+		EnhancedInputComponent->BindAction(IA_Item2, ETriggerEvent::Completed, this, &ABattlePlayerController::Item2);
+		EnhancedInputComponent->BindAction(IA_WeaponSwap, ETriggerEvent::Completed, this, &ABattlePlayerController::WeaponSwap);
+		EnhancedInputComponent->BindAction(IA_AutoManual, ETriggerEvent::Completed, this, &ABattlePlayerController::AutoManualModePC);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("'%s' Failed to find an Enhanced Input Component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
+	}
 }
 
 // ========================================================
@@ -60,55 +90,64 @@ void ABattlePlayerController::DebugRemovePlayerInfoPanelSlot(int32 RemoveIDX)
 // ========================================================
 void ABattlePlayerController::SetupMainHUDWidget()
 {
-	HUDWidgetInstance->OnClickBasicAttack.AddDynamic(this, &ABattlePlayerController::ClickBasicAttack);
-	HUDWidgetInstance->OnClickUltimateSkill.AddDynamic(this, &ABattlePlayerController::ClickUltimateSkill);
-	HUDWidgetInstance->OnClickBasicSkill.AddDynamic(this, &ABattlePlayerController::ClickBasicSkill);
-	HUDWidgetInstance->OnClickWeaponSwap.AddDynamic(this, &ABattlePlayerController::ClickWeaponSwap);
-	HUDWidgetInstance->OnClickItem1.AddDynamic(this, &ABattlePlayerController::ClickItem1);
-	HUDWidgetInstance->OnClickItem2.AddDynamic(this, &ABattlePlayerController::ClickItem2);
-	HUDWidgetInstance->OnToggleAutoManualMode.AddDynamic(this, &ABattlePlayerController::ToggleAutoManualMode);
+	HUDWidgetInstance->OnClickBasicAttack.AddDynamic(this, &ABattlePlayerController::BasicAttack);
+	HUDWidgetInstance->OnClickUltimateSkill.AddDynamic(this, &ABattlePlayerController::UltimateSkill);
+	HUDWidgetInstance->OnClickBasicSkill.AddDynamic(this, &ABattlePlayerController::BasicSkill);
+	HUDWidgetInstance->OnClickWeaponSwap.AddDynamic(this, &ABattlePlayerController::WeaponSwap);
+	HUDWidgetInstance->OnClickItem1.AddDynamic(this, &ABattlePlayerController::Item1);
+	HUDWidgetInstance->OnClickItem2.AddDynamic(this, &ABattlePlayerController::Item2);
+	HUDWidgetInstance->OnToggleAutoManualMode.AddDynamic(this, &ABattlePlayerController::AutoManualModeMobile);
 }
 
-void ABattlePlayerController::ClickBasicAttack()
+// ========================================================
+// 메인
+// ========================================================
+void ABattlePlayerController::BasicAttack()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("ClickBasicAttack"));
-	//Todo : 기본공격 버튼
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("BasicAttack"));
+	//Todo : 기본공격
 }
 
-void ABattlePlayerController::ClickUltimateSkill()
+void ABattlePlayerController::UltimateSkill()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("ClickUltimateSkill"));
-	//Todo : 궁극기 버튼
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("UltimateSkill"));
+	//Todo : 궁극기
 }
 
-void ABattlePlayerController::ClickBasicSkill()
+void ABattlePlayerController::BasicSkill()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("ClickBasicSkill"));
-	//Todo : 기본스킬 버튼
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("BasicSkill"));
+	//Todo : 기본스킬
 }
 
-void ABattlePlayerController::ClickWeaponSwap()
+void ABattlePlayerController::WeaponSwap()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("ClickWeaponSwap"));
-	//Todo : 무기스왑 버튼
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("WeaponSwap"));
+	//Todo : 무기스왑
 }
 
-void ABattlePlayerController::ClickItem1()
+void ABattlePlayerController::Item1()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("ClickItem1"));
-	//Todo : 아이템1 버튼
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Item1"));
+	//Todo : 아이템1
 }
 
-void ABattlePlayerController::ClickItem2()
+void ABattlePlayerController::Item2()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("ClickItem2"));
-	//Todo : 아이템2 버튼
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Item2"));
+	//Todo : 아이템2
 }
 
-void ABattlePlayerController::ToggleAutoManualMode(bool bIsChecked)
+void ABattlePlayerController::AutoManualModeMobile(bool bIsChecked)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("ToggleAutoManualMode"));
-	//Todo : 수동,자동 전투 버튼
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("AutoManualMode"));
+	bIsAutoManual = bIsChecked;
+	//Todo : 수동,자동 전투
+}
+
+void ABattlePlayerController::AutoManualModePC()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("AutoManualMode"));
 }
 
 // ========================================================
@@ -130,4 +169,30 @@ void ABattlePlayerController::SetupInputMode()
 
 	FInputModeGameAndUI InputMode;
 	SetInputMode(InputMode);
+}
+
+
+// ========================================================
+// 입력 관련
+// ========================================================
+void ABattlePlayerController::InputMove(const FInputActionValue& InputValue)
+{
+	UE_LOG(LogTemp, Warning, TEXT("이동 작동"));
+	// 1. 입력값을 Vector2D로 변환 (W/S는 Y, A/D는 X)
+	FVector2D MovementVector = InputValue.Get<FVector2D>();
+
+	if (APawn* ControlledPawn = GetPawn())
+	{
+		// 2. 컨트롤러의 회전 방향을 가져와서 Yaw(좌우 회전) 값만 추출
+		const FRotator Rotation = GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+		// 3. 앞방향(Forward)과 오른쪽방향(Right) 계산
+		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+		// 4. Pawn에 이동 입력 반영
+		ControlledPawn->AddMovementInput(-ForwardDirection, MovementVector.Y); // 앞/뒤
+		ControlledPawn->AddMovementInput(-RightDirection, MovementVector.X);   // 좌/우
+	}
 }

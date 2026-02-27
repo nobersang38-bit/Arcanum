@@ -19,16 +19,22 @@ class ARCANUM_API UBattleStageProgressWidget : public UUserWidget
 protected:
 	virtual void NativeConstruct() override;
 #pragma endregion
+
+
 public:
 	UFUNCTION()
 	void SetPlayerLocationProgress(const FVector& InAllyNexusLocation, const FVector& InEnemyNexusLocation, const FVector& InPlayerLocation);
+
 	UFUNCTION()
 	void SetTime(int32 TimeMS);
 
+
+#pragma region 위젯 바인딩
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<USlider> StageProgressSlider = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UTextBlock> TimeText = nullptr;
+#pragma endregion
 };

@@ -7,6 +7,8 @@
 #include "GameplayTags/ArcanumTags.h"
 #include "Kismet/GameplayStatics.h"
 #include "Core/ARGameInstance.h"
+#include "Data/Rows/AllyUnitsDataRow.h"
+#include "Data/Rows/EnemyUnitsDataRow.h"
 
 #include "Core/ARPlayerAccountService.h"
 
@@ -16,8 +18,9 @@ void UBattlefieldManagerSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 	OnMatchEnded.AddUObject(this, &UBattlefieldManagerSubsystem::SetCurrentMatchData);
 
 	/// 02/26 수정 : 서비스레이어 거치도록
-	SetPlayerData(FPlayerAccountService::GetPlayerDataCopy(this), InBattleData);
+	SetInBattleData(FPlayerAccountService::GetPlayerDataCopy(this), InBattleData);
 
+	SetupUnits();
 	//UARGameInstance* GameInstance = nullptr;
 	//GameInstance = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	//if (GameInstance)
@@ -26,24 +29,23 @@ void UBattlefieldManagerSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 	//}
 }
 
-ACharacter* UBattlefieldManagerSubsystem::GetAllyNexus() const
+void UBattlefieldManagerSubsystem::AddBasement(AActor* InNexus, FGameplayTag InTeamTag)
 {
-	return AllyNexus.Get();
+	if (!InNexus || !InTeamTag.IsValid()) return;
+
+	if (Basements.Contains(InTeamTag))
+	{
+		UE_LOG(LogTemp, Error, TEXT("같은 팀의 기지가 하나 더 있습니다"));
+	}
+	else
+	{
+		Basements.Add(InTeamTag, InNexus);
+	}
 }
 
-ACharacter* UBattlefieldManagerSubsystem::GetEnemyNexus() const
+AActor* UBattlefieldManagerSubsystem::GetBasement(FGameplayTag InTeamTag) const
 {
-	return EnemyNexus.Get();
-}
-
-void UBattlefieldManagerSubsystem::SetAllyNexus(ACharacter* InNexus)
-{
-	AllyNexus = InNexus;
-}
-
-void UBattlefieldManagerSubsystem::SetEnemyNexus(ACharacter* InNexus)
-{
-	EnemyNexus = InNexus;
+	return Basements.FindRef(InTeamTag);
 }
 
 void UBattlefieldManagerSubsystem::SetABattlefieldManagerActor(ABattlefieldManagerActor* InBattlefieldManagerActor)
@@ -51,12 +53,72 @@ void UBattlefieldManagerSubsystem::SetABattlefieldManagerActor(ABattlefieldManag
 	BattlefieldManagerActor = InBattlefieldManagerActor;
 }
 
+FUnitData UBattlefieldManagerSubsystem::GetAllyUnitData(FGameplayTag InUnitTag, bool& OutResult) const
+{
+	if (AllyUnitDatas.Contains(InUnitTag))
+	{
+		OutResult = true;
+		return AllyUnitDatas.FindRef(InUnitTag);
+	}
+	else
+	{
+		OutResult = false;
+		return FUnitData();
+	}
+}
+
+FUnitData UBattlefieldManagerSubsystem::GetEnemyUnitData(FGameplayTag InUnitTag, bool& OutResult) const
+{
+	if (EnemyUnitDatas.Contains(InUnitTag))
+	{
+		OutResult = true;
+		return EnemyUnitDatas.FindRef(InUnitTag);
+	}
+	else
+	{
+		OutResult = false;
+		return FUnitData();
+	}
+}
+
 void UBattlefieldManagerSubsystem::SetCurrentMatchData(const FMatchData& InData)
 {
 	CurrentMatchData = InData;
 }
 
-void UBattlefieldManagerSubsystem::SetPlayerData(const FPlayerData& InPlayerData, FInBattleData& OutInBattleData)
+void UBattlefieldManagerSubsystem::SetupUnits()
+{
+	// 유닛의 모든 정보를 다 가져옴
+	if (UGameInstance* GameInstance = UGameplayStatics::GetGameInstance(GetWorld()))
+	{
+		UGameDataSubsystem* GameDataSubsystem = GameInstance->GetSubsystem<UGameDataSubsystem>();
+		const TMap<FGameplayTag, UDataTable*> DataTables = GameDataSubsystem->MasterDataTables;
+		UE_LOG(LogTemp, Warning, TEXT("데이터 테이블 길이 %d"), DataTables.Num());
+		if (const UDataTable* AllyUnitDataTable = DataTables.FindRef(Arcanum::DataTable::AllyUnitInfo))
+		{
+			TArray<FAllyUnitsDataRow*> AllyUnitsDatArray;
+			AllyUnitDataTable->GetAllRows<FAllyUnitsDataRow>(TEXT(""), AllyUnitsDatArray);
+			for (auto Row : AllyUnitsDatArray)
+			{
+				AllyUnitDatas.Add(Row->UnitData.Info.InfoSetting.Tag, Row->UnitData);
+				UE_LOG(LogTemp, Warning, TEXT("AllyUnitDatas : %s"), *Row->UnitData.Info.InfoSetting.Tag.ToString());
+			}
+		}
+
+		if (const UDataTable* EnemyUnitDataTable = DataTables.FindRef(Arcanum::DataTable::EnemyUnitInfo))
+		{
+			TArray<FEnemyUnitsDataRow*> EnemyUnitsDatArray;
+			EnemyUnitDataTable->GetAllRows<FEnemyUnitsDataRow>(TEXT(""), EnemyUnitsDatArray);
+			for (auto Row : EnemyUnitsDatArray)
+			{
+				EnemyUnitDatas.Add(Row->UnitData.Info.InfoSetting.Tag, Row->UnitData);
+				UE_LOG(LogTemp, Warning, TEXT("EnemyUnitDatas : %s"), *Row->UnitData.Info.InfoSetting.Tag.ToString());
+			}
+		}
+	}
+}
+
+void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerData, FInBattleData& OutInBattleData)
 {
 	for (int i = 0; i < InPlayerData.OwnedCharacters.Num(); i++)
 	{

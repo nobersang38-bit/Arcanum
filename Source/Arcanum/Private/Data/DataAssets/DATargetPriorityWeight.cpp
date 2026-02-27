@@ -6,7 +6,7 @@
 #include "Interface/RuntimeUnitDataInterface.h"
 #include "GameFramework/Character.h"
 
-float UDATargetPriorityWeight::CalculateScore(ACharacter* MyCharacter, ACharacter* TargetCharacter) const
+float FTargetPriorityWeightData::CalculateScore(AActor* MyCharacter, AActor* TargetCharacter) const
 {
 	if (!MyCharacter) return 0.0f;
 	if (!TargetCharacter) return 0.0f;
@@ -17,7 +17,7 @@ float UDATargetPriorityWeight::CalculateScore(ACharacter* MyCharacter, ACharacte
 	if (!MyDataInterface || !MyRuntimeDataInterface) return 0.0f;
 	if (!TargetDataInterface || !TargetRuntimeDataInterface) return 0.0f;
 
-	ACharacter* ResultCharacter = nullptr;
+	AActor* ResultCharacter = nullptr;
 	float CurrentTargetScore = 0;
 
 	const FUnitData& MyUnitData = MyDataInterface->GetUnitData();
@@ -49,7 +49,7 @@ float UDATargetPriorityWeight::CalculateScore(ACharacter* MyCharacter, ACharacte
 }
 
 // 랜덤하게 지정할 점수
-float UDATargetPriorityWeight::CalculateScoreRandomTargetWeight() const
+float FTargetPriorityWeightData::CalculateScoreRandomTargetWeight() const
 {
 	float CurrentTargetScore = 0.0f;
 	if (RandomTargetWeightSet.bUseWeight)
@@ -63,7 +63,7 @@ float UDATargetPriorityWeight::CalculateScoreRandomTargetWeight() const
 }
 
 // 해당 적을 공격하고 있는 아군이 적을수록 점수 올라감
-float UDATargetPriorityWeight::CalculateScoreAttackingTargetNumWeight(const FUnitRuntimeData& TargetUnitRuntimeData) const
+float FTargetPriorityWeightData::CalculateScoreAttackingTargetNumWeight(const FUnitRuntimeData& TargetUnitRuntimeData) const
 {
 	float CurrentTargetScore = 0.0f;
 	if (AttackingTargetNumWeightSet.bUseWeight)
@@ -81,7 +81,7 @@ float UDATargetPriorityWeight::CalculateScoreAttackingTargetNumWeight(const FUni
 }
 
 // 나와 적의 거리가 가까울 수록 점수가 높음
-float UDATargetPriorityWeight::CalculateScoreDistanceWeight(ACharacter* MyCharacter, ACharacter* TargetCharacter) const
+float FTargetPriorityWeightData::CalculateScoreDistanceWeight(AActor* MyCharacter, AActor* TargetCharacter) const
 {
 	float CurrentTargetScore = 0.0f;
 	if (DistanceWeightSet.bUseWeight)
@@ -101,7 +101,7 @@ float UDATargetPriorityWeight::CalculateScoreDistanceWeight(ACharacter* MyCharac
 }
 
 // 나를 공격하는 대상에게 점수를 줌
-float UDATargetPriorityWeight::CalculateScoreAggroWeight(const FUnitRuntimeData& MyUnitRuntimeData, ACharacter* TargetCharacter) const
+float FTargetPriorityWeightData::CalculateScoreAggroWeight(const FUnitRuntimeData& MyUnitRuntimeData, AActor* TargetCharacter) const
 {
 	if (!TargetCharacter) return 0.0f;
 
@@ -123,13 +123,13 @@ float UDATargetPriorityWeight::CalculateScoreAggroWeight(const FUnitRuntimeData&
 
 // 해당 적의 체력이 적으면 점수가 높음(백분율)
 // Todo : CalculateScoreLowHealthWeight 미완성
-float UDATargetPriorityWeight::CalculateScoreLowHealthWeight() const
+float FTargetPriorityWeightData::CalculateScoreLowHealthWeight() const
 {
 	return 0.0f;
 }
 
 // 엘리트일수록 점수가 높음
-float UDATargetPriorityWeight::CalculateScoreEliteWeight(const FUnitData& TargetUnitData) const
+float FTargetPriorityWeightData::CalculateScoreEliteWeight(const FUnitData& TargetUnitData) const
 {
 	float CurrentTargetScore = 0.0f;
 	if (EliteWeightSet.bUseWeight)

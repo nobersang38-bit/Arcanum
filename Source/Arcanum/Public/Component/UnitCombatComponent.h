@@ -10,6 +10,7 @@
 #include "NativeGameplayTags.h"
 #include "Interface/UnitDataInterface.h"
 #include "DataInfo/CommonData/Stats/FBattleStats.h"
+#include "Data/DataAssets/DATargetPriorityWeight.h"
 #include "UnitCombatComponent.generated.h"
 
 // 김도현
@@ -20,17 +21,23 @@ enum class EUnitState : uint8
 	Idle				UMETA(DisplayName = "Idle"),
 	Move				UMETA(DisplayName = "Move"),
 	Attack				UMETA(DisplayName = "Attack"),
-	ActionRestricted	UMETA(DisplayName = "ActionRestricted"),
-	Death				UMETA(DisplayName = "Hit"),
+	HitReaction			UMETA(DisplayName = "HitReaction"),
+	Death				UMETA(DisplayName = "Death"),
 };
 
 // 김도현
 // 자동 전투 컴포넌트(AI컴포넌트)
 class USphereComponent;
+class UUnitStateBase;
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ARCANUM_API UUnitCombatComponent : public UActorComponent
 {
 	GENERATED_BODY()
+	friend class UUnitState_Idle;
+	friend class UUnitState_Move;
+	friend class UUnitState_Attack;
+	friend class UUnitState_HitReaction;
+	friend class UUnitState_Death;
 
 public:	
 	UUnitCombatComponent();
@@ -54,14 +61,28 @@ protected:
 	UFUNCTION()
 	void TickUpdate();
 
-	void TargetAssigned(ACharacter* Target);
+	void TargetAssigned(AActor* Target);
 
 	UFUNCTION()
 	void OnBeginDetected(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	void SelectBestTarget(const TSet<TWeakObjectPtr<ACharacter>>& InDetectedCharacters);
-	ACharacter* GetHigherPriorityTarget(ACharacter* CurrentTarget, ACharacter* WinTarget, int32& WinScore);
+	void SelectBestTarget(const TSet<TWeakObjectPtr<AActor>>& InDetectedCharacters);
+	AActor* GetHigherPriorityTarget(AActor* CurrentTarget, AActor* WinTarget, int32& WinScore);
 
+	UPROPERTY()
+	TWeakObjectPtr<UUnitStateBase> CurrentUnitState = nullptr;
+
+	UPROPERTY()
+	TMap<EUnitState, UUnitStateBase*> UnitStates;
+
+	UFUNCTION()
+	void StateChange(EUnitState InUnitState);
+
+	UFUNCTION()
+	void SetupStates();
+
+	UFUNCTION()
+	void SetupTick();
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FUnitAISetting UnitAISetting;
@@ -79,22 +100,21 @@ protected:
 	bool bDebug_DrawMoveTargeLine = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FGameplayTag RoleTag;
+	FGameplayTag TeamTag;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FGameplayTag AllyTeamTag;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FGameplayTag EnemyTeamTag;
 
 
 private:
 	UFUNCTION()
 	void AIInitialize();
 
-	UFUNCTION()
-	void Onhit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-
-	void Idle();
-	void Move();
-	void Attack();
-	void ActionRestricted(FGameplayTag InActionRestrictedTag);
+	void LightHitReaction();
 	void Death(const FRegenStat& InData);
-
 	void StateReset();
 
 private:
@@ -111,25 +131,25 @@ private:
 
 	// 현재 내가 공격중인 적이거나 공격해야하는 적
 	UPROPERTY()
-	TWeakObjectPtr<ACharacter> TargetCharacter = nullptr;
+	TWeakObjectPtr<AActor> TargetActor = nullptr;
+
+	UPROPERTY()
+	TWeakObjectPtr<AActor> TargetActorBackup = nullptr;
 
 	// 감지된 적 유닛
 	UPROPERTY()
-	TSet<TWeakObjectPtr<ACharacter>> DetectedCharacters;
+	TSet<TWeakObjectPtr<AActor>> DetectedActors;
 
 	// 현재 나를 공격중인 적은 몇명인가, 나중에 액터나 캐릭터 배열로 바꿀수도 있음
 	int32 AttackerCount = 0;
 
 	FGameplayTag TeamID;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Debug");
-	EUnitState CurrentState = EUnitState::Idle;
+	UPROPERTY()
+	TWeakObjectPtr<AActor> TargetBasement = nullptr;
 
 	UPROPERTY()
-	TWeakObjectPtr<ACharacter> TargetNexus = nullptr;
-
-	UPROPERTY()
-	TObjectPtr<class UDATargetPriorityWeight> TargetPriorityWeight = nullptr;
+	FTargetPriorityWeightData TargetPriorityWeight;
 
 	UPROPERTY()
 	TWeakObjectPtr<ACharacter> OwnerCharacter = nullptr;
@@ -140,6 +160,6 @@ private:
 	bool bIsDead = false;
 
 	float RotateInterval = 0.05f;
-	float RotateSpeed = 10.0f;
+	float RotateSpeed = 50.0f;
 	FTimerDelegate RotateDelegate;
 };

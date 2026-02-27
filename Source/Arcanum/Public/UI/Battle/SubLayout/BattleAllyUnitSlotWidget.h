@@ -7,12 +7,15 @@
 #include "NativeGameplayTags.h"
 #include "BattleAllyUnitSlotWidget.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnClickUnitSlot, FGameplayTag, UnitTag);
+
 /**
  * 김도현
  */
 class UTextBlock;
 class UButton;
 class UImage;
+class UProgressBar;
 UCLASS()
 class ARCANUM_API UBattleAllyUnitSlotWidget : public UUserWidget
 {
@@ -20,17 +23,32 @@ class ARCANUM_API UBattleAllyUnitSlotWidget : public UUserWidget
 #pragma region 언리얼 기본 생성
 protected:
 	virtual void NativeConstruct() override;
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
 #pragma endregion
+
+
 public:
+	FOnClickUnitSlot OnClickUnitSlot;
+
 	UFUNCTION()
 	void SetUnitInfo(int32 InCost, UTexture2D* InImage, FGameplayTag InUnitTag);
 
 	UFUNCTION()
-	FORCEINLINE FGameplayTag GetUnitInfo() { return UnitTag; }
+	void SetActivateCost(bool InIsDisable);
 
 	UFUNCTION()
-	void SetDisabled(bool InIsDisable);
+	void SetCoolTimeProgress(float CurrentProgress, float MaxProgress);
 
+	UFUNCTION()
+	void SetUnitTag(FGameplayTag InUnitTag);
+
+	UFUNCTION()
+	FGameplayTag GetUnitTag() const { return UnitTag; }
+
+
+#pragma region 내부 함수
 protected:
 	UFUNCTION()
 	void SetCost(int32 InCost);
@@ -39,8 +57,14 @@ protected:
 	void SetImage(UTexture2D* InImage);
 
 	UFUNCTION()
-	void SetUnitTag(FGameplayTag InUnitTag);
+	void SetProgressesVisible(bool IsVisible);
 
+	UFUNCTION()
+	void ClickUnitSlot();
+#pragma endregion
+
+
+#pragma region 위젯 바인딩
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UButton> Button = nullptr;
@@ -50,6 +74,32 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UTextBlock> CostText = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UTextBlock> CoolTimeText = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UProgressBar> CoolTimeProgress = nullptr;
+#pragma endregion
+
+
+#pragma region 디버그
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Debug|CoolTime")
+	bool bIsDebugCoolTimeStart = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Debug|CoolTime")
+	float DebugCoolTime = 5.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Debug|CoolTime")
+	float DebugMaxCoolTime = 5.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Debug|Cost")
+	bool bIsDebugCostDisableImage = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Debug|Cost")
+	bool bIsSetDebugCostDisableImage = false;
+#pragma endregion
+
 
 private:
 	FGameplayTag UnitTag;

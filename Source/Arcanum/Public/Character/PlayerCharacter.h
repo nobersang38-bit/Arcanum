@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "GameplayTags/ArcanumTags.h"
+#include "Interface/TeamInterface.h"
 #include "PlayerCharacter.generated.h"
 
 /*
@@ -12,7 +13,7 @@
 */
 
 UCLASS()
-class ARCANUM_API APlayerCharacter : public ACharacter
+class ARCANUM_API APlayerCharacter : public ACharacter, public ITeamInterface
 	//, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
@@ -25,6 +26,9 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+protected:
+	virtual FGameplayTag GetTeamTag() override;
 	
 public:
 	// ID 태그 바꾸는 함수
@@ -50,4 +54,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tags")
 	FGameplayTagContainer GameplayTags;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tags")
+	FGameplayTag TeamTag = Arcanum::Unit::Faction::Ally::Root;
 };

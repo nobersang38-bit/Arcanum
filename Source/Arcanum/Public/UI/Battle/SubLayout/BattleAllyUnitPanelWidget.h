@@ -18,11 +18,14 @@ class ARCANUM_API UBattleAllyUnitPanelWidget : public UUserWidget
 #pragma region 언리얼 기본 생성
 protected:
 	virtual void NativeConstruct() override;
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #pragma endregion
+
 
 public:
 	UFUNCTION()
 	void SetMeatCostProgress(float CurrentMeat, float MaxMeat);
+
 	UFUNCTION()
 	void SetManaCostProgress(float CurrentMana, float MaxMana);
 
@@ -34,6 +37,11 @@ public:
 	UFUNCTION()
 	bool RemoveUnitSlot(int32 RemoveIDX = -1);
 
+	UFUNCTION()
+	TArray<UBattleAllyUnitSlotWidget*> GetUnitSlots() const;
+
+
+#pragma region 위젯 바인딩
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UnitSlotClass")
 	TSubclassOf<class UBattleAllyUnitSlotWidget> UnitSlotWidgetClass = nullptr;
@@ -46,4 +54,11 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UHorizontalBox> UnitPanel = nullptr;
+#pragma endregion
+
+
+#pragma region 디버그
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Debug")
+	bool bUseDebugAddUnitSlot = false;
+#pragma endregion
 };

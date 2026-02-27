@@ -7,6 +7,7 @@
 #include "BattleToggleWidget.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnToggle, bool, bIsChecked);
+
 /**
  * 김도현
  */
@@ -20,20 +21,28 @@ class ARCANUM_API UBattleToggleWidget : public UUserWidget
 protected:
 	virtual void NativeConstruct() override;
 #pragma endregion
+
+
 public:
 	FOnToggle OnToggle;
 
 	UFUNCTION()
 	bool IsAutoPlay();
 
+
+#pragma region 내부 함수
 protected:
 	UFUNCTION()
 	void OnChangeToggle(bool IsChecked);
+#pragma endregion
 
+
+#pragma region 위젯 바인딩
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UCheckBox> Toggle = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UWidgetSwitcher> TextSwitcher = nullptr;
+#pragma endregion
 };

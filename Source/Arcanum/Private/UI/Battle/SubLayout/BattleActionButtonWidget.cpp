@@ -5,6 +5,7 @@
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
 #include "Components/ProgressBar.h"
+#include "Components/Image.h"
 
 // ========================================================
 // 언리얼 기본 생성
@@ -43,13 +44,34 @@ void UBattleActionButtonWidget::PostEditChangeProperty(FPropertyChangedEvent& Pr
 		if (bIsDebugCoolTimeStart)
 		{
 			bIsDebugCoolTimeStart = false;
-			SetProgress(DebugCoolTime, DebugMaxCoolTime);
+			SetCoolTimeProgress(DebugCoolTime, DebugMaxCoolTime);
+		}
+	}
+
+	if (MemberPropertyName == GET_MEMBER_NAME_CHECKED(UBattleActionButtonWidget, bIsDebugCostDisableImage))
+	{
+		if (bIsDebugCostDisableImage)
+		{
+			bIsDebugCostDisableImage = false;
+			SetActivateCost(bIsSetDebugCostDisableImage);
 		}
 	}
 }
 #endif
 
-void UBattleActionButtonWidget::SetProgress(float CurrentProgress, float MaxProgress)
+void UBattleActionButtonWidget::SetActivateCost(bool InIsDisable)
+{
+	if (InIsDisable)
+	{
+		DisabledImage->SetVisibility(ESlateVisibility::HitTestInvisible);
+	}
+	else
+	{
+		DisabledImage->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+
+void UBattleActionButtonWidget::SetCoolTimeProgress(float CurrentProgress, float MaxProgress)
 {
 	SetProgressesVisible(true);
 	if (CoolTimeProgress)

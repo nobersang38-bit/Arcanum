@@ -62,6 +62,11 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 }
 
+FGameplayTag APlayerCharacter::GetTeamTag()
+{
+	return TeamTag;
+}
+
 void APlayerCharacter::SetIDTag(FGameplayTag NewIDTag)
 {
 	if (!NewIDTag.IsValid())
