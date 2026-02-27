@@ -1,5 +1,4 @@
 #include "UI/Lobby/Contents/Gacha/SubLayout/GachaBannerButtonWidget.h"
-
 #include "Components/Button.h"
 #include "Components/Image.h"
 #include "Components/Border.h"
@@ -60,15 +59,4 @@ void UGachaBannerButtonWidget::SetBannerTexture(UTexture2D* InNormal, UTexture2D
     if (InClick)  NewStyle.Pressed.SetResourceObject(InClick);
 
     BannerButton->SetStyle(NewStyle);
-}
-void UGachaBannerButtonWidget::UpdateBannerData(const FDTGachaBannerDataRow* InData)
-{
-    if (!InData) return;
-
-    BannerTag = InData->BannerTag;
-    if (InData->BannerImage.IsValid()) SetBannerTexture(InData->BannerImage.Get());
-    else {
-        UTexture2D* LoadedTex = InData->BannerImage.LoadSynchronous();
-        if (LoadedTex) SetBannerTexture(LoadedTex);
-    }
 }

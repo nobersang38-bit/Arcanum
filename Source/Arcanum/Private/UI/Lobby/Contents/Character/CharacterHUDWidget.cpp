@@ -2,6 +2,7 @@
 #include "UI/Lobby/Contents/Character/RoundedSlotWidget.h"
 #include "UI/Lobby/Contents/Character/CharacterInfo.h"
 #include "UI/Lobby/Contents/Character/SquareSlotWidget.h"
+#include "UI/Lobby/Contents/Character/InventorySlot.h"
 #include "Components/UniformGridSlot.h"
 #include "Components/UniformGridPanel.h"
 #include "Components/WidgetSwitcher.h"
@@ -27,6 +28,16 @@ void UCharacterHUDWidget::NativeConstruct()
         CharacterInfo->OnEnhanceBtnClicked.AddDynamic(this, &UCharacterHUDWidget::ShowEnhancementConfirm);
     }
     
+    if (WeaponList)
+    {
+        WeaponList->OnSetupBtnClicked.AddDynamic(this, &UCharacterHUDWidget::SetupEquipment);
+    }
+
+    if (EquipmentList)
+    {
+        EquipmentList->OnSetupBtnClicked.AddDynamic(this, &UCharacterHUDWidget::SetupEquipment);
+    }
+
     if (!CharacterGridPanel || !RoundedSlotWidgetClass)
         return;
 
@@ -87,6 +98,7 @@ void UCharacterHUDWidget::ShowEnhancementConfirm()
     }
 }
 
+
 void UCharacterHUDWidget::OnEnhancementCommonDialog(EDialogResult res)
 {
     if (res == EDialogResult::OK)
@@ -144,5 +156,17 @@ void UCharacterHUDWidget::OnSlotClicked(USquareSlotWidget* ClickedSlot, int32 Sl
             CharacterSwitcher->SetActiveWidgetIndex(0);
         }
         break;
+    }
+}
+
+// ========================================================
+// 무기, 장비 장착 버튼클릭
+// ========================================================
+
+void UCharacterHUDWidget::SetupEquipment()
+{
+    if (CharacterSwitcher)
+    {
+        CharacterSwitcher->SetActiveWidgetIndex(0);
     }
 }

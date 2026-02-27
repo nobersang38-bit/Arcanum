@@ -63,36 +63,36 @@ public:
     static const FPlayerData GetPlayerDataCopy(const UObject* WorldContextObject);
     // 재화
     UFUNCTION(BlueprintCallable)
-    static const FPlayerCurrency GetPlayerCurrency(const UObject* WorldContextObject);
+    const FPlayerCurrency GetPlayerCurrency(const UObject* WorldContextObject);
     // 전투 기본 데이터
     UFUNCTION(BlueprintCallable)
-    static const FPlayerBattleData GetPlayerBattleData(const UObject* WorldContextObject);
+    const FPlayerBattleData GetPlayerBattleData(const UObject* WorldContextObject);
     // 보유 캐릭터
     UFUNCTION(BlueprintCallable)
-    static const TArray<FBattleCharacterData> GetOwnedCharacters(const UObject* WorldContextObject);
+    const TArray<FBattleCharacterData> GetOwnedCharacters(const UObject* WorldContextObject);
     // 인벤토리
     UFUNCTION(BlueprintCallable)
-    static const TArray<FEquipmentInfo> GetInventory(const UObject* WorldContextObject);
+    const TArray<FEquipmentInfo> GetInventory(const UObject* WorldContextObject);
     // 스테이지 진행도
     UFUNCTION(BlueprintCallable)
-    static const TMap<FGameplayTag, FStageProgressData> GetStageProgressMap(const UObject* WorldContextObject);
+    const TMap<FGameplayTag, FStageProgressData> GetStageProgressMap(const UObject* WorldContextObject);
     // 가챠 상태
     UFUNCTION(BlueprintCallable)
-    static const FGachaData GetGachaState(const UObject* WorldContextObject);
+    const FGachaData GetGachaState(const UObject* WorldContextObject);
     // 퀘스트 상태
     UFUNCTION(BlueprintCallable)
-    static const FPlayerQuest GetQuestState(const UObject* WorldContextObject);
+	const FPlayerQuest GetQuestState(const UObject* WorldContextObject);
 #pragma endregion
 
 #pragma region PlayerData Updater
 public:
 	/** 플레이어 재화 변경할때*/
-	static const FPlayerCurrency UpdateCurrency(const UObject* WorldContextObject, const FPlayerData& PlayerData, FGameplayTag Tag, int64 Amount);
+	const FPlayerCurrency UpdateCurrency(const UObject* WorldContextObject, const FPlayerData& PlayerData, FGameplayTag Tag, int64 Amount);
 private:
 	/** 치트 방지용*/
-	static bool VerifyCurrency(UARGameInstance* GI, FPlayerData CachedData);
+	bool VerifyCurrency(UARGameInstance* GI, FPlayerData CachedData);
 	/** 세이브 삭제, 강제종료 */
-	static void VerifiedFailure(UARGameInstance* GI);
+	void VerifiedFailure(UARGameInstance* GI);
 #pragma endregion
 
 
@@ -170,10 +170,8 @@ private:
 
 #pragma region Gacha Widget 관련
 public:
-	static const FDTGachaBannerDataRow* GetGachaBannerData(const UObject* WorldContextObject, FGameplayTag InBannerTag);
-	static void GetActiveGachaBannerRows(const UObject* WorldContextObject, TArray<const FDTGachaBannerDataRow*>& OutRows);
-	static bool RequestGachaExecution(const UObject* WorldContextObject, const FPlayerData& PlayerData, FGameplayTag BannerTag, FCurrencyCost Cost, int32 PullCount);
-private:
+	const FDTGachaBannerDataRow* GetGachaBannerData(const UObject* WorldContextObject, FGameplayTag InBannerTag);
+	void GetActiveGachaBannerRows(const UObject* WorldContextObject, TArray<const FDTGachaBannerDataRow*>& OutRows);
 #pragma endregion
 
 };

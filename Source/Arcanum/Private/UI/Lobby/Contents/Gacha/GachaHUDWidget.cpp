@@ -2,9 +2,6 @@
 #include "UI/Lobby/Contents/Gacha/SubLayout/GachaPullButtonWidget.h"
 #include "UI/Lobby/Contents/Gacha/SubLayout/GachaProbabilityWidget.h"
 #include "UI/Lobby/Contents/Gacha/SubLayout/GachaBannerButtonWidget.h"
-
-#include "Core/ARPlayerAccountService.h"
-
 #include "Components/Image.h"
 #include "Components/Button.h"
 #include "Components/VerticalBox.h"
@@ -24,28 +21,19 @@ void UGachaHUDWidget::InitBannerList()
     if (!BannerVerticalBox || !BannerButtonClass) return;
     BannerVerticalBox->ClearChildren();
 
-    TArray<const FDTGachaBannerDataRow*> TempRows;
-    FPlayerAccountService::GetActiveGachaBannerRows(this, TempRows);
-    ActiveBannerDataList.Empty();
-    for (const FDTGachaBannerDataRow* RowPtr : TempRows) {
-        if (RowPtr) {
-            ActiveBannerDataList.Add(*RowPtr);
-        }
-    }
-
-    for (int32 i = 0; i < ActiveBannerDataList.Num(); ++i) {
+    /// Todo : 추후 DT에서 받아와야 함.
+    for (int32 i = 0; i < 3; ++i) {
         UGachaBannerButtonWidget* NewButton = CreateWidget<UGachaBannerButtonWidget>(this, BannerButtonClass);
         if (NewButton) {
-            NewButton->UpdateBannerData(&ActiveBannerDataList[i]);
             NewButton->BannerClicked.RemoveAll(this);
             NewButton->BannerClicked.AddUObject(this, &UGachaHUDWidget::OnBannerSelected);
-
             UVerticalBoxSlot* ButtonSlot = BannerVerticalBox->AddChildToVerticalBox(NewButton);
             if (ButtonSlot) {
                 ButtonSlot->SetPadding(FMargin(0.f, 0.f, 0.f, 20.f));
                 ButtonSlot->SetSize(FSlateChildSize(ESlateSizeRule::Automatic));
+                ButtonSlot->SetHorizontalAlignment(HAlign_Fill);
+                ButtonSlot->SetVerticalAlignment(VAlign_Top);
             }
-
             if (i == 0) OnBannerSelected(NewButton->BannerTag);
         }
     }
@@ -71,15 +59,6 @@ void UGachaHUDWidget::OnBannerSelected(FGameplayTag SelectedBannerTag)
 {
     if (CurrentSelectedButton) CurrentSelectedButton->SetSelected(false);
 
-    const FDTGachaBannerDataRow* SelectedData = nullptr;
-    for (const FDTGachaBannerDataRow& Data : ActiveBannerDataList) {
-        if (Data.BannerTag == SelectedBannerTag) {
-            SelectedData = &Data;
-            break;
-        }
-    }
-    if (!SelectedData) return;
-
     TArray<UWidget*> AllButtons = BannerVerticalBox->GetAllChildren();
     for (UWidget* Widget : AllButtons) {
         if (UGachaBannerButtonWidget* Btn = Cast<UGachaBannerButtonWidget>(Widget)) {
@@ -90,20 +69,9 @@ void UGachaHUDWidget::OnBannerSelected(FGameplayTag SelectedBannerTag)
             }
         }
     }
-    UpdateDetailedView(SelectedData);
 
     // 여기서 선택된 배너에 맞춰 오른쪽 메인 화면(보상 리스트 등) 갱신 로직 실행
     UE_LOG(LogTemp, Log, TEXT("Selected Banner Tag: %s"), *SelectedBannerTag.ToString());
-}
-void UGachaHUDWidget::UpdateDetailedView(const FDTGachaBannerDataRow* InData)
-{
-    if (!InData) return;
-    if (DetailedBannerImage) {
-        TSoftObjectPtr<UTexture2D> SoftImg = InData->DescriptionImage;
-        if (SoftImg.IsValid()) DetailedBannerImage->SetBrushFromTexture(SoftImg.Get());
-        else DetailedBannerImage->SetBrushFromSoftTexture(SoftImg);
-    }
-    CurrencyCost = InData->PullCost;
 }
 void UGachaHUDWidget::UpdateDetailedImage(TSoftObjectPtr<UTexture2D> NewTexture)
 {
@@ -117,21 +85,10 @@ void UGachaHUDWidget::UpdateDetailedImage(TSoftObjectPtr<UTexture2D> NewTexture)
 // ========================================================
 void UGachaHUDWidget::RequestGacha(int32 InPullCount)
 {
-    if (!CurrentSelectedButton) {
-        UE_LOG(LogTemp, Warning, TEXT("No Banner Selected!"));
-        return;
-    }
-
-    FGameplayTag SelectedTag = CurrentSelectedButton->BannerTag;
-    bool bSuccess = FPlayerAccountService::RequestGachaExecution(this, ParentLobby->CachedPlayerData, SelectedTag, CurrencyCost, InPullCount);
-
-    if (bSuccess) {
-        UE_LOG(LogTemp, Log, TEXT("Gacha Request Success: %d Times"), InPullCount);
-
-        /// Todo : 가챠레벨로 진입(현재 창 Transit으로 Gameinstance쪽에 저장해야함)
-    }
-    else UE_LOG(LogTemp, Error, TEXT("Gacha Request Failed (Insufficient Currency?)"));
-    
+    // 1. 현재 선택된 배너 태그 확인 (CurrentSelectedButton->BannerTag)
+    // 2. 해당 배너에 필요한 재화가 충분한지 확인
+    // 3. GachaManager에게 가챠 실행 요청
+    UE_LOG(LogTemp, Log, TEXT("Request Gacha: %d Times"), InPullCount);
 }
 // ========================================================
 // 확률 버튼
