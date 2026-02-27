@@ -3,6 +3,7 @@
 #include "UI/Common/CommonDialog.h"
 #include "UI/Lobby/Contents/Shop/ShopHUDWidget.h"
 #include "UI/Lobby/Contents/Shop/CurrencyWidget.h"
+#include "UI/Lobby/Contents/Gacha/GachaHUDWidget.h"
 //#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/HorizontalBox.h"
@@ -113,7 +114,10 @@ void ULobbyHUD::ClickShopMenuBtn()
 
 void ULobbyHUD::ClickGachaMenuBtn()
 {
-	if (WidgetSwitcher) WidgetSwitcher->SetActiveWidgetIndex(4);
+	if (UGachaHUDWidget* GachaWidget = Cast<UGachaHUDWidget>(WidgetSwitcher->GetWidgetAtIndex(4))) {
+		GachaWidget->SetParentLobby(this);
+		WidgetSwitcher->SetActiveWidget(GachaWidget);
+	}
 }
 
 void ULobbyHUD::ClickSettingBtn()
