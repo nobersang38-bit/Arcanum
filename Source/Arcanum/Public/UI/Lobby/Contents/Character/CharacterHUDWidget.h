@@ -13,6 +13,7 @@ class UUniformGridPanel;
 class UCommonDialog;
 class UCharacterInfo;
 class UWidgetSwitcher;
+class UInventorySlot;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEnhanceOKClicked);
 
@@ -41,6 +42,12 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCharacterInfo> CharacterInfo;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UInventorySlot> WeaponList;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UInventorySlot> EquipmentList;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCommonDialog> EnhancementConfirm;
@@ -74,6 +81,9 @@ protected:
 
 	UFUNCTION()
 	void ShowEnhancementConfirm();
+
+	UFUNCTION()
+	void SetupEquipment();
 
 public:
 	UPROPERTY(BlueprintAssignable)

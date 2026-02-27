@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "UI/Lobby/Contents/Character/StageList.h"
+#include "UI/Lobby/Contents/Battle/StageList.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 

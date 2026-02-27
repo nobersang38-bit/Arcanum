@@ -1,5 +1,6 @@
 [
   {
+	"StageData":[
     "StageName": "Normal_Stage1",
     "StageTag": "Arcanum.BattleStage.Normal.Stage1",
 	"StageDesc" : "이 스테이지는 노말 스테이지1",
@@ -44,8 +45,10 @@
 	},
 	"StarCount" : 0, 
 	"BestClearTimeMS" : 0.0
+	]
   },
      {
+		 	"StageData":[
     "StageName": "Normal_Stage2",
     "StageTag": "Arcanum.BattleStage.Normal.Stage2",
 	"StageDesc" : "이 스테이지는 노말 스테이지2",
@@ -81,5 +84,6 @@
 	},
 	"StarCount" : 0,
 	"BestClearTimeMS" : 0.0
+	]
   }
 ]

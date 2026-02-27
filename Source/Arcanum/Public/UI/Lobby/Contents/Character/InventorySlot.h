@@ -4,19 +4,20 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "ItemSlot.generated.h"
+#include "InventorySlot.generated.h"
 
 class UCommonBtnWidget;
 class UTextBlock;
 class USquareSlotWidget;
 class UUniformGridPanel;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSetItemBtnClicked);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSetupBtnClicked);
+
 /**
  * 
  */
 UCLASS()
-class ARCANUM_API UItemSlot : public UUserWidget
+class ARCANUM_API UInventorySlot : public UUserWidget
 {
 	GENERATED_BODY()
 protected:
@@ -25,27 +26,28 @@ protected:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FText ItemNameTxt;
+	FText EquipNameTxt;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FText ItemInfoTxt;
+	FText EquipInfoTxt;
 
 	UPROPERTY(BlueprintAssignable)
-	FOnSetItemBtnClicked OnSetItemBtnClicked;
+	FOnSetupBtnClicked OnSetupBtnClicked;
 
 private:
 	UFUNCTION()
-	void ClickSetItemBtn();
+	void ClickEquipSetupBtn();
 
 protected:
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UCommonBtnWidget> SetItemBtn;
+	TObjectPtr<UCommonBtnWidget> SetupBtn;
+	
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> EquipNameText;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> ItemNameText;
+	TObjectPtr<UTextBlock> EquipInfoText;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> ItemInfoText;
+	TObjectPtr<UUniformGridPanel> EquipGridPanel;
 
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UUniformGridPanel> ItemGridPanel;
 };
