@@ -105,6 +105,7 @@ public:
 
 #pragma region Battle Widget 관련
 public:
+// 배틀스타트 함수 (비어놓고 스탑만 누르도록)
 
 #pragma endregion
 

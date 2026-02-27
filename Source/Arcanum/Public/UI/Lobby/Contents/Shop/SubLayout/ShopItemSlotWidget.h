@@ -2,13 +2,15 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "DataInfo/BattleCharacter/Equipment/DataTable/DTEquipment.h"
+#include "GameplayTagContainer.h"
+#include "DataInfo\BattleCharacter\Equipment\DataTable\DTEquipment.h"
 #include "ShopItemSlotWidget.generated.h"
 
 class UButton;
 class UImage;
 class UTextBlock;
 class UBorder;
+struct FDTEquipmentInfoRow;
 
 /* 슬롯 클릭 시 슬롯 인덱스 전달 */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnShopItemSlotClicked, int32, InSlotIndex);
@@ -26,6 +28,9 @@ protected:
 	virtual void NativeConstruct() override;
 
 public:
+	/* 로비HUD가 만든 DT RowPtr로 슬롯 표시만 세팅 */
+	void SetViewData(int32 InSlotIndex, FName InRowName, const FDTEquipmentInfoRow* InRowPtr, bool InSoldOut);
+
 	/* 장비 슬롯 표시 데이터 세팅 */
 	UFUNCTION(BlueprintCallable)
 	void SetEquipmentData(const FDTEquipmentInfoRow& InRow, int32 InSlotIndex, FName InRowName);
@@ -56,7 +61,7 @@ public:
 
 	/* 장비 태그 반환 */
 	UFUNCTION(BlueprintCallable)
-	FGameplayTag GetItemTag() const { return EquipmentRow.ItemTag; }
+	FGameplayTag GetItemTag() const { return EquipmentRowPtr ? EquipmentRowPtr->ItemTag : FGameplayTag(); }
 
 private:
 	/* 슬롯 버튼 클릭 처리 */
@@ -74,7 +79,7 @@ public:
 protected:
 	/* 불투명도 */
 	UPROPERTY(EditAnywhere, Category = "shop")
-	float SoldOutOpacity = 0.3f;
+	float SoldOutOpacity = 0.5f;
 
 private:
 	/* 슬롯 클릭 버튼 */
@@ -97,11 +102,18 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional, AllowPrivateAccess = "true"))
 	TObjectPtr<UTextBlock> PriceText;
 
-	/* 선택 강조 */
+	/* 슬롯 보더 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional, AllowPrivateAccess = "true"))
+	TObjectPtr<UBorder> SlotBorder;
+
+	/* 선택 강조 보더 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional, AllowPrivateAccess = "true"))
 	TObjectPtr<UBorder> SelectedBorder;
 
 private:
+	/* 장비 데이터 캐시 */
+	const FDTEquipmentInfoRow* EquipmentRowPtr = nullptr;
+
 	/* 슬롯 번호 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	int32 SlotIndex = INDEX_NONE;
@@ -109,10 +121,6 @@ private:
 	/* DT RowName */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	FName RowName = NAME_None;
-
-	/* 장비 데이터 캐시 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	FDTEquipmentInfoRow EquipmentRow;
 
 	/* 빈 슬롯 여부 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))

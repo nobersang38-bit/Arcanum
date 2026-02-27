@@ -1,0 +1,172 @@
+#include "UI/Lobby/Contents/Shop/SubLayout/ShopItemSlotWidget.h"
+#include "Components/Button.h"
+#include "Components/Image.h"
+#include "Components/TextBlock.h"
+#include "Components/Border.h"
+
+void UShopItemSlotWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	if (SlotButton)
+	{
+		SlotButton->OnClicked.RemoveDynamic(this, &UShopItemSlotWidget::HandleSlotButtonClicked);
+		SlotButton->OnClicked.AddDynamic(this, &UShopItemSlotWidget::HandleSlotButtonClicked);
+	}
+
+	RefreshSlotUI();
+}
+
+void UShopItemSlotWidget::SetViewData(int32 InSlotIndex, FName InRowName, const FDTEquipmentInfoRow* InRowPtr, bool InSoldOut)
+{
+	if (InRowPtr && !InRowName.IsNone())
+	{
+		SlotIndex = InSlotIndex;
+		RowName = InRowName;
+		EquipmentRowPtr = InRowPtr;
+
+		bEmpty = false;
+		bSoldOut = InSoldOut;
+		bSelected = false;
+
+		RefreshSlotUI();
+	}
+	else
+	{
+		ClearSlot();
+	}
+}
+
+void UShopItemSlotWidget::SetEquipmentData(const FDTEquipmentInfoRow& InRow, int32 InSlotIndex, FName InRowName)
+{
+	SlotIndex = InSlotIndex;
+	RowName = InRowName;
+	EquipmentRowPtr = &InRow;
+
+	bEmpty = (!EquipmentRowPtr || RowName == NAME_None);;
+	bSoldOut = false;
+	bSelected = false;
+
+	RefreshSlotUI();
+}
+
+void UShopItemSlotWidget::ClearSlot()
+{
+	SlotIndex = INDEX_NONE;
+	RowName = NAME_None;
+	EquipmentRowPtr = nullptr;
+
+	bEmpty = true;
+	bSoldOut = false;
+	bSelected = false;
+
+	RefreshSlotUI();
+}
+
+void UShopItemSlotWidget::SetSelected(bool InSelected)
+{
+	if (!bEmpty)
+	{
+		bSelected = InSelected;
+	}
+	else
+	{
+		bSelected = false;
+	}
+
+	RefreshSlotUI();
+}
+
+void UShopItemSlotWidget::SetSoldOut(bool InSoldOut)
+{
+	if (!bEmpty)
+	{
+		bSoldOut = InSoldOut;
+	}
+
+	RefreshSlotUI();
+}
+
+bool UShopItemSlotWidget::IsPurchasable() const
+{
+	return (!bEmpty && !bSoldOut && RowName != NAME_None);
+}
+
+void UShopItemSlotWidget::HandleSlotButtonClicked()
+{
+	if (IsPurchasable())
+	{
+		OnShopItemSlotClicked.Broadcast(SlotIndex);
+	}
+}
+
+
+void UShopItemSlotWidget::RefreshSlotUI()
+{
+	if (SlotButton)
+	{
+		SlotButton->SetIsEnabled(IsPurchasable());
+	}
+
+	float opacity = bSoldOut ? SoldOutOpacity : 1.0f;
+
+	if (SlotBorder)
+	{
+		SlotBorder->SetVisibility(!bEmpty ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+	}
+	if (SelectedBorder)
+	{
+		SelectedBorder->SetVisibility((!bEmpty && bSelected && !bSoldOut) ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+	}
+
+	// 아이템명
+	if (ItemNameText)
+	{
+		ItemNameText->SetText(bEmpty ? FText::GetEmpty() : FText::FromName(RowName));
+		ItemNameText->SetRenderOpacity(opacity);
+	}
+
+	// 설명
+	if (DescText)
+	{
+		if (!bEmpty && EquipmentRowPtr)
+		{
+			DescText->SetText(EquipmentRowPtr->Desc);
+		}
+		else
+		{
+			DescText->SetText(FText::GetEmpty());
+		}
+
+		DescText->SetRenderOpacity(opacity);
+	}
+
+	if (PriceText)
+	{
+		if (!bEmpty && EquipmentRowPtr)
+		{
+			PriceText->SetText(FText::AsNumber(EquipmentRowPtr->BuyPrice));
+		}
+		else
+		{
+			PriceText->SetText(FText::GetEmpty());
+		}
+
+		PriceText->SetRenderOpacity(opacity);
+	}
+
+	if (ItemIconImage)
+	{
+		if (bEmpty || !EquipmentRowPtr)
+		{
+			ItemIconImage->SetVisibility(ESlateVisibility::Collapsed);
+			ItemIconImage->SetBrushFromSoftTexture(nullptr);
+		}
+		else
+		{
+			ItemIconImage->SetVisibility(ESlateVisibility::Visible);
+			ItemIconImage->SetBrushFromSoftTexture(EquipmentRowPtr->Icon.IsNull() ? nullptr : EquipmentRowPtr->Icon);
+			ItemIconImage->SetRenderOpacity(opacity);
+		}
+	}
+}
