@@ -74,12 +74,6 @@ const FPlayerCurrency FPlayerAccountService::UpdateCurrency(const UObject* World
 	if (!GI || !Tag.IsValid() || Amount == 0) return GetPlayerCurrency(WorldContextObject);
 	if (!VerifyCurrency(GI, PlayerData)) return GetPlayerCurrency(WorldContextObject);
 
-	int64 CurrentOwned = GI->GetCurrencyAmount(Tag);
-	if (Amount < 0 && CurrentOwned < FMath::Abs(Amount)) {
-		UE_LOG(LogTemp, Warning, TEXT("UpdateCurrency Failed: Not enough currency."));
-		return GI->GetPlayerDataCopy().PlayerCurrency;
-	}
-
 	GI->AddCurrency(Tag, Amount);
 	GI->SavePlayerData();
 	return GI->GetPlayerDataCopy().PlayerCurrency;
@@ -601,27 +595,8 @@ void FPlayerAccountService::GetActiveGachaBannerRows(const UObject* WorldContext
 
 	FDateTime Now = FDateTime::UtcNow();
 	for (const auto* Row : AllRows) {
-		FDateTime StartDate, EndDate;
-		bool bStartOk = FDateTime::Parse(Row->StartTime, StartDate);
-		bool bEndOk = FDateTime::Parse(Row->EndTime, EndDate);
-
-		if (bStartOk && bEndOk) {
-			if (Now >= StartDate && Now <= EndDate) OutRows.Add(Row);
-		}
-		else UE_LOG(LogTemp, Error, TEXT("Date Parsing Failed: %s"), *Row->StartTime);
+		if (Now >= Row->StartTime && Now <= Row->EndTime) OutRows.Add(Row);
 	}
+
 	OutRows.Sort([](const FDTGachaBannerDataRow& A, const FDTGachaBannerDataRow& B) { return A.DisplayPriority < B.DisplayPriority; });
-}
-bool FPlayerAccountService::RequestGachaExecution(const UObject* WorldContextObject, const FPlayerData& PlayerData,FGameplayTag BannerTag, FCurrencyCost Cost, int32 PullCount)
-{
-	int64 SpendAmount = (PullCount == 1) ? (int64)Cost.SinglePullCost : (int64)Cost.MultiPullCost;
-	UpdateCurrency(WorldContextObject, PlayerData, Cost.ConsumptionCurrencyTag, -SpendAmount);
-
-	// 4. 가챠 결과 계산 (가챠 로직 전담 클래스가 있다면 호출)
-	// TArray<FGachaItemResult> Results = GenerateGachaResults(BannerTag, PullCount);
-
-	// 5. 결과 아이템 지급 (인벤토리 추가)
-	// GrantGachaRewards(WorldContextObject, Results);
-
-	return true;
 }
