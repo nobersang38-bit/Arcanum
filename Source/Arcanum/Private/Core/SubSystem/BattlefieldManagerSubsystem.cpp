@@ -88,10 +88,12 @@ void UBattlefieldManagerSubsystem::SetCurrentMatchData(const FMatchData& InData)
 
 void UBattlefieldManagerSubsystem::SetupUnits()
 {
+	// 유닛의 모든 정보를 다 가져옴
 	if (UGameInstance* GameInstance = UGameplayStatics::GetGameInstance(GetWorld()))
 	{
 		UGameDataSubsystem* GameDataSubsystem = GameInstance->GetSubsystem<UGameDataSubsystem>();
 		const TMap<FGameplayTag, UDataTable*> DataTables = GameDataSubsystem->MasterDataTables;
+		UE_LOG(LogTemp, Warning, TEXT("데이터 테이블 길이 %d"), DataTables.Num());
 		if (const UDataTable* AllyUnitDataTable = DataTables.FindRef(Arcanum::DataTable::AllyUnitInfo))
 		{
 			TArray<FAllyUnitsDataRow*> AllyUnitsDatArray;
@@ -99,7 +101,7 @@ void UBattlefieldManagerSubsystem::SetupUnits()
 			for (auto Row : AllyUnitsDatArray)
 			{
 				AllyUnitDatas.Add(Row->UnitData.Info.InfoSetting.Tag, Row->UnitData);
-				UE_LOG(LogTemp, Warning, TEXT("AllyUnitDatas : %s"), *Row->Tag.ToString());
+				UE_LOG(LogTemp, Warning, TEXT("AllyUnitDatas : %s"), *Row->UnitData.Info.InfoSetting.Tag.ToString());
 			}
 		}
 
@@ -110,7 +112,7 @@ void UBattlefieldManagerSubsystem::SetupUnits()
 			for (auto Row : EnemyUnitsDatArray)
 			{
 				EnemyUnitDatas.Add(Row->UnitData.Info.InfoSetting.Tag, Row->UnitData);
-				UE_LOG(LogTemp, Warning, TEXT("EnemyUnitDatas : %s"), *Row->Tag.ToString());
+				UE_LOG(LogTemp, Warning, TEXT("EnemyUnitDatas : %s"), *Row->UnitData.Info.InfoSetting.Tag.ToString());
 			}
 		}
 	}

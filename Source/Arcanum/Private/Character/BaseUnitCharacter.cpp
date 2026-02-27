@@ -41,12 +41,14 @@ ABaseUnitCharacter::ABaseUnitCharacter()
 	GetCharacterMovement()->SetRVOAvoidanceWeight(0.0f);
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
 void ABaseUnitCharacter::SetUnit(FUnitData InUnitData)
 {
 	UnitData = InUnitData;
-	DataInitialize();
+	IsSetupUnit = true;
+	//DataInitialize();
 }
 
 FGameplayTag ABaseUnitCharacter::GetTeamTag()
@@ -170,7 +172,10 @@ float ABaseUnitCharacter::GetAttackPower()
 
 void ABaseUnitCharacter::DataInitialize()
 {
-	UpdateUnitData();
+	if (!IsSetupUnit)
+	{
+		UpdateUnitData();
+	}
 	AnimSetting();
 }
 

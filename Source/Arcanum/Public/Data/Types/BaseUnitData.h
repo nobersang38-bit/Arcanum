@@ -202,7 +202,7 @@ public:
 	float AttackRate = 1.5f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
-	TSoftObjectPtr<class UBehaviorTree> BehaviorTree = nullptr;
+	TObjectPtr<class UBehaviorTree> BehaviorTree = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
 	FTargetPriorityWeightData TargetPriorityWeightData;

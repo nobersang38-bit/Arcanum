@@ -19,6 +19,11 @@
 #include "Character/BaseUnitCharacter.h"
 #include "Component/Stats/CharacterBattleStatsComponent.h"
 #include "Engine/OverlapResult.h"
+#include "Object/Object/FSM/Unit/UnitState_Idle.h"
+#include "Object/Object/FSM/Unit/UnitState_Move.h"
+#include "Object/Object/FSM/Unit/UnitState_Attack.h"
+#include "Object/Object/FSM/Unit/UnitState_HitReaction.h"
+#include "Object/Object/FSM/Unit/UnitState_Death.h"
 
 // Sets default values for this component's properties
 UUnitCombatComponent::UUnitCombatComponent()
@@ -105,8 +110,8 @@ void UUnitCombatComponent::TickUpdate()
 			//UE_LOG(LogTemp, Warning, TEXT("Attack : %s"), *GetOwner()->GetName());
 			Attack();
 			break;
-		case EUnitState::ActionRestricted: // Todo : 태그로 CC기 종류 감지해야함
-			//UE_LOG(LogTemp, Warning, TEXT("ActionRestricted : %s"), *GetOwner()->GetName());
+		case EUnitState::HitReaction: // Todo : 태그로 CC기 종류 감지해야함
+			//UE_LOG(LogTemp, Warning, TEXT("HitReaction : %s"), *GetOwner()->GetName());
 			break;
 		case EUnitState::Death:
 			//UE_LOG(LogTemp, Warning, TEXT("Death : %s"), *GetOwner()->GetName());
@@ -122,9 +127,10 @@ void UUnitCombatComponent::TickUpdate()
 void UUnitCombatComponent::AIInitialize()
 {
 	if (!OwnerAIC.IsValid()) return;
+	UE_LOG(LogTemp, Warning, TEXT("전트 컴포넌트 AIInitialize실행"));
 	if (!UnitAISetting.BehaviorTree.IsNull())
 	{
-		if (UBehaviorTree* BehaviorTree = UnitAISetting.BehaviorTree.LoadSynchronous())
+		if (UBehaviorTree* BehaviorTree = UnitAISetting.BehaviorTree)
 		{
 			OwnerAIC->RunBehaviorTree(BehaviorTree);
 			if (UBlackboardComponent* BBComp = OwnerAIC->GetBlackboardComponent())
@@ -181,9 +187,10 @@ void UUnitCombatComponent::TargetAssigned(AActor* Target)
 	{
 		if (UBlackboardComponent* BBComp = OwnerAIC->GetBlackboardComponent())
 		{
-			if (OwnerAIC.IsValid())
+			if (OwnerAIC.IsValid() && TargetActor != TargetActorBackup)
 			{
 				OwnerAIC->StopMovement();
+				TargetActorBackup = TargetActor;
 			}
 			BBComp->SetValue<UBlackboardKeyType_Object>(TargetActorKey, TargetActor.Get());
 			CurrentState = EUnitState::Move;
@@ -291,6 +298,36 @@ AActor* UUnitCombatComponent::GetHigherPriorityTarget(AActor* CurrentTarget, AAc
 	}
 }
 
+void UUnitCombatComponent::StateChange(EUnitState InUnitState)
+{
+	CurrentUnitState;
+}
+
+void UUnitCombatComponent::SetupStates()
+{
+	UnitStates.Empty();
+
+	// Idle
+	UUnitStateBase* State_Idle = NewObject<UUnitStateBase>(this, UUnitState_Idle::StaticClass());
+	UnitStates.Add(EUnitState::Idle, Cast<UUnitStateBase>(State_Idle));
+
+	// Move
+	UUnitStateBase* State_Move = NewObject<UUnitStateBase>(this, UUnitState_Move::StaticClass());
+	UnitStates.Add(EUnitState::Move, Cast<UUnitStateBase>(State_Move));
+
+	// Attack
+	UUnitStateBase* State_Attack = NewObject<UUnitStateBase>(this, UUnitState_Attack::StaticClass());
+	UnitStates.Add(EUnitState::Attack, Cast<UUnitStateBase>(State_Attack));
+
+	// HitReaction
+	UUnitStateBase* State_HitReaction = NewObject<UUnitStateBase>(this, UUnitState_HitReaction::StaticClass());
+	UnitStates.Add(EUnitState::HitReaction, Cast<UUnitStateBase>(State_HitReaction));
+
+	// Death
+	UUnitStateBase* State_Death = NewObject<UUnitStateBase>(this, UUnitState_Death::StaticClass());
+	UnitStates.Add(EUnitState::Death, Cast<UUnitStateBase>(State_Death));
+}
+
 // 애매한 상황이 발생하면 여기로 오게됨
 void UUnitCombatComponent::Idle()
 {
@@ -392,7 +429,7 @@ void UUnitCombatComponent::Attack()
 	}
 }
 
-void UUnitCombatComponent::ActionRestricted(FGameplayTag InActionRestrictedTag)
+void UUnitCombatComponent::HitReaction(FGameplayTag InActionRestrictedTag)
 {
 
 }

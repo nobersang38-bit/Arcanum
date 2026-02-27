@@ -49,11 +49,11 @@ void UEnemyUnitSpawnComponent::BeginPlay()
 					StageDifficult = StageDifficult.RightChop(LastDot + 1);
 				}
 
-				if (StageName.FindLastChar('.', LastDot))
-				{
-					// 찾은 인덱스 다음(+1)부터 끝까지 남기고 앞은 다 자릅니다.
-					StageName = StageName.RightChop(LastDot + 1);
-				}
+if (StageName.FindLastChar('.', LastDot))
+{
+	// 찾은 인덱스 다음(+1)부터 끝까지 남기고 앞은 다 자릅니다.
+	StageName = StageName.RightChop(LastDot + 1);
+}
 
 			}
 			else
@@ -93,7 +93,7 @@ void UEnemyUnitSpawnComponent::BeginPlay()
 		}
 	}
 
-	if (UARGameInstance* GameInstance = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(this)))
+	if (UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
 	{
 		if (UnitInfoDataTable)
 		{
@@ -115,14 +115,6 @@ void UEnemyUnitSpawnComponent::BeginPlay()
 			}
 		}
 	}
-
-	
-
-	/*UBattlefieldManagerSubsystem* BattlefieldManagerSubSystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
-	if (BattlefieldManagerSubSystem)
-	{
-		EnemyWaveData = BattlefieldManagerSubSystem->GetInBattleData().EnemyWaveDataInfo;
-	}*/
 
 	GetWorld()->GetTimerManager().SetTimer(WaveTimer, this, &UEnemyUnitSpawnComponent::WaveStart, TickInterval, true);
 }
@@ -150,7 +142,19 @@ void UEnemyUnitSpawnComponent::WaveStart()
 	for (int i = 0; i < EnemyWaveData.EnemyUnitsSet.Num(); i++)
 	{
 		FEnemyUnitStartSpawnTimeData EnemyUnitStartSpawnTimeData = EnemyWaveData.EnemyUnitsSet[i].EnemyUnitStartSpawnTimeData;
-		if (EnemyUnitStartSpawnTimeData.bUseStartSpawnTime && EnemyUnitStartSpawnTimeData.StartSpawnTime <= InternalTime)
+		if (!UnitTimes.Contains(EnemyWaveData.EnemyUnitsSet[i].EnemyUnitTag))
+		{
+			FUnitSpawnCalcData UnitSpawnCalcData;
+			UnitTimes.Add(EnemyWaveData.EnemyUnitsSet[i].EnemyUnitTag, UnitSpawnCalcData);
+		}
+		if (!UnitTimes.Find(EnemyWaveData.EnemyUnitsSet[i].EnemyUnitTag)->UnitSpawnCalcData.Contains(EUnitSpawnCalc::StartSpawnTime))
+		{
+			
+			UnitTimes.Find(EnemyWaveData.EnemyUnitsSet[i].EnemyUnitTag)->UnitSpawnCalcData.Add(EUnitSpawnCalc::StartSpawnTime, 0.0f);
+		}
+
+		float* Time = UnitTimes.Find(EnemyWaveData.EnemyUnitsSet[i].EnemyUnitTag)->UnitSpawnCalcData.Find(EUnitSpawnCalc::StartSpawnTime);
+		if (EnemyUnitStartSpawnTimeData.bUseStartSpawnTime && EnemyUnitStartSpawnTimeData.StartSpawnTime <= *Time)
 		{
 			FGameplayTag WaveTag = EnemyWaveData.EnemyUnitsSet[i].EnemyUnitTag;
 			UBattlefieldManagerSubsystem* BattlefieldManagerSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
@@ -164,19 +168,23 @@ void UEnemyUnitSpawnComponent::WaveStart()
 					if (!bIsDataSuccess) continue;
 
 					FTransform Transform;
-					Transform.SetLocation(GetOwner()->GetActorForwardVector() * 100 + GetOwner()->GetActorLocation());
+					FVector ResultSpawnLocation = GetOwner()->GetActorTransform().TransformPosition(SpawnLocation);
+					Transform.SetLocation(ResultSpawnLocation);
+					Transform.SetRotation(SpawnRotator.Quaternion());
 					AActor* EnemyUnitInstance = UGameplayStatics::BeginDeferredActorSpawnFromClass(GetWorld(), EnemyUnitClass, Transform, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-
 					ABaseUnitCharacter* EnemyUnitCharacter = Cast<ABaseUnitCharacter>(EnemyUnitInstance);
 					if (EnemyUnitCharacter)
 					{
 						EnemyUnitCharacter->SetUnit(UnitData);
 
 						EnemyUnitCharacter->FinishSpawning(Transform);
+						*Time = 0.0f;
+						break;
 					}
 				}
 			}
 		}
+		*Time += TickInterval;
 	}
 	InternalTime += TickInterval;
 }
@@ -185,8 +193,6 @@ void UEnemyUnitSpawnComponent::WaveStart()
 FGameplayTag UEnemyUnitSpawnComponent::CalculateEnemyUnitStartSpawnTime(const FEnemyUnitStartSpawnTimeData& InEnemyUnitStartSpawnTimeData, float InTime, float& OutPassedTime)
 {
 	if (!InEnemyUnitStartSpawnTimeData.bUseStartSpawnTime) return FGameplayTag::EmptyTag;
-
-
 
 	return FGameplayTag();
 }

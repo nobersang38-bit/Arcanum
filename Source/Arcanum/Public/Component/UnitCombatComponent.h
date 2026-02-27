@@ -21,8 +21,8 @@ enum class EUnitState : uint8
 	Idle				UMETA(DisplayName = "Idle"),
 	Move				UMETA(DisplayName = "Move"),
 	Attack				UMETA(DisplayName = "Attack"),
-	ActionRestricted	UMETA(DisplayName = "ActionRestricted"),
-	Death				UMETA(DisplayName = "Hit"),
+	HitReaction			UMETA(DisplayName = "HitReaction"),
+	Death				UMETA(DisplayName = "Death"),
 };
 
 // 김도현
@@ -32,6 +32,11 @@ UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ARCANUM_API UUnitCombatComponent : public UActorComponent
 {
 	GENERATED_BODY()
+	friend class UUnitState_Idle;
+	friend class UUnitState_Move;
+	friend class UUnitState_Attack;
+	friend class UUnitState_HitReaction;
+	friend class UUnitState_Death;
 
 public:	
 	UUnitCombatComponent();
@@ -62,6 +67,22 @@ protected:
 
 	void SelectBestTarget(const TSet<TWeakObjectPtr<AActor>>& InDetectedCharacters);
 	AActor* GetHigherPriorityTarget(AActor* CurrentTarget, AActor* WinTarget, int32& WinScore);
+
+#pragma region 테스트
+	class UUnitStateBase;
+	UPROPERTY()
+	TWeakObjectPtr<UUnitStateBase> CurrentUnitState = nullptr;
+
+	UPROPERTY()
+	TMap<EUnitState, UUnitStateBase*> UnitStates;
+
+	UFUNCTION()
+	void StateChange(EUnitState InUnitState);
+
+	UFUNCTION()
+	void SetupStates();
+#pragma endregion
+
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -99,7 +120,7 @@ private:
 	void Idle();
 	void Move();
 	void Attack();
-	void ActionRestricted(FGameplayTag InActionRestrictedTag);
+	void HitReaction(FGameplayTag InActionRestrictedTag);
 	void Death(const FRegenStat& InData);
 
 	void StateReset();
@@ -119,6 +140,9 @@ private:
 	// 현재 내가 공격중인 적이거나 공격해야하는 적
 	UPROPERTY()
 	TWeakObjectPtr<AActor> TargetActor = nullptr;
+
+	UPROPERTY()
+	TWeakObjectPtr<AActor> TargetActorBackup = nullptr;
 
 	// 감지된 적 유닛
 	UPROPERTY()

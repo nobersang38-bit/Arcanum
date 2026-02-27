@@ -9,6 +9,20 @@
 #include "Data/Types/UnitData.h"
 #include "EnemyUnitSpawnComponent.generated.h"
 
+UENUM()
+enum class EUnitSpawnCalc : uint8
+{
+	StartSpawnTime,
+};
+
+USTRUCT()
+struct FUnitSpawnCalcData
+{
+	GENERATED_BODY()
+public:
+	TMap<EUnitSpawnCalc, float> UnitSpawnCalcData;
+};
+
 // 김도현
 // 적 웨이브 생성 컴포넌트
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -63,6 +77,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting", meta = (MakeEditWidget = "true"))
 	FVector SpawnLocation = FVector::ZeroVector;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting", meta = (MakeEditWidget = "true"))
+	FRotator SpawnRotator = FRotator::ZeroRotator;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
 	float TickInterval = 0.1f;
 	// 적 웨이브 데이터
@@ -76,4 +93,8 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TMap<FGameplayTag, FUnitData> UsingUnits;
+
+	// 유닛 태그, 유닛 스폰 계산 타입, 지난시간
+	UPROPERTY()
+	TMap<FGameplayTag, FUnitSpawnCalcData> UnitTimes;
 };
