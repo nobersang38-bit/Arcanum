@@ -5,6 +5,19 @@
 #include "Components/Border.h"
 #include "Components/Image.h"
 
+void URoundedSlotWidget::NativePreConstruct()
+{
+    if (BackgroundColor) BackgroundColor->SetBrushColor(RoundColor);
+    if (IconImage && IconImg) IconImage->SetBrushFromTexture(IconImg);
+
+    // 테스트용으로 보유 캐릭터 구분
+    // 나중에 json 값으로 구분하기
+    float TargetAlpha = bShowEmptySlotOverlay ? 0.8f : 0.0f;
+    FLinearColor CurrentColor = SlotDimOverlay->ColorAndOpacity;
+    CurrentColor.A = TargetAlpha;
+    SlotDimOverlay->SetColorAndOpacity(CurrentColor);
+}
+
 void URoundedSlotWidget::SetRoundBackgroundColor(FLinearColor NewColor)
 {
     if (BackgroundColor)

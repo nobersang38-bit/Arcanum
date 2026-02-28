@@ -15,7 +15,7 @@ struct FBattleCharacterDef
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Identity")
     FGameplayTag CharacterTag;
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    UTexture2D* CharacterIcon;
+    TSoftObjectPtr<UTexture2D> CharacterIcon;
 
     /* Start 다이얼로그 (추후 sound로 변경 가능) */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
@@ -33,7 +33,7 @@ struct FBattleCharacterDef
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Growth")
     FGameplayTag MaxGrade;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Growth")
-    int32 RequiredShardCount = 10;
+    TArray<int32> RequiredShardCount = { 10, 20, 30 };
 };
 
 USTRUCT(BlueprintType)
@@ -48,7 +48,8 @@ struct FBattleCharacterInfo {
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Growth")
     FGameplayTag CurrGrade;
 
-    /** 성급? 관련 변수, 0이면 미획득 조회시는 +1로 DT에서 찾아야 함.*/
+    /** RequiredShardCount 관련 변수, 0이면 미획득, 획득시 0<CurrentGrade
+        조회시는 -1로 DT에서 찾아야 함.(ex. RequiredShardCount[CurrentGrade-1] => 10)*/
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Growth")
     int32 CurrentGrade = 0;
 

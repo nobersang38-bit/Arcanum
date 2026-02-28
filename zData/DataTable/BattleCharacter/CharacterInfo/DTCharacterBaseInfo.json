@@ -1,8 +1,9 @@
 [
   {
     "Name": "Elara",
+    "BattleCharacterInfo": {
     "CharacterTag": "Arcanum.Player.ID.Elara",
-	"CharacterIcon":"/Game/Assets/UI/Character/AvatarThumb.Icon_Merry",
+	  "CharacterIcon":"/Game/Assets/UI/Character/AvatarThumb.Icon_Merry",
     "DefaultDialogue": "눈송이처럼 가벼운 발걸음으로, 당신을 도와줄게요~",
     "AttackDialogue": "차가운 바람 한 줌, 이리 와요~! 쿵!",
     "HitDialogue": "찡~! 아프진 않지만... 더 조심해야겠어요…",
@@ -10,9 +11,11 @@
     "DefaultGrade": "Arcanum.Player.Grade.Common.0",
     "MaxGrade": "Arcanum.Player.Grade.Common.0",
     "RequiredShardCount": [10,20,30]
+    }
   },
   {
     "Name": "Iris",
+    "BattleCharacterInfo": {
     "CharacterTag": "Arcanum.Player.ID.Iris",
 	"CharacterIcon":"/Game/Assets/UI/Character/AvatarThumb.Icon_Nurse",
     "DefaultDialogue": "어떤 일이라도 제게 맡겨 주세요! 다 치료해 드릴게요!",
@@ -22,9 +25,11 @@
     "DefaultGrade": "Arcanum.Player.Grade.Common.0",
     "MaxGrade": "Arcanum.Player.Grade.Common.0",
     "RequiredShardCount": [10,20,30]
+    }
   },
   {
     "Name": "Celestia",
+    "BattleCharacterInfo": {
     "CharacterTag": "Arcanum.Player.ID.Celestia",
 	"CharacterIcon":"/Game/Assets/UI/Character/AvatarThumb.Icon_Demonia",
     "DefaultDialogue": "내가 나타났다면, 이미 끝난 게임이지.",
@@ -34,9 +39,11 @@
     "DefaultGrade": "Arcanum.Player.Grade.Rare.1",
     "MaxGrade": "Arcanum.Player.Grade.Rare.1",
     "RequiredShardCount": [10,20,30]
+    }
   },
   {
     "Name": "Lynette",
+    "BattleCharacterInfo": {
     "CharacterTag": "Arcanum.Player.ID.Lynette",
 	"CharacterIcon":"/Game/Assets/UI/Character/AvatarThumb.Icon_Anubis",
     "DefaultDialogue": "내가 존재하는 한, 균형은 유지된다.",
@@ -46,9 +53,11 @@
     "DefaultGrade": "Arcanum.Player.Grade.Rare.1",
     "MaxGrade": "Arcanum.Player.Grade.Rare.1",
     "RequiredShardCount": [10,20,30]
+    }
   },
   {
     "Name": "Arna",
+    "BattleCharacterInfo": {
     "CharacterTag": "Arcanum.Player.ID.Arna",
 	"CharacterIcon":"/Game/Assets/UI/Character/AvatarThumb.Icon_Outsider",
     "DefaultDialogue": "나를 바라보지 마… 나는 그렇게 강하지 않아…",
@@ -58,9 +67,11 @@
     "DefaultGrade": "Arcanum.Player.Grade.Epic.2",
     "MaxGrade": "Arcanum.Player.Grade.Epic.2",
     "RequiredShardCount": [10,20,30]
+    }
   },
   {
     "Name": "Aiden",
+    "BattleCharacterInfo": {
     "CharacterTag": "Arcanum.Player.ID.Aiden",
 	"CharacterIcon":"",
     "DefaultDialogue": "나와 함께라면 두려울 것이 없다.",
@@ -70,5 +81,6 @@
     "DefaultGrade": "Arcanum.Player.Grade.Epic.2",
     "MaxGrade": "Arcanum.Player.Grade.Epic.2",
     "RequiredShardCount": [10,20,30]
+    }
   }
 ]

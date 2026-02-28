@@ -32,7 +32,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stage|Health")
 	float EnemyNexusHealth = 100.0f;
 
-	// Todo 부모 데이터 에셋 만들어서 변경해야 합니다
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stage|Wave")
 	TSoftObjectPtr<UDataAsset> WaveData = nullptr;
 };

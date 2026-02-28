@@ -3,6 +3,24 @@
 #include "Components/TextBlock.h"
 #include "UI/Common/CommonBtnWidget.h"
 
+void UCharacterInfo::NativePreConstruct()
+{
+	Super::NativePreConstruct();
+
+    FText DefaultName = FText::FromString(TEXT("캐릭터 이름"));
+    FText DefaultInfo = FText::FromString(TEXT("등급\n성급\n체력\n마나"));
+
+    if (CharacterNameText)
+    {
+        CharacterNameText->SetText(CharactNameTxt.IsEmpty() ? DefaultName : CharactNameTxt);
+    }
+
+    if (CharacterInfoText)
+    {
+        CharacterInfoText->SetText(CharacInfoTxt.IsEmpty() ? DefaultInfo : CharacInfoTxt);
+    }
+}
+
 void UCharacterInfo::NativeConstruct()
 {
 	Super::NativeConstruct();

@@ -3,7 +3,9 @@
 #include "GameplayTags/ArcanumTags.h"
 #include "Core/SubSystem/GameDataSubsystem.h"
 #include "DataInfo/PlayerData/FPlayerData.h"
+#include "Core/Interfaces/IPlayerAccountService.h"
 #include "DataInfo/BattleCharacter/Equipment/DataTable/DTEquipment.h"
+#include "DataInfo/GachaData/DataTable/DTGachaBannerData.h"
 #include "ARPlayerAccountService.generated.h"
 
 UENUM(BlueprintType)
@@ -39,8 +41,68 @@ class UARGameInstance;
  */
 
 
-class FPlayerAccountService
+class FPlayerAccountService : public IPlayerAccountService
 {
+#pragma region 인터페이스(추후 서버 대비용 예시)
+public:
+	// 인터페이스 구현
+	virtual void GetIPlayerDataCopy(const UObject* WorldContextObject, TFunction<void(bool)> OptionalCallback) override;
+	virtual FOnPlayerDataReceived& OnPlayerDataReceived() override { return PlayerDataReceivedDelegate; }
+private:
+	FOnPlayerDataReceived PlayerDataReceivedDelegate;
+#pragma endregion
+
+
+#pragma region PlayerData Getter
+public:
+	/* 사용 예 
+	   const FPlayerCurrency Currency = FPlayerAccountService::GetPlayerCurrency(this);
+	 */
+
+    // 플레이어 전체 데이터 카피
+    static const FPlayerData GetPlayerDataCopy(const UObject* WorldContextObject);
+    // 재화
+    UFUNCTION(BlueprintCallable)
+    const FPlayerCurrency GetPlayerCurrency(const UObject* WorldContextObject);
+    // 전투 기본 데이터
+    UFUNCTION(BlueprintCallable)
+    const FPlayerBattleData GetPlayerBattleData(const UObject* WorldContextObject);
+    // 보유 캐릭터
+    UFUNCTION(BlueprintCallable)
+    const TArray<FBattleCharacterData> GetOwnedCharacters(const UObject* WorldContextObject);
+    // 인벤토리
+    UFUNCTION(BlueprintCallable)
+    const TArray<FEquipmentInfo> GetInventory(const UObject* WorldContextObject);
+    // 스테이지 진행도
+    UFUNCTION(BlueprintCallable)
+    const TMap<FGameplayTag, FStageProgressData> GetStageProgressMap(const UObject* WorldContextObject);
+    // 가챠 상태
+    UFUNCTION(BlueprintCallable)
+    const FGachaData GetGachaState(const UObject* WorldContextObject);
+    // 퀘스트 상태
+    UFUNCTION(BlueprintCallable)
+	const FPlayerQuest GetQuestState(const UObject* WorldContextObject);
+#pragma endregion
+
+#pragma region PlayerData Updater
+public:
+	/** 플레이어 재화 변경할때*/
+	const FPlayerCurrency UpdateCurrency(const UObject* WorldContextObject, const FPlayerData& PlayerData, FGameplayTag Tag, int64 Amount);
+private:
+	/** 치트 방지용*/
+	bool VerifyCurrency(UARGameInstance* GI, FPlayerData CachedData);
+	/** 세이브 삭제, 강제종료 */
+	void VerifiedFailure(UARGameInstance* GI);
+#pragma endregion
+
+
+#pragma region 로그인 관련
+public:
+	static bool LoadPlayerData(const UObject* WorldContextObject);
+	static bool SavePlayerData(const UObject* WorldContextObject);
+#pragma endregion
+
+
 #pragma region Battle Widget 관련
 public:
 // 배틀스타트 함수 (비어놓고 스탑만 누르도록)
@@ -58,7 +120,11 @@ public:
 
 #pragma region Shop Widget 관련
 public:
-    static bool PurchaseEquipment(UARGameInstance* GameInstance, FName RowName);
+    /** DT의 장비목록을 반환하는 함수*/
+    TArray<FName> GetEquipmentList(const UObject* WorldContextObject);
+    /** 상점에서 구매시 사용하는 함수*/
+    static bool PurchaseEquipment(const UObject* WorldContextObject, FName RowName);
+    /** */
     static const FDTEquipmentInfoRow* GetItemDefinition(UGameDataSubsystem* DataSubsystem, const FGameplayTag& ItemTag);
 
 	/* 상점 진입 시 초기화 (저장시간 확인 후 유지/갱신 판정) */
@@ -104,7 +170,8 @@ private:
 
 #pragma region Gacha Widget 관련
 public:
-
+	const FDTGachaBannerDataRow* GetGachaBannerData(const UObject* WorldContextObject, FGameplayTag InBannerTag);
+	void GetActiveGachaBannerRows(const UObject* WorldContextObject, TArray<const FDTGachaBannerDataRow*>& OutRows);
 #pragma endregion
 
 };

@@ -20,12 +20,6 @@ class ARCANUM_API ABaseUnitCharacter : public ACharacter, public ITeamInterface,
 	GENERATED_BODY()
 public:
 #pragma region Debug
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "00_Test")
-	//float Speed = 400.0f;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "00_Test")
-	//float Range = 200.0f;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "00_Test")
 	bool RandomRvoWeight = false;
 #pragma endregion
@@ -33,10 +27,11 @@ public:
 	ABaseUnitCharacter();
 
 public:
+	void SetUnit(FUnitData InUnitData);
+
 	virtual FGameplayTag GetTeamTag() override;
 
-	// Todo : 연결 느슨하게 변경해야함
-	//class UCharacterBattleStatsComponent* GetCharacterBattleStatsComponent() { return CharacterBattleStatsComponent; }
+	class UCharacterBattleStatsComponent* GetCharacterBattleStatsComponent() { return CharacterBattleStatsComponent; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -52,8 +47,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<class UUnitCombatComponent> UnitCombatComponent = nullptr;
 
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	//TObjectPtr<class UCharacterBattleStatsComponent> CharacterBattleStatsComponent = nullptr;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<class UCharacterBattleStatsComponent> CharacterBattleStatsComponent = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<class UWidgetComponent> HealthBarComponent = nullptr;
@@ -61,6 +56,9 @@ protected:
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MainData")
 	FDataTableRowHandle DTUnitDataRowHandle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MainData")
+	TObjectPtr<UDataTable> DTUnitDataTable = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MainData")
 	FUnitData UnitData;
@@ -80,5 +78,7 @@ private:
 	UFUNCTION()
 	void RecievedDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
+	void UpdateUnitData();
 
+	bool IsSetupUnit = false;
 };
