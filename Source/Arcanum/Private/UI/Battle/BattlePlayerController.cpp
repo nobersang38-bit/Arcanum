@@ -35,7 +35,6 @@ void ABattlePlayerController::SetupInputComponent()
 	if (UEnhancedInputLocalPlayerSubsystem* SubSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{
 		SubSystem->AddMappingContext(InputMappingContext, 0);
-		UE_LOG(LogTemp, Warning, TEXT("이동 작동-1"));
 	}
 
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
@@ -177,7 +176,6 @@ void ABattlePlayerController::SetupInputMode()
 // ========================================================
 void ABattlePlayerController::InputMove(const FInputActionValue& InputValue)
 {
-	UE_LOG(LogTemp, Warning, TEXT("이동 작동"));
 	// 1. 입력값을 Vector2D로 변환 (W/S는 Y, A/D는 X)
 	FVector2D MovementVector = InputValue.Get<FVector2D>();
 

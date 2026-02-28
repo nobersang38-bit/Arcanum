@@ -16,10 +16,8 @@ void UUnitState_Move::OnTick(float DeltaTime)
 {
 	if (!Internal_UnitCombatComponent.IsValid()) return;
 
-	Internal_UnitCombatComponent->StateReset();
-
 	TArray<FOverlapResult> OutOverlaps;
-	FCollisionShape MySphere = FCollisionShape::MakeSphere(Internal_UnitCombatComponent->TargetPriorityWeight.GetDetectDistance());
+	FCollisionShape MySphere = FCollisionShape::MakeSphere(Internal_UnitCombatComponent->UnitData.Info.AISetting.TargetPriorityWeightData.GetDetectDistance());
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(Internal_UnitCombatComponent->GetOwner());
 
@@ -38,22 +36,21 @@ void UUnitState_Move::OnTick(float DeltaTime)
 	{
 		Internal_UnitCombatComponent->OnBeginDetected(nullptr, OutOverlaps[i].GetActor(), nullptr, 0, false, FHitResult());
 	}
+
 	if (Internal_UnitCombatComponent->DetectedActors.Num() > 0)
 	{
 		Internal_UnitCombatComponent->SelectBestTarget(Internal_UnitCombatComponent->DetectedActors);
+		Internal_UnitCombatComponent->MoveToTarget(Internal_UnitCombatComponent->TargetActor.Get());
 	}
 	else
 	{
 		Internal_UnitCombatComponent->TargetAssigned(Internal_UnitCombatComponent->TargetBasement.Get());
+		Internal_UnitCombatComponent->MoveToTarget(Internal_UnitCombatComponent->TargetActor.Get());
 	}
 
-	if (Internal_UnitCombatComponent->TargetActor.IsValid())
+	if (Internal_UnitCombatComponent->TargetActor.IsValid() && Internal_UnitCombatComponent->IsCanAttackRange())
 	{
-		float Distance = (Internal_UnitCombatComponent->TargetActor->GetActorLocation() - Internal_UnitCombatComponent->GetOwner()->GetActorLocation()).SquaredLength();
-		if (Distance <= Internal_UnitCombatComponent->UnitAISetting.AttackRange)
-		{
-			Internal_UnitCombatComponent->StateChange(EUnitState::Attack);
-		}
+		Internal_UnitCombatComponent->StateChange(EUnitState::Attack);
 	}
 }
 

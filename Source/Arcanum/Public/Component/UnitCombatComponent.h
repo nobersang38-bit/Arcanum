@@ -45,6 +45,27 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
+#pragma endregion
+
+
+#pragma region 게터
+public:
+	// 현재 나를 공격중인 적은 몇명인가
+	FORCEINLINE int32 GetAttackerCount() const { return AttackerCount; };
+
+	// 런타입 유닛 데이터 가져오기
+	FORCEINLINE FUnitRuntimeData& GetUnitRuntimeData() { return UnitRuntimeData; }
+
+	FORCEINLINE bool GetIsDead() const { return bIsDead; }
+
+#pragma endregion
+
+
+#pragma region 액션
+public:
+	void SendDamage(float InDamage);
+
 #pragma endregion
 
 
@@ -55,6 +76,7 @@ protected:
 
 	UFUNCTION()
 	void TickUpdate();
+
 #pragma endregion
 
 
@@ -68,6 +90,7 @@ protected:
 
 	UFUNCTION()
 	void SetupStates();
+
 #pragma endregion
 
 
@@ -76,37 +99,32 @@ protected:
 	// 상태변경
 	void StateChange(EUnitState InUnitState);
 
-	// Todo KDH : FSM 내부로 이동해야함
 	void OnBeginDetected(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	// 공격 대상 지정
 	void TargetAssigned(AActor* Target);
 
-	// 최우선 타겟 가지고 있기 및 지정
+	// 블랙보드의 타겟 오브젝트의 값 변경으로 이동
+	void MoveToTarget(AActor* Target);
+
+	// 최우선 타겟 지정
 	void SelectBestTarget(const TSet<TWeakObjectPtr<AActor>>& InDetectedCharacters);
 
 	// 최우선 타겟 검색 후 리턴
-	AActor* GetHigherPriorityTarget(AActor* CurrentTarget, AActor* WinTarget, int32& WinScore);
+	AActor* GetHigherPriorityTarget(AActor* CurrentTarget, AActor* WinTarget, float& WinScore);
+
+	// 공격이 가능한 거리라면 true
+	bool IsCanAttackRange();
 	
 #pragma endregion
 
 
 #pragma region 상태
+protected:
 	void LightHitReaction();
 	void Death(const FRegenStat& InData);
-	void StateReset();
 
 #pragma endregion
-
-
-public:
-	// 현재 나를 공격중인 적은 몇명인가
-	FORCEINLINE int32 GetAttackerCount() const { return AttackerCount; };
-
-	// 런타입 유닛 데이터 가져오기
-	FUnitRuntimeData& GetUnitRuntimeData() { return UnitRuntimeData; }
-
-	void SendDamage(float InDamage);
 
 
 #pragma region 수동 설정 데이터
@@ -127,11 +145,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FGameplayTag TeamTag;
 
-	UPROPERTY()
-	FUnitAISetting UnitAISetting;
-
-	UPROPERTY()
-	FTargetPriorityWeightData TargetPriorityWeight;
 #pragma endregion
 
 
@@ -156,22 +169,19 @@ private:
 
 #pragma region 런타임 데이터
 private:
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, Category = "RuntimeData")
 	TWeakObjectPtr<UUnitStateBase> CurrentUnitState = nullptr;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, Category = "RuntimeData")
 	TMap<EUnitState, UUnitStateBase*> UnitStates;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, Category = "RuntimeData")
 	TWeakObjectPtr<AActor> TargetActor = nullptr;
 
-	UPROPERTY()
-	TWeakObjectPtr<AActor> TargetActorBackup = nullptr;
-
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, Category = "RuntimeData")
 	TSet<TWeakObjectPtr<AActor>> DetectedActors;
-
-	UPROPERTY()
+	
+	UPROPERTY(VisibleAnywhere, Category = "RuntimeData")
 	FUnitRuntimeData UnitRuntimeData;
 
 	// 현재 나를 공격중인 적은 몇명인가, 나중에 액터나 캐릭터 배열로 바꿀수도 있음
@@ -179,22 +189,13 @@ private:
 
 	bool bIsDead = false;
 
-	float RotateInterval = 0.05f;
-
-	float RotateSpeed = 50.0f;
-
 #pragma endregion
 
 
 #pragma region 타이머 핸들
 	private:
 		FTimerHandle TickTimerHandle;
-		FTimerHandle AttackTimerHandle;
 		FTimerHandle DeathTimerHandle;
-
-		FTimerHandle RotateTimerHandle;
-
-		FTimerDelegate RotateDelegate;
 
 #pragma endregion
 };

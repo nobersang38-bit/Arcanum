@@ -42,10 +42,11 @@ protected:
 
 	// IUnitDataInterface을(를) 통해 상속됨
 	const FUnitData& GetUnitData() override;
+	virtual bool GetIsDead() override;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<class UUnitCombatComponent> UnitCombatComponent = nullptr;
+	TObjectPtr<class UUnitCombatComponent> UnitCombatComponent0 = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<class UCharacterBattleStatsComponent> CharacterBattleStatsComponent = nullptr;

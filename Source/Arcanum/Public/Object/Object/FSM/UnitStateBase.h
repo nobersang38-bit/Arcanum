@@ -21,5 +21,6 @@ public:
 	virtual void OnExit() {};
 
 protected:
+	UPROPERTY()
 	TWeakObjectPtr<UUnitCombatComponent> Internal_UnitCombatComponent = nullptr;
 };

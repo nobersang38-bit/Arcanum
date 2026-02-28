@@ -30,7 +30,7 @@ ABaseUnitCharacter::ABaseUnitCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	UnitCombatComponent = CreateDefaultSubobject<UUnitCombatComponent>(TEXT("UnitCombatComponent"));
+	UnitCombatComponent0 = CreateDefaultSubobject<UUnitCombatComponent>(TEXT("UnitCombatComponent"));
 	CharacterBattleStatsComponent = CreateDefaultSubobject<UCharacterBattleStatsComponent>(TEXT("CharacterBattleStatsComponent"));
 	HealthBarComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBarComponent"));
 
@@ -180,12 +180,12 @@ void ABaseUnitCharacter::DataInitialize()
 
 FUnitRuntimeData& ABaseUnitCharacter::GetUnitRuntimeData()
 {
-	return UnitCombatComponent->GetUnitRuntimeData();
+	return UnitCombatComponent0->GetUnitRuntimeData();
 }
 
 void ABaseUnitCharacter::OnAttackNotifyTriggered()
 {
-	UnitCombatComponent->SendDamage(GetAttackPower());
+	UnitCombatComponent0->SendDamage(GetAttackPower());
 }
 
 // 데미지 받기
@@ -212,5 +212,14 @@ void ABaseUnitCharacter::UpdateUnitData()
 const FUnitData& ABaseUnitCharacter::GetUnitData()
 {
 	return UnitData;
+}
+
+bool ABaseUnitCharacter::GetIsDead()
+{
+	if (UnitCombatComponent0)
+	{
+		return UnitCombatComponent0->GetIsDead();
+	}
+	return true;
 }
 

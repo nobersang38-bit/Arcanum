@@ -25,4 +25,5 @@ class ARCANUM_API IRuntimeUnitDataInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	virtual FUnitRuntimeData& GetUnitRuntimeData() = 0;
+	virtual bool GetIsDead() = 0;
 };
