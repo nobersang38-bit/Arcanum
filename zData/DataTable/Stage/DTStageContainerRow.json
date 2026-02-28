@@ -1,0 +1,89 @@
+[
+  {
+	"StageData":[
+    "StageName": "Normal_Stage1",
+    "StageTag": "Arcanum.BattleStage.Normal.Stage1",
+	"StageDesc" : "이 스테이지는 노말 스테이지1",
+	"EnemyBasement" : 
+		{
+			"Health" : 100
+		},
+	"StageIcon":"/Game/Assets/UI/",
+	"SpawnInfos": [
+	  {
+		"EnemyTag" : "",
+		"Health": 100,
+		"AttackPower": 100,
+		"AttackSpeed": 10.0,
+		"MoveSpeed": 5.0,
+		"SpawnTime" : 1.0,
+		"Count" : 10
+	  },
+	  {
+		"EnemyTag" : "",
+		"Health": 200,
+		"AttackPower": 200,
+		"AttackSpeed": 10.0,
+		"MoveSpeed": 5.0,
+		"SpawnTime" : 1.0,
+		"Count" : 5
+	  },
+	  {
+		"EnemyTag" : "",
+		"Health": 500,
+		"AttackPower": 300,
+		"AttackSpeed": 20.0,
+		"MoveSpeed": 20.0,
+		"SpawnTime" : 5.0,
+		"Count" : 1
+	  }
+	],
+	"Reward" : 
+	{
+		"Gold" : 100,
+		"Gem" : 5
+	},
+	"StarCount" : 0, 
+	"BestClearTimeMS" : 0.0
+	]
+  },
+     {
+		 	"StageData":[
+    "StageName": "Normal_Stage2",
+    "StageTag": "Arcanum.BattleStage.Normal.Stage2",
+	"StageDesc" : "이 스테이지는 노말 스테이지2",
+	"EnemyBasement" : 
+		{
+			"Health" : 100
+		},
+	"StageIcon":"/Game/Assets/UI/",
+	"SpawnInfos": [
+	  {
+		"EnemyTag" : "",
+		"Health": 100,
+		"AttackPower": 100,
+		"AttackSpeed": 10.0,
+		"MoveSpeed": 5.0,
+		"SpawnTime" : 1.0,
+		"Count" : 10
+	  },
+	  {
+		"EnemyTag" : "",
+		"Health": 200,
+		"AttackPower": 200,
+		"AttackSpeed": 10.0,
+		"MoveSpeed": 5.0,
+		"SpawnTime" : 1.0,
+		"Count" : 10
+	  }
+	],
+	"Reward" : 
+	{
+		"Gold" : 100,
+		"Gem" : 5
+	},
+	"StarCount" : 0,
+	"BestClearTimeMS" : 0.0
+	]
+  }
+]
