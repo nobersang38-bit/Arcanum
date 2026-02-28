@@ -43,7 +43,7 @@ public:
 
 protected:
 	/* SlotCount만큼 슬롯 위젯 생성 (컨테이너) */
-	void CreateInventorySlots();
+	void CreateInventorySlots(int32 InSlotCount);
 
 	/* 슬롯 클릭 바인딩 */
 	void BindSlotEvents();
@@ -59,7 +59,7 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Inventory")
 	FOnInventorySlotSelected OnInventorySlotSelected;
 
-protected: 
+protected:
 	/* 스크롤 컨테이너 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget, AllowPrivateAccess = "true"))
 	TObjectPtr<UScrollBox> ScrollBox;
@@ -82,8 +82,4 @@ protected:
 	/* 현재 선택 슬롯 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	FGuid SelectedGuid;
-
-    /* 슬롯 생성 수 */
-	UPROPERTY()
-	int32 SlotCount = 0;
 };

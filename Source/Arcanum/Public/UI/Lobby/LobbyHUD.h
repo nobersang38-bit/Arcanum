@@ -127,21 +127,36 @@ protected:
 #pragma endregion
 
 #pragma region 인벤토리
+protected:
 	/* 인벤토리 선택 알림 수신 */
 	UFUNCTION()
 	void HandleInventorySlotSelected(FGuid InItemGuid);
+
+	/* 인벤 UI 갱신(표시용) */
+	void RefreshInventoryUI();
+
+	/* 장비 DT 캐시 구축(로비 진입 시 1회) */
+	void BuildEquipmentRowCache();
+
+	/* 캐시에서 ItemTag로 RowPtr 찾기(O(1)) */
+	const FDTEquipmentInfoRow* FindEquipmentRowByTag(const FGameplayTag& InItemTag) const;
 
 protected:
 	/* 인벤토리 위젯 */
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UInventoryHUDWidget> InventoryHUDWidget;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shop")
+	/* 인벤 슬롯 생성 개수 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
 	int32 InventorySlotCount = 50;
 
 	/* 현재 선택된 인벤 아이템 */
 	UPROPERTY()
 	FGuid SelectedInventoryItemGuid;
+
+private:
+	/* ItemTag -> 장비 DT RowPtr 캐시 */
+	TMap<FGameplayTag, const FDTEquipmentInfoRow*> EquipmentRowByTag;
 
 #pragma endregion
 
@@ -177,9 +192,13 @@ protected:
 	UFUNCTION()
 	void HandleShopSecondChanged(int32 InRemainingSeconds);
 
-	// 선택 아이템 구매
+	/* 아이템 구매 */ 
 	UFUNCTION()
 	void TryPurchaseSelectedItem(FName InItemRowName);
+
+	/* 아이템 판매 */
+	UFUNCTION()
+	void TrySellSelectedItem();
 
 private:
 	/* DT 조회로 상점 표시 캐시 */
@@ -192,7 +211,7 @@ protected:
 
 	/* 상점 슬롯 개수 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shop")
-	int32 ShopSlotCount = 4;
+	int32 ShopSlotCount = 5;
 
 private:
 	/* 상점 UI 표시용 RowName 카피 */

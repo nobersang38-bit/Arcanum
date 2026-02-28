@@ -58,23 +58,23 @@ void UInventoryHUDWidget::ClearSelection()
 
 void UInventoryHUDWidget::InitInventorySlots(int32 InSlotCount)
 {
-	SlotCount = FMath::Max(1, InSlotCount);
+	const int32 slotCount = FMath::Max(1, InSlotCount);
 
-	CreateInventorySlots();
+	CreateInventorySlots(slotCount);
 	BindSlotEvents();
 
 	SelectedGuid.Invalidate();
 	RefreshSelection();
 }
 
-void UInventoryHUDWidget::CreateInventorySlots()
+void UInventoryHUDWidget::CreateInventorySlots(int32 InSlotCount)
 {
 	if (!SlotContainer || !InventoryItemSlotWidgetClass) { return; }
 
 	SlotContainer->ClearChildren();
 	Slots.Reset();
 
-	for (int32 slotIndex = 0; slotIndex < SlotCount; slotIndex++)
+	for (int32 slotIndex = 0; slotIndex < InSlotCount; slotIndex++)
 	{
 		if (UInventoryItemSlotWidget* slot = CreateWidget<UInventoryItemSlotWidget>(this, InventoryItemSlotWidgetClass))
 		{
@@ -87,7 +87,7 @@ void UInventoryHUDWidget::CreateInventorySlots()
 
 void UInventoryHUDWidget::BindSlotEvents()
 {
-	for (int32 slotIndex = 0; slotIndex < SlotCount; slotIndex++)
+	for (int32 slotIndex = 0; slotIndex < Slots.Num(); slotIndex++)
 	{
 		if (Slots.IsValidIndex(slotIndex))
 		{
@@ -114,7 +114,7 @@ void UInventoryHUDWidget::HandleSlotClicked(FGuid InItemGuid)
 
 void UInventoryHUDWidget::RefreshSelection()
 {
-	for (int32 slotIndex = 0; slotIndex < SlotCount; slotIndex++)
+	for (int32 slotIndex = 0; slotIndex < Slots.Num(); slotIndex++)
 	{
 		if (Slots.IsValidIndex(slotIndex) && Slots[slotIndex])
 		{

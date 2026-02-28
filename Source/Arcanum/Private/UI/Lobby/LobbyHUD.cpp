@@ -64,6 +64,9 @@ void ULobbyHUD::NativeConstruct()
 		ShopHUDWidget->InitShopSlots(ShopSlotCount);
 		ShopHUDWidget->OnBuyRequested.RemoveDynamic(this, &ULobbyHUD::TryPurchaseSelectedItem);
 		ShopHUDWidget->OnBuyRequested.AddDynamic(this, &ULobbyHUD::TryPurchaseSelectedItem);
+
+		ShopHUDWidget->OnSellRequested.RemoveDynamic(this, &ULobbyHUD::TrySellSelectedItem);
+		ShopHUDWidget->OnSellRequested.AddDynamic(this, &ULobbyHUD::TrySellSelectedItem);
 	}
 
 	if (InventoryHUDWidget)
@@ -73,8 +76,8 @@ void ULobbyHUD::NativeConstruct()
 		InventoryHUDWidget->OnInventorySlotSelected.AddDynamic(this, &ULobbyHUD::HandleInventorySlotSelected);
 	}
 
-
 	BindGameInstanceEvents();
+	BuildEquipmentRowCache();
 	RefreshAllLobbyUI();
 
 	InitShop();
@@ -92,6 +95,7 @@ void ULobbyHUD::RefreshAllLobbyUI()
 
 		// TODO: 로비 갱신
 		RefreshLobbyCurrencyUI();
+		RefreshInventoryUI();
 	}
 }
 
@@ -178,9 +182,84 @@ void ULobbyHUD::RefreshLobbyCurrencyUI()
 	}
 }
 
+
+// ========================================================
+// 인벤토리
+// ========================================================
+
 void ULobbyHUD::HandleInventorySlotSelected(FGuid InItemGuid)
 {
 	SelectedInventoryItemGuid = InItemGuid;
+}
+
+void ULobbyHUD::RefreshInventoryUI()
+{
+	if (InventoryHUDWidget)
+	{
+		const int32 slotCount = FMath::Max(1, InventorySlotCount);
+
+		TArray<FEquipmentInfo> items;
+		TArray<const FDTEquipmentInfoRow*> rowPtrs;
+
+		items.SetNum(slotCount);
+		rowPtrs.SetNum(slotCount);
+
+		for (int32 i = 0; i < slotCount; i++)
+		{
+			rowPtrs[i] = nullptr;
+
+			if (CachedPlayerData.Inventory.IsValidIndex(i))
+			{
+				items[i] = CachedPlayerData.Inventory[i];
+				rowPtrs[i] = FindEquipmentRowByTag(items[i].ItemTag);
+			}
+		}
+
+		InventoryHUDWidget->ApplyInventoryData(items, rowPtrs);
+	}
+}
+
+void ULobbyHUD::BuildEquipmentRowCache()
+{
+	EquipmentRowByTag.Reset();
+
+	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+	{
+		if (UGameDataSubsystem* dataSubsystem = gameInstance->GetSubsystem<UGameDataSubsystem>())
+		{
+			UDataTable* const* tablePtr = dataSubsystem->MasterDataTables.Find(Arcanum::DataTable::Equipment);
+			if (!tablePtr || !(*tablePtr)) { return; }
+
+			UDataTable* table = *tablePtr;
+
+			TArray<FDTEquipmentInfoRow*> rows;
+			table->GetAllRows(TEXT("BuildEquipmentRowCache"), rows);
+
+			for (FDTEquipmentInfoRow* row : rows)
+			{
+				if (row && row->ItemTag.IsValid())
+				{
+					if (!EquipmentRowByTag.Contains(row->ItemTag))
+					{
+						EquipmentRowByTag.Add(row->ItemTag, row);
+					}
+				}
+			}
+		}
+	}
+}
+
+const FDTEquipmentInfoRow* ULobbyHUD::FindEquipmentRowByTag(const FGameplayTag& InItemTag) const
+{
+	if (InItemTag.IsValid())
+	{
+		if (const FDTEquipmentInfoRow* const* found = EquipmentRowByTag.Find(InItemTag))
+		{
+			return *found;
+		}
+	}
+
+	return nullptr;
 }
 
 // ========================================================
@@ -271,6 +350,20 @@ void ULobbyHUD::TryPurchaseSelectedItem(FName InItemRowName)
 			{
 				ShopHUDWidget->ApplyShopData(CachedShopRowNames, CachedShopSoldOutStates, CachedShopRowPtrs);
 			}
+		}
+	}
+}
+
+void ULobbyHUD::TrySellSelectedItem()
+{
+	if (SelectedInventoryItemGuid.IsValid())
+	{
+		if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+		{
+			// TODO: 나중에 서비스 만들면 여기 연결
+			// 예: FPlayerAccountService::SellEquipmentByGuid(gameInstance, SelectedInventoryItemGuid);
+
+			SelectedInventoryItemGuid.Invalidate();
 		}
 	}
 }
