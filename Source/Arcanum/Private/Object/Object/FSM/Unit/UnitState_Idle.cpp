@@ -8,7 +8,10 @@
 void UUnitState_Idle::OnEnter(UUnitCombatComponent* UnitCombatComponent)
 {
 	if (!UnitCombatComponent) return;
+
 	Internal_UnitCombatComponent = UnitCombatComponent;
+	Internal_UnitCombatComponent->StateReset();
+
 	UE_LOG(LogTemp, Warning, TEXT("UUnitState_Idle::OnEnter"));
 }
 
@@ -16,7 +19,6 @@ void UUnitState_Idle::OnTick(float DeltaTime)
 {
 	if (!Internal_UnitCombatComponent.IsValid()) return;
 
-	Internal_UnitCombatComponent->StateReset();
 	if (!Internal_UnitCombatComponent->TargetBasement.IsValid())
 	{
 		UBattlefieldManagerSubsystem* BattlefieldManagerSubsystem = Internal_UnitCombatComponent->GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();

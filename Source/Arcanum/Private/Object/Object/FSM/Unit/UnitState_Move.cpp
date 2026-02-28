@@ -17,6 +17,7 @@ void UUnitState_Move::OnTick(float DeltaTime)
 	if (!Internal_UnitCombatComponent.IsValid()) return;
 
 	Internal_UnitCombatComponent->StateReset();
+
 	TArray<FOverlapResult> OutOverlaps;
 	FCollisionShape MySphere = FCollisionShape::MakeSphere(Internal_UnitCombatComponent->TargetPriorityWeight.GetDetectDistance());
 	FCollisionQueryParams Params;
