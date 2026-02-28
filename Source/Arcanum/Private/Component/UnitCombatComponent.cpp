@@ -89,17 +89,17 @@ void UUnitCombatComponent::SetupTick()
 
 void UUnitCombatComponent::TickUpdate()
 {
-#pragma region 테스트
 	if (CurrentUnitState.IsValid())
 	{
 		CurrentUnitState->OnTick(0.0f);
 	}
-#pragma endregion
 }
 
 void UUnitCombatComponent::AIInitialize()
 {
 	if (!OwnerAIC.IsValid()) return;
+
+	// 비헤이비어트리 실행 및 블랙보드 키 가지고 있기
 	if (!UnitAISetting.BehaviorTree.IsNull())
 	{
 		if (UBehaviorTree* BehaviorTree = UnitAISetting.BehaviorTree)
@@ -115,6 +115,8 @@ void UUnitCombatComponent::AIInitialize()
 		}
 	}
 
+
+	// 적 베이스, 아군 베이스 중 공격 대상 가지고 있기, 타겟으로 지정하기(공격하러 가기)
 	if (UBattlefieldManagerSubsystem* BattlefieldManager = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
 	{
 		if (BattlefieldManager->GetBasement(AllyTeamTag) && BattlefieldManager->GetBasement(EnemyTeamTag) && GetOwner()->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()))

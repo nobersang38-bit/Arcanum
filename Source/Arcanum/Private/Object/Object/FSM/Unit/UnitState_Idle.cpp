@@ -27,6 +27,8 @@ void UUnitState_Idle::OnTick(float DeltaTime)
 	}
 
 	Internal_UnitCombatComponent->TargetAssigned(Internal_UnitCombatComponent->TargetBasement.Get());
+
+	// 상태 변경
 	Internal_UnitCombatComponent->StateChange(EUnitState::Move);
 }
 
