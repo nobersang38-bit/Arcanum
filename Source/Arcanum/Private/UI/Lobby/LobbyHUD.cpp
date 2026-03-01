@@ -3,6 +3,9 @@
 #include "UI/Common/CommonDialog.h"
 #include "UI/Lobby/Contents/Shop/ShopHUDWidget.h"
 #include "UI/Lobby/Contents/Currency/CurrencyWidget.h"
+#include "UI/Lobby/Contents/Inventory/InventoryItemSlotWidget.h"
+#include "UI/Lobby/Contents/Inventory/InventoryHUDWidget.h"
+#include "DataInfo/BattleCharacter/Equipment/DataTable/DTEquipment.h"
 //#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/HorizontalBox.h"
@@ -11,7 +14,7 @@
 #include "DataInfo/PlayerData/FPlayerData.h"
 #include "Core/ARGameInstance.h"
 #include "Core/ARPlayerAccountService.h"
-
+#include "Core/SubSystem/GameTimeSubsystem.h"
 
 void ULobbyHUD::NativeConstruct()
 {
@@ -55,13 +58,65 @@ void ULobbyHUD::NativeConstruct()
 		QuitBtn->OnClicked.AddDynamic(this, &ULobbyHUD::ClickQuitBtn);
 	}
 
+	if (ShopHUDWidget)
+	{
+		ShopHUDWidget->InitShopSlots(ShopSlotCount);
+		ShopHUDWidget->OnBuyRequested.RemoveDynamic(this, &ULobbyHUD::TryPurchaseSelectedItem);
+		ShopHUDWidget->OnBuyRequested.AddDynamic(this, &ULobbyHUD::TryPurchaseSelectedItem);
+
+		ShopHUDWidget->OnSellRequested.RemoveDynamic(this, &ULobbyHUD::TrySellSelectedItem);
+		ShopHUDWidget->OnSellRequested.AddDynamic(this, &ULobbyHUD::TrySellSelectedItem);
+	}
+
+	if (InventoryHUDWidget)
+	{
+		InventoryHUDWidget->InitInventorySlots(InventorySlotCount);
+		InventoryHUDWidget->OnInventorySlotSelected.RemoveDynamic(this, &ULobbyHUD::HandleInventorySlotSelected);
+		InventoryHUDWidget->OnInventorySlotSelected.AddDynamic(this, &ULobbyHUD::HandleInventorySlotSelected);
+	}
+
+	BindGameInstanceEvents();
+	BuildEquipmentRowCache();
+	RefreshAllLobbyUI();
+
+	InitShop();
+	BindShopTimer();
+	RefreshShopUI();
+
 	/// 02/26 수정 : 서비스레이어 거치도록
 	CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
+
 	RefreshLobbyCurrencyUI();
 	//if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance())) {
 	//	CachedPlayerData = gameInstance->GetPlayerDataCopy();
 	//	RefreshLobbyCurrencyUI();
 	//}
+
+	// 로비로 돌아올떄(무조건 들오올떄) 스타트 하는거 넣어놈
+
+}
+
+void ULobbyHUD::RefreshAllLobbyUI()
+{
+	CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
+
+	// TODO: 로비 갱신
+	RefreshLobbyCurrencyUI();
+	RefreshInventoryUI();
+}
+
+void ULobbyHUD::BindGameInstanceEvents()
+{
+	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+	{
+		gameInstance->OnCurrencyChanged.RemoveDynamic(this, &ULobbyHUD::HandleCurrencyChanged);
+		gameInstance->OnCurrencyChanged.AddDynamic(this, &ULobbyHUD::HandleCurrencyChanged);
+	}
+}
+
+void ULobbyHUD::HandleCurrencyChanged()
+{
+	RefreshAllLobbyUI();
 }
 
 void ULobbyHUD::ClickBattleMenuBtn()
@@ -143,9 +198,9 @@ void ULobbyHUD::ClickQuitBtn()
 
 		ExitCommonDialog->OnResult.RemoveDynamic(this, &ULobbyHUD::OnExitCommonDialog);
 		ExitCommonDialog->OnResult.AddDynamic(this, &ULobbyHUD::OnExitCommonDialog);
-	
+
 		// 팝업 떠있을때는 다른 버튼 숨기기
-		if (MenuHorizontalBox )
+		if (MenuHorizontalBox)
 		{
 			MenuHorizontalBox->SetVisibility(ESlateVisibility::Hidden);
 		}
@@ -160,6 +215,10 @@ void ULobbyHUD::ClickQuitBtn()
 	}
 }
 
+
+// ========================================================
+// 재화
+// ========================================================
 void ULobbyHUD::RefreshLobbyCurrencyUI()
 {
 	if (CurrencyWidget)
@@ -168,24 +227,222 @@ void ULobbyHUD::RefreshLobbyCurrencyUI()
 	}
 }
 
-void ULobbyHUD::TryPurchaseSelectedItem(FName InItemRowName)
+// ========================================================
+// 인벤토리
+// ========================================================
+void ULobbyHUD::HandleInventorySlotSelected(FGuid InItemGuid)
 {
+	SelectedInventoryItemGuid = InItemGuid;
+}
+
+void ULobbyHUD::RefreshInventoryUI()
+{
+	if (InventoryHUDWidget)
+	{
+		const int32 slotCount = FMath::Max(1, InventorySlotCount);
+
+		TArray<FEquipmentInfo> items;
+		TArray<const FDTEquipmentInfoRow*> rowPtrs;
+
+		items.SetNum(slotCount);
+		rowPtrs.SetNum(slotCount);
+
+		for (int32 i = 0; i < slotCount; i++)
+		{
+			rowPtrs[i] = nullptr;
+
+			if (CachedPlayerData.Inventory.IsValidIndex(i))
+			{
+				items[i] = CachedPlayerData.Inventory[i];
+				rowPtrs[i] = FindEquipmentRowByTag(items[i].ItemTag);
+			}
+		}
+
+		InventoryHUDWidget->ApplyInventoryData(items, rowPtrs);
+	}
+}
+
+void ULobbyHUD::BuildEquipmentRowCache()
+{
+	EquipmentRowByTag.Reset();
 
 	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
 	{
-		if (FPlayerAccountService::PurchaseEquipment(gameInstance, InItemRowName))
+		if (UGameDataSubsystem* dataSubsystem = gameInstance->GetSubsystem<UGameDataSubsystem>())
 		{
-			/// 02/26 수정 : 서비스레이어 거치도록
-			CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
-			//CachedPlayerData = gameInstance->GetPlayerDataCopy();
+			UDataTable* const* tablePtr = dataSubsystem->MasterDataTables.Find(Arcanum::DataTable::Equipment);
+			if (!tablePtr || !(*tablePtr)) { return; }
 
-			RefreshLobbyCurrencyUI();
+			UDataTable* table = *tablePtr;
 
-			UE_LOG(LogTemp, Log, TEXT("구매 성공: %s"), *InItemRowName.ToString());
+			TArray<FDTEquipmentInfoRow*> rows;
+			table->GetAllRows(TEXT("BuildEquipmentRowCache"), rows);
+
+			for (FDTEquipmentInfoRow* row : rows)
+			{
+				if (row && row->ItemTag.IsValid())
+				{
+					if (!EquipmentRowByTag.Contains(row->ItemTag))
+					{
+						EquipmentRowByTag.Add(row->ItemTag, row);
+					}
+				}
+			}
 		}
-		else
+	}
+}
+
+const FDTEquipmentInfoRow* ULobbyHUD::FindEquipmentRowByTag(const FGameplayTag& InItemTag) const
+{
+	if (InItemTag.IsValid())
+	{
+		if (const FDTEquipmentInfoRow* const* found = EquipmentRowByTag.Find(InItemTag))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("구매 실패: %s"), *InItemRowName.ToString());
+			return *found;
+		}
+	}
+
+	return nullptr;
+}
+
+// ========================================================
+// 상점
+// ========================================================
+void ULobbyHUD::InitShop()
+{
+	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+	{
+		FPlayerAccountService::InitializeShop(gameInstance, ShopSlotCount);
+	}
+}
+
+void ULobbyHUD::RefreshShopUI()
+{
+	BuildShopRuntimeCache();
+
+	if (ShopHUDWidget)
+	{
+		ShopHUDWidget->ApplyShopData(CachedShopRowNames, CachedShopSoldOutStates, CachedShopRowPtrs);
+
+		if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+		{
+			const int32 remaining = FPlayerAccountService::GetShopRemainingSeconds(gameInstance);
+
+			HandleShopSecondChanged(remaining);
+		}
+	}
+}
+
+void ULobbyHUD::BindShopTimer()
+{
+	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+	{
+		if (UGameTimeSubsystem* gameTimeSubsystem = gameInstance->GetSubsystem<UGameTimeSubsystem>())
+		{
+			gameTimeSubsystem->OnShopSecondChanged.RemoveDynamic(this, &ULobbyHUD::HandleShopSecondChanged);
+			gameTimeSubsystem->OnShopSecondChanged.AddDynamic(this, &ULobbyHUD::HandleShopSecondChanged);
+		}
+
+		const int32 remaining = FPlayerAccountService::GetShopRemainingSeconds(gameInstance);
+		HandleShopSecondChanged(remaining);
+	}
+}
+
+void ULobbyHUD::HandleShopSecondChanged(int32 InRemainingSeconds)
+{
+	if (InRemainingSeconds == 0)
+	{
+		if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+		{
+			FPlayerAccountService::RefreshShop(gameInstance, ShopSlotCount);
+			BuildShopRuntimeCache();
+			InRemainingSeconds = FPlayerAccountService::GetShopRemainingSeconds(gameInstance);
+		}
+
+		if (ShopHUDWidget)
+		{
+			ShopHUDWidget->ApplyShopData(CachedShopRowNames, CachedShopSoldOutStates, CachedShopRowPtrs);
+			ShopHUDWidget->ClearShopSelection();
+		}
+	}
+
+	if (ShopHUDWidget)
+	{
+		ShopHUDWidget->SetShopRemainingSeconds(InRemainingSeconds);
+	}
+}
+
+void ULobbyHUD::TryPurchaseSelectedItem(int32 InSlotIndex)
+{
+	if (FPlayerAccountService::PurchaseShopSlot(this, InSlotIndex))
+	{
+		if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+		{
+			gameInstance->OnCurrencyChanged.Broadcast();
+		}
+
+		RefreshShopUI(); 
+	}
+}
+
+void ULobbyHUD::TrySellSelectedItem()
+{
+	if (SelectedInventoryItemGuid.IsValid())
+	{
+		if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+		{
+			// TODO: 나중에 서비스 만들면 여기 연결
+			// 예: FPlayerAccountService::SellEquipmentByGuid(gameInstance, SelectedInventoryItemGuid);
+
+			SelectedInventoryItemGuid.Invalidate();
+		}
+	}
+}
+
+void ULobbyHUD::BuildShopRuntimeCache()
+{
+	CachedShopRowNames.Reset();
+	CachedShopSoldOutStates.Reset();
+	CachedShopRowPtrs.Reset();
+
+	int32 slotCount = FMath::Max(0, ShopSlotCount);
+
+	CachedShopRowNames.SetNum(slotCount);
+	CachedShopSoldOutStates.SetNum(slotCount);
+	CachedShopRowPtrs.SetNum(slotCount);
+
+	for (int32 i = 0; i < slotCount; i++)
+	{
+		CachedShopRowNames[i] = NAME_None;
+		CachedShopSoldOutStates[i] = false;
+		CachedShopRowPtrs[i] = nullptr;
+	}
+
+	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+	{
+		if (UGameDataSubsystem* dataSubsystem = gameInstance->GetSubsystem<UGameDataSubsystem>())
+		{
+			for (int32 slotIndex = 0; slotIndex < slotCount; slotIndex++)
+			{
+				if (gameInstance->CurrentShopRowNames.IsValidIndex(slotIndex))
+				{
+					CachedShopRowNames[slotIndex] = gameInstance->CurrentShopRowNames[slotIndex];
+				}
+
+				if (gameInstance->CurrentShopSoldOutStates.IsValidIndex(slotIndex))
+				{
+					CachedShopSoldOutStates[slotIndex] = gameInstance->CurrentShopSoldOutStates[slotIndex];
+				}
+
+				const FName rowName = CachedShopRowNames[slotIndex];
+				if (rowName == NAME_None)
+				{
+					continue;
+				}
+
+				const FDTEquipmentInfoRow* rowPtr = dataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, rowName);
+				CachedShopRowPtrs[slotIndex] = rowPtr;
+			}
 		}
 	}
 }
@@ -199,7 +456,7 @@ void ULobbyHUD::OnExitCommonDialog(EDialogResult res)
 
 		if (PC)
 		{
-			UKismetSystemLibrary::QuitGame(GetWorld(),PC, EQuitPreference::Quit, true);
+			UKismetSystemLibrary::QuitGame(GetWorld(), PC, EQuitPreference::Quit, true);
 		}
 	}
 	else if (res == EDialogResult::Cancel)

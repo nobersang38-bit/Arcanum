@@ -1,5 +1,4 @@
 #include "UI/Lobby/Contents/Shop/ShopHUDWidget.h"
-#include "UI/Lobby/Contents/Currency/CurrencyWidget.h"
 #include "UI/Lobby/Contents/Shop/SubLayout/ShopItemSlotWidget.h"
 #include "UI/Common/CommonBtnWidget.h"
 #include "Core/ARPlayerAccountService.h"
@@ -72,7 +71,7 @@ void UShopHUDWidget::ApplyShopData(const TArray<FName>& InRowNames, const TArray
 			continue;
 		}
 
-		// 슬롯 위젯은 "표시만" 하게, RowPtr로 세팅
+		// 슬롯 위젯은 표시만 하게, RowPtr로 세팅
 		slot->SetViewData(slotIndex, rowName, rowPtr, bSoldOut);
 
 		// 선택 강조
@@ -167,11 +166,7 @@ void UShopHUDWidget::HandleBuyClicked()
 			{
 				if (slot->IsPurchasable())
 				{
-					const FName rowName = slot->GetRowName();
-					if (rowName != NAME_None)
-					{
-						OnBuyRequested.Broadcast(rowName);
-					}
+					OnBuyRequested.Broadcast(SelectedShopSlotIndex);
 				}
 			}
 		}

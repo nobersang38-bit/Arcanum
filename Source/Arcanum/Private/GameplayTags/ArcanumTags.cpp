@@ -11,6 +11,8 @@ namespace Arcanum {
 		UE_DEFINE_GAMEPLAY_TAG(StageInfo, "Arcanum.DataTable.StageInfo");
 		UE_DEFINE_GAMEPLAY_TAG(AllyUnitInfo, "Arcanum.DataTable.AllyUnitInfo");
 		UE_DEFINE_GAMEPLAY_TAG(EnemyUnitInfo, "Arcanum.DataTable.EnemyUnitInfo");
+		UE_DEFINE_GAMEPLAY_TAG(Potion, "Arcanum.DataTable.Potion");
+
 		//UE_DEFINE_GAMEPLAY_TAG(BattleRegenStats,	"Arcanum.DataTable.BattleRegenStats");
 		//UE_DEFINE_GAMEPLAY_TAG(BattleNonRegenStats, "Arcanum.DataTable.BattleNonRegenStats");
 	}
@@ -181,6 +183,16 @@ namespace Arcanum {
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Surge, "Arcanum.Items.SetBonus.Surge", "역류");
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Avarice, "Arcanum.Items.SetBonus.Avarice", "탐욕");
 			}
+		}
+		namespace Potion
+		{
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Items.Potion", "포션 루트");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Health, "Arcanum.Items.Potion.Health", "체력 포션");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Power, "Arcanum.Items.Potion.Power", "힘의 포션");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Focus, "Arcanum.Items.Potion.Focus", "집중의 포션");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Frenzy, "Arcanum.Items.Potion.Frenzy", "광란의 포션");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Haste, "Arcanum.Items.Potion.Haste", "신속 포션");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Mana, "Arcanum.Items.Potion.Mana", "마나 포션");
 		}
 	}
 }

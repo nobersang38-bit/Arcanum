@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "GameplayTagContainer.h"
-#include "DataInfo\BattleCharacter\Equipment\DataTable\DTEquipment.h"
+#include "DataInfo/BattleCharacter/Equipment/DataTable/DTEquipment.h"
 #include "ShopItemSlotWidget.generated.h"
 
 class UButton;
@@ -28,7 +28,7 @@ protected:
 	virtual void NativeConstruct() override;
 
 public:
-	/* 로비HUD가 만든 DT RowPtr로 슬롯 표시만 세팅 */
+	/* 로비HUD RowPtr 받아서 슬롯 표시만 세팅 */
 	void SetViewData(int32 InSlotIndex, FName InRowName, const FDTEquipmentInfoRow* InRowPtr, bool InSoldOut);
 
 	/* 장비 슬롯 표시 데이터 세팅 */

@@ -232,181 +232,177 @@ bool FPlayerAccountService::PurchaseEquipment(const UObject* WorldContextObject,
 
 	//return true;
 }
+bool FPlayerAccountService::SellItemByGuid(const UObject* WorldContextObject, const FGuid& InItemGuid)
+{
+	return false;
+}
 const FDTEquipmentInfoRow* FPlayerAccountService::GetItemDefinition(UGameDataSubsystem* DataSubsystem, const FGameplayTag& ItemTag)
 {
 	if (!DataSubsystem) return nullptr;
 	return DataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, ItemTag.GetTagName());
 }
-
-// ========================================================
-// Shop Widget 관련
-// ========================================================
-void FPlayerAccountService::InitializeShop(UARGameInstance* InGameInstance, int32 InShopSlotCount)
+void FPlayerAccountService::InitializeShop(const UObject* WorldContextObject, int32 InShopSlotCount)
 {
-	//if (InGameInstance)
-	//{
-	//	if (InShopSlotCount > 0)
-	//	{
-	//		// 세이브 데이터 가져오기
-	//		if (UArcanumSaveGame* saveGame = InGameInstance->GetArSaveGame())
-	//		{
-	//			const bool bDataValid = (saveGame->CurrentShopRowNames.Num() == InShopSlotCount) &&
-	//				(saveGame->CurrentShopSoldOutStates.Num() == InShopSlotCount) &&
-	//				(saveGame->NextShopRefreshTime.GetTicks() > 0);
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return;
 
-	//			if (!bDataValid || IsShopRefreshExpired(InGameInstance))
-	//			{
-	//				RefreshShop(InGameInstance, InShopSlotCount);
-	//			}
+	if (InShopSlotCount > 0)
+	{
+		const bool bDataValid =
+			(GI->CurrentShopRowNames.Num() == InShopSlotCount) &&
+			(GI->CurrentShopSoldOutStates.Num() == InShopSlotCount) &&
+			(GI->NextShopRefreshTime.GetTicks() > 0);
 
-	//			if (UGameTimeSubsystem* gameTimeSubsystem = InGameInstance->GetSubsystem<UGameTimeSubsystem>())
-	//			{
-	//				gameTimeSubsystem->StartShop(saveGame->NextShopRefreshTime);
-	//			}
-	//		}
-	//	}
-	//}
+		if (!bDataValid || IsShopRefreshExpired(WorldContextObject))
+		{
+			RefreshShop(WorldContextObject, InShopSlotCount);
+		}
+
+		if (UGameTimeSubsystem* gameTimeSubsystem = GI->GetSubsystem<UGameTimeSubsystem>())
+		{
+			gameTimeSubsystem->StartShop(GI->NextShopRefreshTime);
+		}
+	}
 }
 
-void FPlayerAccountService::RefreshShop(UARGameInstance* InGameInstance, int32 InShopSlotCount)
+
+void FPlayerAccountService::RefreshShop(const UObject* WorldContextObject, int32 InShopSlotCount)
 {
-	//if (InGameInstance)
-	//{
-	//	if (InShopSlotCount > 0)
-	//	{
-	//		if (UArcanumSaveGame* saveGame = InGameInstance->GetArSaveGame())
-	//		{
-	//			// 새 상점 아이템 생성
-	//			GenerateShopItems(InGameInstance, InShopSlotCount);
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return;
 
-	//			// 품절 상태 초기화
-	//			saveGame->CurrentShopSoldOutStates.SetNum(saveGame->CurrentShopRowNames.Num());
-	//			ResetShopSoldOutStates(InGameInstance, saveGame->CurrentShopRowNames.Num());
+	if (InShopSlotCount > 0)
+	{
+		// 새 상점 아이템 생성
+		GenerateShopItems(GI, InShopSlotCount);
 
-	//			// 다음 갱신 시각 저장
-	//			SetNextShopRefreshTime(InGameInstance);
+		// 품절 상태 초기화
+		GI->CurrentShopSoldOutStates.SetNum(GI->CurrentShopRowNames.Num());
+		ResetShopSoldOutStates(GI, GI->CurrentShopRowNames.Num());
 
-	//			// 세이브 저장
-	//			InGameInstance->SavePlayerData();
+		// 다음 갱신 시각 저장
+		SetNextShopRefreshTime(GI);
 
-	//			// 상점 타이머 시작
-	//			if (UGameTimeSubsystem* gameTimeSubsystem = InGameInstance->GetSubsystem<UGameTimeSubsystem>())
-	//			{
-	//				gameTimeSubsystem->StartShop(saveGame->NextShopRefreshTime);
-	//			}
-	//		}
-	//	}
-	//}
+		// 상점 타이머 시작
+		if (UGameTimeSubsystem* gameTimeSubsystem = GI->GetSubsystem<UGameTimeSubsystem>())
+		{
+			gameTimeSubsystem->StartShop(GI->NextShopRefreshTime);
+		}
+	}
 }
 
-bool FPlayerAccountService::GetShopSlotData(UARGameInstance* InGameInstance, int32 InSlotIndex, FName& OutRowName, bool& OutSoldOut)
+bool FPlayerAccountService::GetShopSlotData(const UObject* WorldContextObject, int32 InSlotIndex, FName& OutRowName, bool& OutSoldOut)
 {
-	/*OutRowName = NAME_None;
+	OutRowName = NAME_None;
 	OutSoldOut = false;
 
-	if (InGameInstance)
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return false;
+
+	if (GI->CurrentShopRowNames.IsValidIndex(InSlotIndex) &&
+		GI->CurrentShopSoldOutStates.IsValidIndex(InSlotIndex))
 	{
-		if (UArcanumSaveGame* saveGame = InGameInstance->GetArSaveGame())
-		{
-			if (saveGame->CurrentShopRowNames.IsValidIndex(InSlotIndex) &&
-				saveGame->CurrentShopSoldOutStates.IsValidIndex(InSlotIndex))
-			{
-				OutRowName = saveGame->CurrentShopRowNames[InSlotIndex];
-				OutSoldOut = saveGame->CurrentShopSoldOutStates[InSlotIndex];
-				return true;
-			}
-		}
+		OutRowName = GI->CurrentShopRowNames[InSlotIndex];
+		OutSoldOut = GI->CurrentShopSoldOutStates[InSlotIndex];
+
+		return true;
 	}
 
-	return false;*/
 	return false;
 }
 
-bool FPlayerAccountService::SetShopSlotSoldOut(UARGameInstance* InGameInstance, int32 InSlotIndex)
+bool FPlayerAccountService::PurchaseShopSlot(const UObject* WorldContextObject, int32 InSlotIndex)
 {
-	/*if (InGameInstance)
-	{
-		if (UArcanumSaveGame* saveGame = InGameInstance->GetArSaveGame())
-		{
-			if (saveGame->CurrentShopSoldOutStates.IsValidIndex(InSlotIndex))
-			{
-				saveGame->CurrentShopSoldOutStates[InSlotIndex] = true;
-				InGameInstance->SavePlayerData();
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return false;
 
-				return true;
+	if (GI->CurrentShopRowNames.IsValidIndex(InSlotIndex) && 
+		GI->CurrentShopSoldOutStates.IsValidIndex(InSlotIndex))
+	{
+		if (!GI->CurrentShopSoldOutStates[InSlotIndex])
+		{
+			const FName rowName = GI->CurrentShopRowNames[InSlotIndex];
+
+			if (!rowName.IsNone() && PurchaseEquipment(WorldContextObject, rowName))
+			{
+				if (SetShopSlotSoldOut(WorldContextObject, InSlotIndex))
+				{
+					return true;
+				}
 			}
 		}
 	}
 
-	return false;*/
 	return false;
 }
 
-int32 FPlayerAccountService::GetShopRemainingSeconds(UARGameInstance* InGameInstance)
+bool FPlayerAccountService::SetShopSlotSoldOut(const UObject* WorldContextObject, int32 InSlotIndex)
 {
-	/*if (InGameInstance)
-	{
-		if (UArcanumSaveGame* saveGame = InGameInstance->GetArSaveGame())
-		{
-			if (saveGame->NextShopRefreshTime.GetTicks() > 0)
-			{
-				const FDateTime currentTimeKST = GetCurrentTimeKST();
-				const FTimespan difference = saveGame->NextShopRefreshTime - currentTimeKST;
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return false;
 
-				return FMath::Max(0, static_cast<int32>(difference.GetTotalSeconds()));
-			}
-		}
+	if (GI->CurrentShopSoldOutStates.IsValidIndex(InSlotIndex))
+	{
+		GI->CurrentShopSoldOutStates[InSlotIndex] = true;
+
+		return true;
 	}
 
-	return 0;*/
+	return false;
+}
+
+int32 FPlayerAccountService::GetShopRemainingSeconds(const UObject* WorldContextObject)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return 0;
+
+	if (GI->NextShopRefreshTime.GetTicks() > 0)
+	{
+		const FDateTime currentTimeKST = GetCurrentTimeKST();
+		const FTimespan difference = GI->NextShopRefreshTime - currentTimeKST;
+
+		return FMath::Max(0, static_cast<int32>(difference.GetTotalSeconds()));
+	}
+
 	return 0;
 }
 
-bool FPlayerAccountService::IsShopRefreshExpired(UARGameInstance* InGameInstance)
+bool FPlayerAccountService::IsShopRefreshExpired(const UObject* WorldContextObject)
 {
-	/*if (InGameInstance)
-	{
-		if (UArcanumSaveGame* saveGame = InGameInstance->GetArSaveGame())
-		{
-			if (saveGame->NextShopRefreshTime.GetTicks() > 0)
-			{
-				const FDateTime currentTimeKST = GetCurrentTimeKST();
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return true;
 
-				return (currentTimeKST >= saveGame->NextShopRefreshTime);
-			}
-		}
+	if (GI->NextShopRefreshTime.GetTicks() > 0)
+	{
+		const FDateTime currentTimeKST = GetCurrentTimeKST();
+
+		return (currentTimeKST >= GI->NextShopRefreshTime);
 	}
 
-	return true;*/
-	return false;
+	return true;
 }
 
 void FPlayerAccountService::GenerateShopItems(UARGameInstance* InGameInstance, int32 InShopSlotCount)
 {
-	//if (InGameInstance)
-	//{
-	//	if (UArcanumSaveGame* saveGame = InGameInstance->GetArSaveGame())
-	//	{
-	//		if (InShopSlotCount > 0)
-	//		{
-	//			FShopItemPools itemPools;
-	//			BuildShopItemPools(InGameInstance, itemPools);
+	if (InGameInstance)
+	{
+		if (InShopSlotCount > 0)
+		{
+			FShopItemPools itemPools;
+			BuildShopItemPools(InGameInstance, itemPools);
 
-	//			// 세이브 데이터 초기화
-	//			saveGame->CurrentShopRowNames.Reset();
+			InGameInstance->CurrentShopRowNames.Reset();
+			InGameInstance->CurrentShopRowNames.Reserve(InShopSlotCount);
 
-	//			saveGame->CurrentShopRowNames.Reserve(InShopSlotCount);
+			for (int32 i = 0; i < InShopSlotCount; i++)
+			{
+				const EShopRarityType rarityType = PickShopRarityType(InGameInstance);
+				const FName pickedRow = PickShopItemRow(rarityType, itemPools);
 
-	//			for (int32 i = 0; i < InShopSlotCount; i++)
-	//			{
-	//				const EShopRarityType rarityType = PickShopRarityType(InGameInstance);
-	//				const FName pickedRow = PickShopItemRow(rarityType, itemPools);
-
-	//				saveGame->CurrentShopRowNames.Add(pickedRow);
-	//			}
-	//		}
-	//	}
-	//}
+				InGameInstance->CurrentShopRowNames.Add(pickedRow);
+			}
+		}
+	}
 }
 
 void FPlayerAccountService::BuildShopItemPools(UARGameInstance* InGameInstance, FShopItemPools& OutItemPools)
@@ -510,42 +506,37 @@ FName FPlayerAccountService::PickShopItemRow(EShopRarityType InRarityType, FShop
 
 void FPlayerAccountService::ResetShopSoldOutStates(UARGameInstance* InGameInstance, int32 InShopSlotCount)
 {
-	/*if (InGameInstance)
+	if (InGameInstance)
 	{
 		if (InShopSlotCount > 0)
 		{
-			if (UArcanumSaveGame* saveGame = InGameInstance->GetArSaveGame())
-			{
-				saveGame->CurrentShopSoldOutStates.SetNum(InShopSlotCount);
+			InGameInstance->CurrentShopSoldOutStates.SetNum(InShopSlotCount);
 
-				for (int32 slotIndex = 0; slotIndex < InShopSlotCount; slotIndex++)
-				{
-					saveGame->CurrentShopSoldOutStates[slotIndex] = false;
-				}
+			for (int32 slotIndex = 0; slotIndex < InShopSlotCount; slotIndex++)
+			{
+				InGameInstance->CurrentShopSoldOutStates[slotIndex] = false;
 			}
 		}
-	}*/
+	}
 }
 
 void FPlayerAccountService::SetNextShopRefreshTime(UARGameInstance* InGameInstance)
 {
-	/*if (InGameInstance)
+	if (InGameInstance)
 	{
-		if (UArcanumSaveGame* saveGame = InGameInstance->GetArSaveGame())
+		if (UGameTimeSubsystem* gameTimeSubsystem = InGameInstance->GetSubsystem<UGameTimeSubsystem>())
 		{
-			if (UGameTimeSubsystem* gameTimeSubsystem = InGameInstance->GetSubsystem<UGameTimeSubsystem>())
-			{
-				const FDateTime currentTimeKST = GetCurrentTimeKST();
-				saveGame->NextShopRefreshTime = currentTimeKST + FTimespan(0, 0, gameTimeSubsystem->ShopRefreshSeconds);
-			}
+			const FDateTime currentTimeKST = GetCurrentTimeKST();
+			InGameInstance->NextShopRefreshTime = currentTimeKST + FTimespan(0, 0, gameTimeSubsystem->ShopRefreshSeconds);
 		}
-	}*/
+	}
 }
 
 FDateTime FPlayerAccountService::GetCurrentTimeKST()
 {
 	return FDateTime::UtcNow() + FTimespan(9, 0, 0);
 }
+
 // ========================================================
 // Gacha Widget 관련
 // ========================================================

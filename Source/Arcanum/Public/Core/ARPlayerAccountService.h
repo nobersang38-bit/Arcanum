@@ -16,6 +16,14 @@ enum class EShopRarityType : uint8
 	Legendary
 };
 
+UENUM(BlueprintType)
+enum class EDisposeType : uint8
+{
+	Sell,                // 판매(골드)
+	DisassembleItem,     // 장비/무기 분해(소울)
+	DisassembleCharacter // 캐릭터 분해(조각)
+};
+
 USTRUCT(BlueprintType)
 struct FShopItemPools
 {
@@ -127,23 +135,29 @@ public:
     /** */
     static const FDTEquipmentInfoRow* GetItemDefinition(UGameDataSubsystem* DataSubsystem, const FGameplayTag& ItemTag);
 
+	/* 인벤 아이템 판매 */
+	static bool SellItemByGuid(const UObject* WorldContextObject, const FGuid& InItemGuid);
+
 	/* 상점 진입 시 초기화 (저장시간 확인 후 유지/갱신 판정) */
-	static void InitializeShop(UARGameInstance* InGameInstance, int32 InShopSlotCount);
+	static void InitializeShop(const UObject* WorldContextObject, int32 InShopSlotCount);
 
 	/* 상점 강제 갱신 (10분 만료시) */
-	static void RefreshShop(UARGameInstance* InGameInstance, int32 InShopSlotCount);
+	static void RefreshShop(const UObject* WorldContextObject, int32 InShopSlotCount);
 
 	/* 상점 슬롯 데이터 조회 (UI 표시용) */
-	static bool GetShopSlotData(UARGameInstance* InGameInstance, int32 InSlotIndex, FName& OutRowName, bool& OutSoldOut);
+	static bool GetShopSlotData(const UObject* WorldContextObject, int32 InSlotIndex, FName& OutRowName, bool& OutSoldOut);
+
+	/* 상점 슬롯 구매 처리 (구매 성공 시 해당 슬롯을 품절로 변경) */
+	static bool PurchaseShopSlot(const UObject* WorldContextObject, int32 InSlotIndex);
 
 	/* 구매 성공 후 슬롯 품절 처리 */
-	static bool SetShopSlotSoldOut(UARGameInstance* InGameInstance, int32 InSlotIndex);
+	static bool SetShopSlotSoldOut(const UObject* WorldContextObject, int32 InSlotIndex);
 
 	/* 저장된 상점 시간이 유효한지 확인 */
-	static bool IsShopRefreshExpired(UARGameInstance* InGameInstance);
+	static bool IsShopRefreshExpired(const UObject* WorldContextObject);
 
 	/* 다음 갱신 시각 기준 남은 초 계산 (UI 타이머 표시용) */
-	static int32 GetShopRemainingSeconds(UARGameInstance* InGameInstance);
+	static int32 GetShopRemainingSeconds(const UObject* WorldContextObject);
 
 private:
 	/* 상점 슬롯 전체 생성 */

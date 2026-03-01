@@ -24,7 +24,7 @@ struct FPlayerData
     UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
     FPlayerCurrency PlayerCurrency;
 
-    /* ==============================
+    /* ==============================z
      *   스테이지 진입 시 기본 값
      * ============================== */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)

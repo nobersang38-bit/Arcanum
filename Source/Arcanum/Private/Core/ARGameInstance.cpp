@@ -291,3 +291,13 @@ void UARGameInstance::InitializeCharacter(FGameplayTag CharacterTag)
 
     UserCharacterRegistry.Add(CharacterTag, NewData);
 }
+
+void UARGameInstance::AddTestGold(int64 InAmount)
+{
+    if (InAmount == 0) { return; }
+  
+    AddCurrency(Arcanum::PlayerData::Currencies::NonRegen::Gold::Value, InAmount);
+
+    SavePlayerData();
+    OnCurrencyChanged.Broadcast();
+}
