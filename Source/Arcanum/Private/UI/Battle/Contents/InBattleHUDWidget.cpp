@@ -52,7 +52,7 @@ void UInBattleHUDWidget::SetPlayerLocationProgress(const FVector& InAllyNexusLoc
 void UInBattleHUDWidget::SetTime(int32 TimeMS)
 {
 	if (!StageProgress) return;
-	StageProgress->SetTime(TimeMS);
+	StageProgress->SetTimeSecond(TimeMS);
 }
 
 // ========================================================

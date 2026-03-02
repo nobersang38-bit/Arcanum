@@ -54,6 +54,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")
 	TSubclassOf<class ABaseUnitCharacter> CharacterType = nullptr;
 
+	// 해당 유닛의 고기 기본 사용량
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")
+	float MeatCost = 10.0f;
+
 	// 해당 객체의 이름
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")
 	FText Name = FText::FromString(TEXT("이름"));
@@ -64,11 +68,11 @@ public:
 
 	// 인게임의 유닛을 선택하거나 작게 보여줄 아이콘
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")
-	TSoftObjectPtr<UTexture2D> Icon = nullptr;
+	TObjectPtr<UTexture2D> Icon = nullptr;
 
 	// 대량 1:2비율의 인물화같은 느낌의 텍스처, 캐릭터 선택창의 캐릭터 선택 패널등에 사용
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")
-	TSoftObjectPtr<UTexture2D> Portrait = nullptr;
+	TObjectPtr<UTexture2D> Portrait = nullptr;
 };
 
 USTRUCT(BlueprintType)

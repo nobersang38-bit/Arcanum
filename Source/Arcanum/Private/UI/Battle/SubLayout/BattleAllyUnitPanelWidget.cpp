@@ -25,7 +25,7 @@ void UBattleAllyUnitPanelWidget::PostEditChangeProperty(FPropertyChangedEvent& P
 		if (bUseDebugAddUnitSlot)
 		{
 			bUseDebugAddUnitSlot = false;
-			AddUnitSlot();
+			//AddUnitSlot();
 		}
 	}
 }
@@ -40,11 +40,11 @@ void UBattleAllyUnitPanelWidget::SetManaCostProgress(float CurrentMana, float Ma
 	ManaCostBar->SetCostProgress(CurrentMana, MaxMana);
 }
 
-void UBattleAllyUnitPanelWidget::AddUnitSlot()
+UBattleAllyUnitSlotWidget* UBattleAllyUnitPanelWidget::AddUnitSlot(const FUnitData& UnitData)
 {
 	// 첫번째와 마지막 인덱스는 스페이서를 사용중이기에 제외 시키고 검사
 
-	if (!UnitPanel || !UnitSlotWidgetClass) return;
+	if (!UnitPanel || !UnitSlotWidgetClass) return nullptr;
 
 	UBattleAllyUnitSlotWidget* UnitSlot = CreateWidget<UBattleAllyUnitSlotWidget>(this, UnitSlotWidgetClass);
 
@@ -105,6 +105,13 @@ void UBattleAllyUnitPanelWidget::AddUnitSlot()
 			NewSlot->SetHorizontalAlignment(Info.HAlign);
 		}
 	}
+	if (UnitSlot)
+	{
+		UnitSlot->SetUnitInfo(UnitData.Info.InfoSetting.MeatCost, UnitData.Info.InfoSetting.Icon, UnitData.Info.InfoSetting.Tag);
+
+		UE_LOG(LogTemp, Error, TEXT("아이콘 세팅"));
+	}
+	return UnitSlot;
 }
 
 bool UBattleAllyUnitPanelWidget::RemoveUnitSlot(int32 RemoveIDX)

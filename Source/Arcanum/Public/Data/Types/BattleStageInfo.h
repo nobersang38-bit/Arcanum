@@ -42,4 +42,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FBasementStat EnemyBasement;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float StageLimitTime = 100.0f;
 };

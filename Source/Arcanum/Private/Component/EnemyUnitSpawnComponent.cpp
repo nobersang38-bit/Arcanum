@@ -50,11 +50,11 @@ void UEnemyUnitSpawnComponent::BeginPlay()
 					StageDifficult = StageDifficult.RightChop(LastDot + 1);
 				}
 
-if (StageName.FindLastChar('.', LastDot))
-{
-	// 찾은 인덱스 다음(+1)부터 끝까지 남기고 앞은 다 자릅니다.
-	StageName = StageName.RightChop(LastDot + 1);
-}
+				if (StageName.FindLastChar('.', LastDot))
+				{
+					// 찾은 인덱스 다음(+1)부터 끝까지 남기고 앞은 다 자릅니다.
+					StageName = StageName.RightChop(LastDot + 1);
+				}
 
 			}
 			else

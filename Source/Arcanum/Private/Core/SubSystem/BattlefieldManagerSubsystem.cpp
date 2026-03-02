@@ -22,6 +22,7 @@ void UBattlefieldManagerSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 
 	SetupUnits();
 	DebugBasementSet();
+	DebugSetUsingAllyUnits();
 	//UARGameInstance* GameInstance = nullptr;
 	//GameInstance = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	//if (GameInstance)
@@ -64,6 +65,11 @@ void UBattlefieldManagerSubsystem::SetABattlefieldManagerActor(ABattlefieldManag
 	BattlefieldManagerActor = InBattlefieldManagerActor;
 }
 
+const TArray<FUnitData>& UBattlefieldManagerSubsystem::GetUsingAllyUnitData()
+{
+	return InBattleData.AllyUnits;
+}
+
 FUnitData UBattlefieldManagerSubsystem::GetAllyUnitData(FGameplayTag InUnitTag, bool& OutResult) const
 {
 	if (AllyUnitDatas.Contains(InUnitTag))
@@ -90,6 +96,13 @@ FUnitData UBattlefieldManagerSubsystem::GetEnemyUnitData(FGameplayTag InUnitTag,
 		OutResult = false;
 		return FUnitData();
 	}
+}
+
+void UBattlefieldManagerSubsystem::DebugSetUsingAllyUnits()
+{
+	InBattleData.AllyUnits.Empty();
+	bool Result = false;
+	InBattleData.AllyUnits.Add(GetAllyUnitData(Arcanum::Unit::Faction::Ally::Army::Root, Result));
 }
 
 void UBattlefieldManagerSubsystem::SetCurrentMatchData(const FMatchData& InData)

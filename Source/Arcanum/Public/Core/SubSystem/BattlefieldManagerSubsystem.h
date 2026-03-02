@@ -20,6 +20,9 @@ public:
 	FPlayerBattleData PlayerBattleData;
 	FBattleCharacterData BattleCharacterData;
 	FBattleStageInfo BattleStageInfo;
+	
+	UPROPERTY()
+	TArray<FUnitData> AllyUnits;
 };
 
 
@@ -61,11 +64,19 @@ public:
 	void SetABattlefieldManagerActor(ABattlefieldManagerActor* InBattlefieldManagerActor);
 
 	UFUNCTION()
+	const TArray<FUnitData>& GetUsingAllyUnitData();
+
+	UFUNCTION()
 	FUnitData GetAllyUnitData(FGameplayTag InUnitTag, bool& OutResult) const;
 	UFUNCTION()
 	FUnitData GetEnemyUnitData(FGameplayTag InUnitTag, bool& OutResult) const;
 
 #pragma endregion
+
+#pragma region 디버그
+	void DebugSetUsingAllyUnits();
+#pragma endregion
+
 
 #pragma region 중요정보 및 설정
 
@@ -111,11 +122,9 @@ protected:
 	UPROPERTY()
 	TMap<FGameplayTag, FBasementStat> BasementStats;
 
-	// 전투맵에서 사용하는 아군 유닛
 	UPROPERTY()
 	TMap<FGameplayTag, FUnitData> AllyUnitDatas;
 
-	// 전투맵에서 사용하는 적군 유닛
 	UPROPERTY()
 	TMap<FGameplayTag, FUnitData> EnemyUnitDatas;
 

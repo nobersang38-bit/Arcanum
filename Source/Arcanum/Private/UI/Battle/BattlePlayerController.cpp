@@ -8,6 +8,12 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
+#include "Core/SubSystem/BattlefieldManagerSubsystem.h"
+#include "GameplayTags/ArcanumTags.h"
+#include "Core/SubSystem/GameTimeSubsystem.h"
+#include "UI/Battle/SubLayout/BattleAllyUnitSlotWidget.h"
+#include "Character/BaseUnitCharacter.h"
+#include "Core/SubSystem/PoolingSubsystem.h"
 
 // ========================================================
 // 언리얼 기본 생성
@@ -15,6 +21,11 @@
 void ABattlePlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+
+	FString AllyUnitClassPath = TEXT("/Game/Test/Battle/Unit/BP_AllyUnit.BP_AllyUnit_C");
+	UClass* LoadAllyUnit = StaticLoadClass(UObject::StaticClass(), nullptr, *AllyUnitClassPath);
+
+	AllyUnitClass = LoadAllyUnit;
 
 	if (HUDWidgetClass)
 	{
@@ -26,6 +37,61 @@ void ABattlePlayerController::BeginPlay()
 	}
 	SetupMainHUDWidget();
 	SetupInputMode();
+
+	MeatValue.BaseMax = 100.0f;
+	MeatValue.Current = 100.0f;
+	MeatValue.BaseTick = 2.0f;
+
+	ManaValue.BaseMax = 100.0f;
+	ManaValue.Current = 100.0f;
+	ManaValue.BaseTick = 2.0f;
+
+	float MeatTickInterval = 0.1f;
+	FTimerDelegate MeatDelegate;
+	MeatDelegate.BindUObject(this, &ABattlePlayerController::UpdateMeatValue, MeatTickInterval);
+	GetWorld()->GetTimerManager().ClearTimer(MeatTimer);
+	GetWorld()->GetTimerManager().SetTimer(MeatTimer, MeatDelegate, MeatTickInterval, true);
+
+	float ManaTickInterval = 0.1f;
+	FTimerDelegate ManaDelegate;
+	ManaDelegate.BindUObject(this, &ABattlePlayerController::UpdateManaValue, ManaTickInterval);
+	GetWorld()->GetTimerManager().ClearTimer(ManaTimer);
+	GetWorld()->GetTimerManager().SetTimer(ManaTimer, ManaDelegate, ManaTickInterval, true);
+
+	UGameTimeSubsystem* TimeSubsystem = GetGameInstance()->GetSubsystem<UGameTimeSubsystem>();
+	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+
+	if (BattleSubsystem)
+	{
+		UsinAllyUnits.Empty();
+		for (int i = 0; i < BattleSubsystem->GetUsingAllyUnitData().Num(); i++)
+		{
+			const FUnitData& UnitDataE = BattleSubsystem->GetUsingAllyUnitData()[i];
+			UsinAllyUnits.Add(UnitDataE.Info.InfoSetting.Tag, UnitDataE);
+		}
+		//UsinAllyUnits = BattleSubsystem->GetUsingAllyUnitData();
+		/*for (int i = 0; i < UsinAllyUnits.Num(); i++)
+		{
+			UE_LOG(LogTemp, Error, TEXT("UsinAllyUnits : %s"), *UsinAllyUnits[i].Info.InfoSetting.Tag.ToString());
+		}*/
+		SetAllyUsingWidget();
+	}
+
+	if (TimeSubsystem)
+	{
+		if (BattleSubsystem)
+		{
+			TimeSubsystem->StartStage(BattleSubsystem->GetInBattleData().BattleStageInfo.StageLimitTime);
+
+			TimeSubsystem->OnStageSecondChanged.RemoveDynamic(this, &ABattlePlayerController::UpdateStageTime);
+			TimeSubsystem->OnStageSecondChanged.AddDynamic(this, &ABattlePlayerController::UpdateStageTime);
+		}
+	}
+
+	SetBossHealthProgress(0.0f, 0.0f);
+
+	GetWorld()->GetTimerManager().ClearTimer(PlayerLocationProgressTimeHandle);
+	GetWorld()->GetTimerManager().SetTimer(PlayerLocationProgressTimeHandle, this, &ABattlePlayerController::UpdatePlayerLocationProgress, PlayerLocationProgressUpdateInterval, true, 0.0f);
 }
 
 void ABattlePlayerController::SetupInputComponent()
@@ -73,7 +139,7 @@ void ABattlePlayerController::DebugBossHealthBar(float CurrentHealth, float MaxH
 void ABattlePlayerController::DebugAddPlayerInfoPanelSlot()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("DebugAddPlayerInfoPanelSlot"));
-	HUDWidgetInstance->GetPlayerInfoPanel()->AddUnitSlot();
+	//HUDWidgetInstance->GetPlayerInfoPanel()->AddUnitSlot();
 }
 
 void ABattlePlayerController::DebugRemovePlayerInfoPanelSlot(int32 RemoveIDX)
@@ -96,6 +162,78 @@ void ABattlePlayerController::SetupMainHUDWidget()
 	HUDWidgetInstance->OnClickItem1.AddDynamic(this, &ABattlePlayerController::Item1);
 	HUDWidgetInstance->OnClickItem2.AddDynamic(this, &ABattlePlayerController::Item2);
 	HUDWidgetInstance->OnToggleAutoManualMode.AddDynamic(this, &ABattlePlayerController::AutoManualModeMobile);
+}
+
+void ABattlePlayerController::UpdatePlayerLocationProgress()
+{
+	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (!AllyBasement.IsValid() && BattleSubsystem)
+	{
+		AllyBasement = BattleSubsystem->GetBasement(Arcanum::Unit::Faction::Ally::Root);
+	}
+
+	if (!EnemyBasement.IsValid() && BattleSubsystem)
+	{
+		EnemyBasement = BattleSubsystem->GetBasement(Arcanum::Unit::Faction::Enemy::Root);
+	}
+
+	if (!AllyBasement.IsValid() && !EnemyBasement.IsValid()) return;
+
+	HUDWidgetInstance->SetPlayerLocationProgress(AllyBasement->GetActorLocation(), EnemyBasement->GetActorLocation(), GetPawn()->GetActorLocation());
+}
+
+void ABattlePlayerController::UpdateStageTime(int32 TimeSecond)
+{
+	HUDWidgetInstance->SetTime(TimeSecond);
+}
+
+void ABattlePlayerController::SetAllyUsingWidget()
+{
+	UBattleAllyUnitPanelWidget* PlayerInfoPanel = HUDWidgetInstance->GetPlayerInfoPanel();
+	for (auto UsingAllyUnit : UsinAllyUnits)
+	{
+		UBattleAllyUnitSlotWidget* UnitSlot = PlayerInfoPanel->AddUnitSlot(UsingAllyUnit.Value);
+		if (UnitSlot)
+		{
+			UnitSlot->SetUnitInfo(UsingAllyUnit.Value.Info.InfoSetting.MeatCost, UsingAllyUnit.Value.Info.InfoSetting.Icon, UsingAllyUnit.Value.Info.InfoSetting.Tag);
+			UnitSlot->SetActivateCost(false);
+			UnitSlot->SetCoolTimeProgress(0.0f, 0.0f);
+			UnitSlot->OnPressUnitSlot.AddDynamic(this, &ABattlePlayerController::ReadySpawnUnit);
+			UnitSlot->OnReleasedUnitSlot.AddDynamic(this, &ABattlePlayerController::SpawnUnit);
+		}
+	}
+}
+
+void ABattlePlayerController::UpdateMeatValue(float DeltaTime)
+{
+	if (UBattleAllyUnitPanelWidget* PlayerInfoPanel = HUDWidgetInstance->GetPlayerInfoPanel())
+	{
+		FRegenStat& InData = MeatValue;
+		InData.Current += DeltaTime * InData.BaseTick;
+		InData.Current = FMath::Clamp(InData.Current, 0.0f, InData.BaseMax);
+		PlayerInfoPanel->SetMeatCostProgress(InData.Current, InData.BaseMax);
+	}
+}
+
+void ABattlePlayerController::UpdateManaValue(float DeltaTime)
+{
+	if (UBattleAllyUnitPanelWidget* PlayerInfoPanel = HUDWidgetInstance->GetPlayerInfoPanel())
+	{
+		FRegenStat& InData = ManaValue;
+		InData.Current += DeltaTime * InData.BaseTick;
+		InData.Current = FMath::Clamp(InData.Current, 0.0f, InData.BaseMax);
+		PlayerInfoPanel->SetManaCostProgress(InData.Current, InData.BaseMax);
+	}
+}
+
+void ABattlePlayerController::SetPlayerHealthProgress(float CurrentHealth, float MaxHealth)
+{
+	HUDWidgetInstance->SetPlayerCharacterHealthBarProgress(CurrentHealth, MaxHealth);
+}
+
+void ABattlePlayerController::SetBossHealthProgress(float CurrentHealth, float MaxHealth)
+{
+	HUDWidgetInstance->SetBossHealthBarProgress(CurrentHealth, MaxHealth);
 }
 
 // ========================================================
@@ -147,6 +285,59 @@ void ABattlePlayerController::AutoManualModeMobile(bool bIsChecked)
 void ABattlePlayerController::AutoManualModePC()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("AutoManualMode"));
+}
+
+void ABattlePlayerController::ReadySpawnUnit(FGameplayTag InTag)
+{
+	SpawnTag = InTag;
+}
+
+void ABattlePlayerController::SpawnUnit(FGameplayTag InTag)
+{
+	if (FUnitData* UnitData = UsinAllyUnits.Find(SpawnTag))
+	{
+		//UE_LOG(LogTemp, Error, TEXT("SpawnUnit : %s"), *SpawnTag.ToString());
+		UPoolingSubsystem* PoolingSubsystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
+		if (PoolingSubsystem)
+		{
+			FHitResult HitResult;
+			GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, HitResult);
+
+			FTransform Transform;
+			Transform.SetLocation(HitResult.ImpactPoint);
+			AActor* EnemyUnitInstance = PoolingSubsystem->SpawnFromPool(AllyUnitClass, Transform);
+			ABaseUnitCharacter* EnemyUnitCharacter = Cast<ABaseUnitCharacter>(EnemyUnitInstance);
+			if (EnemyUnitCharacter)
+			{
+				EnemyUnitCharacter->SetUnit(*UnitData);
+			}
+			//UE_LOG(LogTemp, Error, TEXT("HitResult : %s"), *HitResult.ImpactPoint.ToString());
+		}
+	}
+}
+
+bool ABattlePlayerController::UseMeatValue(float Value)
+{
+	if (MeatValue.Current >= Value)
+	{
+		MeatValue.Current -= Value;
+		MeatValue.Current = FMath::Clamp(MeatValue.Current, 0.0f, MeatValue.BaseMax);
+		return true;
+	}
+
+	return false;
+}
+
+bool ABattlePlayerController::UseManaValue(float Value)
+{
+	if (ManaValue.Current >= Value)
+	{
+		ManaValue.Current -= Value;
+		ManaValue.Current = FMath::Clamp(ManaValue.Current, 0.0f, ManaValue.BaseMax);
+		return true;
+	}
+
+	return false;
 }
 
 // ========================================================

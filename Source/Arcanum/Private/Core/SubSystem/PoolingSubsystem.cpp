@@ -137,7 +137,9 @@ AActor* UPoolingSubsystem::SpawnFromPool(TSubclassOf<AActor> InClass, const FTra
 	}
 
 	// 2. 비활성 풀이 비어있다면 클래스 이름으로 바로 스폰
-	if (AActor* NewActor = GetWorld()->SpawnActor<AActor>(InClass, InTransform))
+	FActorSpawnParameters SpawnParam;
+	SpawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	if (AActor* NewActor = GetWorld()->SpawnActor<AActor>(InClass, InTransform, SpawnParam))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("풀링 스폰"));
 		ActorToTagMap.Add(NewActor, PoolKey);

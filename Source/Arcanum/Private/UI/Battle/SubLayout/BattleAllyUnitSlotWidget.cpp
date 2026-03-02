@@ -15,6 +15,11 @@ void UBattleAllyUnitSlotWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	Button->OnClicked.AddDynamic(this, &UBattleAllyUnitSlotWidget::ClickUnitSlot);
+	Button->OnPressed.AddDynamic(this, &UBattleAllyUnitSlotWidget::PressUnitSlot);
+	Button->OnReleased.AddDynamic(this, &UBattleAllyUnitSlotWidget::ReleasedUnitSlot);
+
+	/*Button->OnPressed.AddDynamic()
+	Button->OnPressed.AddDynamic()*/
 }
 
 #if WITH_EDITOR
@@ -87,6 +92,16 @@ void UBattleAllyUnitSlotWidget::SetUnitTag(FGameplayTag InUnitTag)
 void UBattleAllyUnitSlotWidget::ClickUnitSlot()
 {
 	OnClickUnitSlot.Broadcast(UnitTag);
+}
+
+void UBattleAllyUnitSlotWidget::PressUnitSlot()
+{
+	OnPressUnitSlot.Broadcast(UnitTag);
+}
+
+void UBattleAllyUnitSlotWidget::ReleasedUnitSlot()
+{
+	OnReleasedUnitSlot.Broadcast(UnitTag);
 }
 
 void UBattleAllyUnitSlotWidget::SetActivateCost(bool InIsDisable)

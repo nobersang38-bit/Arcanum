@@ -6,6 +6,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameplayTagContainer.h"
+#include "UI/Battle/BattlePlayerController.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -46,6 +47,15 @@ void APlayerCharacter::BeginPlay()
 	GameplayTags.AddTag(PlayerID);
 
 	PrintIDTag();
+
+	OnTakeAnyDamage.RemoveDynamic(this, &APlayerCharacter::RecievedDamage);
+	OnTakeAnyDamage.AddDynamic(this, &APlayerCharacter::RecievedDamage);
+
+	ABattlePlayerController* OwnerPC = Cast<ABattlePlayerController>(GetController());
+	if (OwnerPC)
+	{
+		OwnerPC->SetPlayerHealthProgress(CurrentHealth, MaxHealth);
+	}
 }
 
 // Called every frame
@@ -65,6 +75,17 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 FGameplayTag APlayerCharacter::GetTeamTag()
 {
 	return TeamTag;
+}
+
+void APlayerCharacter::RecievedDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
+{
+	ABattlePlayerController* OwnerPC = Cast<ABattlePlayerController>(GetController());
+	if (OwnerPC)
+	{
+		CurrentHealth -= Damage;
+		CurrentHealth = FMath::Clamp(CurrentHealth, 0.0f, MaxHealth);
+		OwnerPC->SetPlayerHealthProgress(CurrentHealth, MaxHealth);
+	}
 }
 
 void APlayerCharacter::SetIDTag(FGameplayTag NewIDTag)
