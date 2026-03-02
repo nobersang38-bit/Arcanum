@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Interface/TeamInterface.h"
 #include "Basement.generated.h"
 
 class UPlayerBattleStatsComponent;
@@ -21,7 +22,7 @@ class UCapsuleComponent;
 class UStaticMeshComponent;
 
 UCLASS()
-class ARCANUM_API ABasement : public AActor
+class ARCANUM_API ABasement : public AActor, public ITeamInterface
 {
 	GENERATED_BODY()
 	
@@ -38,6 +39,9 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
+
+	// ITeamInterface을(를) 통해 상속됨
+	FGameplayTag GetTeamTag() override;
 //
 //	/** True면 내 기지, false면 적 기지*/
 //	UPROPERTY(EditAnywhere, Category = "Basement")
@@ -110,4 +114,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
 	TObjectPtr<class UBasementCombatComponent> BasementCombatComponent = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FGameplayTag TeamTag;
 };

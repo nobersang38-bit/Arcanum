@@ -61,6 +61,12 @@ void ABasement::BeginPlay()
 	}
 }
 
+FGameplayTag ABasement::GetTeamTag()
+{
+
+	return TeamTag;
+}
+
 //void ABasement::EnemySpawnTick()
 //{
 //	 if (SpawnCommonCount >= MaxSpawnCommonCount)

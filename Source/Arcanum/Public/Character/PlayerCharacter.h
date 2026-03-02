@@ -42,6 +42,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Tags")
 	void PrintIDTag();
 	
+#pragma region 디버그
+	void PlayerBasicAttack();
+#pragma endregion
 
 protected:
 

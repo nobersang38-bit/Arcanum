@@ -7,6 +7,9 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameplayTagContainer.h"
 #include "UI/Battle/BattlePlayerController.h"
+#include "Kismet/GameplayStatics.h"
+#include "Engine/OverlapResult.h"
+#include "Interface/RuntimeUnitDataInterface.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -130,6 +133,64 @@ void APlayerCharacter::PrintIDTag()
 	for (const FGameplayTag& Tag : GameplayTags)
 	{
 		UE_LOG(LogTemp, Log, TEXT("Tag: %s"), *Tag.ToString());
+	}
+}
+
+void APlayerCharacter::PlayerBasicAttack()
+{
+	DrawDebugSphere(GetWorld(), GetActorLocation() + GetActorForwardVector() * 150.0f, 100.0f, 16, FColor::Red, false, 2.0f);
+	TArray<FOverlapResult> OutOverlaps;
+	FCollisionShape MySphere = FCollisionShape::MakeSphere(100.0f);
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+
+	// 특정 위치(GetActorLocation)에서 한 프레임 즉시 검사
+	bool bHit = GetWorld()->OverlapMultiByChannel(
+		OutOverlaps,
+		GetActorLocation() + GetActorForwardVector() * 150.0f,
+		FQuat::Identity,
+		ECollisionChannel::ECC_Pawn, // 설정한 채널
+		MySphere,
+		Params
+	);
+
+	for (int i = 0; i < OutOverlaps.Num(); i++)
+	{
+		if (!OutOverlaps[i].GetActor()) continue;
+		if (OutOverlaps[i].GetActor() == this) continue;					// 자신이면 제외
+		if (!OutOverlaps[i].GetActor()->Implements<UTeamInterface>()) continue;	// 팀 아이디 인터페이스가 없으면 제외
+
+
+		if (OutOverlaps[i].GetActor()->GetClass()->ImplementsInterface(URuntimeUnitDataInterface::StaticClass()))
+		{
+			auto Interface = Cast<IRuntimeUnitDataInterface>(OutOverlaps[i].GetActor());
+			if (Interface && Interface->GetIsDead())
+			{
+				continue;
+			}
+		}
+
+		// 같은 팀이면 제외
+		if (OutOverlaps[i].GetActor()->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()) &&
+			this->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()))
+		{
+			auto OtherInterface = Cast<ITeamInterface>(OutOverlaps[i].GetActor());
+			auto OwnerInterface = Cast<ITeamInterface>(this);
+
+			if (OtherInterface->GetTeamTag() == OwnerInterface->GetTeamTag())
+			{
+				continue;
+			}
+		}
+		else
+		{
+			continue;
+		}
+
+		if (OutOverlaps[i].GetActor())
+		{
+			UGameplayStatics::ApplyDamage(OutOverlaps[i].GetActor(), 30.0f, GetController(), this, nullptr);
+		}
 	}
 }
 

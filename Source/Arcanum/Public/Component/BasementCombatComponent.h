@@ -9,6 +9,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBasementChangeHealth, float, CurrentHealth, float, MaxHealth);
 
+//김도현
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ARCANUM_API UBasementCombatComponent : public UActorComponent
 {

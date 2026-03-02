@@ -14,6 +14,7 @@
 #include "UI/Battle/SubLayout/BattleAllyUnitSlotWidget.h"
 #include "Character/BaseUnitCharacter.h"
 #include "Core/SubSystem/PoolingSubsystem.h"
+#include "Character/PlayerCharacter.h"
 
 // ========================================================
 // 언리얼 기본 생성
@@ -243,6 +244,13 @@ void ABattlePlayerController::BasicAttack()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("BasicAttack"));
 	//Todo : 기본공격
+
+	//디버그
+	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
+	if (PlayerCharacter)
+	{
+		PlayerCharacter->PlayerBasicAttack();
+	}
 }
 
 void ABattlePlayerController::UltimateSkill()
