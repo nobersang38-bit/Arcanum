@@ -63,32 +63,32 @@ private:
 
 #pragma region PlayerData Getter
 public:
-	/* 사용 예 
+	/* 사용 예
 	   const FPlayerCurrency Currency = FPlayerAccountService::GetPlayerCurrency(this);
 	 */
 
-    // 플레이어 전체 데이터 카피
-    static const FPlayerData GetPlayerDataCopy(const UObject* WorldContextObject);
-    // 재화
-    UFUNCTION(BlueprintCallable)
-    const FPlayerCurrency GetPlayerCurrency(const UObject* WorldContextObject);
-    // 전투 기본 데이터
-    UFUNCTION(BlueprintCallable)
-    const FPlayerBattleData GetPlayerBattleData(const UObject* WorldContextObject);
-    // 보유 캐릭터
-    UFUNCTION(BlueprintCallable)
-    const TArray<FBattleCharacterData> GetOwnedCharacters(const UObject* WorldContextObject);
-    // 인벤토리
-    UFUNCTION(BlueprintCallable)
-    const TArray<FEquipmentInfo> GetInventory(const UObject* WorldContextObject);
-    // 스테이지 진행도
-    UFUNCTION(BlueprintCallable)
-    const TMap<FGameplayTag, FStageProgressData> GetStageProgressMap(const UObject* WorldContextObject);
-    // 가챠 상태
-    UFUNCTION(BlueprintCallable)
-    const FGachaData GetGachaState(const UObject* WorldContextObject);
-    // 퀘스트 상태
-    UFUNCTION(BlueprintCallable)
+	 // 플레이어 전체 데이터 카피
+	static const FPlayerData GetPlayerDataCopy(const UObject* WorldContextObject);
+	// 재화
+	UFUNCTION(BlueprintCallable)
+	const FPlayerCurrency GetPlayerCurrency(const UObject* WorldContextObject);
+	// 전투 기본 데이터
+	UFUNCTION(BlueprintCallable)
+	const FPlayerBattleData GetPlayerBattleData(const UObject* WorldContextObject);
+	// 보유 캐릭터
+	UFUNCTION(BlueprintCallable)
+	const TArray<FBattleCharacterData> GetOwnedCharacters(const UObject* WorldContextObject);
+	// 인벤토리
+	UFUNCTION(BlueprintCallable)
+	const TArray<FEquipmentInfo> GetInventory(const UObject* WorldContextObject);
+	// 스테이지 진행도
+	UFUNCTION(BlueprintCallable)
+	const TMap<FGameplayTag, FStageProgressData> GetStageProgressMap(const UObject* WorldContextObject);
+	// 가챠 상태
+	UFUNCTION(BlueprintCallable)
+	const FGachaData GetGachaState(const UObject* WorldContextObject);
+	// 퀘스트 상태
+	UFUNCTION(BlueprintCallable)
 	const FPlayerQuest GetQuestState(const UObject* WorldContextObject);
 #pragma endregion
 
@@ -113,8 +113,8 @@ public:
 
 #pragma region Battle Widget 관련
 public:
-// 배틀스타트 함수 (비어놓고 스탑만 누르도록)
-
+	/* 스테이지 입장 시 상점 타이머 정지 */
+	static void StopShopOnBattleStart(const UObject* WorldContextObject);
 #pragma endregion
 
 #pragma region Character Widget 관련
@@ -128,26 +128,26 @@ public:
 
 #pragma region Shop Widget 관련
 public:
-    /** DT의 장비목록을 반환하는 함수*/
-    TArray<FName> GetEquipmentList(const UObject* WorldContextObject);
-    /** 상점에서 구매시 사용하는 함수*/
-    static bool PurchaseEquipment(const UObject* WorldContextObject, FName RowName);
-    /** */
-    static const FDTEquipmentInfoRow* GetItemDefinition(UGameDataSubsystem* DataSubsystem, const FGameplayTag& ItemTag);
+	/** DT의 장비목록을 반환하는 함수*/
+	TArray<FName> GetEquipmentList(const UObject* WorldContextObject);
+	/** 상점에서 구매시 사용하는 함수*/
+	static bool PurchaseEquipment(const UObject* WorldContextObject, FName RowName);
+	/** */
+	static const FDTEquipmentInfoRow* GetItemDefinition(UGameDataSubsystem* DataSubsystem, const FGameplayTag& ItemTag);
 
 	/* 인벤 아이템 판매 */
 	static bool SellItemByGuid(const UObject* WorldContextObject, const FGuid& InItemGuid);
 
 	/* 상점 진입 시 초기화 (저장시간 확인 후 유지/갱신 판정) */
-	static void InitializeShop(const UObject* WorldContextObject, int32 InShopSlotCount);
+	static void InitializeShop(const UObject* WorldContextObject, int32 InEquipmentSlotCount, int32 InPotionSlotCount);
 
 	/* 상점 강제 갱신 (10분 만료시) */
-	static void RefreshShop(const UObject* WorldContextObject, int32 InShopSlotCount);
+	static void RefreshShop(const UObject* WorldContextObject, int32 InEquipmentSlotCount, int32 InPotionSlotCount);
 
-	/* 상점 슬롯 데이터 조회 (UI 표시용) */
-	static bool GetShopSlotData(const UObject* WorldContextObject, int32 InSlotIndex, FName& OutRowName, bool& OutSoldOut);
+	/* 상점 슬롯 데이터 조회: TableTag + RowName을 함께 반환 */
+	static bool GetShopSlotData(const UObject* WorldContextObject, int32 InSlotIndex, FGameplayTag& OutTableTag, FName& OutRowName, bool& OutSoldOut);
 
-	/* 상점 슬롯 구매 처리 (구매 성공 시 해당 슬롯을 품절로 변경) */
+	/* 상점 슬롯 구매(TableTag 기준으로 포션 / 장비 분기) */
 	static bool PurchaseShopSlot(const UObject* WorldContextObject, int32 InSlotIndex);
 
 	/* 구매 성공 후 슬롯 품절 처리 */
@@ -159,12 +159,24 @@ public:
 	/* 다음 갱신 시각 기준 남은 초 계산 (UI 타이머 표시용) */
 	static int32 GetShopRemainingSeconds(const UObject* WorldContextObject);
 
+	/* 현재 시간 반환 */
+	static FDateTime GetCurrentTimeKST();
+
+	// ===================
+	// 포션 관련
+	// ===================
+	/* 포션 보유 수량 조회 */
+	static int32 GetPotionCount(const UObject* WorldContextObject, const FGameplayTag& InPotionTag);
+
+	/* 포션 구매(스택형) - 구매 성공 시 수량 증가(최대 20스택) + 골드 차감 */
+	static bool PurchasePotion(const UObject* WorldContextObject, FName InPotionRowName, int32 InBuyCount);
+
 private:
 	/* 상점 슬롯 전체 생성 */
-	static void GenerateShopItems(UARGameInstance* InGameInstance, int32 InShopSlotCount);
+	static void GenerateShopItems(UARGameInstance* InGameInstance, int32 InEquipmentSlotCount, int32 InPotionSlotCount, bool bInRefreshEquipmentOnly);
 
 	/* 상점 아이템 후보군 구성 (일반/세트/전설 분류) */
-	static void BuildShopItemPools(UARGameInstance* InGameInstance,	FShopItemPools& OutItemPools);
+	static void BuildShopItemPools(UARGameInstance* InGameInstance, FShopItemPools& OutItemPools);
 
 	/* 상점 등급 확률 판정 (일반/세트/전설) */
 	static EShopRarityType PickShopRarityType(UARGameInstance* InGameInstance);
@@ -173,13 +185,10 @@ private:
 	static FName PickShopItemRow(EShopRarityType InRarityType, FShopItemPools& InOutItemPools);
 
 	/* 상점 저장 데이터 초기화 */
-	static void ResetShopSoldOutStates(UARGameInstance* InGameInstance, int32 InShopSlotCount);
+	static void ResetShopSoldOutStates(UARGameInstance* InGameInstance, int32 InEquipmentSlotCount);
 
 	/* 다음 갱신 시각 설정 (현재시간 + 10분) */
 	static void SetNextShopRefreshTime(UARGameInstance* InGameInstance);
-
-	/* 현재 시간 반환 */
-	static FDateTime GetCurrentTimeKST();
 #pragma endregion
 
 #pragma region Gacha Widget 관련

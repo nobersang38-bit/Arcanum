@@ -2,6 +2,7 @@
 #include "Core/ARGameInstance.h"
 #include "Core/SubSystem/GameTimeSubsystem.h"
 #include "Core/SubSystem/GameDataSubsystem.h"
+#include "DataInfo\ItemData\Potion\DTPotionInfoRow.h"
 
 #include "Kismet/GameplayStatics.h"
 
@@ -123,7 +124,19 @@ bool FPlayerAccountService::SavePlayerData(const UObject* WorldContextObject)
 // ========================================================
 // Battle Widget 관련
 // ========================================================
+void FPlayerAccountService::StopShopOnBattleStart(const UObject* WorldContextObject)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return;
 
+	GI->PausedShopRemainingSeconds = FPlayerAccountService::GetShopRemainingSeconds(WorldContextObject);
+	GI->bShopPaused = true;
+
+	if (UGameTimeSubsystem* gameTimeSubsystem = GI->GetSubsystem<UGameTimeSubsystem>())
+	{
+		gameTimeSubsystem->StopShop();
+	}
+}
 // ========================================================
 // Character Widget 관련
 // ========================================================
@@ -241,21 +254,25 @@ const FDTEquipmentInfoRow* FPlayerAccountService::GetItemDefinition(UGameDataSub
 	if (!DataSubsystem) return nullptr;
 	return DataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, ItemTag.GetTagName());
 }
-void FPlayerAccountService::InitializeShop(const UObject* WorldContextObject, int32 InShopSlotCount)
+void FPlayerAccountService::InitializeShop(const UObject* WorldContextObject, int32 InEquipmentSlotCount, int32 InPotionSlotCount)
 {
 	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
 	if (!GI) return;
 
-	if (InShopSlotCount > 0)
+	const int32 equipmentCount = FMath::Max(0, InEquipmentSlotCount);
+	const int32 potionCount = FMath::Max(0, InPotionSlotCount);
+	const int32 totalCount = equipmentCount + potionCount;
+
+	if (totalCount > 0)
 	{
 		const bool bDataValid =
-			(GI->CurrentShopRowNames.Num() == InShopSlotCount) &&
-			(GI->CurrentShopSoldOutStates.Num() == InShopSlotCount) &&
+			(GI->CurrentShopKeys.Num() == totalCount) &&
+			(GI->CurrentShopSoldOutStates.Num() == totalCount) &&
 			(GI->NextShopRefreshTime.GetTicks() > 0);
 
 		if (!bDataValid || IsShopRefreshExpired(WorldContextObject))
 		{
-			RefreshShop(WorldContextObject, InShopSlotCount);
+			RefreshShop(WorldContextObject, equipmentCount, potionCount);
 		}
 
 		if (UGameTimeSubsystem* gameTimeSubsystem = GI->GetSubsystem<UGameTimeSubsystem>())
@@ -265,25 +282,30 @@ void FPlayerAccountService::InitializeShop(const UObject* WorldContextObject, in
 	}
 }
 
-
-void FPlayerAccountService::RefreshShop(const UObject* WorldContextObject, int32 InShopSlotCount)
+void FPlayerAccountService::RefreshShop(const UObject* WorldContextObject, int32 InEquipmentSlotCount, int32 InPotionSlotCount)
 {
 	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
 	if (!GI) return;
 
-	if (InShopSlotCount > 0)
+	const int32 equipmentCount = FMath::Max(0, InEquipmentSlotCount);
+	const int32 potionCount = FMath::Max(0, InPotionSlotCount);
+	const int32 totalCount = equipmentCount + potionCount;
+
+	if (totalCount > 0)
 	{
-		// 새 상점 아이템 생성
-		GenerateShopItems(GI, InShopSlotCount);
+		GI->CurrentShopKeys.SetNum(totalCount);
+		GI->CurrentShopSoldOutStates.SetNum(totalCount);
 
-		// 품절 상태 초기화
-		GI->CurrentShopSoldOutStates.SetNum(GI->CurrentShopRowNames.Num());
-		ResetShopSoldOutStates(GI, GI->CurrentShopRowNames.Num());
+		/* 장비만 재생성, 물약은 유지 */
+		GenerateShopItems(GI, equipmentCount, potionCount, true);
 
-		// 다음 갱신 시각 저장
+		/* 장비 구간만 품절 리셋 */
+		ResetShopSoldOutStates(GI, equipmentCount);
+
+		/* 다음 갱신 시각 저장 */
 		SetNextShopRefreshTime(GI);
 
-		// 상점 타이머 시작
+		/* 상점 타이머 시작 */
 		if (UGameTimeSubsystem* gameTimeSubsystem = GI->GetSubsystem<UGameTimeSubsystem>())
 		{
 			gameTimeSubsystem->StartShop(GI->NextShopRefreshTime);
@@ -291,46 +313,61 @@ void FPlayerAccountService::RefreshShop(const UObject* WorldContextObject, int32
 	}
 }
 
-bool FPlayerAccountService::GetShopSlotData(const UObject* WorldContextObject, int32 InSlotIndex, FName& OutRowName, bool& OutSoldOut)
+bool FPlayerAccountService::GetShopSlotData(const UObject* WorldContextObject, int32 InSlotIndex, FGameplayTag& OutTableTag, FName& OutRowName, bool& OutSoldOut)
 {
+	OutTableTag = FGameplayTag();
 	OutRowName = NAME_None;
 	OutSoldOut = false;
 
 	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
 	if (!GI) return false;
 
-	if (GI->CurrentShopRowNames.IsValidIndex(InSlotIndex) &&
-		GI->CurrentShopSoldOutStates.IsValidIndex(InSlotIndex))
+	if (!GI->CurrentShopKeys.IsValidIndex(InSlotIndex) ||
+		!GI->CurrentShopSoldOutStates.IsValidIndex(InSlotIndex))
 	{
-		OutRowName = GI->CurrentShopRowNames[InSlotIndex];
-		OutSoldOut = GI->CurrentShopSoldOutStates[InSlotIndex];
-
-		return true;
+		return false;
 	}
 
-	return false;
+	const FShopProductKey& key = GI->CurrentShopKeys[InSlotIndex];
+
+	OutTableTag = key.TableTag;
+	OutRowName = key.RowName;
+	OutSoldOut = GI->CurrentShopSoldOutStates[InSlotIndex];
+
+	return true;
 }
 
-bool FPlayerAccountService::PurchaseShopSlot(const UObject* WorldContextObject, int32 InSlotIndex)
+bool FPlayerAccountService::PurchaseShopSlot(const UObject* InWorldContextObject, int32 InSlotIndex)
 {
-	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(InWorldContextObject));
 	if (!GI) return false;
 
-	if (GI->CurrentShopRowNames.IsValidIndex(InSlotIndex) && 
-		GI->CurrentShopSoldOutStates.IsValidIndex(InSlotIndex))
-	{
-		if (!GI->CurrentShopSoldOutStates[InSlotIndex])
-		{
-			const FName rowName = GI->CurrentShopRowNames[InSlotIndex];
+	if (!GI->CurrentShopKeys.IsValidIndex(InSlotIndex) ||
+		!GI->CurrentShopSoldOutStates.IsValidIndex(InSlotIndex)) return false;
 
-			if (!rowName.IsNone() && PurchaseEquipment(WorldContextObject, rowName))
-			{
-				if (SetShopSlotSoldOut(WorldContextObject, InSlotIndex))
-				{
-					return true;
-				}
-			}
+	if (GI->CurrentShopSoldOutStates[InSlotIndex]) return false;
+
+	const FShopProductKey& key = GI->CurrentShopKeys[InSlotIndex];
+	if (!key.TableTag.IsValid() || key.RowName.IsNone()) return false;
+
+	UGameDataSubsystem* dataSubsystem = GI->GetSubsystem<UGameDataSubsystem>();
+	if (!dataSubsystem) return false;
+
+	// 포션: 품절 처리 없음
+	if (key.TableTag.MatchesTagExact(Arcanum::DataTable::Potion))
+	{
+		return PurchasePotion(InWorldContextObject, key.RowName, 1);
+	}
+
+	// 장비: 구매 성공 시 품절 처리
+	if (key.TableTag.MatchesTagExact(Arcanum::DataTable::Equipment))
+	{
+		if (PurchaseEquipment(InWorldContextObject, key.RowName))
+		{
+			return SetShopSlotSoldOut(InWorldContextObject, InSlotIndex);
 		}
+
+		return false;
 	}
 
 	return false;
@@ -367,6 +404,55 @@ int32 FPlayerAccountService::GetShopRemainingSeconds(const UObject* WorldContext
 	return 0;
 }
 
+// 포션
+int32 FPlayerAccountService::GetPotionCount(const UObject* WorldContextObject, const FGameplayTag& InPotionTag)
+{
+	if (UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject)))
+	{
+		if (InPotionTag.IsValid())
+		{
+			const FPlayerData& playerData = GI->GetPlayerDataCopy();
+
+			if (const int32* foundCount = playerData.PotionCounts.Find(InPotionTag))
+			{
+				return *foundCount;
+			}
+		}
+	}
+
+	return 0;
+}
+
+// 포션
+bool FPlayerAccountService::PurchasePotion(const UObject* InWorldContextObject, FName InPotionRowName, int32 InBuyCount)
+{
+	UARGameInstance* Gi = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(InWorldContextObject));
+	if (!Gi) return false;
+
+	if (!InPotionRowName.IsNone() || InBuyCount <= 0) return false;
+
+	UGameDataSubsystem* dataSubsystem = Gi->GetSubsystem<UGameDataSubsystem>();
+	if (!dataSubsystem) return false;
+
+	const FDTPotionInfoRow* row = dataSubsystem->GetRow<FDTPotionInfoRow>(Arcanum::DataTable::Potion, InPotionRowName);
+	if (!row || !row->PotionTag.IsValid()) return false;
+
+	FPlayerData& playerData = Gi->GetPlayerData();
+	FCurrencyData* currencyData = playerData.PlayerCurrency.CurrencyDatas.Find(Arcanum::PlayerData::Currencies::NonRegen::Gold::Value);
+	if (!currencyData) return false;
+
+	const int64 totalPrice = static_cast<int64>(row->BuyPrice) * static_cast<int64>(InBuyCount);
+	if (currencyData->CurrAmount < totalPrice) return false;
+
+	int32& currCount = playerData.PotionCounts.FindOrAdd(row->PotionTag);
+	currCount += InBuyCount;
+	currencyData->CurrAmount -= totalPrice;
+
+	Gi->SavePlayerData();
+
+	return true;
+}
+
 bool FPlayerAccountService::IsShopRefreshExpired(const UObject* WorldContextObject)
 {
 	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
@@ -382,24 +468,70 @@ bool FPlayerAccountService::IsShopRefreshExpired(const UObject* WorldContextObje
 	return true;
 }
 
-void FPlayerAccountService::GenerateShopItems(UARGameInstance* InGameInstance, int32 InShopSlotCount)
+void FPlayerAccountService::GenerateShopItems(UARGameInstance* InGameInstance, int32 InEquipmentSlotCount, int32 InPotionSlotCount, bool bInRefreshEquipmentOnly)
 {
 	if (InGameInstance)
 	{
-		if (InShopSlotCount > 0)
+		const int32 equipmentCount = FMath::Max(0, InEquipmentSlotCount);
+		const int32 potionCount = FMath::Max(0, InPotionSlotCount);
+		const int32 totalCount = equipmentCount + potionCount;
+
+		if (totalCount > 0)
 		{
-			FShopItemPools itemPools;
-			BuildShopItemPools(InGameInstance, itemPools);
-
-			InGameInstance->CurrentShopRowNames.Reset();
-			InGameInstance->CurrentShopRowNames.Reserve(InShopSlotCount);
-
-			for (int32 i = 0; i < InShopSlotCount; i++)
+			if (UGameDataSubsystem* dataSubsystem = InGameInstance->GetSubsystem<UGameDataSubsystem>())
 			{
-				const EShopRarityType rarityType = PickShopRarityType(InGameInstance);
-				const FName pickedRow = PickShopItemRow(rarityType, itemPools);
+				// 장비 구간 갱신
+				if (equipmentCount > 0)
+				{
+					FShopItemPools itemPools;
+					BuildShopItemPools(InGameInstance, itemPools);
 
-				InGameInstance->CurrentShopRowNames.Add(pickedRow);
+					for (int32 i = 0; i < equipmentCount; i++)
+					{
+						const EShopRarityType rarityType = PickShopRarityType(InGameInstance);
+						const FName pickedRow = PickShopItemRow(rarityType, itemPools);
+
+						FShopProductKey key;
+						key.TableTag = Arcanum::DataTable::Equipment;
+						key.RowName = pickedRow;
+
+						InGameInstance->CurrentShopKeys[i] = key;
+					}
+				}
+
+				// 물약 구간 고정
+				if (potionCount > 0)
+				{
+					UDataTable* const* potionTablePtr = dataSubsystem->MasterDataTables.Find(Arcanum::DataTable::Potion);
+
+					if (potionTablePtr && *potionTablePtr)
+					{
+						const TArray<FName> potionRows = (*potionTablePtr)->GetRowNames();
+
+						UE_LOG(LogTemp, Warning, TEXT("[Shop][Potion] PotionRows=%d, PotionSlotCount=%d, RefreshOnly=%d"), potionRows.Num(), potionCount, bInRefreshEquipmentOnly ? 1 : 0);
+
+						for (int32 j = 0; j < potionCount; j++)
+						{
+							const int32 dstIndex = equipmentCount + j;
+
+							if (bInRefreshEquipmentOnly)
+							{
+								const FShopProductKey& existing = InGameInstance->CurrentShopKeys[dstIndex];
+								if (existing.TableTag.IsValid() && !existing.RowName.IsNone()) continue;
+							}
+
+							FShopProductKey key;
+							key.TableTag = Arcanum::DataTable::Potion;
+
+							if (potionRows.IsValidIndex(j))
+							{
+								key.RowName = potionRows[j];
+							}
+
+							InGameInstance->CurrentShopKeys[dstIndex] = key;
+						}
+					}
+				}
 			}
 		}
 	}
@@ -504,18 +636,17 @@ FName FPlayerAccountService::PickShopItemRow(EShopRarityType InRarityType, FShop
 }
 
 
-void FPlayerAccountService::ResetShopSoldOutStates(UARGameInstance* InGameInstance, int32 InShopSlotCount)
+void FPlayerAccountService::ResetShopSoldOutStates(UARGameInstance* InGameInstance, int32 InEquipmentSlotCount)
 {
-	if (InGameInstance)
-	{
-		if (InShopSlotCount > 0)
-		{
-			InGameInstance->CurrentShopSoldOutStates.SetNum(InShopSlotCount);
+	if (!InGameInstance) return;
 
-			for (int32 slotIndex = 0; slotIndex < InShopSlotCount; slotIndex++)
-			{
-				InGameInstance->CurrentShopSoldOutStates[slotIndex] = false;
-			}
+	const int32 equipmentCount = FMath::Max(0, InEquipmentSlotCount);
+
+	for (int32 i = 0; i < equipmentCount; i++)
+	{
+		if (InGameInstance->CurrentShopSoldOutStates.IsValidIndex(i))
+		{
+			InGameInstance->CurrentShopSoldOutStates[i] = false;
 		}
 	}
 }

@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -25,6 +23,7 @@ class UShopHUDWidget;
 class UARGameInstance;
 class UInventoryHUDWidget;
 struct FDTEquipmentInfoRow;
+struct FDTPotionInfoRow;
 
 UCLASS()
 class ARCANUM_API ULobbyHUD : public UUserWidget
@@ -138,8 +137,14 @@ protected:
 	/* 장비 DT 캐시 구축(로비 진입 시 1회) */
 	void BuildEquipmentRowCache();
 
-	/* 캐시에서 ItemTag로 RowPtr 찾기(O(1)) */
+	/* 캐시에서 ItemTag로 RowPtr 찾기 */
 	const FDTEquipmentInfoRow* FindEquipmentRowByTag(const FGameplayTag& InItemTag) const;
+
+	/* 포션 DT 캐시 */
+	void BuildPotionRowCache();
+
+	/* 캐시에서 PotionTag로 RowPtr 찾기 */
+	const FDTPotionInfoRow* FindPotionRowByTag(const FGameplayTag& InPotionTag) const;
 
 protected:
 	/* 인벤토리 위젯 */
@@ -148,7 +153,7 @@ protected:
 
 	/* 인벤 슬롯 생성 개수 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
-	int32 InventorySlotCount = 50;
+	int32 InventorySlotCount = 100;
 
 	/* 현재 선택된 인벤 아이템 */
 	UPROPERTY()
@@ -158,6 +163,8 @@ private:
 	/* ItemTag -> 장비 DT RowPtr 캐시 */
 	TMap<FGameplayTag, const FDTEquipmentInfoRow*> EquipmentRowByTag;
 
+	/*  PotionTag -> 포션 DT RowPtr 캐시 */
+	TMap<FGameplayTag, const FDTPotionInfoRow*> PotionRowByTag;
 #pragma endregion
 
 #pragma region 전투
@@ -204,16 +211,27 @@ private:
 	/* DT 조회로 상점 표시 캐시 */
 	void BuildShopRuntimeCache();
 
+	/* 로비 복귀 시 타이머 재개 */
+	void RestartShopTimer();
+
 protected:
 	/* 상점 위젯 */
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UShopHUDWidget> ShopHUDWidget;
 
-	/* 상점 슬롯 개수 */
+	/* 장비 상점 슬롯 개수 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shop")
-	int32 ShopSlotCount = 5;
+	int32 EquipmentShopSlotCount = 5;
+
+	/* 물약 상점 슬롯 개수 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shop")
+	int32 PotionShopSlotCount = 6;
 
 private:
+	/* 상점 슬롯 상품 키(TableTag+RowName) 표시 캐시 */
+	UPROPERTY()
+	TArray<FGameplayTag> CachedShopTableTags;
+
 	/* 상점 UI 표시용 RowName 카피 */
 	UPROPERTY()
 	TArray<FName> CachedShopRowNames;
@@ -222,8 +240,15 @@ private:
 	UPROPERTY()
 	TArray<bool> CachedShopSoldOutStates;
 
-	/* 상점 UI 표시용 DT row 포인터 캐시 */
-	TArray<const FDTEquipmentInfoRow*> CachedShopRowPtrs;
+	/* 상점 슬롯 표시용 공통 캐시 */
+	UPROPERTY()
+	TArray<TSoftObjectPtr<UTexture2D>> CachedShopIcons;
+	UPROPERTY()
+	TArray<FText> CachedShopNames;
+	UPROPERTY()
+	TArray<FText> CachedShopDescs;
+	UPROPERTY()
+	TArray<int64> CachedShopPrices;
 #pragma endregion
 
 #pragma region 가챠

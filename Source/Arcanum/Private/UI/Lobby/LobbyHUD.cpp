@@ -6,6 +6,7 @@
 #include "UI/Lobby/Contents/Inventory/InventoryItemSlotWidget.h"
 #include "UI/Lobby/Contents/Inventory/InventoryHUDWidget.h"
 #include "DataInfo/BattleCharacter/Equipment/DataTable/DTEquipment.h"
+#include "DataInfo/ItemData/Potion/DTPotionInfoRow.h"
 //#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/HorizontalBox.h"
@@ -60,7 +61,7 @@ void ULobbyHUD::NativeConstruct()
 
 	if (ShopHUDWidget)
 	{
-		ShopHUDWidget->InitShopSlots(ShopSlotCount);
+		ShopHUDWidget->InitPanels(EquipmentShopSlotCount, PotionShopSlotCount);
 		ShopHUDWidget->OnBuyRequested.RemoveDynamic(this, &ULobbyHUD::TryPurchaseSelectedItem);
 		ShopHUDWidget->OnBuyRequested.AddDynamic(this, &ULobbyHUD::TryPurchaseSelectedItem);
 
@@ -77,9 +78,11 @@ void ULobbyHUD::NativeConstruct()
 
 	BindGameInstanceEvents();
 	BuildEquipmentRowCache();
+	BuildPotionRowCache();
 	RefreshAllLobbyUI();
 
 	InitShop();
+	RestartShopTimer();
 	BindShopTimer();
 	RefreshShopUI();
 
@@ -87,13 +90,6 @@ void ULobbyHUD::NativeConstruct()
 	CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
 
 	RefreshLobbyCurrencyUI();
-	//if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance())) {
-	//	CachedPlayerData = gameInstance->GetPlayerDataCopy();
-	//	RefreshLobbyCurrencyUI();
-	//}
-
-	// 로비로 돌아올떄(무조건 들오올떄) 스타트 하는거 넣어놈
-
 }
 
 void ULobbyHUD::RefreshAllLobbyUI()
@@ -305,6 +301,49 @@ const FDTEquipmentInfoRow* ULobbyHUD::FindEquipmentRowByTag(const FGameplayTag& 
 	return nullptr;
 }
 
+void ULobbyHUD::BuildPotionRowCache()
+{
+	PotionRowByTag.Reset();
+
+	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+	{
+		if (UGameDataSubsystem* dataSubsystem = gameInstance->GetSubsystem<UGameDataSubsystem>())
+		{
+			UDataTable* const* tablePtr = dataSubsystem->MasterDataTables.Find(Arcanum::DataTable::Potion);
+			if (!tablePtr || !(*tablePtr)) return;
+
+			UDataTable* table = *tablePtr;
+
+			TArray<FDTPotionInfoRow*> rows;
+			table->GetAllRows(TEXT("BuildPotionRowCache"), rows);
+
+			for (FDTPotionInfoRow* row : rows)
+			{
+				if (row && row->PotionTag.IsValid())
+				{
+					if (!PotionRowByTag.Contains(row->PotionTag))
+					{
+						PotionRowByTag.Add(row->PotionTag, row);
+					}
+				}
+			}
+		}
+	}
+}
+
+const FDTPotionInfoRow* ULobbyHUD::FindPotionRowByTag(const FGameplayTag& InPotionTag) const
+{
+	if (InPotionTag.IsValid())
+	{
+		if (const FDTPotionInfoRow* const* found = PotionRowByTag.Find(InPotionTag))
+		{
+			return *found;
+		}
+	}
+
+	return nullptr;
+}
+
 // ========================================================
 // 상점
 // ========================================================
@@ -312,7 +351,7 @@ void ULobbyHUD::InitShop()
 {
 	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
 	{
-		FPlayerAccountService::InitializeShop(gameInstance, ShopSlotCount);
+		FPlayerAccountService::InitializeShop(gameInstance, EquipmentShopSlotCount, PotionShopSlotCount);
 	}
 }
 
@@ -322,7 +361,14 @@ void ULobbyHUD::RefreshShopUI()
 
 	if (ShopHUDWidget)
 	{
-		ShopHUDWidget->ApplyShopData(CachedShopRowNames, CachedShopSoldOutStates, CachedShopRowPtrs);
+		ShopHUDWidget->ApplyShopData(
+			CachedShopRowNames,
+			CachedShopSoldOutStates,
+			CachedShopIcons,
+			CachedShopNames,
+			CachedShopDescs,
+			CachedShopPrices
+		);
 
 		if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
 		{
@@ -354,14 +400,22 @@ void ULobbyHUD::HandleShopSecondChanged(int32 InRemainingSeconds)
 	{
 		if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
 		{
-			FPlayerAccountService::RefreshShop(gameInstance, ShopSlotCount);
+			FPlayerAccountService::RefreshShop(gameInstance, EquipmentShopSlotCount, PotionShopSlotCount);
 			BuildShopRuntimeCache();
 			InRemainingSeconds = FPlayerAccountService::GetShopRemainingSeconds(gameInstance);
 		}
 
 		if (ShopHUDWidget)
 		{
-			ShopHUDWidget->ApplyShopData(CachedShopRowNames, CachedShopSoldOutStates, CachedShopRowPtrs);
+			ShopHUDWidget->ApplyShopData(
+				CachedShopRowNames,
+				CachedShopSoldOutStates,
+				CachedShopIcons,
+				CachedShopNames,
+				CachedShopDescs,
+				CachedShopPrices
+			);
+
 			ShopHUDWidget->ClearShopSelection();
 		}
 	}
@@ -401,47 +455,99 @@ void ULobbyHUD::TrySellSelectedItem()
 
 void ULobbyHUD::BuildShopRuntimeCache()
 {
-	CachedShopRowNames.Reset();
-	CachedShopSoldOutStates.Reset();
-	CachedShopRowPtrs.Reset();
-
-	int32 slotCount = FMath::Max(0, ShopSlotCount);
+	const int32 equipmentSlotCount = FMath::Max(0, EquipmentShopSlotCount);
+	const int32 potionSlotCount = FMath::Max(0, PotionShopSlotCount);
+	const int32 slotCount = EquipmentShopSlotCount + PotionShopSlotCount;
 
 	CachedShopRowNames.SetNum(slotCount);
 	CachedShopSoldOutStates.SetNum(slotCount);
-	CachedShopRowPtrs.SetNum(slotCount);
+
+	CachedShopIcons.SetNum(slotCount);
+	CachedShopNames.SetNum(slotCount);
+	CachedShopDescs.SetNum(slotCount);
+	CachedShopPrices.SetNum(slotCount);
 
 	for (int32 i = 0; i < slotCount; i++)
 	{
 		CachedShopRowNames[i] = NAME_None;
 		CachedShopSoldOutStates[i] = false;
-		CachedShopRowPtrs[i] = nullptr;
+
+		CachedShopIcons[i] = nullptr;
+		CachedShopNames[i] = FText::GetEmpty();
+		CachedShopDescs[i] = FText::GetEmpty();
+		CachedShopPrices[i] = 0;
 	}
 
+	UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance());
+	if (!gameInstance) return;
+
+	UGameDataSubsystem* dataSubsystem = gameInstance->GetSubsystem<UGameDataSubsystem>();
+	if (!dataSubsystem) return;
+
+	for (int32 slotIndex = 0; slotIndex < slotCount; slotIndex++)
+	{
+		if (!gameInstance->CurrentShopKeys.IsValidIndex(slotIndex))	continue;
+
+		const FShopProductKey& key = gameInstance->CurrentShopKeys[slotIndex];
+
+		if (gameInstance->CurrentShopSoldOutStates.IsValidIndex(slotIndex))
+		{
+			CachedShopSoldOutStates[slotIndex] = gameInstance->CurrentShopSoldOutStates[slotIndex];
+		}
+
+		if (!key.TableTag.IsValid() || key.RowName.IsNone()) continue;
+
+		CachedShopRowNames[slotIndex] = key.RowName;
+
+		/* 포션 */
+		if (key.TableTag.MatchesTagExact(Arcanum::DataTable::Potion))
+		{
+			const FDTPotionInfoRow* potionRow = dataSubsystem->GetRow<FDTPotionInfoRow>(Arcanum::DataTable::Potion, key.RowName);
+			if (!potionRow) continue;
+
+			CachedShopIcons[slotIndex] = potionRow->Icon;
+
+			CachedShopNames[slotIndex] = FText::FromName(key.RowName);
+
+			CachedShopDescs[slotIndex] = potionRow->Desc;
+			CachedShopPrices[slotIndex] = potionRow->BuyPrice;
+
+			CachedShopSoldOutStates[slotIndex] = false;
+
+			continue;
+		}
+
+		/* 장비 */
+		if (key.TableTag.MatchesTagExact(Arcanum::DataTable::Equipment))
+		{
+			const FDTEquipmentInfoRow* equipRow = dataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, key.RowName);
+			if (!equipRow) continue;
+
+			CachedShopIcons[slotIndex] = equipRow->Icon;
+			CachedShopNames[slotIndex] = FText::FromName(key.RowName);
+			CachedShopDescs[slotIndex] = equipRow->Desc;
+			CachedShopPrices[slotIndex] = equipRow->BuyPrice;
+
+			continue;
+		}
+	}
+}
+
+void ULobbyHUD::RestartShopTimer()
+{
 	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
 	{
-		if (UGameDataSubsystem* dataSubsystem = gameInstance->GetSubsystem<UGameDataSubsystem>())
+		if (gameInstance->bShopPaused && gameInstance->PausedShopRemainingSeconds > 0)
 		{
-			for (int32 slotIndex = 0; slotIndex < slotCount; slotIndex++)
+			const FDateTime nowKst = FPlayerAccountService::GetCurrentTimeKST();
+			gameInstance->NextShopRefreshTime = nowKst + FTimespan(0, 0, gameInstance->PausedShopRemainingSeconds);
+
+			gameInstance->bShopPaused = false;
+			gameInstance->PausedShopRemainingSeconds = 0;
+
+			if (UGameTimeSubsystem* gameTimeSubsystem = gameInstance->GetSubsystem<UGameTimeSubsystem>())
 			{
-				if (gameInstance->CurrentShopRowNames.IsValidIndex(slotIndex))
-				{
-					CachedShopRowNames[slotIndex] = gameInstance->CurrentShopRowNames[slotIndex];
-				}
-
-				if (gameInstance->CurrentShopSoldOutStates.IsValidIndex(slotIndex))
-				{
-					CachedShopSoldOutStates[slotIndex] = gameInstance->CurrentShopSoldOutStates[slotIndex];
-				}
-
-				const FName rowName = CachedShopRowNames[slotIndex];
-				if (rowName == NAME_None)
-				{
-					continue;
-				}
-
-				const FDTEquipmentInfoRow* rowPtr = dataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, rowName);
-				CachedShopRowPtrs[slotIndex] = rowPtr;
+				gameTimeSubsystem->StartShop(gameInstance->NextShopRefreshTime);
 			}
 		}
 	}

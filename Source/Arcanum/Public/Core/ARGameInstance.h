@@ -10,6 +10,18 @@
 #include "Core/ARPlayerAccountService.h"
 #include "ARGameInstance.generated.h"
 
+USTRUCT(BlueprintType)
+struct FShopProductKey
+{
+    GENERATED_BODY()
+
+    UPROPERTY()
+    FGameplayTag TableTag;
+
+    UPROPERTY()
+    FName RowName = NAME_None;
+};
+
 /* 재화 변경 알림 */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCurrencyChanged);
 
@@ -102,16 +114,24 @@ public:
 #pragma region 런타임 상점 상태
 public:
     /* 상점 다음 갱신 시각 */
-    UPROPERTY()
+    UPROPERTY(Transient)
     FDateTime NextShopRefreshTime;
 
-    /* 현재 상점 슬롯 아이템 RowName 목록 */
-    UPROPERTY()
-    TArray<FName> CurrentShopRowNames;
-
+    /* 현재 상점 슬롯 상품 키 (TableTag + RowName) */
+    UPROPERTY(Transient)
+    TArray<FShopProductKey> CurrentShopKeys;
+    
     /* 현재 상점 슬롯 품절 여부 목록 */
-    UPROPERTY()
+    UPROPERTY(Transient)
     TArray<bool> CurrentShopSoldOutStates;
+
+    /* 전투 진입 타이머 정지했는지 */
+    UPROPERTY(Transient)
+    bool bShopPaused = false;
+
+    /* 정지 순간 남은 초 */
+    UPROPERTY(Transient)
+    int32 PausedShopRemainingSeconds = 0;
 #pragma endregion
 
 #pragma region 테스트 코드

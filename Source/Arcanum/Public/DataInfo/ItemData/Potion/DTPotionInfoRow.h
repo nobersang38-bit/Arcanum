@@ -33,7 +33,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int64 SellPrice = 0;
-
+	
 	/* 물약 쿨타임 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float CooldownSeconds = 0.f;

@@ -3,17 +3,15 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "GameplayTagContainer.h"
-#include "DataInfo/BattleCharacter/Equipment/DataTable/DTEquipment.h"
 #include "ShopItemSlotWidget.generated.h"
 
 class UButton;
 class UImage;
 class UTextBlock;
 class UBorder;
-struct FDTEquipmentInfoRow;
 
 /* 슬롯 클릭 시 슬롯 인덱스 전달 */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnShopItemSlotClicked, int32, InSlotIndex);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnShopItemSlotClicked, int32, InShopSlotIndex);
 
 /**
  * 추영호
@@ -28,12 +26,16 @@ protected:
 	virtual void NativeConstruct() override;
 
 public:
-	/* 로비HUD RowPtr 받아서 슬롯 표시만 세팅 */
-	void SetViewData(int32 InSlotIndex, FName InRowName, const FDTEquipmentInfoRow* InRowPtr, bool InSoldOut);
-
-	/* 장비 슬롯 표시 데이터 세팅 */
-	UFUNCTION(BlueprintCallable)
-	void SetEquipmentData(const FDTEquipmentInfoRow& InRow, int32 InSlotIndex, FName InRowName);
+	/* 슬롯 표시 데이터 세팅 */
+	void SetSlotData(
+		int32 InSlotIndex,
+		FName InRowName,
+		TSoftObjectPtr<UTexture2D> InIcon,
+		const FText& InName,
+		const FText& InDesc,
+		int64 InPrice,
+		bool InSoldOut
+	);
 
 	/* 빈 슬롯 초기화 */
 	UFUNCTION(BlueprintCallable)
@@ -59,10 +61,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FName GetRowName() const { return RowName; }
 
-	/* 장비 태그 반환 */
-	UFUNCTION(BlueprintCallable)
-	FGameplayTag GetItemTag() const { return EquipmentRowPtr ? EquipmentRowPtr->ItemTag : FGameplayTag(); }
-
 private:
 	/* 슬롯 버튼 클릭 처리 */
 	UFUNCTION()
@@ -70,7 +68,6 @@ private:
 
 	/* 슬롯 UI 갱신 */
 	void RefreshSlotUI();
-
 
 public:
 	UPROPERTY(BlueprintAssignable, Category = "Shop")
@@ -111,8 +108,10 @@ private:
 	TObjectPtr<UBorder> SelectedBorder;
 
 private:
-	/* 장비 데이터 캐시 */
-	const FDTEquipmentInfoRow* EquipmentRowPtr = nullptr;
+	TSoftObjectPtr<UTexture2D> ViewIcon;
+	FText ViewName;
+	FText ViewDesc;
+	int64 ViewPrice = 0;
 
 	/* 슬롯 번호 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))

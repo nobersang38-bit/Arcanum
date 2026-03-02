@@ -41,6 +41,8 @@ struct FPlayerData
      * ============================== */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
     TArray<FEquipmentInfo> Inventory;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
+    TMap<FGameplayTag, int32> PotionCounts;
 
     /* ==============================
      *     스테이지 클리어 정보?
