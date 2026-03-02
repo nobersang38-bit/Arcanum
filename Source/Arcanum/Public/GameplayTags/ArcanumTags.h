@@ -35,6 +35,13 @@ namespace Arcanum {
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Equipment);
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(PlayerBattleStats);
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(GachaTable);
+<<<<<<< Updated upstream
+=======
+		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(SkillData);
+		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(StageInfo);
+		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(AllyUnitInfo);
+		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(EnemyUnitInfo);
+>>>>>>> Stashed changes
 
 		//ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(BattleRegenStats);
 		//ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(BattleNonRegenStats);
@@ -103,12 +110,12 @@ namespace Arcanum {
 	namespace Skills {
 		namespace SkillName {
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(None);
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Slash);			// 무기 스킬: 베기
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(ChainBolt);		// 무기 스킬: 체인 볼트
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(PiercingShot);	// 무기 스킬: 관통 사격
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(ShockWave);		// 무기 스킬: 충격파
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Slash);			// 무기 스킬: 베기(했음)
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(ChainBolt);		// 무기 스킬: 체인 볼트(했음)
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(PiercingShot);	// 무기 스킬: 관통 사격(했음)
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(ShockWave);		// 무기 스킬: 충격파(했음)
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(MjolnirStrike);	// 무기 스킬: 묠니르
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(VoidEclipse);	// 무기 스킬: 보이드
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(VoidEclipse);	// 무기 스킬: 보이드(했음)
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(SolarFlare);		// 무기 스킬: 솔라
 		}
 		namespace SkillTypes {
