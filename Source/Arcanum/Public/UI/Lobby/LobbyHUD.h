@@ -5,6 +5,7 @@
 #include "UI/DataType/EDialogResult.h"
 #include "UI/Lobby/Contents/Character/CharacterHUDWidget.h"
 #include "DataInfo/PlayerData/FPlayerData.h"
+#include "DataInfo/ItemData/Data/InventoryViewSlot.h"
 #include "LobbyHUD.generated.h"
 
 /*
@@ -129,7 +130,7 @@ protected:
 protected:
 	/* 인벤토리 선택 알림 수신 */
 	UFUNCTION()
-	void HandleInventorySlotSelected(FGuid InItemGuid);
+	void HandleInventorySlotSelected(const FInventoryViewSlot& InSlot);
 
 	/* 인벤 UI 갱신(표시용) */
 	void RefreshInventoryUI();
@@ -146,25 +147,46 @@ protected:
 	/* 캐시에서 PotionTag로 RowPtr 찾기 */
 	const FDTPotionInfoRow* FindPotionRowByTag(const FGameplayTag& InPotionTag) const;
 
+private:
+	/* 물약 앞쪽부터 그 뒤 장비 정렬 */
+	void BuildInventoryViewSlots(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const;
+
+	/* 정렬 버튼 클릭 토글 */
+	UFUNCTION()
+	void ClickInventorySortBtn();
+
+	/* 포션 스택(20) */
+	void AppendPotionSlots(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const;  
+
+	/* 장비 원본순으로 */
+	void AppendEquipmentSlotsRaw(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const;
+
+	/* 장비 정렬(강화순 투구/갑옷/장갑/신발 ) */
+	void AppendEquipmentSlotsSorted(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const; 
+
 protected:
 	/* 인벤토리 위젯 */
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UInventoryHUDWidget> InventoryHUDWidget;
 
-	/* 인벤 슬롯 생성 개수 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
-	int32 InventorySlotCount = 100;
-
 	/* 현재 선택된 인벤 아이템 */
 	UPROPERTY()
 	FGuid SelectedInventoryItemGuid;
+
+	/* 인벤 정렬 버튼 */
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidgetOptional))
+	TObjectPtr<UCommonBtnWidget> InventorySortBtn;
 
 private:
 	/* ItemTag -> 장비 DT RowPtr 캐시 */
 	TMap<FGameplayTag, const FDTEquipmentInfoRow*> EquipmentRowByTag;
 
-	/*  PotionTag -> 포션 DT RowPtr 캐시 */
+	/* PotionTag -> 포션 DT RowPtr 캐시 */
 	TMap<FGameplayTag, const FDTPotionInfoRow*> PotionRowByTag;
+
+	/* 정렬 토글 상태 (true 정렬)*/
+	UPROPERTY()
+	bool bInventorySortedView = false;
 #pragma endregion
 
 #pragma region 전투

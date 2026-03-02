@@ -134,6 +134,17 @@ public:
     int32 PausedShopRemainingSeconds = 0;
 #pragma endregion
 
+#pragma region 인벤토리
+public:
+    /* 인벤토리 슬롯 개수 */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, Category = "Inventory")
+    int32 InventoryCapacity = 4;
+
+    /* 포션 최대 스택 */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Transient, Category = "Inventory")
+    int32 PotionMaxStack = 20;
+#pragma endregion
+
 #pragma region 테스트 코드
     UFUNCTION(BlueprintCallable)
     bool TestPurchaseEquipment(FName ItemRowName)

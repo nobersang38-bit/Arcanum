@@ -143,7 +143,7 @@ namespace Arcanum {
 				namespace Weapon {
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(GreatSword, "Arcanum.Items.Rarity.Common.Weapon.GreatSword", "대검");
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Staff, "Arcanum.Items.Rarity.Common.Weapon.Staff", "지팡이");
-					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Bow, "Arcanum.Items.Rarity.Common.Weapon.Bow", "없활");
+					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Bow, "Arcanum.Items.Rarity.Common.Weapon.Bow", "활");
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Shield, "Arcanum.Items.Rarity.Common.Weapon.Shield", "방패");
 				}
 				namespace Armor {

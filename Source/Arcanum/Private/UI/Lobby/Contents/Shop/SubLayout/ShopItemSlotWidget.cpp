@@ -18,11 +18,11 @@ void UShopItemSlotWidget::NativeConstruct()
 }
 
 void UShopItemSlotWidget::SetSlotData(
-	int32 InSlotIndex, FName InRowName, 
-	TSoftObjectPtr<UTexture2D> InIcon, 
-	const FText& InName, 
-	const FText& InDesc, 
-	int64 InPrice, 
+	int32 InSlotIndex, FName InRowName,
+	TSoftObjectPtr<UTexture2D> InIcon,
+	const FText& InName,
+	const FText& InDesc,
+	int64 InPrice,
 	bool InSoldOut)
 {
 	if (!InRowName.IsNone())
@@ -152,19 +152,16 @@ void UShopItemSlotWidget::RefreshSlotUI()
 	// 아이콘
 	if (ItemIconImage)
 	{
-		if (ItemIconImage)
+		if (bEmpty || ViewIcon.IsNull())
 		{
-			if (bEmpty || ViewIcon.IsNull())
-			{
-				ItemIconImage->SetVisibility(ESlateVisibility::Collapsed);
-				ItemIconImage->SetBrushFromSoftTexture(nullptr);
-			}
-			else
-			{
-				ItemIconImage->SetVisibility(ESlateVisibility::Visible);
-				ItemIconImage->SetBrushFromSoftTexture(ViewIcon);
-				ItemIconImage->SetRenderOpacity(opacity);
-			}
+			ItemIconImage->SetVisibility(ESlateVisibility::Collapsed);
+			ItemIconImage->SetBrushFromSoftTexture(nullptr);
+		}
+		else
+		{
+			ItemIconImage->SetVisibility(ESlateVisibility::Visible);
+			ItemIconImage->SetBrushFromSoftTexture(ViewIcon);
+			ItemIconImage->SetRenderOpacity(opacity);
 		}
 	}
 }

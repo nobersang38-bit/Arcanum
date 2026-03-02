@@ -1,57 +1,52 @@
 #include "UI/Lobby/Contents/Inventory/InventoryHUDWidget.h"
 #include "UI/Lobby/Contents/Inventory/InventoryItemSlotWidget.h"
-#include "DataInfo/BattleCharacter/Equipment/Data/FEquipmentData.h"
-#include "Components/Button.h"
 #include "Components/WrapBox.h"
 
 void UInventoryHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	SelectedGuid.Invalidate();
+	SelectedSlotIndex = INDEX_NONE;
+
+	CachedViewSlots.Reset();
 }
 
-void UInventoryHUDWidget::ApplyInventoryData(const TArray<FEquipmentInfo>& InItems, const TArray<const FDTEquipmentInfoRow*>& InRowPtrs)
+void UInventoryHUDWidget::ApplyInventorySlots(const TArray<FInventoryViewSlot>& InSlots)
 {
 	const int32 slotCount = Slots.Num();
 
-	CachedItemGuids.Reset();
-	CachedItemGuids.SetNum(slotCount);
+	CachedViewSlots.Reset();
+	CachedViewSlots.SetNum(slotCount);
 
 	for (int32 slotIndex = 0; slotIndex < slotCount; slotIndex++)
 	{
-		CachedItemGuids[slotIndex].Invalidate();
-
-		if (!Slots.IsValidIndex(slotIndex) || !Slots[slotIndex])
+		if (Slots.IsValidIndex(slotIndex))
 		{
-			continue;
+			if (UInventoryItemSlotWidget* slot = Slots[slotIndex])
+			{
+				if (InSlots.IsValidIndex(slotIndex))
+				{
+					CachedViewSlots[slotIndex] = InSlots[slotIndex];
+					slot->SetSlotData(CachedViewSlots[slotIndex], slotIndex);
+
+					const bool bIsSelected = (SelectedSlotIndex == slotIndex);
+					slot->SetSelected(bIsSelected);
+				}
+				// 입력 데이터가 없는 경우 (빈 슬롯 처리)
+				else
+				{
+					CachedViewSlots[slotIndex] = FInventoryViewSlot();
+					slot->ClearSlot(slotIndex);
+					slot->SetSelected(false);
+				}
+			}
 		}
-
-		if (!InItems.IsValidIndex(slotIndex) || !InRowPtrs.IsValidIndex(slotIndex))
-		{
-			Slots[slotIndex]->ClearSlot(slotIndex);
-			continue;
-		}
-
-		const FEquipmentInfo& item = InItems[slotIndex];
-		const FDTEquipmentInfoRow* rowPtr = InRowPtrs[slotIndex];
-
-		if (!rowPtr)
-		{
-			Slots[slotIndex]->ClearSlot(slotIndex);
-			continue;
-		}
-
-		CachedItemGuids[slotIndex] = item.ItemGuid;
-
-		Slots[slotIndex]->SetItemData(item, rowPtr, slotIndex);
-		Slots[slotIndex]->SetSelected(CachedItemGuids.IsValidIndex(slotIndex) && CachedItemGuids[slotIndex] == SelectedGuid);
 	}
 }
 
 void UInventoryHUDWidget::ClearSelection()
 {
-	SelectedGuid.Invalidate();
+	SelectedSlotIndex = INDEX_NONE;
 
 	RefreshSelection();
 }
@@ -63,13 +58,13 @@ void UInventoryHUDWidget::InitInventorySlots(int32 InSlotCount)
 	CreateInventorySlots(slotCount);
 	BindSlotEvents();
 
-	SelectedGuid.Invalidate();
+	SelectedSlotIndex = INDEX_NONE;
 	RefreshSelection();
 }
 
 void UInventoryHUDWidget::CreateInventorySlots(int32 InSlotCount)
 {
-	if (!SlotContainer || !InventoryItemSlotWidgetClass) { return; }
+	if (!SlotContainer || !InventoryItemSlotWidgetClass) return;
 
 	SlotContainer->ClearChildren();
 	Slots.Reset();
@@ -100,15 +95,18 @@ void UInventoryHUDWidget::BindSlotEvents()
 	}
 }
 
-void UInventoryHUDWidget::HandleSlotClicked(FGuid InItemGuid)
+void UInventoryHUDWidget::HandleSlotClicked(int32 InSlotIndex)
 {
-	if (SelectedGuid != InItemGuid)
+	if (CachedViewSlots.IsValidIndex(InSlotIndex))
 	{
-		SelectedGuid = InItemGuid;
+		if (SelectedSlotIndex != InSlotIndex)
+		{
+			SelectedSlotIndex = InSlotIndex;
 
-		OnInventorySlotSelected.Broadcast(InItemGuid);
+			OnInventorySlotSelected.Broadcast(CachedViewSlots[InSlotIndex]);
 
-		RefreshSelection();
+			RefreshSelection();
+		}
 	}
 }
 
@@ -116,10 +114,14 @@ void UInventoryHUDWidget::RefreshSelection()
 {
 	for (int32 slotIndex = 0; slotIndex < Slots.Num(); slotIndex++)
 	{
-		if (Slots.IsValidIndex(slotIndex) && Slots[slotIndex])
+		if (Slots.IsValidIndex(slotIndex))
 		{
-			const bool bIsSelected = (CachedItemGuids.IsValidIndex(slotIndex) && CachedItemGuids[slotIndex] == SelectedGuid);
-			Slots[slotIndex]->SetSelected(bIsSelected);
+			if (UInventoryItemSlotWidget* slot = Slots[slotIndex])
+			{
+				const bool bIsSelected = (SelectedSlotIndex == slotIndex);
+
+				slot->SetSelected(bIsSelected);
+			}
 		}
 	}
 }

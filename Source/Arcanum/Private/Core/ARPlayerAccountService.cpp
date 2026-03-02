@@ -209,11 +209,40 @@ bool FPlayerAccountService::PurchaseEquipment(const UObject* WorldContextObject,
 	NewEquip.CurrUpgradeLevel = 0;
 	NewEquip.Equipment = Row->BaseInfoSteps[0];
 
+	// 인벤 용량 체크: 장비+포션 점유 칸으로 체크
+	const int32 maxSlots = FMath::Max(0, GI->InventoryCapacity);
+	const int32 maxStack = FMath::Max(1, GI->PotionMaxStack);
+
+	// 장비 점유 칸
+	int32 usedEquipSlots = 0;
+	for (int32 i = 0; i < PlayerData.Inventory.Num(); i++)
+	{
+		if (PlayerData.Inventory[i].ItemGuid.IsValid())
+		{
+			usedEquipSlots++;
+		}
+	}
+
+	// 포션 점유 칸 (스택 기준)
+	int32 usedPotionSlots = 0;
+	for (const TPair<FGameplayTag, int32>& pair : PlayerData.PotionCounts)
+	{
+		const int32 count = pair.Value;
+		if (count > 0)
+		{
+			usedPotionSlots += (count + maxStack - 1) / maxStack;
+		}
+	}
+
+	// 총합이 용량이면 더 못 들어가게 막음
+	if ((usedEquipSlots + usedPotionSlots) >= maxSlots)	return false;
+
 	PlayerData.Inventory.Add(MoveTemp(NewEquip));
 	CurrencyData->CurrAmount -= Price;
 
 	GI->SavePlayerData();
 	return true;
+
 
 	//if (!GameInstance) return false;
 
@@ -429,7 +458,7 @@ bool FPlayerAccountService::PurchasePotion(const UObject* InWorldContextObject, 
 	UARGameInstance* Gi = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(InWorldContextObject));
 	if (!Gi) return false;
 
-	if (!InPotionRowName.IsNone() || InBuyCount <= 0) return false;
+	if (InPotionRowName.IsNone() || InBuyCount <= 0) return false;
 
 	UGameDataSubsystem* dataSubsystem = Gi->GetSubsystem<UGameDataSubsystem>();
 	if (!dataSubsystem) return false;
@@ -444,8 +473,48 @@ bool FPlayerAccountService::PurchasePotion(const UObject* InWorldContextObject, 
 	const int64 totalPrice = static_cast<int64>(row->BuyPrice) * static_cast<int64>(InBuyCount);
 	if (currencyData->CurrAmount < totalPrice) return false;
 
+	const int32 oldCount = playerData.PotionCounts.FindRef(row->PotionTag);
+	const int64 oldGold = currencyData->CurrAmount;
+
+	// 인벤 포션 용량 체크
+	const int32 maxSlots = FMath::Max(0, Gi->InventoryCapacity);
+	const int32 maxStack = FMath::Max(1, Gi->PotionMaxStack);
+
+	// 장비 점유 칸(유효 Guid 개수)
+	int32 usedEquipSlots = 0;
+	for (int32 i = 0; i < playerData.Inventory.Num(); i++)
+	{
+		if (playerData.Inventory[i].ItemGuid.IsValid())
+		{
+			usedEquipSlots++;
+		}
+	}
+
+	// 포션 점유 칸
+	const int32 newPotionCount = oldCount + InBuyCount;
+
+	// 구매 직전 포션 슬롯 점유
+	int32 CurrentPotionSlots = 0;
+	for (const TPair<FGameplayTag, int32>& pair : playerData.PotionCounts)
+	{
+		const int32 count = pair.Value;
+		if (count > 0)
+		{
+			CurrentPotionSlots += (count + maxStack - 1) / maxStack;
+		}
+	}
+
+	const int32 oldSlotsForThisPotion = (oldCount > 0) ? ((oldCount + maxStack - 1) / maxStack) : 0;
+	const int32 newSlotsForThisPotion = (newPotionCount > 0) ? ((newPotionCount + maxStack - 1) / maxStack) : 0;
+
+	const int32 extraSlotsNeeded = newSlotsForThisPotion - oldSlotsForThisPotion;
+
+	// 총 점유 칸이 용량 초과면 구매 실패
+	if ((usedEquipSlots + CurrentPotionSlots + extraSlotsNeeded) > maxSlots) return false;
+
 	int32& currCount = playerData.PotionCounts.FindOrAdd(row->PotionTag);
-	currCount += InBuyCount;
+	currCount = newPotionCount;
+
 	currencyData->CurrAmount -= totalPrice;
 
 	Gi->SavePlayerData();
@@ -507,8 +576,6 @@ void FPlayerAccountService::GenerateShopItems(UARGameInstance* InGameInstance, i
 					if (potionTablePtr && *potionTablePtr)
 					{
 						const TArray<FName> potionRows = (*potionTablePtr)->GetRowNames();
-
-						UE_LOG(LogTemp, Warning, TEXT("[Shop][Potion] PotionRows=%d, PotionSlotCount=%d, RefreshOnly=%d"), potionRows.Num(), potionCount, bInRefreshEquipmentOnly ? 1 : 0);
 
 						for (int32 j = 0; j < potionCount; j++)
 						{

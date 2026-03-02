@@ -71,9 +71,19 @@ void ULobbyHUD::NativeConstruct()
 
 	if (InventoryHUDWidget)
 	{
-		InventoryHUDWidget->InitInventorySlots(InventorySlotCount);
 		InventoryHUDWidget->OnInventorySlotSelected.RemoveDynamic(this, &ULobbyHUD::HandleInventorySlotSelected);
 		InventoryHUDWidget->OnInventorySlotSelected.AddDynamic(this, &ULobbyHUD::HandleInventorySlotSelected);
+
+		if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+		{
+			InventoryHUDWidget->InitInventorySlots(gameInstance->InventoryCapacity);
+		}
+	}
+
+	if (InventorySortBtn)
+	{
+		InventorySortBtn->OnClicked.RemoveDynamic(this, &ULobbyHUD::ClickInventorySortBtn);
+		InventorySortBtn->OnClicked.AddDynamic(this, &ULobbyHUD::ClickInventorySortBtn);
 	}
 
 	BindGameInstanceEvents();
@@ -226,35 +236,26 @@ void ULobbyHUD::RefreshLobbyCurrencyUI()
 // ========================================================
 // 인벤토리
 // ========================================================
-void ULobbyHUD::HandleInventorySlotSelected(FGuid InItemGuid)
+void ULobbyHUD::HandleInventorySlotSelected(const FInventoryViewSlot& InSlot)
 {
-	SelectedInventoryItemGuid = InItemGuid;
+	SelectedInventoryItemGuid = InSlot.ItemGuid;
 }
 
 void ULobbyHUD::RefreshInventoryUI()
 {
 	if (InventoryHUDWidget)
 	{
-		const int32 slotCount = FMath::Max(1, InventorySlotCount);
-
-		TArray<FEquipmentInfo> items;
-		TArray<const FDTEquipmentInfoRow*> rowPtrs;
-
-		items.SetNum(slotCount);
-		rowPtrs.SetNum(slotCount);
-
-		for (int32 i = 0; i < slotCount; i++)
+		if (UARGameInstance* const gameInstance = Cast<UARGameInstance>(GetGameInstance()))
 		{
-			rowPtrs[i] = nullptr;
+			const int32 slotCount = FMath::Max(1, gameInstance->InventoryCapacity);
 
-			if (CachedPlayerData.Inventory.IsValidIndex(i))
-			{
-				items[i] = CachedPlayerData.Inventory[i];
-				rowPtrs[i] = FindEquipmentRowByTag(items[i].ItemTag);
-			}
+			TArray<FInventoryViewSlot> viewSlots;
+			viewSlots.Reserve(slotCount);
+
+			BuildInventoryViewSlots(viewSlots, slotCount);
+
+			InventoryHUDWidget->ApplyInventorySlots(viewSlots);
 		}
-
-		InventoryHUDWidget->ApplyInventoryData(items, rowPtrs);
 	}
 }
 
@@ -344,6 +345,207 @@ const FDTPotionInfoRow* ULobbyHUD::FindPotionRowByTag(const FGameplayTag& InPoti
 	return nullptr;
 }
 
+void ULobbyHUD::BuildInventoryViewSlots(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const
+{
+	OutSlots.Reset();
+	const int32 slotCount = FMath::Max(1, InSlotLimit);
+	OutSlots.Reserve(slotCount);
+
+	if (bInventorySortedView)
+	{
+		AppendPotionSlots(OutSlots, slotCount);
+		AppendEquipmentSlotsSorted(OutSlots, slotCount);
+	}
+	else
+	{
+		AppendEquipmentSlotsRaw(OutSlots, slotCount);
+		AppendPotionSlots(OutSlots, slotCount);
+	}
+}
+
+void ULobbyHUD::ClickInventorySortBtn()
+{
+	bInventorySortedView = !bInventorySortedView;
+
+	RefreshInventoryUI();
+
+}
+
+void ULobbyHUD::AppendPotionSlots(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const
+{
+	if (InSlotLimit <= 0) return;
+	if (OutSlots.Num() >= InSlotLimit) return;
+
+	const UARGameInstance* const gameInstance = Cast<UARGameInstance>(GetGameInstance());
+	if (!gameInstance) return;
+
+	const int32 maxStack = FMath::Max(1, gameInstance->PotionMaxStack);
+
+	TArray<FGameplayTag> potionTags;
+	CachedPlayerData.PotionCounts.GetKeys(potionTags);
+
+	potionTags.Sort([](const FGameplayTag& InA, const FGameplayTag& InB)
+		{
+			return InA.GetTagName().LexicalLess(InB.GetTagName());
+		});
+
+	for (const FGameplayTag& potionTag : potionTags)
+	{
+		if (OutSlots.Num() >= InSlotLimit) break;
+
+		const int32 totalCount = CachedPlayerData.PotionCounts.FindRef(potionTag);
+		if (totalCount <= 0) continue;
+
+		const FDTPotionInfoRow* potionRow = FindPotionRowByTag(potionTag);
+		if (!potionRow) continue;
+
+		int32 remaining = totalCount;
+
+		while (remaining > 0 && OutSlots.Num() < InSlotLimit)
+		{
+			FInventoryViewSlot slot;
+			slot.Type = EInventoryViewSlotType::Potion;
+			slot.PotionTag = potionTag;
+
+			const int32 stack = FMath::Min(maxStack, remaining);
+			slot.PotionCount = stack;
+
+			slot.Icon = potionRow->Icon;
+			slot.UpgradeLevel = 0;
+
+			OutSlots.Add(MoveTemp(slot));
+			remaining -= stack;
+		}
+	}
+}
+
+void ULobbyHUD::AppendEquipmentSlotsRaw(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const
+{
+	if (InSlotLimit <= 0) return;
+	if (OutSlots.Num() >= InSlotLimit) return;
+
+	for (int32 i = 0; i < CachedPlayerData.Inventory.Num(); i++)
+	{
+		if (OutSlots.Num() >= InSlotLimit) break;
+
+		const FEquipmentInfo& equip = CachedPlayerData.Inventory[i];
+
+		if (equip.ItemGuid.IsValid())
+		{
+			if (const FDTEquipmentInfoRow* equipRow = FindEquipmentRowByTag(equip.ItemTag))
+			{
+				FInventoryViewSlot slot;
+				slot.Type = EInventoryViewSlotType::Equipment;
+				slot.ItemGuid = equip.ItemGuid;
+				slot.UpgradeLevel = equip.CurrUpgradeLevel;
+
+				slot.Icon = equipRow->Icon;
+
+				OutSlots.Add(MoveTemp(slot));
+			}
+		}
+	}
+}
+
+
+void ULobbyHUD::AppendEquipmentSlotsSorted(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const
+{
+	if (InSlotLimit <= 0) return;
+	if (OutSlots.Num() >= InSlotLimit) return;
+
+	struct FEquipSortItem
+	{
+		const FEquipmentInfo* Equip = nullptr;
+		const FDTEquipmentInfoRow* Row = nullptr;
+		int32 SlotOrder = 999;
+	};
+
+	auto GetSlotOrder = [](const FGameplayTag& InSlotTag) -> int32
+		{
+			// 무기: TwoHand -> RightHand -> LeftHand (앞)
+			if (InSlotTag == Arcanum::Items::ItemSlot::Weapon::TwoHand)   return 0;
+			if (InSlotTag == Arcanum::Items::ItemSlot::Weapon::RightHand) return 1;
+			if (InSlotTag == Arcanum::Items::ItemSlot::Weapon::LeftHand)  return 2;
+
+			// 방어구: Helmet -> Chest -> Glove -> Boot (뒤)
+			if (InSlotTag == Arcanum::Items::ItemSlot::Armor::Helmet) return 10;
+			if (InSlotTag == Arcanum::Items::ItemSlot::Armor::Chest)  return 11;
+			if (InSlotTag == Arcanum::Items::ItemSlot::Armor::Glove)  return 12;
+			if (InSlotTag == Arcanum::Items::ItemSlot::Armor::Boot)   return 13;
+
+			return 999;
+		};
+
+	TArray<FEquipSortItem> items;
+	items.Reserve(CachedPlayerData.Inventory.Num());
+
+	for (int32 i = 0; i < CachedPlayerData.Inventory.Num(); i++)
+	{
+		const FEquipmentInfo& equip = CachedPlayerData.Inventory[i];
+
+		if (equip.ItemGuid.IsValid())
+		{
+			if (const FDTEquipmentInfoRow* equipRow = FindEquipmentRowByTag(equip.ItemTag))
+			{
+				const int32 order = GetSlotOrder(equipRow->SlotTag);
+
+				if (order != 999)
+				{
+					FEquipSortItem item;
+					item.Equip = &equip;
+					item.Row = equipRow;
+					item.SlotOrder = order;
+
+					items.Add(item);
+				}
+			}
+		}
+	}
+
+	items.Sort([](const FEquipSortItem& InA, const FEquipSortItem& InB)
+		{
+			if (InA.SlotOrder != InB.SlotOrder)
+			{
+				return InA.SlotOrder < InB.SlotOrder;
+			}
+
+			const int32 aUp = InA.Equip ? InA.Equip->CurrUpgradeLevel : 0;
+			const int32 bUp = InB.Equip ? InB.Equip->CurrUpgradeLevel : 0;
+
+			if (aUp != bUp)
+			{
+				// 같은 슬롯이면 강화 높은 게 먼저
+				return aUp > bUp;
+			}
+
+			const FGameplayTag aTag = InA.Equip ? InA.Equip->ItemTag : FGameplayTag();
+			const FGameplayTag bTag = InB.Equip ? InB.Equip->ItemTag : FGameplayTag();
+
+			return aTag.GetTagName().LexicalLess(bTag.GetTagName());
+		});
+
+	for (int32 i = 0; i < items.Num(); i++)
+	{
+		if (OutSlots.Num() >= InSlotLimit) break;
+
+		if (const FEquipmentInfo* equip = items[i].Equip)
+		{
+			FInventoryViewSlot slot;
+			slot.Type = EInventoryViewSlotType::Equipment;
+			slot.ItemGuid = equip->ItemGuid;
+			slot.UpgradeLevel = equip->CurrUpgradeLevel;
+
+			// 긍정 조건 계층: 로우 데이터가 유효할 때만 아이콘 할당
+			if (const FDTEquipmentInfoRow* row = items[i].Row)
+			{
+				slot.Icon = row->Icon;
+			}
+
+			OutSlots.Add(MoveTemp(slot));
+		}
+	}
+}
+
 // ========================================================
 // 상점
 // ========================================================
@@ -415,8 +617,6 @@ void ULobbyHUD::HandleShopSecondChanged(int32 InRemainingSeconds)
 				CachedShopDescs,
 				CachedShopPrices
 			);
-
-			ShopHUDWidget->ClearShopSelection();
 		}
 	}
 
@@ -435,7 +635,7 @@ void ULobbyHUD::TryPurchaseSelectedItem(int32 InSlotIndex)
 			gameInstance->OnCurrencyChanged.Broadcast();
 		}
 
-		RefreshShopUI(); 
+		RefreshShopUI();
 	}
 }
 
