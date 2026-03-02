@@ -4,6 +4,7 @@
 #include "Object/Object/FSM/Unit/UnitState_Idle.h"
 #include "Component/UnitCombatComponent.h"
 #include "Core/SubSystem/BattlefieldManagerSubsystem.h"
+#include "GameFramework/Character.h"
 
 void UUnitState_Idle::OnEnter(UUnitCombatComponent* UnitCombatComponent)
 {
@@ -12,6 +13,10 @@ void UUnitState_Idle::OnEnter(UUnitCombatComponent* UnitCombatComponent)
 	Internal_UnitCombatComponent = UnitCombatComponent;
 	Internal_UnitCombatComponent->TargetAssigned(nullptr);
 	Internal_UnitCombatComponent->MoveToTarget(nullptr);
+	if (Internal_UnitCombatComponent->OwnerCharacter.IsValid())
+	{
+		Internal_UnitCombatComponent->OwnerCharacter->StopAnimMontage();
+	}
 
 	float ExitTime = FMath::FRandRange(ExitRange.X, ExitRange.Y);
 	GetWorld()->GetTimerManager().ClearTimer(IdleTimer);

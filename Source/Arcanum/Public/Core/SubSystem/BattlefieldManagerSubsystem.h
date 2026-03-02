@@ -9,6 +9,7 @@
 #include "DataInfo/PlayerData/FPlayerData.h"
 #include "Data/DataAssets/EnemyWaveData.h"
 #include "Data/Types/UnitData.h"
+#include "Data/Types/BattleStageInfo.h"
 #include "BattlefieldManagerSubsystem.generated.h"
 
 USTRUCT(BlueprintType)
@@ -18,7 +19,7 @@ struct FInBattleData
 public:
 	FPlayerBattleData PlayerBattleData;
 	FBattleCharacterData BattleCharacterData;
-	FEnemyWaveDataInfo EnemyWaveDataInfo;
+	FBattleStageInfo BattleStageInfo;
 };
 
 
@@ -47,6 +48,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	AActor* GetBasement(FGameplayTag InTeamTag) const;
+
+	FBasementStat GetBasementStat(FGameplayTag InTeamTag) const;
 
 	UFUNCTION()
 	void AddBasement(AActor* InNexus, FGameplayTag InTeamTag);
@@ -105,6 +108,9 @@ protected:
 	UPROPERTY()
 	TMap<FGameplayTag, AActor*> Basements;
 
+	UPROPERTY()
+	TMap<FGameplayTag, FBasementStat> BasementStats;
+
 	// 전투맵에서 사용하는 아군 유닛
 	UPROPERTY()
 	TMap<FGameplayTag, FUnitData> AllyUnitDatas;
@@ -112,4 +118,10 @@ protected:
 	// 전투맵에서 사용하는 적군 유닛
 	UPROPERTY()
 	TMap<FGameplayTag, FUnitData> EnemyUnitDatas;
+
+protected:
+#pragma region 디버그(나중에 삭제)
+	void DebugBasementSet();
+#pragma endregion
+
 };

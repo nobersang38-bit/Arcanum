@@ -10,12 +10,13 @@
 #include "Interface/UnitDataInterface.h"
 #include "Interface/RuntimeUnitDataInterface.h"
 #include "Interface/CombatInterface.h"
+#include "Interface/PoolingInterface.h"
 #include "BaseUnitCharacter.generated.h"
 
 // 김도현
 // 베이스 유닛 클래스
 UCLASS()
-class ARCANUM_API ABaseUnitCharacter : public ACharacter, public ITeamInterface, public IUnitDataInterface, public IRuntimeUnitDataInterface, public ICombatInterface
+class ARCANUM_API ABaseUnitCharacter : public ACharacter, public ITeamInterface, public IUnitDataInterface, public IRuntimeUnitDataInterface, public ICombatInterface, public IPoolingInterface
 {
 	GENERATED_BODY()
 public:
@@ -43,6 +44,9 @@ protected:
 	// IUnitDataInterface을(를) 통해 상속됨
 	const FUnitData& GetUnitData() override;
 	virtual bool GetIsDead() override;
+
+	void UnitActivate();
+	void UnitDeactive();
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -82,4 +86,8 @@ private:
 	void UpdateUnitData();
 
 	bool IsSetupUnit = false;
+
+	// IPoolingInterface을(를) 통해 상속됨
+	void ActivateItem() override;
+	void DeactiveItem() override;
 };

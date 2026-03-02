@@ -4,6 +4,8 @@
 #include "Object/Object/FSM/Unit/UnitState_Move.h"
 #include "Component/UnitCombatComponent.h"
 #include "Engine/OverlapResult.h"
+#include "GameFramework/Character.h"
+#include "AIController.h"
 
 void UUnitState_Move::OnEnter(UUnitCombatComponent* UnitCombatComponent)
 {
@@ -16,26 +18,15 @@ void UUnitState_Move::OnTick(float DeltaTime)
 {
 	if (!Internal_UnitCombatComponent.IsValid()) return;
 
-	TArray<FOverlapResult> OutOverlaps;
-	FCollisionShape MySphere = FCollisionShape::MakeSphere(Internal_UnitCombatComponent->UnitData.Info.AISetting.TargetPriorityWeightData.GetDetectDistance());
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(Internal_UnitCombatComponent->GetOwner());
-
-	// 특정 위치(GetActorLocation)에서 한 프레임 즉시 검사
-	bool bHit = GetWorld()->OverlapMultiByChannel(
-		OutOverlaps,
-		Internal_UnitCombatComponent->GetOwner()->GetActorLocation(),
-		FQuat::Identity,
-		ECollisionChannel::ECC_Pawn, // 설정한 채널
-		MySphere,
-		Params
-	);
-
-	Internal_UnitCombatComponent->DetectedActors.Empty();
-	for (int i = 0; i < OutOverlaps.Num(); i++)
+	FVector Velocity = Internal_UnitCombatComponent->OwnerCharacter->GetVelocity();
+	if (Velocity.SquaredLength() > 10.0f)
 	{
-		Internal_UnitCombatComponent->OnBeginDetected(nullptr, OutOverlaps[i].GetActor(), nullptr, 0, false, FHitResult());
+		float Yaw = Velocity.Rotation().Yaw;
+		FRotator ControllerRotator = FRotator(0, Yaw, 0);
+		Internal_UnitCombatComponent->OwnerAIC->SetControlRotation(ControllerRotator);
 	}
+
+	Internal_UnitCombatComponent->EnemyFind();
 
 	if (Internal_UnitCombatComponent->DetectedActors.Num() > 0)
 	{

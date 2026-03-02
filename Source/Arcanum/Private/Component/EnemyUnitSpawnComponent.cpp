@@ -9,6 +9,7 @@
 #include "Data/Rows/DTBattleStageInfo.h"
 #include "Data/Rows/EnemyUnitsDataRow.h"
 #include "Character/BaseUnitCharacter.h"
+#include "Core/SubSystem/PoolingSubsystem.h"
 
 // Sets default values for this component's properties
 UEnemyUnitSpawnComponent::UEnemyUnitSpawnComponent()
@@ -85,7 +86,7 @@ if (StageName.FindLastChar('.', LastDot))
 				{
 					if (StageTag.MatchesTag(BattleStageInfos[i]->StageTag) && StageTag.IsValid())
 					{
-						EnemyWaveData = BattleStageInfos[i]->EnemyWaveDataInfo.EnemyWaveDataInfo;
+						EnemyWaveData = BattleStageInfos[i]->BattleStageInfo.EnemyWaveDataInfo;
 						break;
 					}
 				}
@@ -171,15 +172,34 @@ void UEnemyUnitSpawnComponent::WaveStart()
 					FVector ResultSpawnLocation = GetOwner()->GetActorTransform().TransformPosition(SpawnLocation);
 					Transform.SetLocation(ResultSpawnLocation);
 					Transform.SetRotation(SpawnRotator.Quaternion());
-					AActor* EnemyUnitInstance = UGameplayStatics::BeginDeferredActorSpawnFromClass(GetWorld(), EnemyUnitClass, Transform, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-					ABaseUnitCharacter* EnemyUnitCharacter = Cast<ABaseUnitCharacter>(EnemyUnitInstance);
-					if (EnemyUnitCharacter)
-					{
-						EnemyUnitCharacter->SetUnit(UnitData);
+					FVector Scale = FVector(1.0f, 1.0f, 1.0f);
+					Transform.SetScale3D(Scale);
 
-						EnemyUnitCharacter->FinishSpawning(Transform);
-						*Time = 0.0f;
-						break;
+					// 스폰
+					UPoolingSubsystem* PoolingSubsystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
+					if (PoolingSubsystem)
+					{
+						if (EnemyUnitClass)
+						{
+							AActor* EnemyUnitInstance = PoolingSubsystem->SpawnFromPool(EnemyUnitClass, Transform);
+							ABaseUnitCharacter* EnemyUnitCharacter = Cast<ABaseUnitCharacter>(EnemyUnitInstance);
+							if (EnemyUnitCharacter)
+							{
+								EnemyUnitCharacter->SetUnit(UnitData);
+								*Time = 0.0f;
+								break;
+							}
+						}
+						/*AActor* EnemyUnitInstance = UGameplayStatics::BeginDeferredActorSpawnFromClass(GetWorld(), EnemyUnitClass, Transform, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+						ABaseUnitCharacter* EnemyUnitCharacter = Cast<ABaseUnitCharacter>(EnemyUnitInstance);
+						if (EnemyUnitCharacter)
+						{
+							EnemyUnitCharacter->SetUnit(UnitData);
+
+							EnemyUnitCharacter->FinishSpawning(Transform);
+							*Time = 0.0f;
+							break;
+						}*/
 					}
 				}
 			}

@@ -66,6 +66,8 @@ public:
 public:
 	void SendDamage(float InDamage);
 
+	void UnitActivate();
+	void UnitDeactive();
 #pragma endregion
 
 
@@ -99,7 +101,7 @@ protected:
 	// 상태변경
 	void StateChange(EUnitState InUnitState);
 
-	void OnBeginDetected(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void EnemyFind();
 
 	// 공격 대상 지정
 	void TargetAssigned(AActor* Target);

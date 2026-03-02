@@ -26,6 +26,7 @@
 #include "Object/Object/FSM/Unit/UnitState_HitReaction.h"
 #include "Object/Object/FSM/Unit/UnitState_Death.h"
 #include "Interface/RuntimeUnitDataInterface.h"
+#include "Core/SubSystem/PoolingSubsystem.h"
 
 // ========================================================
 // 언리얼 기본 생성
@@ -41,12 +42,6 @@ void UUnitCombatComponent::BeginPlay()
 	Super::BeginPlay();
 
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UUnitCombatComponent::DeferredBeginPlay);
-
-	// Death바인딩
-	if (ABaseUnitCharacter* TempOwner = Cast<ABaseUnitCharacter>(GetOwner()))
-	{
-		TempOwner->GetCharacterBattleStatsComponent()->OnCharacterRegenStatChanged.AddUObject(this, &UUnitCombatComponent::Death);
-	}
 }
 
 
@@ -61,12 +56,40 @@ void UUnitCombatComponent::SendDamage(float InDamage)
 	}
 }
 
+void UUnitCombatComponent::UnitActivate()
+{
+	DeferredBeginPlay();
+
+	OwnerCharacter->GetMesh()->SetHiddenInGame(false);
+	OwnerCharacter->GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	OwnerCharacter->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+}
+
+void UUnitCombatComponent::UnitDeactive()
+{
+	OwnerCharacter->GetMesh()->SetHiddenInGame(true);
+	OwnerCharacter->GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	OwnerCharacter->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	GetWorld()->GetTimerManager().ClearTimer(TickTimerHandle);
+	GetWorld()->GetTimerManager().ClearTimer(DeathTimerHandle);
+	OwnerAIC->GetBrainComponent()->StopLogic(TEXT("비활성화!!"));
+}
+
 
 // ========================================================
 // 생명 주기
 // ========================================================
 void UUnitCombatComponent::DeferredBeginPlay()
 {
+	bIsDead = false;
+	// Death바인딩
+	if (ABaseUnitCharacter* TempOwner = Cast<ABaseUnitCharacter>(GetOwner()))
+	{
+		TempOwner->GetCharacterBattleStatsComponent()->OnCharacterRegenStatChanged.RemoveAll(this);
+		TempOwner->GetCharacterBattleStatsComponent()->OnCharacterRegenStatChanged.AddUObject(this, &UUnitCombatComponent::Death);
+	}
+
 	if (ACharacter* TempOwnerCharacter = Cast<ACharacter>(GetOwner()))
 	{
 		OwnerCharacter = TempOwnerCharacter;
@@ -160,7 +183,11 @@ void UUnitCombatComponent::SetupTick()
 
 void UUnitCombatComponent::SetupStates()
 {
-	UnitStates.Empty();
+	if (!UnitStates.IsEmpty())
+	{
+		StateChange(EUnitState::Idle);
+		return;
+	}
 
 	// Idle
 	UUnitStateBase* State_Idle = NewObject<UUnitStateBase>(this, UUnitState_Idle::StaticClass());
@@ -203,52 +230,70 @@ void UUnitCombatComponent::StateChange(EUnitState InUnitState)
 	}
 }
 
-void UUnitCombatComponent::OnBeginDetected(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void UUnitCombatComponent::EnemyFind()
 {
-	if (!OtherActor) return;
-	if (OtherActor == GetOwner()) return;					// 자신이면 제외
-	if (!OtherActor->Implements<UTeamInterface>()) return;	// 팀 아이디 인터페이스가 없으면 제외
+	TArray<FOverlapResult> OutOverlaps;
+	FCollisionShape MySphere = FCollisionShape::MakeSphere(UnitData.Info.AISetting.TargetPriorityWeightData.GetDetectDistance());
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(GetOwner());
 
+	// 특정 위치(GetActorLocation)에서 한 프레임 즉시 검사
+	bool bHit = GetWorld()->OverlapMultiByChannel(
+		OutOverlaps,
+		GetOwner()->GetActorLocation(),
+		FQuat::Identity,
+		ECollisionChannel::ECC_Pawn, // 설정한 채널
+		MySphere,
+		Params
+	);
 
-	if (OtherActor->GetClass()->ImplementsInterface(URuntimeUnitDataInterface::StaticClass()))
+	DetectedActors.Empty();
+
+	for (int i = 0; i < OutOverlaps.Num(); i++)
 	{
-		auto Interface = Cast<IRuntimeUnitDataInterface>(OtherActor);
-		if (Interface && Interface->GetIsDead())
+		if (!OutOverlaps[i].GetActor()) continue;
+		if (OutOverlaps[i].GetActor() == GetOwner()) continue;					// 자신이면 제외
+		if (!OutOverlaps[i].GetActor()->Implements<UTeamInterface>()) continue;	// 팀 아이디 인터페이스가 없으면 제외
+
+
+		if (OutOverlaps[i].GetActor()->GetClass()->ImplementsInterface(URuntimeUnitDataInterface::StaticClass()))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("이자식은 죽었다"));
-			return;
-		}
-	}
-
-	// 같은 팀이면 제외
-	if (OtherActor->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()) &&
-		GetOwner()->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()))
-	{
-		auto OtherInterface = Cast<ITeamInterface>(OtherActor);
-		auto OwnerInterface = Cast<ITeamInterface>(GetOwner());
-
-		if (OtherInterface->GetTeamTag() == OwnerInterface->GetTeamTag())
-		{
-			return;
-		}
-	}
-	else
-	{
-		return;
-	}
-
-	// 캐릭터로 변환가능하면 추가
-	if (DetectedActors.Num() < UnitData.Info.AISetting.MaxTargetCount)
-	{
-		if (OtherActor->GetClass()->ImplementsInterface(UUnitDataInterface::StaticClass()))
-		{
-			auto Interface = Cast<IUnitDataInterface>(OtherActor);
-			if (Interface->GetUnitData().Info.AISetting.bIsElite)
+			auto Interface = Cast<IRuntimeUnitDataInterface>(OutOverlaps[i].GetActor());
+			if (Interface && Interface->GetIsDead())
 			{
-				UnitRuntimeData.Elites.Add(OtherActor);
+				continue;
 			}
 		}
-		DetectedActors.Add(OtherActor);
+
+		// 같은 팀이면 제외
+		if (OutOverlaps[i].GetActor()->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()) &&
+			GetOwner()->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()))
+		{
+			auto OtherInterface = Cast<ITeamInterface>(OutOverlaps[i].GetActor());
+			auto OwnerInterface = Cast<ITeamInterface>(GetOwner());
+
+			if (OtherInterface->GetTeamTag() == OwnerInterface->GetTeamTag())
+			{
+				continue;
+			}
+		}
+		else
+		{
+			continue;
+		}
+
+		if (DetectedActors.Num() < UnitData.Info.AISetting.MaxTargetCount)
+		{
+			if (OutOverlaps[i].GetActor()->GetClass()->ImplementsInterface(UUnitDataInterface::StaticClass()))
+			{
+				auto Interface = Cast<IUnitDataInterface>(OutOverlaps[i].GetActor());
+				if (Interface->GetUnitData().Info.AISetting.bIsElite)
+				{
+					UnitRuntimeData.Elites.Add(OutOverlaps[i].GetActor());
+				}
+			}
+			DetectedActors.Add(OutOverlaps[i].GetActor());
+		}
 	}
 }
 
@@ -259,7 +304,6 @@ void UUnitCombatComponent::TargetAssigned(AActor* Target)
 
 void UUnitCombatComponent::MoveToTarget(AActor* Target)
 {
-
 	if (OwnerAIC.IsValid())
 	{
 		if (UBlackboardComponent* BBComp = OwnerAIC->GetBlackboardComponent())
@@ -301,6 +345,10 @@ void UUnitCombatComponent::SelectBestTarget(const TSet<TWeakObjectPtr<AActor>>& 
 		{
 			Interface->GetUnitRuntimeData().AttackingTargets.Add(OwnerCharacter);
 		}
+		
+	}
+	if (ResultTarget)
+	{
 		TargetActor = ResultTarget;
 		TargetAssigned(TargetActor.Get());
 	}
@@ -338,7 +386,10 @@ bool UUnitCombatComponent::IsCanAttackRange()
 {
 	if (TargetActor.IsValid())
 	{
-		float Distance = (TargetActor->GetActorLocation() - GetOwner()->GetActorLocation()).SquaredLength();
+		FVector OutPoint;
+		float Distance = TargetActor->ActorGetDistanceToCollision(GetOwner()->GetActorLocation(), ECollisionChannel::ECC_Pawn, OutPoint);
+		Distance *= Distance;
+		//float Distance = (TargetActor->GetActorLocation() - GetOwner()->GetActorLocation()).SquaredLength();
 		if (Distance <= UnitData.Info.AISetting.AttackRange)
 		{
 			return true;
@@ -360,9 +411,11 @@ void UUnitCombatComponent::Death(const FRegenStat& InData)
 {
 	if (!bIsDead && InData.ParentTag == Arcanum::BattleStat::Character::Regen::Health::Root && InData.Current <= 0.0f)
 	{
+		GetWorld()->GetTimerManager().ClearTimer(TickTimerHandle);
 		bIsDead = true;
 		StateChange(EUnitState::Death);
-		OwnerCharacter->StopAnimMontage();
+		OwnerAIC->BrainComponent->StopLogic(TEXT("정지"));
+		//OwnerCharacter->StopAnimMontage();
 		UAnimMontage* DeathMontage = nullptr;
 		int32 IDX = 0;
 		if (OwnerCharacter.IsValid() && UnitData.Info.AnimSetting.Deads.Num() > 0)
@@ -370,15 +423,21 @@ void UUnitCombatComponent::Death(const FRegenStat& InData)
 			IDX = FMath::RandRange(0, (UnitData.Info.AnimSetting.Deads.Num() - 1));
 			DeathMontage = UnitData.Info.AnimSetting.Deads[IDX].DeadMontage;
 			OwnerCharacter->PlayAnimMontage(DeathMontage);
-
-			FTimerDelegate DeathTimerDelegate;
-			DeathTimerDelegate.BindWeakLambda(this, [this]()
-				{
-					// Todo KDH 풀링 디액티브로 변경해야함
-					this->GetOwner()->Destroy();
-				});
-			GetWorld()->GetTimerManager().SetTimer(DeathTimerHandle, DeathTimerDelegate, UnitData.Info.AnimSetting.Deads[IDX].DeactiveTime, false, UnitData.Info.AnimSetting.Deads[IDX].DeactiveTime);
 		}
+		FTimerDelegate DeathTimerDelegate;
+		DeathTimerDelegate.BindWeakLambda(this, [this]()
+			{
+				UPoolingSubsystem* PoolingSubsystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
+				if (PoolingSubsystem)
+				{
+					if (!PoolingSubsystem->DeactiveItem(GetOwner()))
+					{
+						GetOwner()->Destroy();
+					}
+				}
+			});
+		GetWorld()->GetTimerManager().ClearTimer(DeathTimerHandle);
+		GetWorld()->GetTimerManager().SetTimer(DeathTimerHandle, DeathTimerDelegate, UnitData.Info.AnimSetting.Deads[IDX].DeactiveTime, false, UnitData.Info.AnimSetting.Deads[IDX].DeactiveTime);
 	}
 	else return;
 }

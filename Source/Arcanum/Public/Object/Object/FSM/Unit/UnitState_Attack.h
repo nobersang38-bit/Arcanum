@@ -29,8 +29,11 @@ protected:
 	UFUNCTION()
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
+	UPROPERTY()
+	TWeakObjectPtr<AActor> TargetActorBackup = nullptr;
+
 	FTimerHandle AttackTimerHandle;
 	FTimerHandle FocusTargetActorTimerHandle;
-	float RotateInterval = 0.01f;
+	float RotateInterval = 0.5f;
 	float RotateSpeed = 300.0f;
 };

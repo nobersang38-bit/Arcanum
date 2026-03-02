@@ -5,12 +5,14 @@
 #include "Component/UnitCombatComponent.h"
 #include "GameFramework/Character.h"
 #include "Interface/RuntimeUnitDataInterface.h"
+#include "AIController.h"
 
 void UUnitState_Attack::OnEnter(UUnitCombatComponent* UnitCombatComponent)
 {
 	if (!UnitCombatComponent) return;
 	Internal_UnitCombatComponent = UnitCombatComponent;
 	Internal_UnitCombatComponent->MoveToTarget(nullptr);
+	TargetActorBackup = Internal_UnitCombatComponent->TargetActor;
 
 	if (AttackTimerHandle.IsValid())
 	{
@@ -29,6 +31,7 @@ void UUnitState_Attack::OnEnter(UUnitCombatComponent* UnitCombatComponent)
 void UUnitState_Attack::OnTick(float DeltaTime)
 {
 	if (!Internal_UnitCombatComponent.IsValid()) return;
+	FocusTargetActor();
 }
 
 void UUnitState_Attack::OnExit()
@@ -41,7 +44,9 @@ void UUnitState_Attack::OnExit()
 	{
 		GetWorld()->GetTimerManager().ClearTimer(FocusTargetActorTimerHandle);
 	}
+
 	Internal_UnitCombatComponent->OwnerCharacter->StopAnimMontage();
+	TargetActorBackup = nullptr;
 }
 
 
@@ -61,11 +66,11 @@ void UUnitState_Attack::Attack()
 		EndDelegate.BindUObject(this, &UUnitState_Attack::OnAttackMontageEnded);
 		Internal_UnitCombatComponent->OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_SetEndDelegate(EndDelegate, AttackMontage);
 
-		if (!FocusTargetActorTimerHandle.IsValid())
+		/*if (!FocusTargetActorTimerHandle.IsValid())
 		{
 			Internal_UnitCombatComponent->GetWorld()->GetTimerManager().ClearTimer(FocusTargetActorTimerHandle);
 			Internal_UnitCombatComponent->GetWorld()->GetTimerManager().SetTimer(FocusTargetActorTimerHandle, this, &UUnitState_Attack::FocusTargetActor, RotateInterval, true, 0.0f);
-		}
+		}*/
 	}
 	else
 	{
@@ -80,15 +85,23 @@ void UUnitState_Attack::FocusTargetActor()
 {
 	if (!Internal_UnitCombatComponent.IsValid()) return;
 
-	if (Internal_UnitCombatComponent->TargetActor.IsValid() && Internal_UnitCombatComponent->OwnerCharacter.IsValid())
+	//if (Internal_UnitCombatComponent->TargetActor.IsValid() && Internal_UnitCombatComponent->OwnerCharacter.IsValid())
+	//{
+	//	FVector Direction = Internal_UnitCombatComponent->TargetActor->GetActorLocation() - Internal_UnitCombatComponent->GetOwner()->GetActorLocation();
+	//	Direction = FVector(Direction.X, Direction.Y, 0);
+	//	Internal_UnitCombatComponent->GetOwner()->SetActorRotation(FMath::RInterpConstantTo(Internal_UnitCombatComponent->GetOwner()->GetActorRotation(), Direction.Rotation(), RotateInterval, RotateSpeed));
+	//}
+	//else
+	//{
+	//	Internal_UnitCombatComponent->GetWorld()->GetTimerManager().ClearTimer(FocusTargetActorTimerHandle);
+	//}
+
+	if (Internal_UnitCombatComponent->TargetActor.IsValid())
 	{
 		FVector Direction = Internal_UnitCombatComponent->TargetActor->GetActorLocation() - Internal_UnitCombatComponent->GetOwner()->GetActorLocation();
-		Direction = FVector(Direction.X, Direction.Y, 0);
-		Internal_UnitCombatComponent->GetOwner()->SetActorRotation(FMath::RInterpConstantTo(Internal_UnitCombatComponent->GetOwner()->GetActorRotation(), Direction.Rotation(), RotateInterval, RotateSpeed));
-	}
-	else
-	{
-		Internal_UnitCombatComponent->GetWorld()->GetTimerManager().ClearTimer(FocusTargetActorTimerHandle);
+		float Yaw = Direction.Rotation().Yaw;
+		FRotator ControllerRotator = FRotator(0, Yaw, 0);
+		Internal_UnitCombatComponent->OwnerAIC->SetControlRotation(ControllerRotator);
 	}
 }
 
@@ -109,6 +122,16 @@ void UUnitState_Attack::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterr
 		if (Interface && Interface->GetIsDead())
 		{
 			// 상태 변경
+			Internal_UnitCombatComponent->StateChange(EUnitState::Move);
+		}
+	}
+
+	Internal_UnitCombatComponent->EnemyFind();
+	if (Internal_UnitCombatComponent->DetectedActors.Num() > 0)
+	{
+		Internal_UnitCombatComponent->SelectBestTarget(Internal_UnitCombatComponent->DetectedActors);
+		if (Internal_UnitCombatComponent->TargetActor != TargetActorBackup)
+		{
 			Internal_UnitCombatComponent->StateChange(EUnitState::Move);
 		}
 	}

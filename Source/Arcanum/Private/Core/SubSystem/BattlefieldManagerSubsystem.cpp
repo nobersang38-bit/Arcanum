@@ -21,6 +21,7 @@ void UBattlefieldManagerSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 	SetInBattleData(FPlayerAccountService::GetPlayerDataCopy(this), InBattleData);
 
 	SetupUnits();
+	DebugBasementSet();
 	//UARGameInstance* GameInstance = nullptr;
 	//GameInstance = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	//if (GameInstance)
@@ -46,6 +47,16 @@ void UBattlefieldManagerSubsystem::AddBasement(AActor* InNexus, FGameplayTag InT
 AActor* UBattlefieldManagerSubsystem::GetBasement(FGameplayTag InTeamTag) const
 {
 	return Basements.FindRef(InTeamTag);
+}
+
+FBasementStat UBattlefieldManagerSubsystem::GetBasementStat(FGameplayTag InTeamTag) const
+{
+	if (const FBasementStat* TempBasementStat = BasementStats.Find(InTeamTag))
+	{
+		return *TempBasementStat;
+	}
+
+	return FBasementStat();
 }
 
 void UBattlefieldManagerSubsystem::SetABattlefieldManagerActor(ABattlefieldManagerActor* InBattlefieldManagerActor)
@@ -116,6 +127,18 @@ void UBattlefieldManagerSubsystem::SetupUnits()
 			}
 		}
 	}
+}
+
+void UBattlefieldManagerSubsystem::DebugBasementSet()
+{
+	FBasementStat PlayerBasementStat;
+	FBasementStat EnemyBasementStat;
+
+	PlayerBasementStat.CommandCenterCurrentHP.BaseValue = 1000.0f;
+	EnemyBasementStat.CommandCenterCurrentHP.BaseValue = 1000.0f;
+
+	BasementStats.Add(Arcanum::Unit::Faction::Ally::Root, PlayerBasementStat);
+	BasementStats.Add(Arcanum::Unit::Faction::Enemy::Root, EnemyBasementStat);
 }
 
 void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerData, FInBattleData& OutInBattleData)

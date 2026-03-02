@@ -7,6 +7,9 @@
 #include "TimerManager.h"
 #include "Engine/World.h"
 #include "GameFramework/Character.h"
+#include "Components/WidgetComponent.h"
+#include "UI/InGame/UnitHealthWidget.h"
+#include "Component/BasementCombatComponent.h"
 
 // Sets default values
 ABasement::ABasement()
@@ -18,6 +21,10 @@ ABasement::ABasement()
 
 	// 캡슐 말고 스태틱 메시의 콜리전 사용
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	BasementCombatComponent = CreateDefaultSubobject<UBasementCombatComponent>(TEXT("BasementCombatComponent"));
+
+	HealthWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthWidgetComponent"));
+	HealthWidgetComponent->SetupAttachment(RootComponent);
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CrystalMesh"));
 	MeshComponent->SetupAttachment(RootComponent);
@@ -39,6 +46,19 @@ void ABasement::BeginPlay()
 	//		true
 	//	);
 	//}
+	if (UUserWidget* TempHealthWidgetUser = Cast<UUserWidget>(HealthWidgetComponent->GetWidget()))
+	{
+		if (UUnitHealthWidget* TempHealthWidget = Cast<UUnitHealthWidget>(TempHealthWidgetUser))
+		{
+			BasementCombatComponent->OnBasementChangeHealth.RemoveDynamic(TempHealthWidget, &UUnitHealthWidget::SetPercentFloat);
+			BasementCombatComponent->OnBasementChangeHealth.AddDynamic(TempHealthWidget, &UUnitHealthWidget::SetPercentFloat);
+
+			FBasementStat Stat = BasementCombatComponent->GetBasementStat();
+			float CurrentHealth = Stat.CommandCenterCurrentHP.BaseValue;
+			float MaxHealth = Stat.CommandCenterMaxHP.BaseValue;
+			TempHealthWidget->SetPercentFloat(CurrentHealth, MaxHealth);
+		}
+	}
 }
 
 //void ABasement::EnemySpawnTick()

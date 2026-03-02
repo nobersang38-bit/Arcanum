@@ -34,6 +34,12 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Refrence")
 	float Velocity = 0.0f;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Refrence")
+	float VelocityRatio = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
+	float VelocityRatioFactor = 0.01f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AnimSequence")
 	TObjectPtr<UAnimSequenceBase> Anim_Idle = nullptr;
 
