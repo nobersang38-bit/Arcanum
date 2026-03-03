@@ -46,4 +46,5 @@ protected:
 	// 캐릭터 소지 안 하면 어둡게 표출되도록
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UImage> SlotDimOverlay;
+
 };
