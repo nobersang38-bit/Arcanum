@@ -4,6 +4,8 @@
 
 void UCurrencyWidget::NativeConstruct()
 {
+	Super::NativeConstruct();
+
 	// 초기값
 	if (GoldText)
 	{

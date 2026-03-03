@@ -1,20 +1,14 @@
 #include "UI/Lobby/Contents/Shop/ShopHUDWidget.h"
-#include "UI/Lobby/Contents/Currency/CurrencyWidget.h"
-#include "UI/Lobby/Contents/Shop/SubLayout/ShopItemSlotWidget.h"
+#include "UI/Lobby/Contents/Shop/SubLayout/ShopPanelWidget.h"
 #include "UI/Common/CommonBtnWidget.h"
-#include "Core/ARPlayerAccountService.h"
-#include "Core/SubSystem/GameDataSubsystem.h"
-#include "Core/ARGameInstance.h"
-#include "Components/WrapBox.h"
-#include "Components/WrapBoxSlot.h"
 #include "Components/TextBlock.h"
-#include "Components/Button.h"
 
 void UShopHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	SelectedShopSlotIndex = INDEX_NONE;
+	SelectedSlotIndex = INDEX_NONE;
+
 
 	if (BuyButton)
 	{
@@ -27,120 +21,51 @@ void UShopHUDWidget::NativeConstruct()
 		SellButton->OnClicked.RemoveDynamic(this, &UShopHUDWidget::HandleSellClicked);
 		SellButton->OnClicked.AddDynamic(this, &UShopHUDWidget::HandleSellClicked);
 	}
-}
 
-void UShopHUDWidget::InitShopSlots(int32 InShopSlotCount)
-{
-	ShopSlotCount = FMath::Max(1, InShopSlotCount);
-
-	CreateShopSlots();
-	BindShopSlotEvents();
-
-	SelectedShopSlotIndex = INDEX_NONE;
-	RefreshShopSlotSelection();
-}
-
-void UShopHUDWidget::ApplyShopData(const TArray<FName>& InRowNames, const TArray<bool>& InSoldOutStates, const TArray<const FDTEquipmentInfoRow*>& InRowPtrs)
-{
-	for (int32 slotIndex = 0; slotIndex < ShopSlotCount; slotIndex++)
+	if (EquipmentPanel)
 	{
-		if (!ShopSlots.IsValidIndex(slotIndex))
-		{
-			continue;
-		}
+		EquipmentPanel->OnSlotClicked.RemoveDynamic(this, &UShopHUDWidget::HandleEquipmentSlotClicked);
+		EquipmentPanel->OnSlotClicked.AddDynamic(this, &UShopHUDWidget::HandleEquipmentSlotClicked);
+	}
 
-		UShopItemSlotWidget* slot = ShopSlots[slotIndex];
-		if (!slot)
-		{
-			continue;
-		}
-
-		// 데이터 부족/비정상이면 빈 슬롯 처리
-		if (!InRowNames.IsValidIndex(slotIndex) || !InSoldOutStates.IsValidIndex(slotIndex) || !InRowPtrs.IsValidIndex(slotIndex))
-		{
-			slot->ClearSlot();
-			continue;
-		}
-
-		const FName rowName = InRowNames[slotIndex];
-		const bool bSoldOut = InSoldOutStates[slotIndex];
-		const FDTEquipmentInfoRow* rowPtr = InRowPtrs[slotIndex];
-
-		if (!rowPtr || rowName == NAME_None)
-		{
-			slot->ClearSlot();
-			continue;
-		}
-
-		// 슬롯 위젯은 "표시만" 하게, RowPtr로 세팅
-		slot->SetViewData(slotIndex, rowName, rowPtr, bSoldOut);
-
-		// 선택 강조
-		slot->SetSelected(slotIndex == SelectedShopSlotIndex);
+	if (PotionPanel)
+	{
+		PotionPanel->OnSlotClicked.RemoveDynamic(this, &UShopHUDWidget::HandlePotionSlotClicked);
+		PotionPanel->OnSlotClicked.AddDynamic(this, &UShopHUDWidget::HandlePotionSlotClicked);
 	}
 }
 
-
-void UShopHUDWidget::CreateShopSlots()
+void UShopHUDWidget::ApplyShopData(
+	const TArray<FName>& InRowNames,
+	const TArray<bool>& InSoldOutStates,
+	const TArray<TSoftObjectPtr<UTexture2D>>& InIcons,
+	const TArray<FText>& InNames,
+	const TArray<FText>& InDescs,
+	const TArray<int64>& InPrices)
 {
-	if (!ShopSlotContainer || !ShopItemSlotWidgetClass) { return; }
-
-	ShopSlotContainer->ClearChildren();
-	ShopSlots.Reset();
-
-	for (int32 slotIndex = 0; slotIndex < ShopSlotCount; slotIndex++)
+	if (EquipmentPanel)
 	{
-		if (UShopItemSlotWidget* shopSlot = CreateWidget<UShopItemSlotWidget>(this, ShopItemSlotWidgetClass))
-		{
-			shopSlot->ClearSlot();
-			ShopSlotContainer->AddChildToWrapBox(shopSlot);
-			ShopSlots.Add(shopSlot);
-		}
+		EquipmentPanel->ApplyData(InRowNames, InSoldOutStates, InIcons, InNames, InDescs, InPrices);
 	}
-}
 
-void UShopHUDWidget::BindShopSlotEvents()
-{
-	for (int32 slotIndex = 0; slotIndex < ShopSlotCount; slotIndex++)
+	if (PotionPanel)
 	{
-		if (ShopSlots.IsValidIndex(slotIndex))
-		{
-			if (UShopItemSlotWidget* shopSlot = ShopSlots[slotIndex])
-			{
-				shopSlot->OnShopItemSlotClicked.RemoveDynamic(this, &UShopHUDWidget::HandleShopSlotClicked);
-				shopSlot->OnShopItemSlotClicked.AddDynamic(this, &UShopHUDWidget::HandleShopSlotClicked);
-			}
-		}
-	}
-}
-
-void UShopHUDWidget::HandleShopSlotClicked(int32 InSlotIndex)
-{
-	if (ShopSlots.IsValidIndex(InSlotIndex))
-	{
-		if (SelectedShopSlotIndex != InSlotIndex)
-		{
-			SelectedShopSlotIndex = InSlotIndex;
-			RefreshShopSlotSelection();
-		}
-	}
-}
-
-void UShopHUDWidget::RefreshShopSlotSelection()
-{
-	for (int32 slotIndex = 0; slotIndex < ShopSlotCount; slotIndex++)
-	{
-		if (ShopSlots.IsValidIndex(slotIndex))
-		{
-			ShopSlots[slotIndex]->SetSelected(slotIndex == SelectedShopSlotIndex);
-		}
+		PotionPanel->ApplyData(InRowNames, InSoldOutStates, InIcons, InNames, InDescs, InPrices);
 	}
 }
 
 void UShopHUDWidget::ClearShopSelection()
 {
-	SelectedShopSlotIndex = INDEX_NONE;
-	RefreshShopSlotSelection();
+	SelectedSlotIndex = INDEX_NONE;
+
+	if (EquipmentPanel) 
+	{ 
+		EquipmentPanel->ClearSelection(); 
+	}
+	if (PotionPanel) 
+	{ 
+		PotionPanel->ClearSelection();
+	}
 }
 
 void UShopHUDWidget::SetShopRemainingSeconds(int32 InRemainingSeconds)
@@ -155,26 +80,49 @@ void UShopHUDWidget::SetShopRemainingSeconds(int32 InRemainingSeconds)
 	}
 }
 
+void UShopHUDWidget::InitPanels(int32 InEquipmentSlotCount, int32 InPotionSlotCount)
+{
+	if (EquipmentPanel)
+	{
+		EquipmentPanel->InitSlots(FMath::Max(0, InEquipmentSlotCount), 0);
+		EquipmentPanel->ClearSelection();
+	}
+
+	if (PotionPanel)
+	{
+		const int32 equipCount = FMath::Max(0, InEquipmentSlotCount);
+		PotionPanel->InitSlots(FMath::Max(0, InPotionSlotCount), equipCount);
+		PotionPanel->ClearSelection();
+	}
+
+	SelectedSlotIndex = INDEX_NONE;
+}
+
 void UShopHUDWidget::HandleBuyClicked()
 {
-	UE_LOG(LogTemp, Log, TEXT("BuyButton Clicked"));
-
-	if (SelectedShopSlotIndex != INDEX_NONE)
+	if (SelectedSlotIndex != INDEX_NONE)
 	{
-		if (ShopSlots.IsValidIndex(SelectedShopSlotIndex))
-		{
-			if (UShopItemSlotWidget* slot = ShopSlots[SelectedShopSlotIndex])
-			{
-				if (slot->IsPurchasable())
-				{
-					const FName rowName = slot->GetRowName();
-					if (rowName != NAME_None)
-					{
-						OnBuyRequested.Broadcast(rowName);
-					}
-				}
-			}
-		}
+		OnBuyRequested.Broadcast(SelectedSlotIndex);
+	}
+}
+
+void UShopHUDWidget::HandleEquipmentSlotClicked(int32 InSlotIndex)
+{
+	SelectedSlotIndex = InSlotIndex;
+
+	if (PotionPanel)
+	{
+		PotionPanel->ClearSelection();
+	}
+}
+
+void UShopHUDWidget::HandlePotionSlotClicked(int32 InSlotIndex)
+{
+	SelectedSlotIndex = InSlotIndex;
+
+	if (EquipmentPanel)
+	{
+		EquipmentPanel->ClearSelection();
 	}
 }
 

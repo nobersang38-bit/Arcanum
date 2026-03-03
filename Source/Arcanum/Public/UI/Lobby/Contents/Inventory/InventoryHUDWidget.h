@@ -4,22 +4,21 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "DataInfo/ItemData/Data/InventoryViewSlot.h"
 #include "InventoryHUDWidget.generated.h"
 
 class UScrollBox;
 class UWrapBox;
 class UCommonBtnWidget;
 class UInventoryItemSlotWidget;
-struct FEquipmentInfo;
-struct FDTEquipmentInfoRow;
 
-/* 선택된 아이템 알림 */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInventorySlotSelected, FGuid, InItemGuid);
+/* 장비/포션 공용 선택된 아이템 알림 */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInventorySlotSelected, const FInventoryViewSlot&, InSlot);
 
 /**
  * 추영호 
  * - 인벤토리 HUD
- * - 슬롯 생성
+ * - 슬롯 생성 + 표시(ViewSlot 기반)
  */
 
 UCLASS()
@@ -32,8 +31,8 @@ protected:
 
 
 public:
-	/* 인벤 목록/RowPtr로 화면 갱신 */
-	void ApplyInventoryData(const TArray<FEquipmentInfo>& InItems, const TArray<const FDTEquipmentInfoRow*>& InRowPtrs);
+	/* 공용 슬롯 리스트로 화면 갱신 */
+	void ApplyInventorySlots(const TArray<FInventoryViewSlot>& InSlots);
 
 	/* 선택 초기화 */
 	void ClearSelection();
@@ -43,14 +42,14 @@ public:
 
 protected:
 	/* SlotCount만큼 슬롯 위젯 생성 (컨테이너) */
-	void CreateInventorySlots();
+	void CreateInventorySlots(int32 InSlotCount);
 
 	/* 슬롯 클릭 바인딩 */
 	void BindSlotEvents();
 
 	/* 슬롯 클릭 처리 (선택 유지) */
 	UFUNCTION()
-	void HandleSlotClicked(FGuid InItemGuid);
+	void HandleSlotClicked(int32 InSlotIndex);
 
 	/* 선택 강조 갱신 */
 	void RefreshSelection();
@@ -59,11 +58,7 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Inventory")
 	FOnInventorySlotSelected OnInventorySlotSelected;
 
-protected: 
-	/* 스크롤 컨테이너 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget, AllowPrivateAccess = "true"))
-	TObjectPtr<UScrollBox> ScrollBox;
-
+protected:
 	/* 슬롯 배치 컨테이너 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget, AllowPrivateAccess = "true"))
 	TObjectPtr<UWrapBox> SlotContainer;
@@ -77,13 +72,10 @@ protected:
 	TArray<TObjectPtr<UInventoryItemSlotWidget>> Slots;
 
 	/* UI 표시용 데이터 캐시 */
-	TArray<FGuid> CachedItemGuids;
-
-	/* 현재 선택 슬롯 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	FGuid SelectedGuid;
-
-    /* 슬롯 생성 수 */
 	UPROPERTY()
-	int32 SlotCount = 0;
+	TArray<FInventoryViewSlot> CachedViewSlots;
+
+	/* 현재 선택 슬롯 인덱스 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	int32 SelectedSlotIndex = INDEX_NONE;
 };
