@@ -35,13 +35,10 @@ namespace Arcanum {
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Equipment);
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(PlayerBattleStats);
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(GachaTable);
-<<<<<<< Updated upstream
-=======
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(SkillData);
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(StageInfo);
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(AllyUnitInfo);
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(EnemyUnitInfo);
->>>>>>> Stashed changes
 
 		//ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(BattleRegenStats);
 		//ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(BattleNonRegenStats);
@@ -324,93 +321,62 @@ namespace Arcanum {
 	}
 }
 
-// KYJ : 전투 상태
-//	namespace Combat {
-//		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
-//		namespace State {
-//			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Alive);			// 살아있음
-//			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dead);			// 죽음
-//			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Stunned);		// 스턴
-//		}
-//	}
 //	// KYJ : 아군, 적군 유닛
-//	namespace Unit {
-//		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
-//		// 아군인지 적군인지 체크
-//		namespace Faction {
-//			// 아군
-//			namespace Ally {
-//				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
-//				namespace Army {
-//					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
-//				}
-//				namespace Bard {
-//					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
-//				}
-//				namespace Maid {
-//					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
-//				}
-//				namespace Tinker {
-//					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
-//				}
-//			}
-//			// 적군
-//			namespace Enemy {
-//				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
-//				namespace Macaron {
-//					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
-//				}
-//				namespace Leech {
-//					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
-//				}
-//				namespace GhostMacaron {
-//					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
-//				}
-//				namespace Bat {
-//					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
-//				}
-//				namespace Cell {
-//					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
-//				}
-//				namespace Mask {
-//					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
-//				}
-//				namespace Wolfron {
-//					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
-//				}
-//				namespace MageMacaron {
-//					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
-//				}
-//				namespace Felice {
-//					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
-//				}
-//				namespace CupFelice {
-//					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
-//				}
-//			}
-//		}
-//		
-//		namespace Role {
-//			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Tank);				// 방어
-//			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Melee);				// 근딜
-//			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ranged);				// 원딜
-//			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(AoEDPS);				// 광딜
-//		}
-//	}
-//	}
-//
-//	// KYJ : 전투 제어
-//	namespace Battle {
-//		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
-//		namespace Mode {
-//			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Manual);		// 수동 조작
-//			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Auto);		// 자동 전투
-//		}
-//
-//		namespace State {
-//			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Active);		// 전투 중
-//			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Paused);		// 일시정지
-//			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ended);		// 전투 종료
-//		}
-//	}
-//}
+namespace Arcanum {
+	namespace Unit {
+		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+		// 아군인지 적군인지 체크
+		namespace Faction {
+			// 아군
+			namespace Ally {
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				namespace Army {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				}
+				namespace Bard {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				}
+				namespace Maid {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				}
+				namespace Tinker {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				}
+			}
+			// 적군
+			namespace Enemy {
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				namespace Macaron {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				}
+				namespace Leech {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				}
+				namespace GhostMacaron {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				}
+				namespace Bat {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				}
+				namespace Cell {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				}
+				namespace Mask {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				}
+				namespace Wolfron {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				}
+				namespace MageMacaron {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				}
+				namespace Felice {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				}
+				namespace CupFelice {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				}
+			}
+		}
+	}
+}
