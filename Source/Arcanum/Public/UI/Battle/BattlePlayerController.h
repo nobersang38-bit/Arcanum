@@ -186,7 +186,7 @@ protected:
 	UPROPERTY()
 	TWeakObjectPtr<AActor> EnemyBasement = nullptr;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<class ABaseUnitCharacter> AllyUnitClass = nullptr;
 
 protected:

@@ -23,10 +23,10 @@ void ABattlePlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FString AllyUnitClassPath = TEXT("/Game/Test/Battle/Unit/BP_AllyUnit.BP_AllyUnit_C");
+	/*FString AllyUnitClassPath = TEXT("/Game/Test/Battle/Unit/BP_AllyUnit.BP_AllyUnit_C");
 	UClass* LoadAllyUnit = StaticLoadClass(UObject::StaticClass(), nullptr, *AllyUnitClassPath);
 
-	AllyUnitClass = LoadAllyUnit;
+	AllyUnitClass = LoadAllyUnit;*/
 
 	if (HUDWidgetClass)
 	{
@@ -326,8 +326,7 @@ void ABattlePlayerController::SpawnUnit(FGameplayTag InTag)
 			GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, HitResult);
 			UE_LOG(LogTemp, Error, TEXT("ASDLocation : %.0f, %.0f, %.0f"), HitResult.ImpactPoint.X, HitResult.ImpactPoint.Y, HitResult.ImpactPoint.Z);
 
-			FString Result = FString::Printf(TEXT("ASDLocation : %.0f, %.0f, %.0f"), HitResult.ImpactPoint.X, HitResult.ImpactPoint.Y, HitResult.ImpactPoint.Z);
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, *Result);
+			
 
 			FVector ReleasedLocation = HUDWidgetInstance->GetSelectUnitDropLocation();
 			FTransform Transform;
@@ -337,6 +336,8 @@ void ABattlePlayerController::SpawnUnit(FGameplayTag InTag)
 			if (EnemyUnitCharacter)
 			{
 				EnemyUnitCharacter->SetUnit(*UnitData);
+				FString Result = FString::Printf(TEXT("ASDLocation : %.0f, %.0f, %.0f\tUnitData : %s"), HitResult.ImpactPoint.X, HitResult.ImpactPoint.Y, HitResult.ImpactPoint.Z, *UnitData->Info.InfoSetting.Tag.ToString());
+				//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, *Result);
 			}
 			//UE_LOG(LogTemp, Error, TEXT("HitResult : %s"), *HitResult.ImpactPoint.ToString());
 		}

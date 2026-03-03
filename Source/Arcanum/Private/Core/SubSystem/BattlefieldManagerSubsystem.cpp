@@ -152,6 +152,8 @@ void UBattlefieldManagerSubsystem::SetupUnits()
 			for (auto Row : AllyUnitsDatArray)
 			{
 				AllyUnitDatas.Add(Row->UnitData.Info.InfoSetting.Tag, Row->UnitData);
+				FString Result = FString::Printf(TEXT("AllyUnitDatas : %s"), *Row->UnitData.Info.InfoSetting.Tag.ToString());
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, *Result);
 				UE_LOG(LogTemp, Warning, TEXT("AllyUnitDatas : %s"), *Row->UnitData.Info.InfoSetting.Tag.ToString());
 			}
 		}
