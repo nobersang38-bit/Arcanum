@@ -11,7 +11,7 @@
  */
 
 USTRUCT(BlueprintType)
-struct FDTPotionInfoRow 
+struct FDTPotionInfoRow : public FTableRowBase
 {
 	GENERATED_BODY()
 
