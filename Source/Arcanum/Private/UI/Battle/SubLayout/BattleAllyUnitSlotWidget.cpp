@@ -6,6 +6,7 @@
 #include "Components/Button.h"
 #include "Components/Image.h"
 #include "Components/ProgressBar.h"
+#include "Blueprint/DragDropOperation.h"
 
 // ========================================================
 // 언리얼 기본 생성

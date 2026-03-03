@@ -124,9 +124,12 @@ void ABattlePlayerController::SetupInputComponent()
 void ABattlePlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	float x;
+	float y;
+	GetMousePosition(x, y);
 	FHitResult HitResult;
 	GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, HitResult);
-	UE_LOG(LogTemp, Error, TEXT("마우스 위치 : %.0f, %.0f, %.0f"), HitResult.ImpactPoint.X, HitResult.ImpactPoint.Y, HitResult.ImpactPoint.Z);
+	UE_LOG(LogTemp, Error, TEXT("마우스 위치 : %.0f, %.0f"), x, y);
 }
 
 // ========================================================
@@ -307,6 +310,7 @@ void ABattlePlayerController::ReadySpawnUnit(FGameplayTag InTag)
 {
 	UE_LOG(LogTemp, Error, TEXT("눌렀다"));
 	SpawnTag = InTag;
+	SetupInputMode();
 }
 
 void ABattlePlayerController::SpawnUnit(FGameplayTag InTag)
@@ -332,6 +336,7 @@ void ABattlePlayerController::SpawnUnit(FGameplayTag InTag)
 			//UE_LOG(LogTemp, Error, TEXT("HitResult : %s"), *HitResult.ImpactPoint.ToString());
 		}
 	}
+	SetupInputMode();
 }
 
 bool ABattlePlayerController::UseMeatValue(float Value)
@@ -375,9 +380,12 @@ void ABattlePlayerController::SetupInputMode()
 	SetVirtualJoystickVisibility(false);
 #endif
 
+	//FInputModeGameOnly InputMode;
+	//FInputModeUIOnly InputMode;
 	FInputModeGameAndUI InputMode;
+	InputMode.SetWidgetToFocus(nullptr);
 	InputMode.SetHideCursorDuringCapture(false);
-	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
 	SetInputMode(InputMode);
 }
 

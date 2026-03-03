@@ -31,7 +31,6 @@ protected:
 
 #pragma endregion
 
-
 public:
 	FOnClickUnitSlot OnClickUnitSlot;
 	FOnPressUnitSlot OnPressUnitSlot;
