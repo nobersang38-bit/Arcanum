@@ -121,6 +121,14 @@ void ABattlePlayerController::SetupInputComponent()
 	}
 }
 
+void ABattlePlayerController::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	FHitResult HitResult;
+	GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, HitResult);
+	UE_LOG(LogTemp, Error, TEXT("마우스 위치 : %.0f, %.0f, %.0f"), HitResult.ImpactPoint.X, HitResult.ImpactPoint.Y, HitResult.ImpactPoint.Z);
+}
+
 // ========================================================
 // 디버그(콘솔 호출 후, 함수 이름으로 실행가능)
 // ========================================================
@@ -297,11 +305,13 @@ void ABattlePlayerController::AutoManualModePC()
 
 void ABattlePlayerController::ReadySpawnUnit(FGameplayTag InTag)
 {
+	UE_LOG(LogTemp, Error, TEXT("눌렀다"));
 	SpawnTag = InTag;
 }
 
 void ABattlePlayerController::SpawnUnit(FGameplayTag InTag)
 {
+	UE_LOG(LogTemp, Error, TEXT("땟다"));
 	if (FUnitData* UnitData = UsinAllyUnits.Find(SpawnTag))
 	{
 		//UE_LOG(LogTemp, Error, TEXT("SpawnUnit : %s"), *SpawnTag.ToString());
@@ -366,7 +376,8 @@ void ABattlePlayerController::SetupInputMode()
 #endif
 
 	FInputModeGameAndUI InputMode;
-	//InputMode.SetHideCursorDuringCapture(false);
+	InputMode.SetHideCursorDuringCapture(false);
+	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 	SetInputMode(InputMode);
 }
 
