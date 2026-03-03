@@ -85,6 +85,9 @@ protected:
 	UFUNCTION()
 	void SetupEquipment();
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Data")
+	UDataTable* CharacterDataTable;
+
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnEnhanceOKClicked OnEnhanceOKClicked;

@@ -73,7 +73,7 @@
     "Name": "Aiden",
     "BattleCharacterInfo": {
     "CharacterTag": "Arcanum.Player.ID.Aiden",
-	"CharacterIcon":"",
+	"CharacterIcon":"/Game/Assets/UI/Character/AvatarThumb.Icon_Enchant",
     "DefaultDialogue": "나와 함께라면 두려울 것이 없다.",
     "AttackDialogue": "내가 여기 있는 이유는… 싸우기 위해서다.",
     "HitDialogue": "한 번 맞았다고 물러서지 않는다!",
