@@ -10,6 +10,21 @@
 #include "Core/ARPlayerAccountService.h"
 #include "ARGameInstance.generated.h"
 
+/**특정 값(Amount 등) 반환 시 에러를 나타내기 위한 상수 */
+#define INDEX_NONE_LONG -1LL
+
+/** 게임 내 다양한 처리 결과를 나타내는 상태 코드 */
+UENUM(BlueprintType)
+enum class EGameErrCode : uint8
+{
+    Success             UMETA(DisplayName = "Success"),             // 성공
+    InvalidTag          UMETA(DisplayName = "Invalid Tag"),         // 유효하지 않은 태그 (InTag.IsValid() 실패)
+    NotFound            UMETA(DisplayName = "Data Not Found"),      // 데이터를 찾을 수 없음
+    InsufficientBalance UMETA(DisplayName = "Insufficient Balance"),// 잔액 부족
+    UnknownError        UMETA(DisplayName = "Unknown Error")        // 기타/알 수 없는 에러
+};
+
+
 /* 재화 변경 알림 */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCurrencyChanged); //
 

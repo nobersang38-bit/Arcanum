@@ -152,21 +152,12 @@ bool UARGameInstance::LoadPlayerData()
 }
 int64 UARGameInstance::GetCurrencyAmount(FGameplayTag InTag) const
 {
-    if (!InTag.IsValid()) return 0;
+    if (!InTag.IsValid()) return INDEX_NONE_LONG;
 
-    // 1. 현재 GameInstance가 들고 있는 최신 PlayerData 참조
-    // PlayerData.PlayerCurrency가 TMap<FGameplayTag, int64> 형식인 경우
-    if (PlayerData.PlayerCurrency.CurrencyMap.Contains(InTag))
-    {
-        return PlayerData.PlayerCurrency.CurrencyMap[InTag];
-    }
+    const FCurrencyData* FoundData = PlayerData.PlayerCurrency.CurrencyDatas.Find(InTag);
 
-    /* 만약 Map 형식이 아니라 개별 변수라면 아래처럼 태그 비교가 필요합니다.
-       if (InTag == TAG_Currency_Diamond) return PlayerData.PlayerCurrency.Diamond;
-       if (InTag == TAG_Currency_Gold) return PlayerData.PlayerCurrency.Gold;
-    */
-
-    return 0;
+    if (FoundData) return FoundData->CurrAmount;
+    else return INDEX_NONE_LONG;
 }
 void UARGameInstance::AddCurrency(FGameplayTag CurrencyValueTag, int64 Amount)
 { 
