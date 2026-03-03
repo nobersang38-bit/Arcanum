@@ -115,10 +115,10 @@ void UInventoryItemSlotWidget::RefreshSlotUI()
 		// Potion
 		else 
 		{
-			if (ViewSlot.PotionCount > 0)
+			if (ViewSlot.StackCount > 0)
 			{
 				StackOrUpgradeText->SetVisibility(ESlateVisibility::Visible);
-				StackOrUpgradeText->SetText(FText::FromString(FString::Printf(TEXT("x%d"), ViewSlot.PotionCount)));
+				StackOrUpgradeText->SetText(FText::FromString(FString::Printf(TEXT("x%d"), ViewSlot.StackCount)));
 			}
 			else
 			{

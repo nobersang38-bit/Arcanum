@@ -2,8 +2,8 @@
 #include "Core/ARGameInstance.h"
 #include "Core/SubSystem/GameTimeSubsystem.h"
 #include "Core/SubSystem/GameDataSubsystem.h"
-#include "DataInfo\ItemData\Potion\DTPotionInfoRow.h"
-
+#include "DataInfo/ItemData/Potion/DTPotionInfoRow.h"
+#include "DataInfo/InventoryData/DataTable/DTInventoryRuleItem.h"
 #include "Kismet/GameplayStatics.h"
 
 // ========================================================
@@ -210,8 +210,8 @@ bool FPlayerAccountService::PurchaseEquipment(const UObject* WorldContextObject,
 	NewEquip.Equipment = Row->BaseInfoSteps[0];
 
 	// 인벤 용량 체크: 장비+포션 점유 칸으로 체크
-	const int32 maxSlots = FMath::Max(0, GI->InventoryCapacity);
-	const int32 maxStack = FMath::Max(1, GI->PotionMaxStack);
+	const FDTInventoryRuleItem* ruleRow = GetInventoryRuleRow(WorldContextObject);
+	const int32 maxSlots = ruleRow ? FMath::Max(0, ruleRow->Capacity) : 0;
 
 	// 장비 점유 칸
 	int32 usedEquipSlots = 0;
@@ -225,13 +225,13 @@ bool FPlayerAccountService::PurchaseEquipment(const UObject* WorldContextObject,
 
 	// 포션 점유 칸 (스택 기준)
 	int32 usedPotionSlots = 0;
-	for (const TPair<FGameplayTag, int32>& pair : PlayerData.PotionCounts)
+	for (const TPair<FGameplayTag, int32>& pair : PlayerData.StackCounts)
 	{
 		const int32 count = pair.Value;
-		if (count > 0)
-		{
-			usedPotionSlots += (count + maxStack - 1) / maxStack;
-		}
+		if (count <= 0) continue;
+
+		const int32 tagMaxStack = GetMaxStackByItemTag(ruleRow, pair.Key);
+		usedPotionSlots += (count + tagMaxStack - 1) / tagMaxStack;
 	}
 
 	// 총합이 용량이면 더 못 들어가게 막음
@@ -433,7 +433,7 @@ int32 FPlayerAccountService::GetShopRemainingSeconds(const UObject* WorldContext
 	return 0;
 }
 
-// 포션
+// 포션 보유 수량 조회
 int32 FPlayerAccountService::GetPotionCount(const UObject* WorldContextObject, const FGameplayTag& InPotionTag)
 {
 	if (UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject)))
@@ -442,7 +442,7 @@ int32 FPlayerAccountService::GetPotionCount(const UObject* WorldContextObject, c
 		{
 			const FPlayerData& playerData = GI->GetPlayerDataCopy();
 
-			if (const int32* foundCount = playerData.PotionCounts.Find(InPotionTag))
+			if (const int32* foundCount = playerData.StackCounts.Find(InPotionTag))
 			{
 				return *foundCount;
 			}
@@ -452,7 +452,7 @@ int32 FPlayerAccountService::GetPotionCount(const UObject* WorldContextObject, c
 	return 0;
 }
 
-// 포션
+// 포션 구매(스택형) - 구매 성공 시 수량 증가(최대 20스택)
 bool FPlayerAccountService::PurchasePotion(const UObject* InWorldContextObject, FName InPotionRowName, int32 InBuyCount)
 {
 	UARGameInstance* Gi = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(InWorldContextObject));
@@ -473,12 +473,12 @@ bool FPlayerAccountService::PurchasePotion(const UObject* InWorldContextObject, 
 	const int64 totalPrice = static_cast<int64>(row->BuyPrice) * static_cast<int64>(InBuyCount);
 	if (currencyData->CurrAmount < totalPrice) return false;
 
-	const int32 oldCount = playerData.PotionCounts.FindRef(row->PotionTag);
+	const int32 oldCount = playerData.StackCounts.FindRef(row->PotionTag);
 	const int64 oldGold = currencyData->CurrAmount;
 
 	// 인벤 포션 용량 체크
-	const int32 maxSlots = FMath::Max(0, Gi->InventoryCapacity);
-	const int32 maxStack = FMath::Max(1, Gi->PotionMaxStack);
+	const FDTInventoryRuleItem* ruleRow = GetInventoryRuleRow(InWorldContextObject);
+	const int32 maxSlots = ruleRow ? FMath::Max(0, ruleRow->Capacity) : 0;
 
 	// 장비 점유 칸(유효 Guid 개수)
 	int32 usedEquipSlots = 0;
@@ -495,24 +495,26 @@ bool FPlayerAccountService::PurchasePotion(const UObject* InWorldContextObject, 
 
 	// 구매 직전 포션 슬롯 점유
 	int32 CurrentPotionSlots = 0;
-	for (const TPair<FGameplayTag, int32>& pair : playerData.PotionCounts)
+	for (const TPair<FGameplayTag, int32>& pair : playerData.StackCounts)
 	{
 		const int32 count = pair.Value;
-		if (count > 0)
-		{
-			CurrentPotionSlots += (count + maxStack - 1) / maxStack;
-		}
+		if (count <= 0) continue;
+
+		const int32 tagMaxStack = GetMaxStackByItemTag(ruleRow, pair.Key);
+		CurrentPotionSlots += (count + tagMaxStack - 1) / tagMaxStack;
 	}
 
-	const int32 oldSlotsForThisPotion = (oldCount > 0) ? ((oldCount + maxStack - 1) / maxStack) : 0;
-	const int32 newSlotsForThisPotion = (newPotionCount > 0) ? ((newPotionCount + maxStack - 1) / maxStack) : 0;
+	// 이 포션의 MaxStack
+	const int32 thisMaxStack = GetMaxStackByItemTag(ruleRow, row->PotionTag);
 
+	const int32 oldSlotsForThisPotion = (oldCount > 0) ? ((oldCount + thisMaxStack - 1) / thisMaxStack) : 0;
+	const int32 newSlotsForThisPotion = (newPotionCount > 0) ? ((newPotionCount + thisMaxStack - 1) / thisMaxStack) : 0;
 	const int32 extraSlotsNeeded = newSlotsForThisPotion - oldSlotsForThisPotion;
 
 	// 총 점유 칸이 용량 초과면 구매 실패
 	if ((usedEquipSlots + CurrentPotionSlots + extraSlotsNeeded) > maxSlots) return false;
 
-	int32& currCount = playerData.PotionCounts.FindOrAdd(row->PotionTag);
+	int32& currCount = playerData.StackCounts.FindOrAdd(row->PotionTag);
 	currCount = newPotionCount;
 
 	currencyData->CurrAmount -= totalPrice;
@@ -728,6 +730,50 @@ void FPlayerAccountService::SetNextShopRefreshTime(UARGameInstance* InGameInstan
 			InGameInstance->NextShopRefreshTime = currentTimeKST + FTimespan(0, 0, gameTimeSubsystem->ShopRefreshSeconds);
 		}
 	}
+}
+
+const FDTInventoryRuleItem* FPlayerAccountService::GetInventoryRuleRow(const UObject* WorldContextObject)
+{
+	UARGameInstance* Gi = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!Gi) return nullptr;
+
+	if (UGameDataSubsystem* dataSubsystem = Gi->GetSubsystem<UGameDataSubsystem>())
+	{
+		if (UDataTable* const* tablePtr = dataSubsystem->MasterDataTables.Find(Arcanum::DataTable::InventoryRule))
+		{
+			if (*tablePtr)
+			{
+				return (*tablePtr)->FindRow<FDTInventoryRuleItem>(FName("Default"), TEXT("InventoryRule"));
+			}
+		}
+	}
+
+	return nullptr;
+}
+
+int32 FPlayerAccountService::GetMaxStackByItemTag(const FDTInventoryRuleItem* InRuleRow, const FGameplayTag& InItemTag)
+{
+	if (!InRuleRow || !InItemTag.IsValid()) return 1;
+
+	const FInventoryRuleItem* bestRule = nullptr;
+
+	for (const FInventoryRuleItem& rule : InRuleRow->Rules)
+	{
+		if (rule.RuleTag.IsValid() && InItemTag.MatchesTag(rule.RuleTag))
+		{
+			if (!bestRule || rule.Priority > bestRule->Priority)
+			{
+				bestRule = &rule;
+			}
+		}
+	}
+
+	if (bestRule && bestRule->StackRule == EInventoryStackRule::Stackable)
+	{
+		return FMath::Max(1, bestRule->MaxStack);
+	}
+
+	return 1;
 }
 
 FDateTime FPlayerAccountService::GetCurrentTimeKST()

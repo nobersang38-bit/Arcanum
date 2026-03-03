@@ -25,6 +25,7 @@ class UARGameInstance;
 class UInventoryHUDWidget;
 struct FDTEquipmentInfoRow;
 struct FDTPotionInfoRow;
+struct FDTInventoryRuleItem;
 
 UCLASS()
 class ARCANUM_API ULobbyHUD : public UUserWidget
@@ -138,11 +139,20 @@ protected:
 	/* 장비 DT 캐시 구축(로비 진입 시 1회) */
 	void BuildEquipmentRowCache();
 
-	/* 캐시에서 ItemTag로 RowPtr 찾기 */
-	const FDTEquipmentInfoRow* FindEquipmentRowByTag(const FGameplayTag& InItemTag) const;
-
 	/* 포션 DT 캐시 */
 	void BuildPotionRowCache();
+
+	/* 인벤 룰 DT 캐시 구축 */
+	void BuildInventoryRuleTableCache();
+
+	/* 룰 테이블 기반 인벤 최대 슬롯 */
+	int32 GetInventoryCapacityFromRuleTable() const;
+
+	/* 아이템 태그 기반 MaxStack 조회 */
+	bool FindMaxStackByItemTag(const FGameplayTag& InItemTag, int32& OutMaxStack) const;
+
+	/* 캐시에서 ItemTag로 RowPtr 찾기 */
+	const FDTEquipmentInfoRow* FindEquipmentRowByTag(const FGameplayTag& InItemTag) const;
 
 	/* 캐시에서 PotionTag로 RowPtr 찾기 */
 	const FDTPotionInfoRow* FindPotionRowByTag(const FGameplayTag& InPotionTag) const;
@@ -161,8 +171,9 @@ private:
 	/* 장비 원본순으로 */
 	void AppendEquipmentSlotsRaw(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const;
 
-	/* 장비 정렬(강화순 투구/갑옷/장갑/신발 ) */
+	/* 장비 정렬(강화순 투구/갑옷/장갑/신발) */
 	void AppendEquipmentSlotsSorted(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const; 
+
 
 protected:
 	/* 인벤토리 위젯 */
@@ -177,7 +188,14 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidgetOptional))
 	TObjectPtr<UCommonBtnWidget> InventorySortBtn;
 
+	/* InventoryRule DT의 단일 Row 캐시 */
+	const FDTInventoryRuleItem* InventoryRuleRow = nullptr;
+
 private:
+	/* 인벤 룰 DT 포인터 캐시 */
+	UPROPERTY()
+	TObjectPtr<UDataTable> InventoryRuleTable;
+
 	/* ItemTag -> 장비 DT RowPtr 캐시 */
 	TMap<FGameplayTag, const FDTEquipmentInfoRow*> EquipmentRowByTag;
 

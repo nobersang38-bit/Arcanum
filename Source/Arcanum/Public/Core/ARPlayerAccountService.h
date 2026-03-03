@@ -6,6 +6,9 @@
 #include "Core/Interfaces/IPlayerAccountService.h"
 #include "DataInfo/BattleCharacter/Equipment/DataTable/DTEquipment.h"
 #include "DataInfo/GachaData/DataTable/DTGachaBannerData.h"
+#include "DataInfo/ItemData/Potion/DTPotionInfoRow.h"
+#include "DataInfo/InventoryData/DataTable/DTInventoryRuleItem.h"
+#include "DataInfo/ItemData/Data/InventoryViewSlot.h"
 #include "ARPlayerAccountService.generated.h"
 
 UENUM(BlueprintType)
@@ -189,6 +192,12 @@ private:
 
 	/* 다음 갱신 시각 설정 (현재시간 + 10분) */
 	static void SetNextShopRefreshTime(UARGameInstance* InGameInstance);
+
+	/* InventoryRule DT의 Default Row를 조회 */
+	static const FDTInventoryRuleItem* GetInventoryRuleRow(const UObject* WorldContextObject);
+
+	/* InventoryRuleRow 기준으로 ItemTag의 최대 스택 수를 계산  */
+	static int32 GetMaxStackByItemTag(const FDTInventoryRuleItem* InRuleRow, const FGameplayTag& InItemTag);
 #pragma endregion
 
 #pragma region Gacha Widget 관련

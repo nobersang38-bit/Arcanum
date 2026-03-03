@@ -6,6 +6,8 @@
 #include "DataInfo/BattleCharacter/BattleStats/DataTable/DTBattleStats.h"
 #include "DataInfo/PlayerData/PlayerBattleData/DataTable/DTPlayerBattleStats.h"
 #include "DataInfo/BattleCharacter/CharacterInfo/DataTable/DTCharacterBaseInfo.h"
+#include "DataInfo/BattleCharacter/Equipment/DataTable/DTEquipment.h"
+#include "DataInfo/ItemData/Potion/DTPotionInfoRow.h"
 
 // ========================================================
 // 초기화 관련
@@ -297,6 +299,26 @@ void UARGameInstance::AddTestGold(int64 InAmount)
     if (InAmount == 0) { return; }
   
     AddCurrency(Arcanum::PlayerData::Currencies::NonRegen::Gold::Value, InAmount);
+
+    SavePlayerData();
+    OnCurrencyChanged.Broadcast();
+}
+
+void UARGameInstance::AddTestShard(int64 InAmount)
+{
+    if (InAmount == 0) { return; }
+
+    AddCurrency(Arcanum::PlayerData::Currencies::NonRegen::Shard::Value, InAmount);
+
+    SavePlayerData();
+    OnCurrencyChanged.Broadcast();
+}
+
+void UARGameInstance::AddTestSoul(int64 InAmount)
+{
+    if (InAmount == 0) { return; }
+
+    AddCurrency(Arcanum::PlayerData::Currencies::NonRegen::Soul::Value, InAmount);
 
     SavePlayerData();
     OnCurrencyChanged.Broadcast();

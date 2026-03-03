@@ -18,7 +18,7 @@ enum class EInventoryViewSlotType : uint8
 {
     Empty,
     Equipment,
-    Potion,
+    StackItem,
 };
 
 USTRUCT(BlueprintType)
@@ -34,15 +34,15 @@ struct FInventoryViewSlot
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FGuid ItemGuid;
 
-    /* 어떤 포션 종류인지 구분하는 태그 */
+    /* 어떤 종류인지 구분하는 태그 */
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FGameplayTag PotionTag;
+    FGameplayTag ItemTag;
 
-    /* 포션 슬롯 스택 */
+    /* 슬롯 스택 */
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    int32 PotionCount = 0;
+    int32 StackCount = 0;
 
-    /* 장비/포션 공통 아이콘 */
+    /* 장비/스택아이템 공통 아이콘 */
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TSoftObjectPtr<UTexture2D> Icon;
 
