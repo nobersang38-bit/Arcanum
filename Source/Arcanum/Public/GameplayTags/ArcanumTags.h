@@ -35,6 +35,7 @@ namespace Arcanum {
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Equipment);
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(PlayerBattleStats);
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(GachaTable);
+		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(SkillData);
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(StageInfo);
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(AllyUnitInfo);
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(EnemyUnitInfo);
@@ -108,12 +109,12 @@ namespace Arcanum {
 	namespace Skills {
 		namespace SkillName {
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(None);
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Slash);			// 무기 스킬: 베기
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(ChainBolt);		// 무기 스킬: 체인 볼트
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(PiercingShot);	// 무기 스킬: 관통 사격
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(ShockWave);		// 무기 스킬: 충격파
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Slash);			// 무기 스킬: 베기(했음)
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(ChainBolt);		// 무기 스킬: 체인 볼트(했음)
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(PiercingShot);	// 무기 스킬: 관통 사격(했음)
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(ShockWave);		// 무기 스킬: 충격파(했음)
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(MjolnirStrike);	// 무기 스킬: 묠니르
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(VoidEclipse);	// 무기 스킬: 보이드
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(VoidEclipse);	// 무기 스킬: 보이드(했음)
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(SolarFlare);		// 무기 스킬: 솔라
 		}
 		namespace SkillTypes {
@@ -332,15 +333,6 @@ namespace Arcanum {
 	}
 }
 
-// KYJ : 전투 상태
-//	namespace Combat {
-//		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
-//		namespace State {
-//			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Alive);			// 살아있음
-//			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dead);			// 죽음
-//			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Stunned);		// 스턴
-//		}
-//	}
 //	// KYJ : 아군, 적군 유닛
 namespace Arcanum {
 	namespace Unit {
@@ -400,28 +392,3 @@ namespace Arcanum {
 		}
 	}
 }
-//		
-//		namespace Role {
-//			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Tank);				// 방어
-//			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Melee);				// 근딜
-//			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ranged);				// 원딜
-//			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(AoEDPS);				// 광딜
-//		}
-//	}
-//	}
-//
-//	// KYJ : 전투 제어
-//	namespace Battle {
-//		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
-//		namespace Mode {
-//			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Manual);		// 수동 조작
-//			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Auto);		// 자동 전투
-//		}
-//
-//		namespace State {
-//			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Active);		// 전투 중
-//			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Paused);		// 일시정지
-//			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ended);		// 전투 종료
-//		}
-//	}
-//}

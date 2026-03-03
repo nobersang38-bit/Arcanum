@@ -1,0 +1,37 @@
+[
+  {
+    "Name": "Slash",
+    "SkillTag": "Arcanum.Skills.SkillName.Slash",
+    "SkillClass" : ""
+  },
+  {
+    "Name": "ChainBolt",
+    "SkillTag": "Arcanum.Skills.SkillName.ChainBolt",
+    "SkillClass" : ""
+  },
+  {
+    "Name": "PiercingShot",
+    "SkillTag": "Arcanum.Skills.SkillName.PiercingShot",
+    "SkillClass" : ""
+  },
+  {
+    "Name": "ShockWave",
+    "SkillTag": "Arcanum.Skills.SkillName.ShockWave",
+    "SkillClass" : ""
+  },
+  {
+    "Name": "MjolnirStrike",
+    "SkillTag": "Arcanum.Skills.SkillName.MjolnirStrike",
+    "SkillClass" : ""
+  },
+  {
+    "Name": "VoidEclipse",
+    "SkillTag": "Arcanum.Skills.SkillName.VoidEclipse",
+    "SkillClass" : ""
+  },
+  {
+    "Name": "SolarFlare",
+    "SkillTag": "Arcanum.Skills.SkillName.SolarFlare",
+    "SkillClass" : ""
+  }
+]
