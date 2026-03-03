@@ -65,9 +65,6 @@ public:
 	FOnShopPanelSlotClicked OnSlotClicked;
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional, AllowPrivateAccess = "true"))
-	TObjectPtr<UScrollBox> Scroll;
-
 	/* 슬롯 컨테이너 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget, AllowPrivateAccess = "true"))
 	TObjectPtr<UWrapBox> SlotContainer;

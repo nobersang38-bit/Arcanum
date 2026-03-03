@@ -1,13 +1,13 @@
 [
   {
     "Name": "Default",
-    "Capacity": 40,
+    "Capacity": 100,
     "Rules": [
       {
         "RuleTag": { "TagName": "Arcanum.Items.Potion" },
         "CategoryTag": { "TagName": "" },
         "StackRule": "Stackable",
-        "MaxStack": 20,
+        "MaxStack": 10,
         "Priority": 100,
         "SortOrder": 0
       },
