@@ -91,7 +91,6 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnEnhanceOKClicked OnEnhanceOKClicked;
 
-
 private:
 	UFUNCTION()
 	void OnEnhancementCommonDialog(EDialogResult res);
