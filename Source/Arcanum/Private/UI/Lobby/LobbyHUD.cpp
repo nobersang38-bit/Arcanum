@@ -582,16 +582,14 @@ void ULobbyHUD::AppendEquipmentSlotsSorted(TArray<FInventoryViewSlot>& OutSlots,
 			{
 				const int32 order = GetSlotOrderFromRuleTable(equipRow->SlotTag);
 
-				// 정의된 슬롯만 정렬 후보에 추가
-				if (order != 999)
-				{
-					FEquipSortItem item;
-					item.Equip = &equip;
-					item.Row = equipRow;
-					item.SlotOrder = order;
+				// SlotOrders에 없는 장비도 맨 뒤에 표시
+				// if (order != 999) {}
+				FEquipSortItem item;
+				item.Equip = &equip;
+				item.Row = equipRow;
+				item.SlotOrder = order;
 
-					items.Add(item);
-				}
+				items.Add(item);
 			}
 		}
 	}
