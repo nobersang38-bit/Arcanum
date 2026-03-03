@@ -165,7 +165,7 @@ protected:
 	/* 포션 DT 캐시 */
 	void BuildPotionRowCache();
 
-	/* 인벤 룰 DT 캐시 구축 */
+	/* 인벤 룰 DT 캐시 */
 	void BuildInventoryRuleTableCache();
 
 	/* 룰 테이블 기반 인벤 최대 슬롯 */
@@ -173,6 +173,9 @@ protected:
 
 	/* 아이템 태그 기반 MaxStack 조회 */
 	bool FindMaxStackByItemTag(const FGameplayTag& InItemTag, int32& OutMaxStack) const;
+
+	/* SlotTag의 정렬 순서 조회 */
+	int32 GetSlotOrderFromRuleTable(const FGameplayTag& InSlotTag) const;
 
 	/* 캐시에서 ItemTag로 RowPtr 찾기 */
 	const FDTEquipmentInfoRow* FindEquipmentRowByTag(const FGameplayTag& InItemTag) const;
@@ -213,6 +216,9 @@ protected:
 
 	/* InventoryRule DT의 단일 Row 캐시 */
 	const FDTInventoryRuleItem* InventoryRuleRow = nullptr;
+
+	/* SlotTag -> Order 캐시 */
+	TMap<FGameplayTag, int32> SlotOrderByTag;
 
 private:
 	/* 인벤 룰 DT 포인터 캐시 */
