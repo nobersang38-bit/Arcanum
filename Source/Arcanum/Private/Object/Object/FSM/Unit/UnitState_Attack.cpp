@@ -24,8 +24,6 @@ void UUnitState_Attack::OnEnter(UUnitCombatComponent* UnitCombatComponent)
 	}
 
 	GetWorld()->GetTimerManager().SetTimer(AttackTimerHandle, this, &UUnitState_Attack::Attack, Internal_UnitCombatComponent->UnitData.Info.AISetting.AttackRate, true, 0.0f);
-
-	UE_LOG(LogTemp, Warning, TEXT("UUnitState_Attack::OnEnter"));
 }
 
 void UUnitState_Attack::OnTick(float DeltaTime)

@@ -68,11 +68,11 @@ void UBasementCombatComponent::RecievedDamage(AActor* DamagedActor, float Damage
 
 					if (OwnerTag == AllyTag)
 					{
-						MatchData.bIsVictory = true;
+						MatchData.bIsVictory = false;
 					}
 					else if(OwnerTag == EnemyTag)
 					{
-						MatchData.bIsVictory = false;
+						MatchData.bIsVictory = true;
 					}
 
 					BattleSubsystem->OnMatchEnded.Broadcast(MatchData);

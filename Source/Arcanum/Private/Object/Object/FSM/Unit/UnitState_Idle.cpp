@@ -21,8 +21,6 @@ void UUnitState_Idle::OnEnter(UUnitCombatComponent* UnitCombatComponent)
 	float ExitTime = FMath::FRandRange(ExitRange.X, ExitRange.Y);
 	GetWorld()->GetTimerManager().ClearTimer(IdleTimer);
 	GetWorld()->GetTimerManager().SetTimer(IdleTimer, this, &UUnitState_Idle::IdleExit, ExitTime, false, ExitTime);
-
-	UE_LOG(LogTemp, Warning, TEXT("UUnitState_Idle::OnEnter"));
 }
 
 void UUnitState_Idle::OnTick(float DeltaTime)

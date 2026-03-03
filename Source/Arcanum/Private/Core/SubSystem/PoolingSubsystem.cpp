@@ -68,7 +68,7 @@ AActor* UPoolingSubsystem::SpawnFromPool(const FGameplayTag& SpawnTag, const FTr
 
 		if (IsValid(PooledActor))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("풀링 활성화"));
+			//UE_LOG(LogTemp, Warning, TEXT("풀링 활성화"));
 			ActivateItems.FindOrAdd(PoolKey).Items.Add(PooledActor);
 			Internal_ActivateItem(PooledActor, InTransform);
 			return PooledActor;
@@ -81,7 +81,7 @@ AActor* UPoolingSubsystem::SpawnFromPool(const FGameplayTag& SpawnTag, const FTr
 	{
 		if (AActor* NewActor = GetWorld()->SpawnActor<AActor>(*ClassPtr, InTransform))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("풀링 스폰"));
+			//UE_LOG(LogTemp, Warning, TEXT("풀링 스폰"));
 			ActorToTagMap.Add(NewActor, PoolKey);
 			ActivateItems.FindOrAdd(PoolKey).Items.Add(NewActor);
 			Internal_ActivateItem(NewActor, InTransform);
@@ -129,7 +129,7 @@ AActor* UPoolingSubsystem::SpawnFromPool(TSubclassOf<AActor> InClass, const FTra
 
 		if (IsValid(PooledActor))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("풀링 활성화"));
+			//UE_LOG(LogTemp, Warning, TEXT("풀링 활성화"));
 			ActivateItems.FindOrAdd(PoolKey).Items.Add(PooledActor);
 			Internal_ActivateItem(PooledActor, InTransform);
 			return PooledActor;
@@ -141,7 +141,7 @@ AActor* UPoolingSubsystem::SpawnFromPool(TSubclassOf<AActor> InClass, const FTra
 	SpawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	if (AActor* NewActor = GetWorld()->SpawnActor<AActor>(InClass, InTransform, SpawnParam))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("풀링 스폰"));
+		//UE_LOG(LogTemp, Warning, TEXT("풀링 스폰"));
 		ActorToTagMap.Add(NewActor, PoolKey);
 		ActivateItems.FindOrAdd(PoolKey).Items.Add(NewActor);
 		Internal_ActivateItem(NewActor, InTransform);

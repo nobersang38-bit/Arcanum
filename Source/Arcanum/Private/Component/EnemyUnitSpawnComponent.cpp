@@ -164,7 +164,7 @@ void UEnemyUnitSpawnComponent::WaveStart()
 				if (WaveTag.IsValid())
 				{
 					bool bIsDataSuccess = false;
-					UE_LOG(LogTemp, Warning, TEXT("WaveTag : %s"), *WaveTag.ToString());
+					//UE_LOG(LogTemp, Warning, TEXT("WaveTag : %s"), *WaveTag.ToString());
 					FUnitData UnitData = BattlefieldManagerSubsystem->GetEnemyUnitData(WaveTag, bIsDataSuccess);
 					if (!bIsDataSuccess) continue;
 

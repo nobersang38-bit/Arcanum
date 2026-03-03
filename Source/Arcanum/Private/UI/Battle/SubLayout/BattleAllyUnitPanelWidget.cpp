@@ -109,7 +109,7 @@ UBattleAllyUnitSlotWidget* UBattleAllyUnitPanelWidget::AddUnitSlot(const FUnitDa
 	{
 		UnitSlot->SetUnitInfo(UnitData.Info.InfoSetting.MeatCost, UnitData.Info.InfoSetting.Icon, UnitData.Info.InfoSetting.Tag);
 
-		UE_LOG(LogTemp, Error, TEXT("아이콘 세팅"));
+		//UE_LOG(LogTemp, Error, TEXT("아이콘 세팅"));
 	}
 	return UnitSlot;
 }

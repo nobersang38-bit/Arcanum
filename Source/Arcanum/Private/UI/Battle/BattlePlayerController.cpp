@@ -366,6 +366,7 @@ void ABattlePlayerController::SetupInputMode()
 #endif
 
 	FInputModeGameAndUI InputMode;
+	//InputMode.SetHideCursorDuringCapture(false);
 	SetInputMode(InputMode);
 }
 

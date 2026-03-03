@@ -11,7 +11,6 @@ void UUnitState_Move::OnEnter(UUnitCombatComponent* UnitCombatComponent)
 {
 	if (!UnitCombatComponent) return;
 	Internal_UnitCombatComponent = UnitCombatComponent;
-	UE_LOG(LogTemp, Warning, TEXT("UUnitState_Move::OnEnter"));
 }
 
 void UUnitState_Move::OnTick(float DeltaTime)
