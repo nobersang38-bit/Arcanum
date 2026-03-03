@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "RoundedSlotWidget.generated.h"
-#include "GameplayTagContainer.h"
 
 /**
  * 
@@ -48,6 +47,4 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UImage> SlotDimOverlay;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slot")
-	FGameplayTag  SelectedCharacter ;
 };
