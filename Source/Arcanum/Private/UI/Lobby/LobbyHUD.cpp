@@ -67,9 +67,9 @@ void ULobbyHUD::NativeConstruct()
 		return;
 	}
 
-	if (!CharacterDataTable)
+	if (!CharacterBattleStatsDataTable)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("CharacterDataTable is nullptr!"));
+		UE_LOG(LogTemp, Warning, TEXT("CharacterBattleStatsDataTable is nullptr!"));
 		return;
 	}
 
