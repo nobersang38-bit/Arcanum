@@ -326,6 +326,9 @@ void ABattlePlayerController::SpawnUnit(FGameplayTag InTag)
 			GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, HitResult);
 			UE_LOG(LogTemp, Error, TEXT("ASDLocation : %.0f, %.0f, %.0f"), HitResult.ImpactPoint.X, HitResult.ImpactPoint.Y, HitResult.ImpactPoint.Z);
 
+			FString Result = FString::Printf(TEXT("ASDLocation : %.0f, %.0f, %.0f"), HitResult.ImpactPoint.X, HitResult.ImpactPoint.Y, HitResult.ImpactPoint.Z);
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, *Result);
+
 			FVector ReleasedLocation = HUDWidgetInstance->GetSelectUnitDropLocation();
 			FTransform Transform;
 			Transform.SetLocation(ReleasedLocation);

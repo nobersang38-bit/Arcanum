@@ -57,6 +57,7 @@ FReply UBattleAllyUnitSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeo
 	if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
 	{
 		// 블루프린트의 'Detect Drag if Pressed' 와 동일한 역할
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("클릭 유닛 슬롯"));
 		FEventReply Reply = UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
 		return Reply.NativeReply;
 	}
@@ -156,7 +157,7 @@ void UBattleAllyUnitSlotWidget::SetCoolTimeProgress(float CurrentProgress, float
 	SetProgressesVisible(true);
 	if (CoolTimeProgress)
 	{
-		CoolTimeProgress->SetPercent(CurrentProgress / MaxProgress);
+		CoolTimeProgress->SetPercent(CurrentProgress / MaxProgress * 0.000001f);
 	}
 	if (CoolTimeText)
 	{
