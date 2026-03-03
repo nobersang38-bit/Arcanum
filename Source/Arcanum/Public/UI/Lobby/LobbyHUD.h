@@ -23,6 +23,7 @@ class UWidgetSwitcher;
 class UCurrencyWidget;
 class UShopHUDWidget;
 class UARGameInstance;
+class UDataTable;
 
 UCLASS()
 class ARCANUM_API ULobbyHUD : public UUserWidget
@@ -78,6 +79,12 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UWidgetSwitcher> WidgetSwitcher;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Data")
+	TObjectPtr<UDataTable> CharacterDataTable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Data")
+	TObjectPtr<UDataTable> CharacterBattleStatsDataTable;
 	
 private:
 	UFUNCTION()

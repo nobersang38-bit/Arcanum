@@ -82,6 +82,11 @@ void UCharacterHUDWidget::NativeConstruct()
     }
 }
 
+FReply UCharacterHUDWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+    return FReply::Handled();
+}
+
 // ========================================================
 // 캐릭터창 - 강화하기 버튼
 // ========================================================

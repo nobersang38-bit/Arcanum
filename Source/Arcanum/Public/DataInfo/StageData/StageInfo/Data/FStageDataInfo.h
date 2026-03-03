@@ -27,12 +27,19 @@ struct FStageDataInfo
 {
     GENERATED_BODY()
     
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FGameplayTag StageTag;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FText StageName;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FText StageDesc;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FEnemyBasement EnemyBasement;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TArray<FEnemySpawnInfo> SpawnInfos;
-
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TSoftObjectPtr<UTexture2D> StageImg;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FStageReward Reward;
 };
