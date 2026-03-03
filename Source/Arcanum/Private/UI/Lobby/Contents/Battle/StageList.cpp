@@ -22,3 +22,11 @@ void UStageList::NativePreConstruct()
         StageInfoText->SetText(StgName.IsEmpty() ? DefaultInfo : StgInfo);
     }
 }
+
+FReply UStageList::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+    Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+    OnStageListClicked.Broadcast(this, StageRowName);
+
+    return FReply::Handled();
+}

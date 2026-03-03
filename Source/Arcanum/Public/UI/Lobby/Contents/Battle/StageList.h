@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "StageList.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnStageListClicked, UStageList*, ClickedSlot, FName, StageName);
+
 class UTextBlock;
 class UImage;
 /**
@@ -17,8 +19,12 @@ class ARCANUM_API UStageList : public UUserWidget
 	GENERATED_BODY()
 protected:
 	virtual void NativePreConstruct() override;
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 public:
+	UPROPERTY(BlueprintAssignable, Category = "Stage")
+	FOnStageListClicked OnStageListClicked;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FText StgName;
 
@@ -27,6 +33,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UTexture2D> StageImg;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool SelecetedStage = false;
 
 protected:
 	UPROPERTY(meta = (BindWidget))
@@ -37,4 +46,9 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> StageInfoText;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stage")
+	FName StageRowName;
+
+
 };

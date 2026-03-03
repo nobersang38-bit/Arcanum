@@ -10,6 +10,8 @@
  * 
  */
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCharacterSlotClicked, URoundedSlotWidget*, ClickedSlot, int32, SlotIndex);
+
 class UImage;
 class UBorder;
 
@@ -19,8 +21,12 @@ class ARCANUM_API URoundedSlotWidget : public UUserWidget
 	GENERATED_BODY()
 protected:
 	virtual void NativePreConstruct() override;
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 public:
+	UPROPERTY(BlueprintAssignable, Category = "Slot")
+	FOnCharacterSlotClicked OnCharacterSlotClicked;
+
 	UFUNCTION(BlueprintCallable)
 	void SetRoundBackgroundColor(FLinearColor NewColor);
 
@@ -47,4 +53,6 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UImage> SlotDimOverlay;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slot")
+	int32 SlotIndex;
 };

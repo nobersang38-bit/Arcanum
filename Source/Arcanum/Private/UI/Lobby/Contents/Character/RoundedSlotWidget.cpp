@@ -7,6 +7,7 @@
 
 void URoundedSlotWidget::NativePreConstruct()
 {
+    Super::NativePreConstruct();
     if (BackgroundColor) BackgroundColor->SetBrushColor(RoundColor);
     if (IconImage && IconImg) IconImage->SetBrushFromTexture(IconImg);
 
@@ -16,6 +17,13 @@ void URoundedSlotWidget::NativePreConstruct()
     FLinearColor CurrentColor = SlotDimOverlay->ColorAndOpacity;
     CurrentColor.A = TargetAlpha;
     SlotDimOverlay->SetColorAndOpacity(CurrentColor);
+}
+
+FReply URoundedSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+    Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+    OnCharacterSlotClicked.Broadcast(this, SlotIndex);
+    return FReply::Handled();
 }
 
 void URoundedSlotWidget::SetRoundBackgroundColor(FLinearColor NewColor)

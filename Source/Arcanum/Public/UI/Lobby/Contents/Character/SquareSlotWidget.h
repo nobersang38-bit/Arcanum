@@ -20,9 +20,9 @@ class ARCANUM_API USquareSlotWidget : public UUserWidget
 	GENERATED_BODY()
 protected:
 	virtual void NativePreConstruct() override;
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry,const FPointerEvent& InMouseEvent) override;
 
 public:
-	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry,const FPointerEvent& InMouseEvent) override;
 
 	UPROPERTY(BlueprintAssignable, Category = "Slot")
 	FOnWeaponSlotClicked OnSlotClicked;
