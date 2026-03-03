@@ -71,6 +71,12 @@ public:
 	UFUNCTION()
 	FUnitData GetEnemyUnitData(FGameplayTag InUnitTag, bool& OutResult) const;
 
+	UFUNCTION()
+	void StartTime();
+
+	UFUNCTION()
+	void StopTime();
+
 #pragma endregion
 
 #pragma region 디버그
@@ -97,7 +103,7 @@ public:
 
 protected:
 	UFUNCTION()
-	void SetCurrentMatchData(const FMatchData& InData);
+	void CheckMatchEnded(int32 Time);
 
 #pragma region 디버그
 	void SetupUnits();
@@ -131,6 +137,8 @@ protected:
 protected:
 #pragma region 디버그(나중에 삭제)
 	void DebugBasementSet();
+	UFUNCTION()
+	void DebugEndedMessage(const FMatchData& MatchData);
 #pragma endregion
 
 };

@@ -3,6 +3,7 @@
 
 #include "Component/BasementCombatComponent.h"
 #include "Core/SubSystem/BattlefieldManagerSubsystem.h"
+#include "Interface/TeamInterface.h"
 #include "GameplayTags/ArcanumTags.h"
 
 // Sets default values for this component's properties
@@ -49,5 +50,35 @@ void UBasementCombatComponent::RecievedDamage(AActor* DamagedActor, float Damage
 	float Health = BasementStat.CommandCenterCurrentHP.BaseValue;
 	BasementStat.CommandCenterCurrentHP.BaseValue = FMath::Clamp(Health - Damage, 0, FLT_MAX);
 	OnBasementChangeHealth.Broadcast(BasementStat.CommandCenterCurrentHP.BaseValue, BasementStat.CommandCenterMaxHP.BaseValue);
+
+	if (BasementStat.CommandCenterCurrentHP.BaseValue <= 0.0f)
+	{
+		UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+		if (BattleSubsystem)
+		{
+			if (GetOwner()->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()))
+			{
+				auto Interface = Cast<ITeamInterface>(GetOwner());
+				FGameplayTag OwnerTag = Interface->GetTeamTag();
+
+				if (OwnerTag.IsValid())
+				{
+					FMatchData MatchData;
+					MatchData.CurrentMatchState = EMatchState::Ended;
+
+					if (OwnerTag == AllyTag)
+					{
+						MatchData.bIsVictory = true;
+					}
+					else if(OwnerTag == EnemyTag)
+					{
+						MatchData.bIsVictory = false;
+					}
+
+					BattleSubsystem->OnMatchEnded.Broadcast(MatchData);
+				}
+			}
+		}
+	}
 }
 

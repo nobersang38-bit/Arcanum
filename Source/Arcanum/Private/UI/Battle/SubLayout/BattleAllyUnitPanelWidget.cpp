@@ -14,7 +14,7 @@ void UBattleAllyUnitPanelWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 }
-
+#if WITH_EDITOR
 void UBattleAllyUnitPanelWidget::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
@@ -29,7 +29,7 @@ void UBattleAllyUnitPanelWidget::PostEditChangeProperty(FPropertyChangedEvent& P
 		}
 	}
 }
-
+#endif
 void UBattleAllyUnitPanelWidget::SetMeatCostProgress(float CurrentMeat, float MaxMeat)
 {
 	MeatCostBar->SetCostProgress(CurrentMeat, MaxMeat);

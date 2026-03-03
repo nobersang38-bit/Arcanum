@@ -19,7 +19,12 @@ class ARCANUM_API UBattleAllyUnitPanelWidget : public UUserWidget
 #pragma region 언리얼 기본 생성
 protected:
 	virtual void NativeConstruct() override;
+
+
+
+#if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
 #pragma endregion
 
 

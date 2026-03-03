@@ -10,6 +10,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Engine/OverlapResult.h"
 #include "Interface/RuntimeUnitDataInterface.h"
+#include "Core/SubSystem/BattlefieldManagerSubsystem.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -88,6 +89,17 @@ void APlayerCharacter::RecievedDamage(AActor* DamagedActor, float Damage, const 
 		CurrentHealth -= Damage;
 		CurrentHealth = FMath::Clamp(CurrentHealth, 0.0f, MaxHealth);
 		OwnerPC->SetPlayerHealthProgress(CurrentHealth, MaxHealth);
+	}
+	if (CurrentHealth <= 0.0f)
+	{
+		UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+		if (BattleSubsystem)
+		{
+			FMatchData MatchData;
+			MatchData.bIsVictory = false;
+			MatchData.CurrentMatchState = EMatchState::Ended;
+			BattleSubsystem->OnMatchEnded.Broadcast(MatchData);
+		}
 	}
 }
 

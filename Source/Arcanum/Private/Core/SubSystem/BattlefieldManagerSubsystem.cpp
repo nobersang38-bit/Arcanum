@@ -9,13 +9,13 @@
 #include "Core/ARGameInstance.h"
 #include "Data/Rows/AllyUnitsDataRow.h"
 #include "Data/Rows/EnemyUnitsDataRow.h"
+#include "Core/SubSystem/GameTimeSubsystem.h"
 
 #include "Core/ARPlayerAccountService.h"
 
 void UBattlefieldManagerSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
-	OnMatchEnded.AddUObject(this, &UBattlefieldManagerSubsystem::SetCurrentMatchData);
 
 	/// 02/26 수정 : 서비스레이어 거치도록
 	SetInBattleData(FPlayerAccountService::GetPlayerDataCopy(this), InBattleData);
@@ -23,6 +23,7 @@ void UBattlefieldManagerSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 	SetupUnits();
 	DebugBasementSet();
 	DebugSetUsingAllyUnits();
+	OnMatchEnded.AddUObject(this, &UBattlefieldManagerSubsystem::DebugEndedMessage);
 	//UARGameInstance* GameInstance = nullptr;
 	//GameInstance = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	//if (GameInstance)
@@ -98,6 +99,26 @@ FUnitData UBattlefieldManagerSubsystem::GetEnemyUnitData(FGameplayTag InUnitTag,
 	}
 }
 
+void UBattlefieldManagerSubsystem::StartTime()
+{
+	
+	UGameTimeSubsystem* TimeSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameTimeSubsystem>();
+	if (TimeSubsystem)
+	{
+		TimeSubsystem->StartStage(GetInBattleData().BattleStageInfo.StageLimitTime);
+
+		TimeSubsystem->OnStageSecondChanged.RemoveDynamic(this, &UBattlefieldManagerSubsystem::CheckMatchEnded);
+		TimeSubsystem->OnStageSecondChanged.AddDynamic(this, &UBattlefieldManagerSubsystem::CheckMatchEnded);
+	}
+}
+
+void UBattlefieldManagerSubsystem::StopTime()
+{
+	UGameTimeSubsystem* TimeSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameTimeSubsystem>();
+	if (TimeSubsystem)
+	TimeSubsystem->StopStage();
+}
+
 void UBattlefieldManagerSubsystem::DebugSetUsingAllyUnits()
 {
 	InBattleData.AllyUnits.Empty();
@@ -105,9 +126,15 @@ void UBattlefieldManagerSubsystem::DebugSetUsingAllyUnits()
 	InBattleData.AllyUnits.Add(GetAllyUnitData(Arcanum::Unit::Faction::Ally::Army::Root, Result));
 }
 
-void UBattlefieldManagerSubsystem::SetCurrentMatchData(const FMatchData& InData)
+void UBattlefieldManagerSubsystem::CheckMatchEnded(int32 Time)
 {
-	CurrentMatchData = InData;
+	if (Time <= 0)
+	{
+		FMatchData MatchData;
+		MatchData.bIsVictory = false;
+		MatchData.CurrentMatchState = EMatchState::Ended;
+		OnMatchEnded.Broadcast(MatchData);
+	}
 }
 
 void UBattlefieldManagerSubsystem::SetupUnits()
@@ -152,6 +179,19 @@ void UBattlefieldManagerSubsystem::DebugBasementSet()
 
 	BasementStats.Add(Arcanum::Unit::Faction::Ally::Root, PlayerBasementStat);
 	BasementStats.Add(Arcanum::Unit::Faction::Enemy::Root, EnemyBasementStat);
+}
+
+void UBattlefieldManagerSubsystem::DebugEndedMessage(const FMatchData& MatchData)
+{
+	if (MatchData.bIsVictory)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("승리"));
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("패배"));
+	}
+
 }
 
 void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerData, FInBattleData& OutInBattleData)

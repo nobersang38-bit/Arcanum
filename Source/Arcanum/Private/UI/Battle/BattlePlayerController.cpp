@@ -82,7 +82,7 @@ void ABattlePlayerController::BeginPlay()
 	{
 		if (BattleSubsystem)
 		{
-			TimeSubsystem->StartStage(BattleSubsystem->GetInBattleData().BattleStageInfo.StageLimitTime);
+			BattleSubsystem->StartTime();
 
 			TimeSubsystem->OnStageSecondChanged.RemoveDynamic(this, &ABattlePlayerController::UpdateStageTime);
 			TimeSubsystem->OnStageSecondChanged.AddDynamic(this, &ABattlePlayerController::UpdateStageTime);
