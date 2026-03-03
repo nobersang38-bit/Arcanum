@@ -55,6 +55,14 @@ void ULobbyHUD::NativeConstruct()
 		QuitBtn->OnClicked.AddDynamic(this, &ULobbyHUD::ClickQuitBtn);
 	}
 
+	if (!CharacterDataTable)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("CharacterDataTable is nullptr!"));
+		return;
+	}
+
+	
+
 	/// 02/26 수정 : 서비스레이어 거치도록
 	CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
 	RefreshLobbyCurrencyUI();
@@ -92,7 +100,11 @@ void ULobbyHUD::ClickCharacterMenuBtn()
 	{
 		WidgetSwitcher->SetActiveWidgetIndex(1);
 	}
-
+	TArray<FName> RowNames = CharacterDataTable->GetRowNames();
+	for (const FName& RowName : RowNames)
+	{
+		UE_LOG(LogTemp, Log, TEXT("RowName: %s"), *RowName.ToString());
+	}
 }
 
 void ULobbyHUD::ClickEnhancementMenuBtn()

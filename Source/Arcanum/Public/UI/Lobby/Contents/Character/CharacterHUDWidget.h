@@ -28,7 +28,7 @@ class ARCANUM_API UCharacterHUDWidget : public UUserWidget
 #pragma region 언리얼 기본 생성
 protected:
 	virtual void NativeConstruct() override;
-	//virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry,const FPointerEvent& InMouseEvent) override;
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry,const FPointerEvent& InMouseEvent) override;
 #pragma endregion
 
 #pragma region 바인딩
@@ -79,14 +79,13 @@ protected:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Slot")
 	TSubclassOf<URoundedSlotWidget> RoundedSlotWidgetClass;
 
+
+
 	UFUNCTION()
 	void ShowEnhancementConfirm();
 
 	UFUNCTION()
 	void SetupEquipment();
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Data")
-	UDataTable* CharacterDataTable;
 
 public:
 	UPROPERTY(BlueprintAssignable)
