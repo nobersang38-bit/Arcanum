@@ -129,7 +129,7 @@ void ABattlePlayerController::Tick(float DeltaTime)
 	GetMousePosition(x, y);
 	FHitResult HitResult;
 	GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, HitResult);
-	UE_LOG(LogTemp, Error, TEXT("마우스 위치 : %.0f, %.0f"), x, y);
+	//UE_LOG(LogTemp, Error, TEXT("마우스 위치 : %.0f, %.0f"), x, y);
 }
 
 // ========================================================
@@ -324,9 +324,11 @@ void ABattlePlayerController::SpawnUnit(FGameplayTag InTag)
 		{
 			FHitResult HitResult;
 			GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, HitResult);
+			UE_LOG(LogTemp, Error, TEXT("ASDLocation : %.0f, %.0f, %.0f"), HitResult.ImpactPoint.X, HitResult.ImpactPoint.Y, HitResult.ImpactPoint.Z);
 
+			FVector ReleasedLocation = HUDWidgetInstance->GetSelectUnitDropLocation();
 			FTransform Transform;
-			Transform.SetLocation(HitResult.ImpactPoint);
+			Transform.SetLocation(ReleasedLocation);
 			AActor* EnemyUnitInstance = PoolingSubsystem->SpawnFromPool(AllyUnitClass, Transform);
 			ABaseUnitCharacter* EnemyUnitCharacter = Cast<ABaseUnitCharacter>(EnemyUnitInstance);
 			if (EnemyUnitCharacter)
@@ -383,7 +385,6 @@ void ABattlePlayerController::SetupInputMode()
 	//FInputModeGameOnly InputMode;
 	//FInputModeUIOnly InputMode;
 	FInputModeGameAndUI InputMode;
-	InputMode.SetWidgetToFocus(nullptr);
 	InputMode.SetHideCursorDuringCapture(false);
 	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
 	SetInputMode(InputMode);
