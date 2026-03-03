@@ -1,6 +1,4 @@
 #include "UI/Lobby/Contents/Inventory/InventoryItemSlotWidget.h"
-#include "DataInfo/BattleCharacter/Equipment/DataTable/DTEquipment.h"
-#include "DataInfo/BattleCharacter/Equipment/Data/FEquipmentData.h"
 #include "Components/Button.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
@@ -19,17 +17,10 @@ void UInventoryItemSlotWidget::NativeConstruct()
 	RefreshSlotUI();
 }
 
-void UInventoryItemSlotWidget::SetItemData(const FEquipmentInfo& InItem, const FDTEquipmentInfoRow* InRowPtr, int32 InSlotIndex)
+void UInventoryItemSlotWidget::SetSlotData(const FInventoryViewSlot& InSlot, int32 InSlotIndex)
 {
 	SlotIndex = InSlotIndex;
-
-	ItemTag = InItem.ItemTag;
-	ItemGuid = InItem.ItemGuid;
-	CurrUpgradeLevel = InItem.CurrUpgradeLevel;
-
-	CachedRowPtr = InRowPtr;
-	bEmpty = !ItemGuid.IsValid();
-
+	ViewSlot = InSlot;
 	bSelected = false;
 
 	RefreshSlotUI();
@@ -38,14 +29,9 @@ void UInventoryItemSlotWidget::ClearSlot(int32 InSlotIndex)
 {
 	SlotIndex = InSlotIndex;
 
-	ItemTag = FGameplayTag();
-	ItemGuid.Invalidate();
-	CurrUpgradeLevel = 0;
+	ViewSlot = FInventoryViewSlot();
 
-	bEmpty = true;
 	bSelected = false;
-
-	CachedRowPtr = nullptr;
 
 	RefreshSlotUI();
 }
@@ -59,25 +45,27 @@ void UInventoryItemSlotWidget::SetSelected(bool InSelected)
 
 void UInventoryItemSlotWidget::HandleSlotClicked()
 {
-	if (!bEmpty)
+	if (ViewSlot.Type != EInventoryViewSlotType::Empty)
 	{
-		OnInventorySlotClicked.Broadcast(ItemGuid);
+		OnInventorySlotClicked.Broadcast(SlotIndex);
 	}
 }
 
 void UInventoryItemSlotWidget::RefreshSlotUI()
 {
+	const bool bIsEmpty = (ViewSlot.Type == EInventoryViewSlotType::Empty);
+
 	if (SlotButton)
 	{
-		SlotButton->SetIsEnabled(!bEmpty && CachedRowPtr);
+		SlotButton->SetIsEnabled(!bIsEmpty);
 	}
 
 	if (SelectedBorder)
 	{
-		SelectedBorder->SetVisibility(bSelected ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+		SelectedBorder->SetVisibility((!bIsEmpty && bSelected) ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 	}
 
-	if (bEmpty || !CachedRowPtr)
+	if (bIsEmpty)
 	{
 		if (ItemIconImage)
 		{
@@ -85,10 +73,10 @@ void UInventoryItemSlotWidget::RefreshSlotUI()
 			ItemIconImage->SetVisibility(ESlateVisibility::Collapsed);
 		}
 
-		if (UpgradeText)
+		if (StackOrUpgradeText)
 		{
-			UpgradeText->SetText(FText::GetEmpty());
-			UpgradeText->SetVisibility(ESlateVisibility::Collapsed);
+			StackOrUpgradeText->SetText(FText::GetEmpty());
+			StackOrUpgradeText->SetVisibility(ESlateVisibility::Collapsed);
 		}
 
 		return;
@@ -96,21 +84,47 @@ void UInventoryItemSlotWidget::RefreshSlotUI()
 
 	if (ItemIconImage)
 	{
-		ItemIconImage->SetVisibility(ESlateVisibility::Visible);
-		ItemIconImage->SetBrushFromSoftTexture(CachedRowPtr->Icon.IsNull() ? nullptr : CachedRowPtr->Icon);
-	}
-
-	if (UpgradeText)
-	{
-		if (CurrUpgradeLevel > 0)
+		if (ViewSlot.Icon.IsNull())
 		{
-			UpgradeText->SetVisibility(ESlateVisibility::Visible);
-			UpgradeText->SetText(FText::FromString(FString::Printf(TEXT("+%d"), CurrUpgradeLevel)));
+			ItemIconImage->SetBrushFromSoftTexture(nullptr);
+			ItemIconImage->SetVisibility(ESlateVisibility::Collapsed);
 		}
 		else
 		{
-			UpgradeText->SetText(FText::GetEmpty());
-			UpgradeText->SetVisibility(ESlateVisibility::Collapsed);
+			ItemIconImage->SetVisibility(ESlateVisibility::Visible);
+			ItemIconImage->SetBrushFromSoftTexture(ViewSlot.Icon);
+		}
+	}
+
+	if (StackOrUpgradeText)
+	{
+		// 장비
+		if (ViewSlot.Type == EInventoryViewSlotType::Equipment)
+		{
+			if (ViewSlot.UpgradeLevel > 0)
+			{
+				StackOrUpgradeText->SetVisibility(ESlateVisibility::Visible);
+				StackOrUpgradeText->SetText(FText::FromString(FString::Printf(TEXT("+%d"), ViewSlot.UpgradeLevel)));
+			}
+			else
+			{
+				StackOrUpgradeText->SetText(FText::GetEmpty());
+				StackOrUpgradeText->SetVisibility(ESlateVisibility::Collapsed);
+			}
+		}
+		// Potion
+		else 
+		{
+			if (ViewSlot.StackCount > 0)
+			{
+				StackOrUpgradeText->SetVisibility(ESlateVisibility::Visible);
+				StackOrUpgradeText->SetText(FText::FromString(FString::Printf(TEXT("x%d"), ViewSlot.StackCount)));
+			}
+			else
+			{
+				StackOrUpgradeText->SetText(FText::GetEmpty());
+				StackOrUpgradeText->SetVisibility(ESlateVisibility::Collapsed);
+			}
 		}
 	}
 }

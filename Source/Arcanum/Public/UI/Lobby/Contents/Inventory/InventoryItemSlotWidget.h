@@ -3,17 +3,16 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "GameplayTagContainer.h"
+#include "DataInfo/ItemData/Data/InventoryViewSlot.h"
 #include "InventoryItemSlotWidget.generated.h"
 
 class UButton;
 class UImage;
 class UTextBlock;
 class UBorder;
-struct FDTEquipmentInfoRow;
-struct FEquipmentInfo;
 
 /* 슬롯 클릭시 슬롯 인덱스 전달 */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInventorySlotClicked, FGuid, InItemGuid);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInventorySlotClicked, int32, InSlotIndex);
 
 /**
  * 추영호
@@ -28,8 +27,8 @@ protected:
 	virtual void NativeConstruct() override;
 
 public:
-	/* 슬롯 데이터 세팅 (장비 1개) */ 
-	void SetItemData(const FEquipmentInfo& InItem, const FDTEquipmentInfoRow* InRow, int32 InSlotIndex);
+	/* 슬롯 데이터 세팅 */ 
+	void SetSlotData(const FInventoryViewSlot& InSlot, int32 InSlotIndex);
 
 	/* 빈 슬롯 처리 */
 	UFUNCTION()
@@ -38,17 +37,10 @@ public:
 	/* 선택 강조 */
 	UFUNCTION()
 	void SetSelected(bool InSelected);
-
-	/* 판매 가능(빈슬롯) 여부 */
-	bool IsValidItem() const { return !bEmpty; } 
-
+	
 	/* 인벤 인덱스 */
 	UFUNCTION()
-	int32 GetSlotIndex() const { return SlotIndex;  } 
-
-	UFUNCTION()
-	/* 장비 인스턴스 식별자(동일 ItemTag 여러 개 구분용) */
-	FGuid GetItemGuid() const { return ItemGuid;  } 
+	int32 GetSlotIndex() const { return SlotIndex; } 
 
 private:
 	/* 슬롯 버튼 눌렀을 때 호출 */
@@ -69,32 +61,21 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional, AllowPrivateAccess = "true"))
 	TObjectPtr<UImage> ItemIconImage;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional, AllowPrivateAccess = "true"))
-	TObjectPtr<UTextBlock> UpgradeText;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget, AllowPrivateAccess = "true"))
+	TObjectPtr<UTextBlock> StackOrUpgradeText;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional, AllowPrivateAccess = "true"))
 	TObjectPtr<UBorder> SelectedBorder;
 
 private:
-	/* 슬롯 UI 표시용 DT 장비 Row 캐시(아이콘/이름) */
-	const FDTEquipmentInfoRow* CachedRowPtr = nullptr;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	int32 SlotIndex = INDEX_NONE;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	bool bEmpty = true;
+	/* 이 슬롯이 장비/포션/빈칸 중 무엇인지 (장비면 Guid, 포션이면 Tag/Count) */
+	UPROPERTY()
+	FInventoryViewSlot ViewSlot;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	bool bSelected = false;
-
-	UPROPERTY()
-	FGameplayTag ItemTag;
-
-	UPROPERTY()
-	FGuid ItemGuid;
-
-	UPROPERTY()
-	int32 CurrUpgradeLevel = 0;
 };
 

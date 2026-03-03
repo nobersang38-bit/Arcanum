@@ -4,15 +4,12 @@
 #include "Blueprint/UserWidget.h"
 #include "ShopHUDWidget.generated.h"
 
-class UWrapBox;
-class UShopItemSlotWidget;
 class UTextBlock;
-class UButton;
 class UCommonBtnWidget;
-struct FDTEquipmentInfoRow;
+class UShopPanelWidget;
 
 /* 구입 요청 */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnShopBuyRequested, FName, InRowName);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnShopBuyRequested, int32, InSlotIndex);
 
 /* 판매 요청 */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnShopSellRequested);
@@ -27,20 +24,28 @@ class ARCANUM_API UShopHUDWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
+/*
+public:
+	void SetParentLobby(ULobbyHUD* InLobby) { ParentLobby = InLobby; }
+private:
+	UPROPERTY() 
+	TObjectPtr<ULobbyHUD> ParentLobby;
+	// ParentLobby->CachedPlayerData
+*/
+
 protected:
 	virtual void NativeConstruct() override;
 
 #pragma region 상점 슬롯
 public:
-	/* 로비HUD가 슬롯 개수 내려주면 여기서 슬롯 생성 */
-	UFUNCTION()
-	void InitShopSlots(int32 InShopSlotCount);
-
-	/* 로비 HUD가 만든 상점 캐시 */
+	/* 상점 캐시 */
 	void ApplyShopData(
 		const TArray<FName>& InRowNames,
 		const TArray<bool>& InSoldOutStates,
-		const TArray<const FDTEquipmentInfoRow*>& InRowPtrs);
+		const TArray<TSoftObjectPtr<UTexture2D>>& InIcons,
+		const TArray<FText>& InNames,
+		const TArray<FText>& InDescs,
+		const TArray<int64>& InPrices);
 
 	/* 상점 갱신될 때 선택 초기화*/
 	void ClearShopSelection();
@@ -49,48 +54,30 @@ public:
 	UFUNCTION()
 	void SetShopRemainingSeconds(int32 InRemainingSeconds);
 
-protected:
-	/* 상점 슬롯 위젯들 생성 */
-	void CreateShopSlots();
-
-	/* 상점 슬롯 클릭 델리게이트 바인딩 */
-	void BindShopSlotEvents();
-
-	/* 슬롯 클릭 처리 */
+	/* 패널 슬롯 개수 세팅 */
 	UFUNCTION()
-	void HandleShopSlotClicked(int32 InSlotIndex);
-
-	/* 슬롯 선택 강조 갱신 */
-	void RefreshShopSlotSelection();
+	void InitPanels(int32 InEquipmentSlotCount, int32 InPotionSlotCount);
 
 protected:
-	/* 상점 슬롯 컨테이너 */
+	/* 장비 패널 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget, AllowPrivateAccess = "true"))
-	TObjectPtr<UWrapBox> ShopSlotContainer;
+	TObjectPtr<UShopPanelWidget> EquipmentPanel;
 
-	/* 상점 슬롯 위젯 클래스 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shop", meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<UShopItemSlotWidget> ShopItemSlotWidgetClass;
+	/* 물약 패널 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget, AllowPrivateAccess = "true"))
+	TObjectPtr<UShopPanelWidget> PotionPanel;
 
-	/* 생성된 상점 슬롯들 */
-	UPROPERTY()
-	TArray<TObjectPtr<UShopItemSlotWidget>> ShopSlots;
-
-	/* 현재 선택된 슬롯 인덱스 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	int32 SelectedShopSlotIndex = INDEX_NONE;
-
-private:
-	/* 로비HUD에서 내려준 값 */
-	UPROPERTY()
-	int32 ShopSlotCount = 0;
-
-protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional, AllowPrivateAccess = "true"))
 	TObjectPtr<UTextBlock> ShopTimerText;
+
+private:
+	/* 현재 선택 인덱스 */
+private:
+	UPROPERTY()
+	int32 SelectedSlotIndex = INDEX_NONE;
 #pragma endregion
 
-#pragma region 구매_판매_버튼
+#pragma region 구매 판매 버튼
 protected:
 	// 버튼 클릭 처리
 	UFUNCTION()
@@ -98,6 +85,12 @@ protected:
 
 	UFUNCTION()
 	void HandleSellClicked();
+
+	/* 패널 슬롯 클릭 수신 */
+	UFUNCTION()
+	void HandleEquipmentSlotClicked(int32 InSlotIndex);
+	UFUNCTION()
+	void HandlePotionSlotClicked(int32 InSlotIndex);
 
 public:
 	/* 로비HUD가 바인딩해서 실제 구매/판매 실행 */

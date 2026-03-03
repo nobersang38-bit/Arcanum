@@ -17,13 +17,23 @@ void UShopItemSlotWidget::NativeConstruct()
 	RefreshSlotUI();
 }
 
-void UShopItemSlotWidget::SetViewData(int32 InSlotIndex, FName InRowName, const FDTEquipmentInfoRow* InRowPtr, bool InSoldOut)
+void UShopItemSlotWidget::SetSlotData(
+	int32 InSlotIndex, FName InRowName,
+	TSoftObjectPtr<UTexture2D> InIcon,
+	const FText& InName,
+	const FText& InDesc,
+	int64 InPrice,
+	bool InSoldOut)
 {
-	if (InRowPtr && !InRowName.IsNone())
+	if (!InRowName.IsNone())
 	{
 		SlotIndex = InSlotIndex;
 		RowName = InRowName;
-		EquipmentRowPtr = InRowPtr;
+
+		ViewIcon = InIcon;
+		ViewName = InName;
+		ViewDesc = InDesc;
+		ViewPrice = InPrice;
 
 		bEmpty = false;
 		bSoldOut = InSoldOut;
@@ -37,24 +47,15 @@ void UShopItemSlotWidget::SetViewData(int32 InSlotIndex, FName InRowName, const 
 	}
 }
 
-void UShopItemSlotWidget::SetEquipmentData(const FDTEquipmentInfoRow& InRow, int32 InSlotIndex, FName InRowName)
-{
-	SlotIndex = InSlotIndex;
-	RowName = InRowName;
-	EquipmentRowPtr = &InRow;
-
-	bEmpty = (!EquipmentRowPtr || RowName == NAME_None);;
-	bSoldOut = false;
-	bSelected = false;
-
-	RefreshSlotUI();
-}
-
 void UShopItemSlotWidget::ClearSlot()
 {
 	SlotIndex = INDEX_NONE;
 	RowName = NAME_None;
-	EquipmentRowPtr = nullptr;
+
+	ViewIcon = nullptr;
+	ViewName = FText::GetEmpty();
+	ViewDesc = FText::GetEmpty();
+	ViewPrice = 0;
 
 	bEmpty = true;
 	bSoldOut = false;
@@ -122,30 +123,23 @@ void UShopItemSlotWidget::RefreshSlotUI()
 	// 아이템명
 	if (ItemNameText)
 	{
-		ItemNameText->SetText(bEmpty ? FText::GetEmpty() : FText::FromName(RowName));
+		ItemNameText->SetText(bEmpty ? FText::GetEmpty() : ViewName);
 		ItemNameText->SetRenderOpacity(opacity);
 	}
 
 	// 설명
 	if (DescText)
 	{
-		if (!bEmpty && EquipmentRowPtr)
-		{
-			DescText->SetText(EquipmentRowPtr->Desc);
-		}
-		else
-		{
-			DescText->SetText(FText::GetEmpty());
-		}
-
+		DescText->SetText(bEmpty ? FText::GetEmpty() : ViewDesc);
 		DescText->SetRenderOpacity(opacity);
 	}
 
+	// 가격
 	if (PriceText)
 	{
-		if (!bEmpty && EquipmentRowPtr)
+		if (!bEmpty)
 		{
-			PriceText->SetText(FText::AsNumber(EquipmentRowPtr->BuyPrice));
+			PriceText->SetText(FText::AsNumber(ViewPrice));
 		}
 		else
 		{
@@ -155,9 +149,10 @@ void UShopItemSlotWidget::RefreshSlotUI()
 		PriceText->SetRenderOpacity(opacity);
 	}
 
+	// 아이콘
 	if (ItemIconImage)
 	{
-		if (bEmpty || !EquipmentRowPtr)
+		if (bEmpty || ViewIcon.IsNull())
 		{
 			ItemIconImage->SetVisibility(ESlateVisibility::Collapsed);
 			ItemIconImage->SetBrushFromSoftTexture(nullptr);
@@ -165,7 +160,7 @@ void UShopItemSlotWidget::RefreshSlotUI()
 		else
 		{
 			ItemIconImage->SetVisibility(ESlateVisibility::Visible);
-			ItemIconImage->SetBrushFromSoftTexture(EquipmentRowPtr->Icon.IsNull() ? nullptr : EquipmentRowPtr->Icon);
+			ItemIconImage->SetBrushFromSoftTexture(ViewIcon);
 			ItemIconImage->SetRenderOpacity(opacity);
 		}
 	}
