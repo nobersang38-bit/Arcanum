@@ -390,7 +390,7 @@ void ABattlePlayerController::SetupInputMode()
 	//FInputModeUIOnly InputMode;
 	FInputModeGameAndUI InputMode;
 	InputMode.SetHideCursorDuringCapture(false);
-	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
+	//InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
 	SetInputMode(InputMode);
 }
 
