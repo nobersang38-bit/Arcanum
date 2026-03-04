@@ -15,7 +15,7 @@ void URoundedSlotWidget::NativePreConstruct()
 FReply URoundedSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
     Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
-    OnCharacterSlotClicked.Broadcast(this, SlotIndex);
+    OnCharacterSlotClicked.Broadcast(this, SlotCharacterName);
     return FReply::Handled();
 }
 
@@ -27,7 +27,7 @@ void URoundedSlotWidget::SetRoundBackgroundColor(FLinearColor NewColor)
     }
 }
 
-void URoundedSlotWidget::SetIconImage(UTexture2D* CharacterIcon, bool OwnedCharacter)
+void URoundedSlotWidget::SetIconImage(UTexture2D* CharacterIcon, bool OwnedCharacter, FName CharacterName)
 {
     if (!IconImage) return;
 
@@ -42,6 +42,9 @@ void URoundedSlotWidget::SetIconImage(UTexture2D* CharacterIcon, bool OwnedChara
         FLinearColor CurrentColor = SlotDimOverlay->ColorAndOpacity;
         CurrentColor.A = TargetAlpha;
         SlotDimOverlay->SetColorAndOpacity(CurrentColor);
+
+        SlotCharacterName = CharacterName;
+        //SlotCharacterName = GetLeafNameFromTag(CharacterTag);
     }
     else
     {

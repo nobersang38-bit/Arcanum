@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "UI/DataType/EDialogResult.h"
+#include "GameplayTags/ArcanumTags.h"
 #include "CharacterHUDWidget.generated.h"
 
 class URoundedSlotWidget;
@@ -94,31 +95,24 @@ protected:
 
 	UFUNCTION()
 	void SetupEquipment();
-
+	int GetCurrentGrade;
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnEnhanceOKClicked OnEnhanceOKClicked;
 
 	void InitCharacterHUD();
 
-	//void AddCharacterData(const TArray<FName>& InRowNames,
-	//	const TArray<TSoftObjectPtr<UTexture2D>>& InIcons);
-
-	//void AddCharacterInfoData(const TArray<FName>& InRowNames,
-	//	const TArray<float>& Health,
-	//	const TArray<float>& Mana,
-	//	const TArray<float>& AttackPower,
-	//	const TArray<float>& MoveSpeed,
-	//	const TArray<float>& Evasion,
-	//	const TArray<float>& CritChance,
-	//	const TArray<float>& DamageReduction);
 private:
 	UFUNCTION()
 	void OnEnhancementCommonDialog(EDialogResult res);
 	
 	UFUNCTION()
-	void OnSlotClicked(USquareSlotWidget* ClickedSlot, int32 SlotIndex);
+	void OnSquareSlotClicked(USquareSlotWidget* ClickedSlot, int32 SlotIndex);
 
+	UFUNCTION()
+	void OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlot, FName CharacterName);
+
+	int32 NumColumns = 3;
 #pragma endregion
 
 };

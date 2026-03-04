@@ -32,9 +32,22 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FText CharacInfoTxt;
 
+	UFUNCTION(BlueprintCallable)
+	void SetCharacterName(FName CharacterName);
+
+	UFUNCTION(BlueprintCallable)
+	void SetStarCharcterInfo(int32 Grade);
+	
+	//UFUNCTION(BlueprintCallable)
+	//void SetCharcterInfo();
+
+
 protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> CharacterNameText;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> GradeStarsText;
 	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> CharacterInfoText;

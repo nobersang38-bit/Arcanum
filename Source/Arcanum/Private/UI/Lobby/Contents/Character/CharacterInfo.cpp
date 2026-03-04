@@ -31,6 +31,32 @@ void UCharacterInfo::NativeConstruct()
 	}
 }
 
+void UCharacterInfo::SetCharacterName(FName CharacterName)
+{
+    if (CharacterNameText)
+    {
+        CharacterNameText->SetText(FText::FromName(CharacterName));
+    }
+}
+
+void UCharacterInfo::SetStarCharcterInfo(int32 Grade)
+{
+    if (GradeStarsText)
+    {
+        FString Stars;
+
+        if (Grade > 0) {
+
+            for (int32 i = 1; i < Grade; i++)
+            {
+                Stars += TEXT("★");
+            }
+        }
+
+        GradeStarsText->SetText(FText::FromString(Stars));
+    }
+}
+
 void UCharacterInfo::ClickCharacterEnhanceBtn()
 {
 	OnEnhanceBtnClicked.Broadcast();

@@ -6,6 +6,7 @@
 
 #include "DataInfo/BattleCharacter/FBattleCharacterData.h"
 #include "DataInfo/BattleCharacter/Equipment/Data/FEquipmentData.h"
+#include "DataInfo/BattleCharacter/BattleStats/DataTable/DTBattleStats.h"
 
 #include "DataInfo/StageData/FStageData.h"
 

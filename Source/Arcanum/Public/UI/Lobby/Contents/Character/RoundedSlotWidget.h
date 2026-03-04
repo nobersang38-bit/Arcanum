@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "GameplayTags/ArcanumTags.h"
 #include "RoundedSlotWidget.generated.h"
-
 /**
  * 
  */
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCharacterSlotClicked, URoundedSlotWidget*, ClickedSlot, int32, SlotIndex);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCharacterSlotClicked, URoundedSlotWidget*, ClickedSlot, FName, CharacterName);
 
 class UImage;
 class UBorder;
@@ -31,7 +31,7 @@ public:
 	void SetRoundBackgroundColor(FLinearColor NewColor);
 
 	UFUNCTION(BlueprintCallable)
-	void SetIconImage(UTexture2D* Texture, bool OwnedCharacter);
+	void SetIconImage(UTexture2D* CharacterIcon, bool OwnedCharacter ,FName CharacterName);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FLinearColor RoundColor = FLinearColor::White;
@@ -51,5 +51,5 @@ protected:
 	TObjectPtr<UImage> SlotDimOverlay;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slot")
-	int32 SlotIndex;
+	FName SlotCharacterName = "";
 };

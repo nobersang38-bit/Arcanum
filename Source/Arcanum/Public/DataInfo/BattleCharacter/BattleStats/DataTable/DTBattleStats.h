@@ -14,8 +14,8 @@ struct FDTBattleStatsContainerRow : public FTableRowBase
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     FGameplayTag BattleCharacterTag;
     
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    bool bPlayableCharacter = false;
+    //UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    //bool bPlayableCharacter = false;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     TArray<FGradeStatData> GradeDataSteps;

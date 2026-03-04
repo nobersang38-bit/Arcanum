@@ -10,7 +10,6 @@ class UImage;
 class UBorder;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnWeaponSlotClicked,USquareSlotWidget*, ClickedSlot,int32, SlotIndex);
-
 /**
  * 
  */
