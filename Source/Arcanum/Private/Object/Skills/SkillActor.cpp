@@ -7,17 +7,11 @@ ASkillActor::ASkillActor()
     SetActorEnableCollision(false);
     SetActorHiddenInGame(true);
 }
-
 void ASkillActor::BeginPlay()
 {
     Super::BeginPlay();
 }
-
-void ASkillActor::ActivateSkillActor(
-    USkillBase* InSkill,
-    AActor* InOwner,
-    const FVector& SpawnLocation,
-    const FRotator& SpawnRotation)
+void ASkillActor::ActivateSkillActor(USkillBase* InSkill, AActor* InOwner, const FVector& SpawnLocation, const FRotator& SpawnRotation)
 {
     OwnerSkill = InSkill;
     InstigatorActor = InOwner;
@@ -29,7 +23,6 @@ void ASkillActor::ActivateSkillActor(
     SetActorHiddenInGame(false);
     SetActorEnableCollision(true);
 }
-
 void ASkillActor::DeactivateSkillActor()
 {
     bIsActive = false;
@@ -39,7 +32,6 @@ void ASkillActor::DeactivateSkillActor()
 
     ReturnToPool();
 }
-
 void ASkillActor::ReturnToPool()
 {
     // 여기서 PoolManager에 반환

@@ -32,11 +32,11 @@ struct FDTGachaBannerDataRow : public FTableRowBase
 
     /** 시작 시간 */
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    FDateTime StartTime;
+    FString StartTime;
 
     /** 종료 시간 */
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    FDateTime EndTime;
+    FString EndTime;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     FCurrencyCost PullCost;

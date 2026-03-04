@@ -50,7 +50,7 @@ public:
 	UFUNCTION()
 	void HandleCurrencyChanged();
 
-private:
+public:
 	FPlayerData CachedPlayerData;
 #pragma endregion
 
