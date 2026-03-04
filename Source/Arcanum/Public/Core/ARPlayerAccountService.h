@@ -171,14 +171,11 @@ public:
 	/* 현재 시간 반환 */
 	static FDateTime GetCurrentTimeKST();
 
-	// ===================
-	// 포션 관련
-	// ===================
-	/* 포션 보유 수량 조회 */
-	static int32 GetPotionCount(const UObject* WorldContextObject, const FGameplayTag& InPotionTag);
+	/* 스택 보유 수량 조회 */
+	static int32 GetStackItemCountByTag(const UObject* WorldContextObject, const FGameplayTag& InItemTag);
 
-	/* 포션 구매(스택형) - 구매 성공 시 수량 증가(최대 20스택) + 골드 차감 */
-	static bool PurchasePotion(const UObject* WorldContextObject, FName InPotionRowName, int32 InBuyCount);
+	/* 스택형 아이템 구매 */
+	static bool PurchaseStackItemByRowName(const UObject* WorldContextObject, FName InCatalogRowName, int32 InBuyCount);
 
 private:
 	/* 상점 슬롯 전체 생성 */
@@ -208,14 +205,23 @@ private:
 	const FGameplayTag& InStorePolicyTag,
 	TArray<FGameplayTag>& OutItemTags);
 
-	/*  */
-	static bool AddGuidItemByCatalog(const UObject* WorldContextObject, const FDTItemCatalogRow* InCatalogRow);
+	using FAddGuidHandler = bool(*)(const UObject* WorldContextObject, const FDTItemCatalogRow* InCatalogRow);
+
+	// DetailTableTag에 맞는 Guid 생성 핸들러를 반환(등록표)
+	static FAddGuidHandler FindGuidAddHandler(const FGameplayTag& InDetailTableTag);
+
+	/* Guid 아이템을 카탈로그 정보로 인스턴스 생성해 인벤에 추가 */
+	static bool AddGuidByCatalog(const UObject* WorldContextObject, const FDTItemCatalogRow* InCatalogRow);
+
+	/* Equipment 전용: 카탈로그 DetailRowName으로 장비 인스턴스 생성 후 Inventory에 추가 */
+	static bool AddGuidFromEquipment(const UObject* WorldContextObject, const FDTItemCatalogRow* InCatalogRow);
 
 	/* ItemTag 목록에서 랜덤으로 하나 뽑아 RowName로 반환 */
 	static FName PickCatalogRowNameFromTags(TArray<FGameplayTag>& InOutItemTags);
 
 	/* potion 구간 채우기  */
 	static void FillShopStackItemSlots(UARGameInstance* InGameInstance, int32 InStartIndex,	int32 InCount);
+
 #pragma endregion
 
 #pragma region Gacha Widget 관련
