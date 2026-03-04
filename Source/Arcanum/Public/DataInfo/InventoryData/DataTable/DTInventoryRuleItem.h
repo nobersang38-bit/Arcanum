@@ -20,10 +20,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 Capacity = 100;
 
-	/* 타입별 규칙 목록 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FInventoryRuleItem> Rules;
-
 	/* SlotTag별 정렬 규칙 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FInventorySlotOrderItem> SlotOrders;

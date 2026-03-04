@@ -14,6 +14,7 @@
  * 2. 설정, 종료 버튼 관리
  */
 
+class UDataTable;
 class UCommonBtnWidget;
 class UCommonDialog;
 class UHorizontalBox;
@@ -26,7 +27,8 @@ class UInventoryHUDWidget;
 struct FDTEquipmentInfoRow;
 struct FDTPotionInfoRow;
 struct FDTInventoryRuleItem;
-class UDataTable;
+struct FDTItemCatalogRow;
+
 
 UCLASS()
 class ARCANUM_API ULobbyHUD : public UUserWidget
@@ -162,17 +164,11 @@ protected:
 	/* 장비 DT 캐시 구축(로비 진입 시 1회) */
 	void BuildEquipmentRowCache();
 
-	/* 포션 DT 캐시 */
-	void BuildPotionRowCache();
-
 	/* 인벤 룰 DT 캐시 */
 	void BuildInventoryRuleTableCache();
 
 	/* 룰 테이블 기반 인벤 최대 슬롯 */
 	int32 GetInventoryCapacityFromRuleTable() const;
-
-	/* 아이템 태그 기반 MaxStack 조회 */
-	bool FindMaxStackByItemTag(const FGameplayTag& InItemTag, int32& OutMaxStack) const;
 
 	/* SlotTag의 정렬 순서 조회 */
 	int32 GetSlotOrderFromRuleTable(const FGameplayTag& InSlotTag) const;
@@ -181,7 +177,7 @@ protected:
 	const FDTEquipmentInfoRow* FindEquipmentRowByTag(const FGameplayTag& InItemTag) const;
 
 	/* 캐시에서 PotionTag로 RowPtr 찾기 */
-	const FDTPotionInfoRow* FindPotionRowByTag(const FGameplayTag& InPotionTag) const;
+	const FDTItemCatalogRow* FindItemCatalogRowByTag(const FGameplayTag& InItemTag) const;
 
 private:
 	/* 물약 앞쪽부터 그 뒤 장비 정렬 */
@@ -235,9 +231,6 @@ private:
 
 	/* ItemTag -> 장비 DT RowPtr 캐시 */
 	TMap<FGameplayTag, const FDTEquipmentInfoRow*> EquipmentRowByTag;
-
-	/* PotionTag -> 포션 DT RowPtr 캐시 */
-	TMap<FGameplayTag, const FDTPotionInfoRow*> PotionRowByTag;
 
 	/* 정렬 토글 상태 (true 정렬)*/
 	UPROPERTY()

@@ -14,6 +14,9 @@ namespace Arcanum {
 		UE_DEFINE_GAMEPLAY_TAG(EnemyUnitInfo, "Arcanum.DataTable.EnemyUnitInfo");
 		UE_DEFINE_GAMEPLAY_TAG(Potion, "Arcanum.DataTable.Potion");
 		UE_DEFINE_GAMEPLAY_TAG(InventoryRule, "Arcanum.DataTable.InventoryRule");
+		UE_DEFINE_GAMEPLAY_TAG(ItemCatalog, "Arcanum.DataTable.ItemCatalog");
+		
+
 
 		//UE_DEFINE_GAMEPLAY_TAG(BattleRegenStats,	"Arcanum.DataTable.BattleRegenStats");
 		//UE_DEFINE_GAMEPLAY_TAG(BattleNonRegenStats, "Arcanum.DataTable.BattleNonRegenStats");
@@ -186,6 +189,13 @@ namespace Arcanum {
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Avarice, "Arcanum.Items.SetBonus.Avarice", "탐욕");
 			}
 		}
+		namespace Type
+		{
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Equipment, "Arcanum.Items.Type.Equipment", "아이템 타입: 장비");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Potion, "Arcanum.Items.Type.Potion", "아이템 타입: 포션");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Material, "Arcanum.Items.Type.Material", "아이템 타입: 재료");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Character, "Arcanum.Items.Type.Character", "아이템 타입: 캐릭터");
+		}
 		namespace Potion
 		{
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Items.Potion", "포션 루트");
@@ -195,6 +205,15 @@ namespace Arcanum {
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Frenzy, "Arcanum.Items.Potion.Frenzy", "광란의 포션");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Haste, "Arcanum.Items.Potion.Haste", "신속 포션");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Mana, "Arcanum.Items.Potion.Mana", "마나 포션");
+		}
+	}
+	namespace Inventory
+	{
+		namespace Store
+		{
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Guid, "Arcanum.Inventory.Store.Guid", "저장 정책: 비중첩(GUID 1개=1칸)");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Stack, "Arcanum.Inventory.Store.Stack", "저장 정책: 스택(TMap Tag->Count)");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Character, "Arcanum.Inventory.Store.Character", "저장 정책: 캐릭터 저장");
 		}
 	}
 }

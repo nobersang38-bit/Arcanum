@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "NativeGameplayTags.h"
+#include "Arcanum/Public/GameplayTags/ArcanumTags.h"
 #include "Core/Settings/DataTableSettings.h"
 #include "GameDataSubsystem.generated.h"
 
