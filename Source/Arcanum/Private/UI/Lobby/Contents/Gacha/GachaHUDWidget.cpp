@@ -121,13 +121,16 @@ void UGachaHUDWidget::RequestGacha(int32 InPullCount)
 {
     FPlayerAccountService::UpdateCurrency(this, ParentLobby->CachedPlayerData, Arcanum::PlayerData::Currencies::NonRegen::Soul::Value, 10000);
     ParentLobby->CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
+    FPlayerAccountService::UpdateCurrency(this, ParentLobby->CachedPlayerData, Arcanum::PlayerData::Currencies::NonRegen::Gold::Value, 10000);
+    ParentLobby->CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
+
     if (!CurrentSelectedButton) {
         UE_LOG(LogTemp, Warning, TEXT("No Banner Selected!"));
         return;
     }
 
     FGameplayTag SelectedTag = CurrentSelectedButton->BannerTag;
-    bool bSuccess = FPlayerAccountService::RequestGachaExecution(this, ParentLobby->CachedPlayerData, SelectedTag, CurrencyCost, InPullCount);
+    bool bSuccess = FPlayerAccountService::ExecuteGacha(this, ParentLobby->CachedPlayerData, SelectedTag, CurrencyCost, InPullCount);
 
     if (bSuccess) {
         UE_LOG(LogTemp, Log, TEXT("Gacha Request Success: %d Times"), InPullCount);

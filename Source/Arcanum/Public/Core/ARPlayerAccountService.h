@@ -210,11 +210,7 @@ private:
 public:
 	static const FDTGachaBannerDataRow* GetGachaBannerData(const UObject* WorldContextObject, FGameplayTag InBannerTag);
 	static void GetActiveGachaBannerRows(const UObject* WorldContextObject, TArray<const FDTGachaBannerDataRow*>& OutRows);
-	static bool RequestGachaExecution(const UObject* WorldContextObject, const FPlayerData& PlayerData, FGameplayTag BannerTag, FCurrencyCost Cost, int32 PullCount);
-	static TArray<FGachaItemResult> GenerateGachaResults(const FDTGachaBannerDataRow* BannerData, int32 PullCount);
-private:
-	static FGameplayTag DetermineGrade(const TArray<FGachaRarityProbability>& Probabilities);
-	static FGameplayTag GetRandomTagFromDT(UDataTable* Table);
+	static bool ExecuteGacha(const UObject* WorldContextObject, const FPlayerData& PlayerData, FGameplayTag BannerTag, FCurrencyCost Cost, int32 PullCount);
 #pragma endregion
 
 };
