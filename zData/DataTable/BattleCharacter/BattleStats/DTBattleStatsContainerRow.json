@@ -65,7 +65,7 @@
   {
     "Name": "Iris",
     "BattleCharacterTag": "Arcanum.Player.ID.Iris",
-    "bPlayableCharacter": true,
+    "bPlayableCharacter": false,
     "GradeDataSteps": [
       {
         "RegenStats": [
@@ -333,7 +333,7 @@
   {
     "Name": "Aiden",
     "BattleCharacterTag": "Arcanum.Player.ID.Aiden",
-    "bPlayableCharacter": true,
+    "bPlayableCharacter": false,
     "GradeDataSteps": [
       {
         "RegenStats": [

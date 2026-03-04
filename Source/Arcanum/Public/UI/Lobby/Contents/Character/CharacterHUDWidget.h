@@ -14,11 +14,13 @@ class UCommonDialog;
 class UCharacterInfo;
 class UWidgetSwitcher;
 class UInventorySlot;
+class ULobbyHUD;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEnhanceOKClicked);
 
 /**
- * 
+ *  김유진
+ *  역할 : 캐릭터 탭 (캐릭터 선택, 캐릭터 강화, 장비 장착)
  */
 UCLASS()
 class ARCANUM_API UCharacterHUDWidget : public UUserWidget
@@ -33,6 +35,12 @@ protected:
 
 #pragma region 바인딩
 	// 캐릭터창, 유닛창, 장비창, 캐릭터 설명창, 캐릭터 강화창, 장비 인벤토리
+public:
+	void SetParentLobby(ULobbyHUD* InLobby) { ParentLobby = InLobby; }
+private:
+	UPROPERTY()
+	TObjectPtr<ULobbyHUD> ParentLobby;
+	// ParentLobby->CachedPlayerData
 protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UUniformGridPanel> CharacterGridPanel;
@@ -91,6 +99,17 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnEnhanceOKClicked OnEnhanceOKClicked;
 
+	//void AddCharacterData(const TArray<FName>& InRowNames,
+	//	const TArray<TSoftObjectPtr<UTexture2D>>& InIcons);
+
+	//void AddCharacterInfoData(const TArray<FName>& InRowNames,
+	//	const TArray<float>& Health,
+	//	const TArray<float>& Mana,
+	//	const TArray<float>& AttackPower,
+	//	const TArray<float>& MoveSpeed,
+	//	const TArray<float>& Evasion,
+	//	const TArray<float>& CritChance,
+	//	const TArray<float>& DamageReduction);
 private:
 	UFUNCTION()
 	void OnEnhancementCommonDialog(EDialogResult res);

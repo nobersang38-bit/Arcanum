@@ -15,6 +15,9 @@
 void UARGameInstance::Init()
 {
     Super::Init();
+
+    /// Test : 테스트용 (추후 삭제)
+    InitializeGameData();
 }
 void UARGameInstance::InitializeGameData()
 {

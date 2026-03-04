@@ -49,4 +49,5 @@ public:
 private:
 	UFUNCTION()
 	void ClickCharacterEnhanceBtn();
+
 };
