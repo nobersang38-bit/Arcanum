@@ -726,10 +726,9 @@ void ULobbyHUD::TryPurchaseSelectedItem(int32 InSlotIndex)
 	{
 		if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
 		{
-			gameInstance->OnCurrencyChanged.Broadcast();
+			RefreshShopUI();
+			RefreshAllLobbyUI();
 		}
-
-		RefreshShopUI();
 	}
 }
 
@@ -737,12 +736,22 @@ void ULobbyHUD::TrySellSelectedItem()
 {
 	if (SelectedInventoryItemGuid.IsValid())
 	{
-		if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+		if (FPlayerAccountService::SellItemByGuid(this, SelectedInventoryItemGuid))
 		{
-			// TODO: 나중에 서비스 만들면 여기 연결
-			// 예: FPlayerAccountService::SellEquipmentByGuid(gameInstance, SelectedInventoryItemGuid);
-
 			SelectedInventoryItemGuid.Invalidate();
+			RefreshAllLobbyUI();
+		}
+
+		return;
+	}
+
+	if (SelectedStackItemTag.IsValid() && SelectedStackItemCount > 0)
+	{
+		if (FPlayerAccountService::SellStackItemByTag(this, SelectedStackItemTag, SelectedStackItemCount))
+		{
+			SelectedStackItemTag = FGameplayTag();
+			SelectedStackItemCount = 0;
+			RefreshAllLobbyUI();
 		}
 	}
 }

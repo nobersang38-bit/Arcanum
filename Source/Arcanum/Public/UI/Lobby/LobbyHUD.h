@@ -210,6 +210,14 @@ protected:
 	UPROPERTY()
 	FGuid SelectedInventoryItemGuid;
 
+	/* 마지막으로 선택된 스택 아이템 태그 */
+	UPROPERTY()
+	FGameplayTag SelectedStackItemTag;
+	// 마지막으로 선택된 스택 슬롯에 보이는 개수(슬롯 단위)
+	UPROPERTY()
+	int32 SelectedStackItemCount = 0;
+
+
 	/* 인벤 정렬 버튼 */
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UCommonBtnWidget> InventorySortBtn;

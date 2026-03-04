@@ -77,6 +77,9 @@ const FPlayerCurrency FPlayerAccountService::UpdateCurrency(const UObject* World
 
 	GI->AddCurrency(Tag, Amount);
 	GI->SavePlayerData();
+
+	GI->OnCurrencyChanged.Broadcast();  
+
 	return GI->GetPlayerDataCopy().PlayerCurrency;
 }
 bool FPlayerAccountService::VerifyCurrency(UARGameInstance* GI, FPlayerData CachedData)
@@ -276,13 +279,125 @@ bool FPlayerAccountService::PurchaseEquipment(const UObject* WorldContextObject,
 }
 bool FPlayerAccountService::SellItemByGuid(const UObject* WorldContextObject, const FGuid& InItemGuid)
 {
-	return false;
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return false;
+
+	if (!InItemGuid.IsValid()) return false;
+
+	UGameDataSubsystem* dataSubsytem = GI->GetSubsystem<UGameDataSubsystem>();
+	if (!dataSubsytem) return false;
+
+	// PlayerData에서 GUID로 장비 찾기
+	FPlayerData& playerData = GI->GetPlayerData();
+
+	int32 foundIndex = INDEX_NONE;
+	for (int32 i = 0; i < playerData.Inventory.Num(); i++)
+	{
+		if (playerData.Inventory[i].ItemGuid == InItemGuid)
+		{
+			foundIndex = i;
+			break;
+		}
+	}
+	if (foundIndex == INDEX_NONE) return false;
+
+	const FEquipmentInfo& equipment = playerData.Inventory[foundIndex];
+
+	// 판매가 조회 (Tag -> DT row)
+	const FDTEquipmentInfoRow* equipRow = GetItemDefinition(dataSubsytem, equipment.ItemTag);
+	if (!equipRow) return false;
+	// 
+
+	const int64 sellPrice = static_cast<int64>(equipRow->SellPrice);
+	if (sellPrice < 0) return false;
+
+	// 골드 추가
+	FCurrencyData* gold = playerData.PlayerCurrency.CurrencyDatas.Find(Arcanum::PlayerData::Currencies::NonRegen::Gold::Value);
+	if (!gold) return false;
+
+	gold->CurrAmount += sellPrice;
+	if (gold->MaxAmount > 0)
+	{
+		gold->CurrAmount = FMath::Clamp(gold->CurrAmount, int64(0), gold->MaxAmount);
+	}
+
+	// 인벤엔서 제거
+	playerData.Inventory.RemoveAtSwap(foundIndex, 1, EAllowShrinking::No);
+
+	// 저장
+	GI->SavePlayerData();
+
+	return true;
 }
+
+bool FPlayerAccountService::SellStackItemByTag(const UObject* WorldContextObject, const FGameplayTag& InItemTag, int32 InSellCount)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return false;
+
+	if (!InItemTag.IsValid() || InSellCount <= 0) return false;
+
+	UGameDataSubsystem* datasubsystem = GI->GetSubsystem<UGameDataSubsystem>();
+	if (!datasubsystem) return false;
+
+	FPlayerData& playerData = GI->GetPlayerData();
+
+	// 보유 수량 확인
+	int32* currentCountPtr = playerData.StackCounts.Find(InItemTag);
+	if (!currentCountPtr || *currentCountPtr < InSellCount) return false;
+
+	// 판매가 조회 (포션 DT)
+	int64 sellPricePerOne = 0;
+
+	UDataTable* const* tablePtr = datasubsystem->MasterDataTables.Find(Arcanum::DataTable::Potion);
+	if (!tablePtr || !(*tablePtr)) return false;
+	UDataTable* table = *tablePtr;
+
+	const FDTPotionInfoRow* foundRow = nullptr;
+	for (const TPair<FName, uint8*>& pair : table->GetRowMap())
+	{
+		const FDTPotionInfoRow* row = reinterpret_cast<const FDTPotionInfoRow*>(pair.Value);
+		if (row && row->PotionTag.IsValid() && row->PotionTag.MatchesTagExact(InItemTag))
+		{
+			foundRow = row;
+			break;
+		}
+	}
+	if (!foundRow) return false;
+
+	sellPricePerOne = static_cast<int64>(foundRow->SellPrice);
+	if (sellPricePerOne < 0) return false;
+
+	// 골드 추가
+	FCurrencyData* gold = playerData.PlayerCurrency.CurrencyDatas.Find(Arcanum::PlayerData::Currencies::NonRegen::Gold::Value);
+	if (!gold) return false;
+
+	const int64 totalSellGold = sellPricePerOne * static_cast<int64>(InSellCount);
+	gold->CurrAmount += totalSellGold;
+	if (gold->MaxAmount > 0)
+	{
+		gold->CurrAmount = FMath::Clamp(gold->CurrAmount, int64(0), gold->MaxAmount);
+	}
+
+	// 스택 차감 (0이면 제거)
+	*currentCountPtr -= InSellCount;
+	if (*currentCountPtr <= 0)
+	{
+		playerData.StackCounts.Remove(InItemTag);
+	}
+
+	// 저장
+	GI->SavePlayerData();
+
+	return true;
+}
+
 const FDTEquipmentInfoRow* FPlayerAccountService::GetItemDefinition(UGameDataSubsystem* DataSubsystem, const FGameplayTag& ItemTag)
 {
 	if (!DataSubsystem) return nullptr;
 	return DataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, ItemTag.GetTagName());
 }
+
 void FPlayerAccountService::InitializeShop(const UObject* WorldContextObject, int32 InEquipmentSlotCount, int32 InPotionSlotCount)
 {
 	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));

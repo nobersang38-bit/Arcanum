@@ -15,11 +15,13 @@
 void UARGameInstance::Init()
 {
     Super::Init();
+
+    InitializeGameData();
 }
 void UARGameInstance::InitializeGameData()
 {
     /// Todo : 추후 SaveSlot으로 저장이름 변경해줘야함. 지금 변경하면 테스트 불가.
-    ArSaveGame = Cast<UArcanumSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("PlayerSlot"), 0));
+    ArSaveGame = Cast<UArcanumSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, 0));
     if (!ArSaveGame) {
         ArSaveGame = Cast<UArcanumSaveGame>(UGameplayStatics::CreateSaveGameObject(UArcanumSaveGame::StaticClass()));
         AddIDPW(TEXT("Admin"), TEXT("12345"));

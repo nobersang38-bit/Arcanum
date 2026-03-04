@@ -137,9 +137,14 @@ public:
 	static bool PurchaseEquipment(const UObject* WorldContextObject, FName RowName);
 	/** */
 	static const FDTEquipmentInfoRow* GetItemDefinition(UGameDataSubsystem* DataSubsystem, const FGameplayTag& ItemTag);
+	/* 장비 DT에서 ItemTag로 Row를 찾는다 */
+	//static const FDTEquipmentInfoRow* GetRowByItemTag(const UObject* WorldContextObject, const FGameplayTag& InItemTag);
 
-	/* 인벤 아이템 판매 */
+	/* Guid(장비) 아이템 판매 */
 	static bool SellItemByGuid(const UObject* WorldContextObject, const FGuid& InItemGuid);
+
+	/* stack(물약) 아이템 판매 */
+	static bool SellStackItemByTag(const UObject* WorldContextObject, const FGameplayTag& InItemTag, int32 InSellCount);
 
 	/* 상점 진입 시 초기화 (저장시간 확인 후 유지/갱신 판정) */
 	static void InitializeShop(const UObject* WorldContextObject, int32 InEquipmentSlotCount, int32 InPotionSlotCount);
