@@ -214,6 +214,9 @@ protected:
 	TMap<FGameplayTag, FUnitData> UsinAllyUnits;
 
 	UPROPERTY()
+	TMap<FGameplayTag, class UBattleAllyUnitSlotWidget*> UsingAllyUnitSlots;
+
+	UPROPERTY()
 	TMap<FGameplayTag, FTimerHandle> CoolTimeHandles;
 
 	// Todo KDH : 데이터 가져오게 변경해야함

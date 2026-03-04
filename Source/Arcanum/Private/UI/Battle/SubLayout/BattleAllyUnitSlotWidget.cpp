@@ -109,11 +109,11 @@ void UBattleAllyUnitSlotWidget::ReleasedUnitSlot()
 
 void UBattleAllyUnitSlotWidget::SetActivateCost(bool InIsDisable)
 {
-	if (InIsDisable)
+	if (InIsDisable && DisabledImage->GetVisibility() == ESlateVisibility::Hidden)
 	{
 		DisabledImage->SetVisibility(ESlateVisibility::HitTestInvisible);
 	}
-	else
+	else if(!InIsDisable && DisabledImage->GetVisibility() == ESlateVisibility::HitTestInvisible)
 	{
 		DisabledImage->SetVisibility(ESlateVisibility::Hidden);
 	}

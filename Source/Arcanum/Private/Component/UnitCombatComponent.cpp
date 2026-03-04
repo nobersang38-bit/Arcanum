@@ -418,12 +418,6 @@ void UUnitCombatComponent::Death(const FRegenStat& InData)
 		//OwnerCharacter->StopAnimMontage();
 		UAnimMontage* DeathMontage = nullptr;
 		int32 IDX = 0;
-		if (OwnerCharacter.IsValid() && UnitData.Info.AnimSetting.Deads.Num() > 0)
-		{
-			IDX = FMath::RandRange(0, (UnitData.Info.AnimSetting.Deads.Num() - 1));
-			DeathMontage = UnitData.Info.AnimSetting.Deads[IDX].DeadMontage;
-			OwnerCharacter->PlayAnimMontage(DeathMontage);
-		}
 		FTimerDelegate DeathTimerDelegate;
 		DeathTimerDelegate.BindWeakLambda(this, [this]()
 			{
@@ -436,8 +430,16 @@ void UUnitCombatComponent::Death(const FRegenStat& InData)
 					}
 				}
 			});
-		GetWorld()->GetTimerManager().ClearTimer(DeathTimerHandle);
-		GetWorld()->GetTimerManager().SetTimer(DeathTimerHandle, DeathTimerDelegate, UnitData.Info.AnimSetting.Deads[IDX].DeactiveTime, false, UnitData.Info.AnimSetting.Deads[IDX].DeactiveTime);
+
+		if (OwnerCharacter.IsValid() && UnitData.Info.AnimSetting.Deads.Num() > 0)
+		{
+			IDX = FMath::RandRange(0, (UnitData.Info.AnimSetting.Deads.Num() - 1));
+			DeathMontage = UnitData.Info.AnimSetting.Deads[IDX].DeadMontage;
+			OwnerCharacter->PlayAnimMontage(DeathMontage);
+
+			GetWorld()->GetTimerManager().ClearTimer(DeathTimerHandle);
+			GetWorld()->GetTimerManager().SetTimer(DeathTimerHandle, DeathTimerDelegate, UnitData.Info.AnimSetting.Deads[IDX].DeactiveTime, false, UnitData.Info.AnimSetting.Deads[IDX].DeactiveTime);
+		}
 	}
 	else return;
 }

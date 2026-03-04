@@ -15,6 +15,7 @@
 #include "Character/BaseUnitCharacter.h"
 #include "Core/SubSystem/PoolingSubsystem.h"
 #include "Character/PlayerCharacter.h"
+#include "UI/Battle/SubLayout/BattleAllyUnitSlotWidget.h"
 
 // ========================================================
 // 언리얼 기본 생성
@@ -206,6 +207,7 @@ void ABattlePlayerController::SetAllyUsingWidget()
 			UnitSlot->SetCoolTimeProgress(0.0f, 0.0f);
 			UnitSlot->OnPressUnitSlot.AddDynamic(this, &ABattlePlayerController::ReadySpawnUnit);
 			UnitSlot->OnReleasedUnitSlot.AddDynamic(this, &ABattlePlayerController::SpawnUnit);
+			UsingAllyUnitSlots.Add(UsingAllyUnit.Key, UnitSlot);
 		}
 	}
 }
@@ -218,6 +220,21 @@ void ABattlePlayerController::UpdateMeatValue(float DeltaTime)
 		InData.Current += DeltaTime * InData.BaseTick;
 		InData.Current = FMath::Clamp(InData.Current, 0.0f, InData.BaseMax);
 		PlayerInfoPanel->SetMeatCostProgress(InData.Current, InData.BaseMax);
+
+		for (auto Iter : UsinAllyUnits)
+		{
+			if (UBattleAllyUnitSlotWidget** Slot = UsingAllyUnitSlots.Find(Iter.Key))
+			{
+				if (Iter.Value.Info.InfoSetting.MeatCost <= MeatValue.Current)
+				{
+					(*Slot)->SetActivateCost(false);
+				}
+				else
+				{
+					(*Slot)->SetActivateCost(true);
+				}
+			}
+		}
 	}
 }
 
@@ -304,21 +321,17 @@ void ABattlePlayerController::ReadySpawnUnit(FGameplayTag InTag)
 {
 	if (!IsUnitUsingEnable(InTag)) return;
 
-	UE_LOG(LogTemp, Error, TEXT("눌렀다"));
+	//UE_LOG(LogTemp, Error, TEXT("눌렀다"));
 	SpawnTag = InTag;
 
 	float X;
 	float Y;
 	GetMousePosition(X, Y);
 	SpawnLocationBackup = FVector(X, Y, 0);
-	//SetupInputMode();
 }
 
 void ABattlePlayerController::SpawnUnit(FGameplayTag InTag)
 {
-	if (!IsUnitUsingEnable(InTag)) return;
-	if (!UsingUnitCost(InTag)) return;
-
 	TrySpawnUnit = 0;
 	GetWorld()->GetTimerManager().ClearTimer(SpawnUnitTimer);
 	GetWorld()->GetTimerManager().SetTimer(SpawnUnitTimer, this, &ABattlePlayerController::Internal_SpawnUnit, 0.001f, true, 0.0f);
@@ -327,7 +340,7 @@ void ABattlePlayerController::SpawnUnit(FGameplayTag InTag)
 
 void ABattlePlayerController::Internal_SpawnUnit()
 {
-	UE_LOG(LogTemp, Error, TEXT("땟다"));
+	//UE_LOG(LogTemp, Error, TEXT("땟다"));
 	TrySpawnUnit++;
 	if (TrySpawnUnit > 100)
 	{
@@ -350,18 +363,25 @@ void ABattlePlayerController::Internal_SpawnUnit()
 			FVector MouseBackUp = FVector(X, Y, 0);
 			if ((SpawnLocationBackup - MouseBackUp).SquaredLength() < 100.0f)
 			{
+				GetWorld()->GetTimerManager().ClearTimer(SpawnUnitTimer);
 				return;
 			}
-			FTransform Transform;
-			Transform.SetLocation(HitResult.ImpactPoint);
-			AActor* EnemyUnitInstance = PoolingSubsystem->SpawnFromPool(AllyUnitClass, Transform);
-			ABaseUnitCharacter* EnemyUnitCharacter = Cast<ABaseUnitCharacter>(EnemyUnitInstance);
-			if (EnemyUnitCharacter)
+			
+			if (IsUnitUsingEnable(SpawnTag))
 			{
-				EnemyUnitCharacter->SetUnit(*UnitData);
-				GetWorld()->GetTimerManager().ClearTimer(SpawnUnitTimer);
-				UE_LOG(LogTemp, Error, TEXT("ASDLocation : %.0f, %.0f, %.0f"), HitResult.ImpactPoint.X, HitResult.ImpactPoint.Y, HitResult.ImpactPoint.Z);
-				return;
+				UsingUnitCost(SpawnTag);
+				FTransform Transform;
+				Transform.SetLocation(HitResult.ImpactPoint);
+				AActor* EnemyUnitInstance = PoolingSubsystem->SpawnFromPool(AllyUnitClass, Transform);
+				ABaseUnitCharacter* EnemyUnitCharacter = Cast<ABaseUnitCharacter>(EnemyUnitInstance);
+
+				if (EnemyUnitCharacter)
+				{
+					EnemyUnitCharacter->SetUnit(*UnitData);
+					GetWorld()->GetTimerManager().ClearTimer(SpawnUnitTimer);
+					UE_LOG(LogTemp, Error, TEXT("ASDLocation : %.0f, %.0f, %.0f"), HitResult.ImpactPoint.X, HitResult.ImpactPoint.Y, HitResult.ImpactPoint.Z);
+					return;
+				}
 			}
 		}
 	}
@@ -393,8 +413,8 @@ bool ABattlePlayerController::UseManaValue(float Value)
 
 bool ABattlePlayerController::UseCoolTime(FGameplayTag InTag)
 {
-	if (!IsUnitUsingEnable(InTag)) return false;
 	FUnitData* UnitData = UsinAllyUnits.Find(InTag);
+	if(!UnitData) return false;
 
 	UnitData->Info.InfoSetting.CoolTime.Current = UnitData->Info.InfoSetting.CoolTime.BaseMax;
 
@@ -469,6 +489,11 @@ void ABattlePlayerController::Internal_UnitCoolTimeTick(FGameplayTag InTag, floa
 		float& MaxCoolTime = UnitData->Info.InfoSetting.CoolTime.BaseMax;
 		CurrentCoolTime -= TickInterval;
 		CurrentCoolTime = FMath::Clamp(CurrentCoolTime, 0.0f, MaxCoolTime);
+
+		if (UBattleAllyUnitSlotWidget** SlotWidget = UsingAllyUnitSlots.Find(InTag))
+		{
+			(*SlotWidget)->SetCoolTimeProgress(CurrentCoolTime, MaxCoolTime);
+		}
 
 		// 사용할 수 있게되면 타이머 정지
 		if (CurrentCoolTime <= 0.0f)
