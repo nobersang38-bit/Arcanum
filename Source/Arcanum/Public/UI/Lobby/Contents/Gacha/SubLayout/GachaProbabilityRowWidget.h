@@ -11,9 +11,9 @@ class UHorizontalBox;
 UCLASS()
 class ARCANUM_API UGachaProbabilityRowWidget : public UUserWidget
 {
-	GENERATED_BODY()
-	
-public:
+    GENERATED_BODY()
+
+    public:
     void SetAsHeader(FText GradeName, float Probability, FLinearColor HeaderColor);
     void SetAsCharacter(UTexture2D* Icon, FText Name, float Probability, bool bIsPickup);
 

@@ -13,7 +13,6 @@ void UGachaProbabilityRowWidget::SetAsHeader(FText GradeName, float Probability,
 
     if (DisplayName) DisplayName->SetText(GradeName);
 
-    // 확률 표시 (예: 4.0%)
     FString ProbStr = FString::SanitizeFloat(Probability * 100.f) + TEXT("%");
     if (ProbabilityText) ProbabilityText->SetText(FText::FromString(ProbStr));
 }
@@ -33,7 +32,6 @@ void UGachaProbabilityRowWidget::SetAsCharacter(UTexture2D* Icon, FText Name, fl
 
     if (DisplayName) DisplayName->SetText(Name);
 
-    // 상세 확률 (예: 0.024%) - 소수점 아래가 길 수 있으므로 포맷팅 신경써야함
     FString ProbStr = FString::Printf(TEXT("%.3f%%"), Probability * 100.f);
     if (ProbabilityText) ProbabilityText->SetText(FText::FromString(ProbStr));
 }

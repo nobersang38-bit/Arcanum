@@ -12,9 +12,9 @@ class UGachaProbabilityRowWidget;
 UCLASS()
 class ARCANUM_API UGachaProbabilityWidget : public UUserWidget
 {
-	GENERATED_BODY()
-	
-#pragma region 언리얼 기본생성
+    GENERATED_BODY()
+
+    #pragma region 언리얼 기본생성
 protected:
     virtual void NativeConstruct() override;
 #pragma endregion

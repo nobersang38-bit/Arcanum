@@ -6,8 +6,6 @@
 #include "DataInfo/BattleCharacter/BattleStats/DataTable/DTBattleStats.h"
 #include "DataInfo/PlayerData/PlayerBattleData/DataTable/DTPlayerBattleStats.h"
 #include "DataInfo/BattleCharacter/CharacterInfo/DataTable/DTCharacterBaseInfo.h"
-#include "DataInfo/BattleCharacter/Equipment/DataTable/DTEquipment.h"
-#include "DataInfo/ItemData/Potion/DTPotionInfoRow.h"
 
 // ========================================================
 // 초기화 관련
@@ -15,6 +13,8 @@
 void UARGameInstance::Init()
 {
     Super::Init();
+
+    InitializeGameData();
 }
 void UARGameInstance::InitializeGameData()
 {
@@ -149,11 +149,20 @@ bool UARGameInstance::LoadPlayerData()
         }
     }
     else InitializeGameData();
-    
+
     return false;
 }
+int64 UARGameInstance::GetCurrencyAmount(FGameplayTag InTag) const
+{
+    if (!InTag.IsValid()) return INDEX_NONE_LONG;
+
+    const FCurrencyData* FoundData = PlayerData.PlayerCurrency.CurrencyDatas.Find(InTag);
+
+    if (FoundData) return FoundData->CurrAmount;
+    else return INDEX_NONE_LONG;
+}
 void UARGameInstance::AddCurrency(FGameplayTag CurrencyValueTag, int64 Amount)
-{ 
+{
     if (!CurrencyValueTag.IsValid() || Amount == 0) return;
 
     FCurrencyData& CurrencyData = PlayerData.PlayerCurrency.CurrencyDatas.FindOrAdd(CurrencyValueTag);
@@ -292,34 +301,4 @@ void UARGameInstance::InitializeCharacter(FGameplayTag CharacterTag)
     //}
 
     UserCharacterRegistry.Add(CharacterTag, NewData);
-}
-
-void UARGameInstance::AddTestGold(int64 InAmount)
-{
-    if (InAmount == 0) { return; }
-  
-    AddCurrency(Arcanum::PlayerData::Currencies::NonRegen::Gold::Value, InAmount);
-
-    SavePlayerData();
-    OnCurrencyChanged.Broadcast();
-}
-
-void UARGameInstance::AddTestShard(int64 InAmount)
-{
-    if (InAmount == 0) { return; }
-
-    AddCurrency(Arcanum::PlayerData::Currencies::NonRegen::Shard::Value, InAmount);
-
-    SavePlayerData();
-    OnCurrencyChanged.Broadcast();
-}
-
-void UARGameInstance::AddTestSoul(int64 InAmount)
-{
-    if (InAmount == 0) { return; }
-
-    AddCurrency(Arcanum::PlayerData::Currencies::NonRegen::Soul::Value, InAmount);
-
-    SavePlayerData();
-    OnCurrencyChanged.Broadcast();
 }
