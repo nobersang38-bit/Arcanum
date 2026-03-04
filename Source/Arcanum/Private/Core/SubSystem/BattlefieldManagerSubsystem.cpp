@@ -9,18 +9,21 @@
 #include "Core/ARGameInstance.h"
 #include "Data/Rows/AllyUnitsDataRow.h"
 #include "Data/Rows/EnemyUnitsDataRow.h"
+#include "Core/SubSystem/GameTimeSubsystem.h"
 
 #include "Core/ARPlayerAccountService.h"
 
 void UBattlefieldManagerSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
-	OnMatchEnded.AddUObject(this, &UBattlefieldManagerSubsystem::SetCurrentMatchData);
 
 	/// 02/26 수정 : 서비스레이어 거치도록
 	SetInBattleData(FPlayerAccountService::GetPlayerDataCopy(this), InBattleData);
 
 	SetupUnits();
+	DebugBasementSet();
+	DebugSetUsingAllyUnits();
+	OnMatchEnded.AddUObject(this, &UBattlefieldManagerSubsystem::DebugEndedMessage);
 	//UARGameInstance* GameInstance = nullptr;
 	//GameInstance = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	//if (GameInstance)
@@ -48,9 +51,24 @@ AActor* UBattlefieldManagerSubsystem::GetBasement(FGameplayTag InTeamTag) const
 	return Basements.FindRef(InTeamTag);
 }
 
+FBasementStat UBattlefieldManagerSubsystem::GetBasementStat(FGameplayTag InTeamTag) const
+{
+	if (const FBasementStat* TempBasementStat = BasementStats.Find(InTeamTag))
+	{
+		return *TempBasementStat;
+	}
+
+	return FBasementStat();
+}
+
 void UBattlefieldManagerSubsystem::SetABattlefieldManagerActor(ABattlefieldManagerActor* InBattlefieldManagerActor)
 {
 	BattlefieldManagerActor = InBattlefieldManagerActor;
+}
+
+const TArray<FUnitData>& UBattlefieldManagerSubsystem::GetUsingAllyUnitData()
+{
+	return InBattleData.AllyUnits;
 }
 
 FUnitData UBattlefieldManagerSubsystem::GetAllyUnitData(FGameplayTag InUnitTag, bool& OutResult) const
@@ -81,9 +99,42 @@ FUnitData UBattlefieldManagerSubsystem::GetEnemyUnitData(FGameplayTag InUnitTag,
 	}
 }
 
-void UBattlefieldManagerSubsystem::SetCurrentMatchData(const FMatchData& InData)
+void UBattlefieldManagerSubsystem::StartTime()
 {
-	CurrentMatchData = InData;
+	
+	UGameTimeSubsystem* TimeSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameTimeSubsystem>();
+	if (TimeSubsystem)
+	{
+		TimeSubsystem->StartStage(GetInBattleData().BattleStageInfo.StageLimitTime);
+
+		TimeSubsystem->OnStageSecondChanged.RemoveDynamic(this, &UBattlefieldManagerSubsystem::CheckMatchEnded);
+		TimeSubsystem->OnStageSecondChanged.AddDynamic(this, &UBattlefieldManagerSubsystem::CheckMatchEnded);
+	}
+}
+
+void UBattlefieldManagerSubsystem::StopTime()
+{
+	UGameTimeSubsystem* TimeSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameTimeSubsystem>();
+	if (TimeSubsystem)
+	TimeSubsystem->StopStage();
+}
+
+void UBattlefieldManagerSubsystem::DebugSetUsingAllyUnits()
+{
+	InBattleData.AllyUnits.Empty();
+	bool Result = false;
+	InBattleData.AllyUnits.Add(GetAllyUnitData(Arcanum::Unit::Faction::Ally::Army::Root, Result));
+}
+
+void UBattlefieldManagerSubsystem::CheckMatchEnded(int32 Time)
+{
+	if (Time <= 0)
+	{
+		FMatchData MatchData;
+		MatchData.bIsVictory = false;
+		MatchData.CurrentMatchState = EMatchState::Ended;
+		OnMatchEnded.Broadcast(MatchData);
+	}
 }
 
 void UBattlefieldManagerSubsystem::SetupUnits()
@@ -101,6 +152,8 @@ void UBattlefieldManagerSubsystem::SetupUnits()
 			for (auto Row : AllyUnitsDatArray)
 			{
 				AllyUnitDatas.Add(Row->UnitData.Info.InfoSetting.Tag, Row->UnitData);
+				FString Result = FString::Printf(TEXT("AllyUnitDatas : %s"), *Row->UnitData.Info.InfoSetting.Tag.ToString());
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, *Result);
 				UE_LOG(LogTemp, Warning, TEXT("AllyUnitDatas : %s"), *Row->UnitData.Info.InfoSetting.Tag.ToString());
 			}
 		}
@@ -116,6 +169,31 @@ void UBattlefieldManagerSubsystem::SetupUnits()
 			}
 		}
 	}
+}
+
+void UBattlefieldManagerSubsystem::DebugBasementSet()
+{
+	FBasementStat PlayerBasementStat;
+	FBasementStat EnemyBasementStat;
+
+	PlayerBasementStat.CommandCenterCurrentHP.BaseValue = 1000.0f;
+	EnemyBasementStat.CommandCenterCurrentHP.BaseValue = 1000.0f;
+
+	BasementStats.Add(Arcanum::Unit::Faction::Ally::Root, PlayerBasementStat);
+	BasementStats.Add(Arcanum::Unit::Faction::Enemy::Root, EnemyBasementStat);
+}
+
+void UBattlefieldManagerSubsystem::DebugEndedMessage(const FMatchData& MatchData)
+{
+	if (MatchData.bIsVictory)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("승리"));
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("패배"));
+	}
+
 }
 
 void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerData, FInBattleData& OutInBattleData)

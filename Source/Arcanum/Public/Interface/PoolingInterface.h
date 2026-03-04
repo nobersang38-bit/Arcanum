@@ -4,12 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "Data/Types/UnitData.h"
-#include "UnitDataInterface.generated.h"
+#include "PoolingInterface.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class UUnitDataInterface : public UInterface
+class UPoolingInterface : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -17,11 +16,12 @@ class UUnitDataInterface : public UInterface
 /**
  * 김도현
  */
-class ARCANUM_API IUnitDataInterface
+class ARCANUM_API IPoolingInterface
 {
 	GENERATED_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual const FUnitData& GetUnitData() = 0;
+	virtual void ActivateItem() = 0;
+	virtual void DeactiveItem() = 0;
 };

@@ -12,7 +12,7 @@ void AARLobbyController::BeginPlay()
 
 	if (LobbyHUDClass)
 	{
-		if (LobbyHUD = CreateWidget<ULobbyHUD>(this, LobbyHUDClass))
+		if ((LobbyHUD = CreateWidget<ULobbyHUD>(this, LobbyHUDClass)))
 		{
 			LobbyHUD->AddToViewport();
 

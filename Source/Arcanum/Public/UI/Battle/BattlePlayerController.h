@@ -4,12 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "DataInfo/CommonData/Stats/FBattleStats.h"
+#include "Data/Types/UnitData.h"
 #include "BattlePlayerController.generated.h"
 
 class UInputMappingContext;
 class UInputAction;
 class UInBattleHUDWidget;
 struct FInputActionValue;
+// 김도현
 UCLASS()
 class ARCANUM_API ABattlePlayerController : public APlayerController
 {
@@ -18,6 +21,7 @@ class ARCANUM_API ABattlePlayerController : public APlayerController
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
+	virtual void Tick(float DeltaTime) override;
 #pragma endregion
 
 
@@ -62,6 +66,30 @@ protected:
 #pragma region 메인HUD
 protected:
 	void SetupMainHUDWidget();
+
+	UFUNCTION()
+	void UpdatePlayerLocationProgress();
+
+	UFUNCTION()
+	void UpdateStageTime(int32 TimeSecond);
+
+	UFUNCTION()
+	void SetAllyUsingWidget();
+
+	UFUNCTION()
+	void UpdateMeatValue(float DeltaTime);
+
+	UFUNCTION()
+	void UpdateManaValue(float DeltaTime);
+
+public:
+	UFUNCTION()
+	void SetPlayerHealthProgress(float CurrentHealth, float MaxHealth);
+
+	UFUNCTION()
+	void SetBossHealthProgress(float CurrentHealth, float MaxHealth);
+
+
 #pragma endregion
 
 
@@ -90,6 +118,20 @@ protected:
 
 	UFUNCTION()
 	void AutoManualModePC();
+
+	UFUNCTION()
+	void ReadySpawnUnit(FGameplayTag InTag);
+
+	UFUNCTION()
+	void SpawnUnit(FGameplayTag InTag);
+
+	// 사용할 고기
+	UFUNCTION()
+	bool UseMeatValue(float Value);
+
+	// 사용할 마나
+	UFUNCTION()
+	bool UseManaValue(float Value);
 #pragma endregion
 
 
@@ -133,6 +175,37 @@ protected:
 	TObjectPtr<UInputAction> IA_AutoManual = nullptr;
 #pragma endregion
 
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
+	float PlayerLocationProgressUpdateInterval = 0.05f;
+
+protected:
+	UPROPERTY()
+	TWeakObjectPtr<AActor> AllyBasement = nullptr;
+
+	UPROPERTY()
+	TWeakObjectPtr<AActor> EnemyBasement = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSubclassOf<class ABaseUnitCharacter> AllyUnitClass = nullptr;
+
+protected:
+	UPROPERTY()
+	TMap<FGameplayTag, FUnitData> UsinAllyUnits;
+
+	// Todo KDH : 데이터 가져오게 변경해야함
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FRegenStat MeatValue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FRegenStat ManaValue;
+
+	FTimerHandle MeatTimer;
+	FTimerHandle ManaTimer;
+
+	FGameplayTag SpawnTag;
+
 private:
+	FTimerHandle PlayerLocationProgressTimeHandle;
 	bool bIsAutoManual = false;
 };

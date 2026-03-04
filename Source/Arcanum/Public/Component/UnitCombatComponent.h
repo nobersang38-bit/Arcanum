@@ -39,21 +39,39 @@ class ARCANUM_API UUnitCombatComponent : public UActorComponent
 	friend class UUnitState_HitReaction;
 	friend class UUnitState_Death;
 
-public:	
+#pragma region 언리얼 기본 생성
+public:
 	UUnitCombatComponent();
 
+protected:
+	virtual void BeginPlay() override;
+
+#pragma endregion
+
+
+#pragma region 게터
 public:
 	// 현재 나를 공격중인 적은 몇명인가
 	FORCEINLINE int32 GetAttackerCount() const { return AttackerCount; };
 
 	// 런타입 유닛 데이터 가져오기
-	FUnitRuntimeData& GetUnitRuntimeData() { return UnitRuntimeData; }
+	FORCEINLINE FUnitRuntimeData& GetUnitRuntimeData() { return UnitRuntimeData; }
 
+	FORCEINLINE bool GetIsDead() const { return bIsDead; }
+
+#pragma endregion
+
+
+#pragma region 액션
+public:
 	void SendDamage(float InDamage);
 
-protected:
-	virtual void BeginPlay() override;
+	void UnitActivate();
+	void UnitDeactive();
+#pragma endregion
 
+
+#pragma region 생명 주기
 protected:
 	UFUNCTION()
 	void DeferredBeginPlay();
@@ -61,95 +79,81 @@ protected:
 	UFUNCTION()
 	void TickUpdate();
 
-	void TargetAssigned(AActor* Target);
+#pragma endregion
+
+
+#pragma region 초기설정
+protected:
+	UFUNCTION()
+	void AIInitialize();
 
 	UFUNCTION()
-	void OnBeginDetected(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	void SelectBestTarget(const TSet<TWeakObjectPtr<AActor>>& InDetectedCharacters);
-	AActor* GetHigherPriorityTarget(AActor* CurrentTarget, AActor* WinTarget, int32& WinScore);
-
-	UPROPERTY()
-	TWeakObjectPtr<UUnitStateBase> CurrentUnitState = nullptr;
-
-	UPROPERTY()
-	TMap<EUnitState, UUnitStateBase*> UnitStates;
-
-	UFUNCTION()
-	void StateChange(EUnitState InUnitState);
+	void SetupTick();
 
 	UFUNCTION()
 	void SetupStates();
 
-	UFUNCTION()
-	void SetupTick();
+#pragma endregion
+
+
+#pragma region 헬퍼
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FUnitAISetting UnitAISetting;
+	// 상태변경
+	void StateChange(EUnitState InUnitState);
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	FUnitData UnitData;
+	void EnemyFind();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	FUnitRuntimeData UnitRuntimeData;
+	// 공격 대상 지정
+	void TargetAssigned(AActor* Target);
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool bDebug_StopAI = false;
+	// 블랙보드의 타겟 오브젝트의 값 변경으로 이동
+	void MoveToTarget(AActor* Target);
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool bDebug_DrawMoveTargeLine = false;
+	// 최우선 타겟 지정
+	void SelectBestTarget(const TSet<TWeakObjectPtr<AActor>>& InDetectedCharacters);
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FGameplayTag TeamTag;
+	// 최우선 타겟 검색 후 리턴
+	AActor* GetHigherPriorityTarget(AActor* CurrentTarget, AActor* WinTarget, float& WinScore);
 
+	// 공격이 가능한 거리라면 true
+	bool IsCanAttackRange();
+	
+#pragma endregion
+
+
+#pragma region 상태
+protected:
+	void LightHitReaction();
+	void Death(const FRegenStat& InData);
+
+#pragma endregion
+
+
+#pragma region 수동 설정 데이터
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FGameplayTag AllyTeamTag;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FGameplayTag EnemyTeamTag;
 
+#pragma endregion
 
-private:
-	UFUNCTION()
-	void AIInitialize();
 
-	void LightHitReaction();
-	void Death(const FRegenStat& InData);
-	void StateReset();
+#pragma region 자동 설정 데이터
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FUnitData UnitData;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FGameplayTag TeamTag;
+
+#pragma endregion
+
+
+#pragma region 캐싱
 private:
 	UPROPERTY()
 	TWeakObjectPtr<class AAIController> OwnerAIC = nullptr;
-
-	FTimerHandle TickTimerHandle;
-	FTimerHandle AttackTimerHandle;
-	FTimerHandle DeathTimerHandle;
-
-	FTimerHandle RotateTimerHandle;
-
-	FBlackboard::FKey TargetActorKey;
-
-	// 현재 내가 공격중인 적이거나 공격해야하는 적
-	UPROPERTY()
-	TWeakObjectPtr<AActor> TargetActor = nullptr;
-
-	UPROPERTY()
-	TWeakObjectPtr<AActor> TargetActorBackup = nullptr;
-
-	// 감지된 적 유닛
-	UPROPERTY()
-	TSet<TWeakObjectPtr<AActor>> DetectedActors;
-
-	// 현재 나를 공격중인 적은 몇명인가, 나중에 액터나 캐릭터 배열로 바꿀수도 있음
-	int32 AttackerCount = 0;
-
-	FGameplayTag TeamID;
-
-	UPROPERTY()
-	TWeakObjectPtr<AActor> TargetBasement = nullptr;
-
-	UPROPERTY()
-	FTargetPriorityWeightData TargetPriorityWeight;
 
 	UPROPERTY()
 	TWeakObjectPtr<ACharacter> OwnerCharacter = nullptr;
@@ -157,9 +161,43 @@ private:
 	UPROPERTY()
 	TWeakObjectPtr<class UCapsuleComponent> OwnerCapsuleComponent = nullptr;
 
+	UPROPERTY()
+	TWeakObjectPtr<AActor> TargetBasement = nullptr;
+
+	FBlackboard::FKey TargetActorKey;
+
+#pragma endregion
+
+
+#pragma region 런타임 데이터
+private:
+	UPROPERTY(VisibleAnywhere, Category = "RuntimeData")
+	TWeakObjectPtr<UUnitStateBase> CurrentUnitState = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "RuntimeData")
+	TMap<EUnitState, UUnitStateBase*> UnitStates;
+
+	UPROPERTY(VisibleAnywhere, Category = "RuntimeData")
+	TWeakObjectPtr<AActor> TargetActor = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "RuntimeData")
+	TSet<TWeakObjectPtr<AActor>> DetectedActors;
+	
+	UPROPERTY(VisibleAnywhere, Category = "RuntimeData")
+	FUnitRuntimeData UnitRuntimeData;
+
+	// 현재 나를 공격중인 적은 몇명인가, 나중에 액터나 캐릭터 배열로 바꿀수도 있음
+	int32 AttackerCount = 0;
+
 	bool bIsDead = false;
 
-	float RotateInterval = 0.05f;
-	float RotateSpeed = 50.0f;
-	FTimerDelegate RotateDelegate;
+#pragma endregion
+
+
+#pragma region 타이머 핸들
+	private:
+		FTimerHandle TickTimerHandle;
+		FTimerHandle DeathTimerHandle;
+
+#pragma endregion
 };

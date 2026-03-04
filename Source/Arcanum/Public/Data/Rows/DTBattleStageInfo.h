@@ -6,6 +6,7 @@
 #include "UObject/NoExportTypes.h"
 #include "NativeGameplayTags.h"
 #include "Data/Types/BattleStageInfo.h"
+#include "DataInfo/CommonData/Stats/FBattleStats.h"
 #include "DTBattleStageInfo.generated.h"
 
 // 김도현
@@ -18,8 +19,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FGameplayTag StageTag;
 
-	// 적 웨이브 정보
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FBattleStageInfo EnemyWaveDataInfo;
+	FBattleStageInfo BattleStageInfo;
 };
 

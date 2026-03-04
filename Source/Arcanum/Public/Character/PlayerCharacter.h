@@ -29,6 +29,9 @@ protected:
 
 protected:
 	virtual FGameplayTag GetTeamTag() override;
+
+	UFUNCTION()
+	void RecievedDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 	
 public:
 	// ID 태그 바꾸는 함수
@@ -39,6 +42,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Tags")
 	void PrintIDTag();
 	
+#pragma region 디버그
+	void PlayerBasicAttack();
+#pragma endregion
 
 protected:
 
@@ -56,4 +62,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tags")
 	FGameplayTag TeamTag = Arcanum::Unit::Faction::Ally::Root;
+
+protected:
+	// Todo 데이터 구조체로 변경해야함
+	float CurrentHealth = 300.0f;
+	float MaxHealth = 300.0f;
 };

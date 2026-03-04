@@ -8,6 +8,8 @@
 #include "BattleAllyUnitSlotWidget.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnClickUnitSlot, FGameplayTag, UnitTag);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPressUnitSlot, FGameplayTag, UnitTag);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReleasedUnitSlot, FGameplayTag, UnitTag);
 
 /**
  * 김도현
@@ -26,11 +28,17 @@ protected:
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
-#pragma endregion
+	// 마우스 클릭 감지
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
+	// 드래그 시작 감지
+	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
+#pragma endregion
 
 public:
 	FOnClickUnitSlot OnClickUnitSlot;
+	FOnPressUnitSlot OnPressUnitSlot;
+	FOnReleasedUnitSlot OnReleasedUnitSlot;
 
 	UFUNCTION()
 	void SetUnitInfo(int32 InCost, UTexture2D* InImage, FGameplayTag InUnitTag);
@@ -61,6 +69,12 @@ protected:
 
 	UFUNCTION()
 	void ClickUnitSlot();
+
+	UFUNCTION()
+	void PressUnitSlot();
+
+	UFUNCTION()
+	void ReleasedUnitSlot();
 #pragma endregion
 
 
