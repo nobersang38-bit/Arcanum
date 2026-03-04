@@ -70,6 +70,9 @@ FReply UCharacterHUDWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry,
 
 void UCharacterHUDWidget::InitCharacterHUD()
 {
+    CharacterGridPanel->ClearChildren();
+    CreatedCharacterSlots.Empty();
+
     for (int32 i = 0; i < ParentLobby->CachedPlayerData.OwnedCharacters.Num(); i++)
     {
         URoundedSlotWidget* NewSlot = CreateWidget<URoundedSlotWidget>(GetWorld(), RoundedSlotWidgetClass);
@@ -81,25 +84,34 @@ void UCharacterHUDWidget::InitCharacterHUD()
         bool hasOwned = false;
         FGameplayTag CharacterTag = ParentLobby->CachedPlayerData.OwnedCharacters[i].CharacterInfo.BattleCharacterInitData.CharacterTag;
         FName CharacterName = GetLeafNameFromTag(CharacterTag);
-
+        
         if (GetCurrentGrade > 0)
             hasOwned = true;
-
+  
         NewSlot->SetIconImage(CharacterIcon, hasOwned, CharacterName);
         NewSlot->OnCharacterSlotClicked.AddDynamic(this, &UCharacterHUDWidget::OnCharacterSlotSelected);
+
 
         if (!NewSlot)
             continue;
 
-        // 2️ GridPanel에 추가
         UUniformGridSlot* GridSlot = CharacterGridPanel->AddChildToUniformGrid(NewSlot);
 
         if (GridSlot)
         {
-            // 3️ 위치 지정
             GridSlot->SetRow(i / NumColumns);
             GridSlot->SetColumn(i % NumColumns);
         }
+
+        if (ParentLobby->CachedPlayerData.OwnedCharacters[i].bSelection)
+        {
+            NewSlot->SetRoundBackgroundColor(FLinearColor(1.0f, 0.4f, 0.7f, 1.0f));
+        }
+        else
+        {
+            NewSlot->SetRoundBackgroundColor(FLinearColor::White);
+        }
+        CreatedCharacterSlots.Add(NewSlot);
     }
 }
 
@@ -139,30 +151,34 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
 {
     UE_LOG(LogTemp, Warning, TEXT("클릭한 캐릭터 슬롯 태그 : %s"), *CharacterName.ToString());
 
-        // 선택된 캐릭터
-        for (int32 i = 0; i < ParentLobby->CachedPlayerData.OwnedCharacters.Num(); i++)
+    // 선택된 캐릭터만 bSelection true로 변경하기
+    for (int32 i = 0; i < ParentLobby->CachedPlayerData.OwnedCharacters.Num(); i++)
+    {
+        FBattleCharacterData& TargetData = ParentLobby->CachedPlayerData.OwnedCharacters[i];
+
+        FGameplayTag CharacterTag = TargetData.CharacterInfo.BattleCharacterInitData.CharacterTag;
+        FName ListCharacterName = GetLeafNameFromTag(CharacterTag);
+
+        bool bIsSelected = (ListCharacterName == CharacterName);
+        TargetData.bSelection = bIsSelected;
+
+        if (CreatedCharacterSlots.IsValidIndex(i))
         {
-            FBattleCharacterData& TargetData = ParentLobby->CachedPlayerData.OwnedCharacters[i];
-
-            FGameplayTag CharacterTag = TargetData.CharacterInfo.BattleCharacterInitData.CharacterTag;
-            FName ListCharacterName = GetLeafNameFromTag(CharacterTag);
-
-            // 선택한 캐릭터만 true로 변경
-            TargetData.bSelection = (ListCharacterName == CharacterName);
-           
+            CreatedCharacterSlots[i]->SetRoundBackgroundColor( bIsSelected ? (FLinearColor(1.0f, 0.4f, 0.7f, 1.0f)) : FLinearColor::White);
         }
+    }
 
-        if (CharacterSwitcher)
+    if (CharacterSwitcher)
+    {
+        CharacterSwitcher->SetActiveWidgetIndex(0);
+        UCharacterInfo* InfoWidget = Cast<UCharacterInfo>(CharacterSwitcher->GetWidgetAtIndex(0));
+
+        if (InfoWidget)
         {
-            CharacterSwitcher->SetActiveWidgetIndex(0);
-            UCharacterInfo* InfoWidget = Cast<UCharacterInfo>(CharacterSwitcher->GetWidgetAtIndex(0));
-
-            if (InfoWidget)
-            {
-                InfoWidget->SetCharacterName(CharacterName);
-                InfoWidget->SetStarCharcterInfo(4);
-            }
+            InfoWidget->SetCharacterName(CharacterName);
+            InfoWidget->SetStarCharcterInfo(4);
         }
+    }
     
 }
 

@@ -88,7 +88,8 @@ protected:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Slot")
 	TSubclassOf<URoundedSlotWidget> RoundedSlotWidgetClass;
 
-
+	UPROPERTY()
+	TArray<URoundedSlotWidget*> CreatedCharacterSlots;
 
 	UFUNCTION()
 	void ShowEnhancementConfirm();
