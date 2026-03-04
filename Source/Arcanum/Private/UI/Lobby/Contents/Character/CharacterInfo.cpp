@@ -57,6 +57,14 @@ void UCharacterInfo::SetStarCharcterInfo(int32 Grade)
     }
 }
 
+void UCharacterInfo::SetEnhanceButtonEnabled(bool bIsCharacterOwned)
+{
+    if (CharacterEnhanceBtn)
+    {
+        CharacterEnhanceBtn->SetIsEnabled(bIsCharacterOwned);
+    }
+}
+
 void UCharacterInfo::ClickCharacterEnhanceBtn()
 {
 	OnEnhanceBtnClicked.Broadcast();

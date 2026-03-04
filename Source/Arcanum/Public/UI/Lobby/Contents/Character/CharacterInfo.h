@@ -41,6 +41,9 @@ public:
 	//UFUNCTION(BlueprintCallable)
 	//void SetCharcterInfo();
 
+	UFUNCTION(BlueprintCallable)
+	void SetEnhanceButtonEnabled(bool bIsCharacterOwned);
+
 
 protected:
 	UPROPERTY(meta = (BindWidget))

@@ -147,9 +147,10 @@ void UCharacterHUDWidget::OnEnhancementCommonDialog(EDialogResult res)
 // ========================================================
 // 캐릭터 슬롯 클릭
 // ========================================================
-void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlot, FName CharacterName)
+void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlot, FName CharacterName, bool SlotCharacterOwned)
 {
     UE_LOG(LogTemp, Warning, TEXT("클릭한 캐릭터 슬롯 태그 : %s"), *CharacterName.ToString());
+    int32 CharacterStar = 0;
 
     // 선택된 캐릭터만 bSelection true로 변경하기
     for (int32 i = 0; i < ParentLobby->CachedPlayerData.OwnedCharacters.Num(); i++)
@@ -162,12 +163,18 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
         bool bIsSelected = (ListCharacterName == CharacterName);
         TargetData.bSelection = bIsSelected;
 
+        if (bIsSelected)
+        {
+            CharacterStar = TargetData.CharacterInfo.CurrentLevel;
+        }
+
         if (CreatedCharacterSlots.IsValidIndex(i))
         {
             CreatedCharacterSlots[i]->SetRoundBackgroundColor( bIsSelected ? (FLinearColor(1.0f, 0.4f, 0.7f, 1.0f)) : FLinearColor::White);
         }
     }
 
+    // 캐릭터 info창 바꾸기
     if (CharacterSwitcher)
     {
         CharacterSwitcher->SetActiveWidgetIndex(0);
@@ -176,7 +183,8 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
         if (InfoWidget)
         {
             InfoWidget->SetCharacterName(CharacterName);
-            InfoWidget->SetStarCharcterInfo(4);
+            InfoWidget->SetStarCharcterInfo(CharacterStar);
+            InfoWidget->SetEnhanceButtonEnabled(SlotCharacterOwned);
         }
     }
     

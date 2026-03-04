@@ -111,7 +111,7 @@ private:
 	void OnSquareSlotClicked(USquareSlotWidget* ClickedSlot, int32 SlotIndex);
 
 	UFUNCTION()
-	void OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlot, FName CharacterName);
+	void OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlot, FName CharacterName, bool SlotCharacterOwned);
 
 	int32 NumColumns = 3;
 #pragma endregion

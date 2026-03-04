@@ -10,7 +10,7 @@
  * 
  */
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCharacterSlotClicked, URoundedSlotWidget*, ClickedSlot, FName, CharacterName);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnCharacterSlotClicked, URoundedSlotWidget*, ClickedSlot, FName, CharacterName, bool, SlotCharacterOwned);
 
 class UImage;
 class UBorder;
@@ -52,4 +52,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slot")
 	FName SlotCharacterName = "";
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slot")
+	bool SlotCharacterOwned;
 };
