@@ -400,7 +400,18 @@ void ULobbyHUD::BuildInventoryRuleTableCache()
 		}
 	}
 
-	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+	if (InventoryRuleRow)
+	{
+		for (const FInventorySlotOrderItem& item : InventoryRuleRow->SlotOrders)
+		{
+			if (item.SlotTag.IsValid())
+			{
+				SlotOrderByTag.Add(item.SlotTag, item.Order);
+			}
+		}
+	}
+
+	if (InventoryHUDWidget)
 	{
 		InventoryHUDWidget->InitInventorySlots(GetInventoryCapacityFromRuleTable());
 	}
@@ -445,6 +456,21 @@ bool ULobbyHUD::FindMaxStackByItemTag(const FGameplayTag& InItemTag, int32& OutM
 
 	OutMaxStack = 1;
 	return true;
+}
+
+int32 ULobbyHUD::GetSlotOrderFromRuleTable(const FGameplayTag& InSlotTag) const
+{
+	if (!InSlotTag.IsValid())
+	{
+		return 999;
+	}
+
+	if (const int32* found = SlotOrderByTag.Find(InSlotTag))
+	{
+		return *found;
+	}
+
+	return 999;
 }
 
 const FDTPotionInfoRow* ULobbyHUD::FindPotionRowByTag(const FGameplayTag& InPotionTag) const
@@ -575,23 +601,6 @@ void ULobbyHUD::AppendEquipmentSlotsSorted(TArray<FInventoryViewSlot>& OutSlots,
 		int32 SlotOrder = 999;
 	};
 
-	// 슬롯 태그를 정렬 우선순위 숫자 변환(무기 먼저, 방어구는 뒤)
-	auto GetSlotOrder = [](const FGameplayTag& InSlotTag) -> int32
-		{
-			// 무기: TwoHand -> RightHand -> LeftHand (앞)
-			if (InSlotTag == Arcanum::Items::ItemSlot::Weapon::TwoHand)   return 0;
-			if (InSlotTag == Arcanum::Items::ItemSlot::Weapon::RightHand) return 1;
-			if (InSlotTag == Arcanum::Items::ItemSlot::Weapon::LeftHand)  return 2;
-
-			// 방어구: Helmet -> Chest -> Glove -> Boot (뒤)
-			if (InSlotTag == Arcanum::Items::ItemSlot::Armor::Helmet) return 10;
-			if (InSlotTag == Arcanum::Items::ItemSlot::Armor::Chest)  return 11;
-			if (InSlotTag == Arcanum::Items::ItemSlot::Armor::Glove)  return 12;
-			if (InSlotTag == Arcanum::Items::ItemSlot::Armor::Boot)   return 13;
-
-			return 999;
-		};
-
 	// 캐시된 인벤토리에서 정렬 가능한 장비만 추출
 	TArray<FEquipSortItem> items;
 	items.Reserve(CachedPlayerData.Inventory.Num());
@@ -604,7 +613,7 @@ void ULobbyHUD::AppendEquipmentSlotsSorted(TArray<FInventoryViewSlot>& OutSlots,
 		{
 			if (const FDTEquipmentInfoRow* equipRow = FindEquipmentRowByTag(equip.ItemTag))
 			{
-				const int32 order = GetSlotOrder(equipRow->SlotTag);
+				const int32 order = GetSlotOrderFromRuleTable(equipRow->SlotTag);
 
 				// 정의된 슬롯만 정렬 후보에 추가
 				if (order != 999)
