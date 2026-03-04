@@ -7,11 +7,11 @@
 #include "Components/UniformGridPanel.h"
 #include "Components/WidgetSwitcher.h"
 #include "UI/Common/CommonDialog.h"
+#include "UI/Lobby/LobbyHUD.h"
 
 void UCharacterHUDWidget::NativeConstruct()
 {
     Super::NativeConstruct();
-
     // 무기 슬롯 (Slot Index 모두 0으로 설정)
     Weapon1Slot->OnSlotClicked.AddDynamic(this, &UCharacterHUDWidget::OnSlotClicked);
     Weapon2Slot->OnSlotClicked.AddDynamic(this, &UCharacterHUDWidget::OnSlotClicked);
@@ -80,11 +80,46 @@ void UCharacterHUDWidget::NativeConstruct()
             GridSlot->SetColumn(Index % NumColumns);
         }
     }
+   
 }
 
 FReply UCharacterHUDWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
     return FReply::Handled();
+}
+
+void UCharacterHUDWidget::InitCharacterHUD()
+{
+    int32 NumColumns = 3;
+
+    for (int32 i = 0; i < ParentLobby->CachedPlayerData.OwnedCharacters.Num(); i++)
+    {
+        URoundedSlotWidget* NewSlot = CreateWidget<URoundedSlotWidget>(GetWorld(), RoundedSlotWidgetClass);
+        
+        TSoftObjectPtr<UTexture2D> CharacterIconSoftPtr = ParentLobby->CachedPlayerData.OwnedCharacters[i].CharacterInfo.BattleCharacterInitData.CharacterIcon;
+        UTexture2D* CharacterIcon = CharacterIconSoftPtr.LoadSynchronous();
+
+        int GetCurrentGrade = ParentLobby->CachedPlayerData.OwnedCharacters[i].CharacterInfo.CurrentGrade; // 0 이면 보유X , 0 초과는 보유 및 강화
+        bool hasOwned = false;
+
+        if (GetCurrentGrade > 0)
+            hasOwned = true;
+
+        NewSlot->SetIconImage(CharacterIcon, hasOwned);
+
+        if (!NewSlot)
+            continue;
+
+        // 2️ GridPanel에 추가
+        UUniformGridSlot* GridSlot = CharacterGridPanel->AddChildToUniformGrid(NewSlot);
+
+        if (GridSlot)
+        {
+            // 3️ 위치 지정
+            GridSlot->SetRow(i / NumColumns);
+            GridSlot->SetColumn(i % NumColumns);
+        }
+    }
 }
 
 // ========================================================
@@ -175,3 +210,4 @@ void UCharacterHUDWidget::SetupEquipment()
         CharacterSwitcher->SetActiveWidgetIndex(0);
     }
 }
+

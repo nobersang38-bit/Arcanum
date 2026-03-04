@@ -10,13 +10,6 @@ void URoundedSlotWidget::NativePreConstruct()
     Super::NativePreConstruct();
     if (BackgroundColor) BackgroundColor->SetBrushColor(RoundColor);
     if (IconImage && IconImg) IconImage->SetBrushFromTexture(IconImg);
-
-    // 테스트용으로 보유 캐릭터 구분
-    // 나중에 json 값으로 구분하기
-    float TargetAlpha = bShowEmptySlotOverlay ? 0.8f : 0.0f;
-    FLinearColor CurrentColor = SlotDimOverlay->ColorAndOpacity;
-    CurrentColor.A = TargetAlpha;
-    SlotDimOverlay->SetColorAndOpacity(CurrentColor);
 }
 
 FReply URoundedSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -34,7 +27,7 @@ void URoundedSlotWidget::SetRoundBackgroundColor(FLinearColor NewColor)
     }
 }
 
-void URoundedSlotWidget::SetIconImage(UTexture2D* CharacterIcon)
+void URoundedSlotWidget::SetIconImage(UTexture2D* CharacterIcon, bool OwnedCharacter)
 {
     if (!IconImage) return;
 
@@ -42,6 +35,13 @@ void URoundedSlotWidget::SetIconImage(UTexture2D* CharacterIcon)
     if (CharacterIcon)
     {
         Brush.SetResourceObject(CharacterIcon);
+
+        // 보유 캐릭터 구분
+        // 나중에 json 값으로 구분하기
+        float TargetAlpha = OwnedCharacter ? 0.0f : 0.8f;
+        FLinearColor CurrentColor = SlotDimOverlay->ColorAndOpacity;
+        CurrentColor.A = TargetAlpha;
+        SlotDimOverlay->SetColorAndOpacity(CurrentColor);
     }
     else
     {

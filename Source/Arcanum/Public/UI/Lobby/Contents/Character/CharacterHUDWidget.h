@@ -40,7 +40,7 @@ public:
 private:
 	UPROPERTY()
 	TObjectPtr<ULobbyHUD> ParentLobby;
-	// ParentLobby->CachedPlayerData
+	//ParentLobby->CachedPlayer
 protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UUniformGridPanel> CharacterGridPanel;
@@ -98,6 +98,8 @@ protected:
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnEnhanceOKClicked OnEnhanceOKClicked;
+
+	void InitCharacterHUD();
 
 	//void AddCharacterData(const TArray<FName>& InRowNames,
 	//	const TArray<TSoftObjectPtr<UTexture2D>>& InIcons);

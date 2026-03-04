@@ -31,16 +31,13 @@ public:
 	void SetRoundBackgroundColor(FLinearColor NewColor);
 
 	UFUNCTION(BlueprintCallable)
-	void SetIconImage(UTexture2D* Texture);
+	void SetIconImage(UTexture2D* Texture, bool OwnedCharacter);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FLinearColor RoundColor = FLinearColor::White;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UTexture2D> IconImg;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bShowEmptySlotOverlay = true;
 
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
@@ -49,7 +46,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UImage> IconImage;
 
-	// 캐릭터 소지 안 하면 어둡게 표출되도록
+	// 캐릭터 미보유시 어둡게 표출되도록
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UImage> SlotDimOverlay;
 

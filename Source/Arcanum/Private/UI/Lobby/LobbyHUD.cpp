@@ -89,7 +89,7 @@ void ULobbyHUD::NativeConstruct()
 		InventorySortBtn->OnClicked.RemoveDynamic(this, &ULobbyHUD::ClickInventorySortBtn);
 		InventorySortBtn->OnClicked.AddDynamic(this, &ULobbyHUD::ClickInventorySortBtn);
 	}
-
+	
 	//BuildCharacterRowCache();
 
 	BindGameInstanceEvents();
@@ -115,7 +115,7 @@ void ULobbyHUD::NativeConstruct()
 	//	CachedPlayerData = gameInstance->GetPlayerDataCopy();
 	//	RefreshLobbyCurrencyUI();
 	//}
-
+	ClickCharacterMenuBtn();
 	RefreshLobbyCurrencyUI();
 }
 
@@ -155,6 +155,7 @@ void ULobbyHUD::ClickCharacterMenuBtn()
 {
 	if (UCharacterHUDWidget* CharacterWidget = Cast<UCharacterHUDWidget>(WidgetSwitcher->GetWidgetAtIndex(1))) {
 		CharacterWidget->SetParentLobby(this);
+		CharacterWidget->InitCharacterHUD();
 		WidgetSwitcher->SetActiveWidget(CharacterWidget);
 	}
 }
