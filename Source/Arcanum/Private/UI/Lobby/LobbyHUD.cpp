@@ -8,6 +8,7 @@
 #include "DataInfo/BattleCharacter/Equipment/DataTable/DTEquipment.h"
 #include "DataInfo/ItemData/Potion/DTPotionInfoRow.h"
 #include "DataInfo/InventoryData/DataTable/DTInventoryRuleItem.h"
+#include "UI/Lobby/Contents/Gacha/GachaHUDWidget.h"
 //#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/HorizontalBox.h"
@@ -111,7 +112,7 @@ void ULobbyHUD::NativeConstruct()
 	//	CachedPlayerData = gameInstance->GetPlayerDataCopy();
 	//	RefreshLobbyCurrencyUI();
 	//}
-
+	ClickCharacterMenuBtn();
 	RefreshLobbyCurrencyUI();
 }
 
@@ -192,7 +193,10 @@ void ULobbyHUD::ClickShopMenuBtn()
 
 void ULobbyHUD::ClickGachaMenuBtn()
 {
-	if (WidgetSwitcher) WidgetSwitcher->SetActiveWidgetIndex(4);
+	if (UGachaHUDWidget* GachaWidget = Cast<UGachaHUDWidget>(WidgetSwitcher->GetWidgetAtIndex(4))) {
+		GachaWidget->SetParentLobby(this);
+		WidgetSwitcher->SetActiveWidget(GachaWidget);
+	}
 }
 
 void ULobbyHUD::ClickSettingBtn()

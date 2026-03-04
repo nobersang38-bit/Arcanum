@@ -7,8 +7,8 @@
     "BannerName": "심연의 수호자 - 에이든 픽업",
     "BannerImage": "",
     "DescriptionImage": "",
-    "StartTime": "(Year=2026,Month=1,Day=1,Hour=0,Minute=0,Second=0)",
-    "EndTime": "(Year=2026,Month=1,Day=14,Hour=23,Minute=59,Second=59)",
+    "StartTime": "2026-02-23 00:00:00",
+    "EndTime": "2026-04-30 23:59:59",
     "PullCost": {
       "ConsumptionCurrencyTag": "Arcanum.PlayerData.Currencies.NonRegen.Soul.Value",
       "SinglePullCost": 200,
@@ -48,8 +48,8 @@
     "BannerName": "세상의 모든 별들 - 상시 소환",
     "BannerImage": "",
     "DescriptionImage": "",
-    "StartTime": "(Year=2024,Month=1,Day=1,Hour=0,Minute=0,Second=0)",
-    "EndTime": "(Year=2099,Month=12,Day=31,Hour=23,Minute=59,Second=59)",
+    "StartTime": "2026-01-01 00:00:00",
+    "EndTime": "2099-12-31 23:59:59",
     "PullCost": {
       "ConsumptionCurrencyTag": "Arcanum.PlayerData.Currencies.NonRegen.Soul.Value",
       "SinglePullCost": 200,
@@ -82,6 +82,53 @@
       }
     ],
     "FiveStarPityCount": 90,
+    "bGuaranteePickupOnFail": false
+  },
+  {
+    "Name": "Standard_Equipment_Gacha",
+    "BannerTag": "Arcanum.Gacha.Type.WeaponPickup",
+    "GachaTypeTag": "Arcanum.Gacha.Type.WeaponPickup",
+    "DisplayPriority": 200,
+    "BannerName": "고대의 무기고 - 장비 소환",
+    "BannerImage": "T_Banner_Weapon_Standard",
+    "DescriptionImage": "T_Desc_Weapon_Standard",
+    "StartTime": "2026-01-01 00:00:00",
+    "EndTime": "2099-12-31 23:59:59",
+    "PullCost": {
+      "ConsumptionCurrencyTag": "Arcanum.PlayerData.Currencies.NonRegen.Gold.Value",
+      "SinglePullCost": 150,
+      "MultiPullCount": 10,
+      "MultiPullCost": 1500
+    },
+    "RarityProbabilities": [
+      { "GradeTag": "Arcanum.Items.Rarity.Legendary", "Probability": 0.02 },
+      { "GradeTag": "Arcanum.Items.Rarity.SetItem", "Probability": 0.10 },
+      { "GradeTag": "Arcanum.Items.Rarity.Common", "Probability": 0.88 }
+    ],
+    "GradePools": [
+      {
+        "GradeTag": "Arcanum.Items.Rarity.Legendary",
+        "PickupCharacters": [], 
+        "CommonPoolTable": "DT_ItemPool_Legendary",
+        "PickupRatio": 0.0
+      },
+      {
+        "GradeTag": "Arcanum.Items.Rarity.SetItem",
+        "PickupCharacters": [
+          "Arcanum.Items.Rarity.SetItem.Talasha",
+          "Arcanum.Items.Rarity.SetItem.Sigon"
+        ],
+        "CommonPoolTable": "DT_ItemPool_SetItem",
+        "PickupRatio": 0.5
+      },
+      {
+        "GradeTag": "Arcanum.Items.Rarity.Common",
+        "PickupCharacters": [],
+        "CommonPoolTable": "DT_ItemPool_Common",
+        "PickupRatio": 0.0
+      }
+    ],
+    "FiveStarPityCount": 80,
     "bGuaranteePickupOnFail": false
   }
 ]

@@ -24,7 +24,6 @@ enum class EGameErrCode : uint8
     UnknownError        UMETA(DisplayName = "Unknown Error")        // 기타/알 수 없는 에러
 };
 
-
 UENUM(BlueprintType)
 enum class EHUDIndex : uint8
 {
@@ -43,6 +42,9 @@ struct FGachaItemResult
     // 1. 뽑힌 대상의 식별자 (캐릭터 태그, 아이템 태그 등)
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     FGameplayTag ItemTag;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    FGameplayTag GradeTag;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     TSoftObjectPtr<UDataTable> SourceTable;
@@ -125,7 +127,18 @@ private:
     FPlayerData& GetPlayerData() { return PlayerData; }
     /** 저장할 본체*/
     UPROPERTY() FPlayerData PlayerData;
-    #pragma endregion
+#pragma endregion
+
+#pragma region 가챠 관련
+private:
+    bool GenerateResults(const FDTGachaBannerDataRow* BannerData, int32 PullCount);
+    FGameplayTag DetermineGrade(const FDTGachaBannerDataRow* BannerData);
+    bool ApplyHardPity(const FDTGachaBannerDataRow* BannerData, FGachaBannerState& BannerState, FGameplayTag& InOutGrade);
+    FGameplayTag GetHighestGrade(const FDTGachaBannerDataRow* BannerData);
+    FGachaItemResult ResolvePickup(const FDTGachaBannerDataRow* BannerData, const FGachaGradePool& Pool, FGachaBannerState& BannerState, FGameplayTag GachaIndex);
+    FGameplayTag GetRandomFromGrade(const FGachaGradePool& Pool, FGameplayTag GachaIndex);
+    void AddRandomEquipmentToInventory(FDTEquipmentInfoRow* InRow);
+#pragma endregion
 
 
 #pragma region 고정

@@ -14,23 +14,14 @@ class ARCANUM_API AProjectileBase : public ASkillActor
     public:
     AProjectileBase();
 
-    virtual void ActivateSkillActor(
-        USkillBase* InSkill,
-        AActor* InOwner,
-        const FVector& SpawnLocation,
-        const FRotator& SpawnRotation) override;
+    virtual void ActivateSkillActor(USkillBase* InSkill, AActor* InOwner, const FVector& SpawnLocation, const FRotator& SpawnRotation) override;
 
 protected:
     virtual void BeginPlay() override;
 
     /** 충돌 */
     UFUNCTION()
-    virtual void OnHit(
-        UPrimitiveComponent* HitComponent,
-        AActor* OtherActor,
-        UPrimitiveComponent* OtherComp,
-        FVector NormalImpulse,
-        const FHitResult& Hit);
+    virtual void OnHit(UPrimitiveComponent* HitComponent,AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 protected:
     /** 충돌용 콜리전 */

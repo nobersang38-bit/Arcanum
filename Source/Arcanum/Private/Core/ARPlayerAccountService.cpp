@@ -8,6 +8,11 @@
 
 #include "Kismet/GameplayStatics.h"
 
+#pragma region 가챠 관련
+#include "DataInfo/PlayerData/PlayerGacha/FPlayerGacha.h"
+#pragma endregion
+
+
 // ========================================================
 // 인터페이스(추후 서버 대비용 예시)
 // ========================================================
@@ -885,7 +890,7 @@ void FPlayerAccountService::GetActiveGachaBannerRows(const UObject* WorldContext
 	}
 	OutRows.Sort([](const FDTGachaBannerDataRow& A, const FDTGachaBannerDataRow& B) { return A.DisplayPriority < B.DisplayPriority; });
 }
-bool FPlayerAccountService::RequestGachaExecution(const UObject* WorldContextObject, const FPlayerData& PlayerData, FGameplayTag BannerTag, FCurrencyCost Cost, int32 PullCount)
+bool FPlayerAccountService::ExecuteGacha(const UObject* WorldContextObject, const FPlayerData& PlayerData, FGameplayTag BannerTag, FCurrencyCost Cost, int32 PullCount)
 {
 	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
 	if (!World) return false;
@@ -893,83 +898,14 @@ bool FPlayerAccountService::RequestGachaExecution(const UObject* WorldContextObj
 	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
 	if (!GI) return false;
 
-	UGameDataSubsystem* DataSubsystem = GI->GetSubsystem<UGameDataSubsystem>();
-	if (!DataSubsystem) return false;
-
-	UDataTable** TablePtr = DataSubsystem->MasterDataTables.Find(Arcanum::DataTable::GachaTable);
-	if (!TablePtr || !(*TablePtr)) return false;
-
-	TArray<FDTGachaBannerDataRow*> AllRows;
-	(*TablePtr)->GetAllRows<FDTGachaBannerDataRow>(TEXT("GachaContext"), AllRows);
-	FDTGachaBannerDataRow* SelectedBannerData = nullptr;
-	for (auto* Row : AllRows) {
-		if (Row->BannerTag == BannerTag) {
-			SelectedBannerData = Row;
-			break;
-		}
-	}
-	if (!SelectedBannerData) return false;
-
 	int64 SpendAmount = (PullCount == 1) ? (int64)Cost.SinglePullCost : (int64)Cost.MultiPullCost;
 	FPlayerCurrency PlayerCurrency = GetPlayerCurrency(WorldContextObject);
 	FCurrencyData* TargetData = PlayerCurrency.CurrencyDatas.Find(Cost.ConsumptionCurrencyTag);
 
 	if (!TargetData || TargetData->CurrAmount < SpendAmount) return false;
+	const FDTGachaBannerDataRow* BannerData = GetGachaBannerData(WorldContextObject, BannerTag);
+	if (!BannerData) return false;
 
 	UpdateCurrency(WorldContextObject, PlayerData, Cost.ConsumptionCurrencyTag, -SpendAmount);
-	GI->GachaItemResult = GenerateGachaResults(SelectedBannerData, PullCount);
-
-	return true;
-}
-TArray<FGachaItemResult> FPlayerAccountService::GenerateGachaResults(const FDTGachaBannerDataRow* BannerData, int32 PullCount)
-{
-	TArray<FGachaItemResult> Results;
-	if (!BannerData) return Results;
-
-	for (int32 i = 0; i < PullCount; ++i) {
-		FGameplayTag SelectedGradeTag = DetermineGrade(BannerData->RarityProbabilities);
-		const FGachaGradePool* SelectedPool = BannerData->GradePools.FindByPredicate([&](const FGachaGradePool& Pool) { return Pool.GradeTag == SelectedGradeTag; });
-
-		if (!SelectedPool) continue;
-		float RandRoll = FMath::FRand();
-		if (SelectedPool->PickupCharacters.Num() > 0 && RandRoll <= SelectedPool->PickupRatio) {
-			int32 RandomIdx = FMath::RandRange(0, SelectedPool->PickupCharacters.Num() - 1);
-			Results.Add({ SelectedPool->PickupCharacters[RandomIdx], nullptr });
-		}
-		else {
-			UDataTable* TargetDT = SelectedPool->CommonPoolTable.LoadSynchronous();
-			if (TargetDT) {
-				FGameplayTag RandomItemTag = GetRandomTagFromDT(TargetDT);
-				Results.Add({ RandomItemTag, TargetDT });
-			}
-		}
-	}
-
-	return Results;
-}
-FGameplayTag FPlayerAccountService::DetermineGrade(const TArray<FGachaRarityProbability>& Probabilities)
-{
-	float RandVal = FMath::FRand();
-	float CumulativeProb = 0.0f;
-
-	for (const auto& Prob : Probabilities) {
-		CumulativeProb += Prob.Probability;
-		if (RandVal <= CumulativeProb) return Prob.GradeTag;
-	}
-	return Probabilities.Last().GradeTag;
-}
-
-FGameplayTag FPlayerAccountService::GetRandomTagFromDT(UDataTable* Table)
-{
-	if (!Table) return FGameplayTag::EmptyTag;
-
-	TArray<FName> RowNames = Table->GetRowNames();
-	if (RowNames.Num() == 0) return FGameplayTag::EmptyTag;
-
-	int32 RandomIdx = FMath::RandRange(0, RowNames.Num() - 1);
-	FName TargetRowName = RowNames[RandomIdx];
-
-	auto* RowData = Table->FindRow<FDTCharacterBaseInfoRow>(TargetRowName, TEXT("GachaContext"));
-	if (RowData) return RowData->BattleCharacterInfo.CharacterTag;
-	else return FGameplayTag::EmptyTag;
+	return GI->GenerateResults(BannerData, PullCount);
 }

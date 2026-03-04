@@ -180,9 +180,210 @@ bool UARGameInstance::DeletePlayerData()
     return false;
 }
 
+// ========================================================
+// 가챠 관련
+// ========================================================
+bool UARGameInstance::GenerateResults(const FDTGachaBannerDataRow* BannerData, int32 PullCount)
+{
+    GachaItemResult.Empty();
+    TArray<FGachaItemResult> Results;
+    Results.Reserve(PullCount);
+
+    FGachaBannerState& BannerState = PlayerData.GachaState.BannerStates.FindOrAdd(BannerData->BannerTag);
+    for (int32 i = 0; i < PullCount; ++i) {
+        FGameplayTag Grade = DetermineGrade(BannerData);
+        ApplyHardPity(BannerData, BannerState, Grade);
+
+        const FGachaGradePool* Pool = BannerData->GradePools.FindByPredicate([&](const FGachaGradePool& P) { return P.GradeTag == Grade; });
+        if (Pool) {
+            FGachaItemResult Result = ResolvePickup(BannerData, *Pool, BannerState, Grade);
+            Results.Add(Result);
+        }
+    }
+
+    GachaItemResult = Results;
+    return GachaItemResult.Num() > 0;
 
 
+    //TArray<FGachaItemResult> Results;
+    //const FGameplayTag EpicGrade = GetHighestGrade(BannerData);
 
+    //// 테스트용 카운터
+    //int32 LastEpicPullIndex = 0;
+    //for (int32 i = 1; i <= 100000; ++i) {
+    //    FGameplayTag Grade = DetermineGrade(BannerData);
+    //    FGachaBannerState& BannerState = PlayerData.GachaState.BannerStates.FindOrAdd(BannerData->BannerTag);
+
+    //    bool bIsPity = ApplyHardPity(BannerData, BannerState, Grade);
+
+    //    const FGachaGradePool* Pool = BannerData->GradePools.FindByPredicate([&](const FGachaGradePool& P) { return P.GradeTag == Grade; });
+
+    //    if (Pool) {
+    //        FGachaItemResult Result = ResolvePickup(BannerData, *Pool, BannerState);
+    //        Results.Add(Result);
+
+    //        if (Grade == EpicGrade) {
+    //            int32 PullsSinceLastEpic = i - LastEpicPullIndex;
+
+    //            // Grade 태그 정보 추가
+    //            UE_LOG(LogTemp, Log, TEXT("[%d번째] ★%s 당첨★ | 등급: %s | 이전 에픽 이후 [%d]회 소모 | 방식: %s | 아이템: %s"),
+    //                i,
+    //                *EpicGrade.ToString(),
+    //                *Grade.ToString(), // 실제 결정된 Grade 출력
+    //                PullsSinceLastEpic,
+    //                bIsPity ? TEXT("천장(Pity)") : TEXT("생뽑(Luck)"),
+    //                *Result.ItemTag.ToString());
+
+    //            LastEpicPullIndex = i;
+    //        }
+    //    }
+    //}
+
+    //return Results.Num() > 0;
+}
+FGameplayTag UARGameInstance::DetermineGrade(const FDTGachaBannerDataRow* BannerData)
+{
+    float Rand = FMath::FRand();
+    float Acc = 0.f;
+    for (const auto& Prob : BannerData->RarityProbabilities) {
+        Acc += Prob.Probability;
+
+        if (Rand <= Acc) return Prob.GradeTag;
+    }
+
+    return BannerData->RarityProbabilities.Last().GradeTag;
+}
+bool UARGameInstance::ApplyHardPity(const FDTGachaBannerDataRow* BannerData, FGachaBannerState& BannerState, FGameplayTag& InOutGrade)
+{
+    const FGameplayTag EpicGrade = GetHighestGrade(BannerData);
+    if (InOutGrade == EpicGrade) {
+        BannerState.PityCount = 0;
+        return false;
+    }
+
+    if (BannerState.PityCount >= BannerData->FiveStarPityCount) {
+        InOutGrade = EpicGrade;
+        BannerState.PityCount = 0;
+        return true;
+    }
+    else {
+        BannerState.PityCount++;
+        return false;
+    }
+}
+FGameplayTag UARGameInstance::GetHighestGrade(const FDTGachaBannerDataRow* BannerData)
+{
+    float LowestProb = 999.f;
+    FGameplayTag HighestTag;
+
+    for (const auto& Prob : BannerData->RarityProbabilities) {
+        if (Prob.Probability < LowestProb) {
+            LowestProb = Prob.Probability;
+            HighestTag = Prob.GradeTag;
+        }
+    }
+    return HighestTag;
+}
+FGachaItemResult UARGameInstance::ResolvePickup(const FDTGachaBannerDataRow* BannerData, const FGachaGradePool& Pool, FGachaBannerState& BannerState, FGameplayTag GachaIndex)
+{
+    FGachaItemResult Result;
+    Result.GradeTag = Pool.GradeTag;
+    if (Pool.PickupCharacters.Num() == 0) {
+        Result.ItemTag = GetRandomFromGrade(Pool, GachaIndex);
+        return Result;
+    }
+
+    if (BannerState.bPickupGuaranteed) {
+        BannerState.bPickupGuaranteed = false;
+        Result.ItemTag = Pool.PickupCharacters[0];
+        return Result;
+    }
+
+    if (FMath::FRand() <= Pool.PickupRatio) {
+        int32 Index = FMath::RandRange(0, Pool.PickupCharacters.Num() - 1);
+        Result.ItemTag = Pool.PickupCharacters[Index];
+    }
+    else {
+        Result.ItemTag = GetRandomFromGrade(Pool, GachaIndex);
+        if (BannerData->bGuaranteePickupOnFail) BannerState.bPickupGuaranteed = true;
+    }
+
+    return Result;
+}
+FGameplayTag UARGameInstance::GetRandomFromGrade(const FGachaGradePool& Pool, FGameplayTag GachaIndex)
+{
+    UDataTable* PoolTable = Pool.CommonPoolTable.LoadSynchronous();
+    if (!PoolTable) return FGameplayTag::EmptyTag;
+
+    TArray<FName> RowNames = PoolTable->GetRowNames();
+    TArray<FGameplayTag> ValidList;
+
+    UGameDataSubsystem* DataSubsystem = GetSubsystem<UGameDataSubsystem>();
+    if (!DataSubsystem) return FGameplayTag::EmptyTag;
+
+    static const FGameplayTag CharacterRoot = FGameplayTag::RequestGameplayTag("Arcanum.Player.Grade");
+    static const FGameplayTag ItemRoot = FGameplayTag::RequestGameplayTag("Arcanum.Items.Rarity");
+
+    if (GachaIndex.MatchesTag(CharacterRoot)) {
+        for (const FName& RowName : RowNames) {
+            if (FDTCharacterBaseInfoRow* CharRow = DataSubsystem->GetRow<FDTCharacterBaseInfoRow>(Arcanum::DataTable::CharacterInfo, RowName)) {
+                if (CharRow->BattleCharacterInfo.DefaultGrade == Pool.GradeTag) {
+                    ValidList.Add(CharRow->BattleCharacterInfo.CharacterTag);
+                    continue;
+                }
+            }
+        }
+    }
+    else if (GachaIndex.MatchesTag(ItemRoot)) {
+        for (const FName& RowName : RowNames) {
+            if (FDTEquipmentInfoRow* ItemRow = DataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, RowName)) {
+                if (ItemRow->ItemTag.MatchesTag(Pool.GradeTag)) {
+                    ValidList.Add(ItemRow->ItemTag);
+                    AddRandomEquipmentToInventory(ItemRow);
+                }
+            }
+        }
+    }
+
+    return ValidList.Num() > 0 ? ValidList[FMath::RandRange(0, ValidList.Num() - 1)] : FGameplayTag::EmptyTag;
+}
+void UARGameInstance::AddRandomEquipmentToInventory(FDTEquipmentInfoRow* InRow)
+{
+    if (!InRow || InRow->BaseInfoSteps.Num() == 0) return;
+
+    FEquipmentInfo NewItem;
+    NewItem.ItemTag = InRow->ItemTag;
+    NewItem.ItemGuid = FGuid::NewGuid();
+    NewItem.CurrUpgradeLevel = 0;
+
+    NewItem.Equipment = InRow->BaseInfoSteps[0];
+    for (const FStatRangeDefinition& Range : NewItem.Equipment.RandomStatRanges) {
+        FDerivedStatModifier FinalStat;
+        FinalStat.StatTag = Range.StatTag;
+
+        float MinF = Range.MinValue.Flat;
+        float MaxF = Range.MaxValue.Flat;
+        FinalStat.Value.Flat = FMath::RandRange(FMath::Min(MinF, MaxF), FMath::Max(MinF, MaxF));
+
+        float MinM = Range.MinValue.Mul;
+        float MaxM = Range.MaxValue.Mul;
+        FinalStat.Value.Mul = FMath::RandRange(FMath::Min(MinM, MaxM), FMath::Max(MinM, MaxM));
+        NewItem.Equipment.OnHitTargetStats.Add(FinalStat);
+    }
+
+    PlayerData.Inventory.Add(NewItem);
+
+    //if (NewItem.Equipment.OnHitTargetStats.Num() > 0)
+    //{
+    //    const FDerivedStatModifier& LastStat = NewItem.Equipment.OnHitTargetStats.Last();
+    //    UE_LOG(LogTemp, Log, TEXT("[Gacha_Success] Item: %s | GUID: %s | Stat: %s | Result: (Flat: %.2f, Mul: %.2f)"),
+    //        *NewItem.ItemTag.ToString(),
+    //        *NewItem.ItemGuid.ToString(),
+    //        *LastStat.StatTag.ToString(),
+    //        LastStat.Value.Flat,
+    //        LastStat.Value.Mul);
+    //}
+}
 
 
 
