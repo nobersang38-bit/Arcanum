@@ -124,12 +124,6 @@ void ABattlePlayerController::SetupInputComponent()
 void ABattlePlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	float x;
-	float y;
-	GetMousePosition(x, y);
-	FHitResult HitResult;
-	GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, HitResult);
-	//UE_LOG(LogTemp, Error, TEXT("마우스 위치 : %.0f, %.0f"), x, y);
 }
 
 // ========================================================
@@ -308,41 +302,69 @@ void ABattlePlayerController::AutoManualModePC()
 
 void ABattlePlayerController::ReadySpawnUnit(FGameplayTag InTag)
 {
+	if (!IsUnitUsingEnable(InTag)) return;
+
 	UE_LOG(LogTemp, Error, TEXT("눌렀다"));
 	SpawnTag = InTag;
-	SetupInputMode();
+
+	float X;
+	float Y;
+	GetMousePosition(X, Y);
+	SpawnLocationBackup = FVector(X, Y, 0);
+	//SetupInputMode();
 }
 
 void ABattlePlayerController::SpawnUnit(FGameplayTag InTag)
 {
+	if (!IsUnitUsingEnable(InTag)) return;
+	if (!UsingUnitCost(InTag)) return;
+
+	TrySpawnUnit = 0;
+	GetWorld()->GetTimerManager().ClearTimer(SpawnUnitTimer);
+	GetWorld()->GetTimerManager().SetTimer(SpawnUnitTimer, this, &ABattlePlayerController::Internal_SpawnUnit, 0.001f, true, 0.0f);
+	SetupInputMode();
+}
+
+void ABattlePlayerController::Internal_SpawnUnit()
+{
 	UE_LOG(LogTemp, Error, TEXT("땟다"));
+	TrySpawnUnit++;
+	if (TrySpawnUnit > 100)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(SpawnUnitTimer);
+		return;
+	}
+
 	if (FUnitData* UnitData = UsinAllyUnits.Find(SpawnTag))
 	{
-		//UE_LOG(LogTemp, Error, TEXT("SpawnUnit : %s"), *SpawnTag.ToString());
 		UPoolingSubsystem* PoolingSubsystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
 		if (PoolingSubsystem)
 		{
+
 			FHitResult HitResult;
 			GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, HitResult);
-			UE_LOG(LogTemp, Error, TEXT("ASDLocation : %.0f, %.0f, %.0f"), HitResult.ImpactPoint.X, HitResult.ImpactPoint.Y, HitResult.ImpactPoint.Z);
 
-			
-
-			FVector ReleasedLocation = HUDWidgetInstance->GetSelectUnitDropLocation();
+			float X;
+			float Y;
+			GetMousePosition(X, Y);
+			FVector MouseBackUp = FVector(X, Y, 0);
+			if ((SpawnLocationBackup - MouseBackUp).SquaredLength() < 100.0f)
+			{
+				return;
+			}
 			FTransform Transform;
-			Transform.SetLocation(ReleasedLocation);
+			Transform.SetLocation(HitResult.ImpactPoint);
 			AActor* EnemyUnitInstance = PoolingSubsystem->SpawnFromPool(AllyUnitClass, Transform);
 			ABaseUnitCharacter* EnemyUnitCharacter = Cast<ABaseUnitCharacter>(EnemyUnitInstance);
 			if (EnemyUnitCharacter)
 			{
 				EnemyUnitCharacter->SetUnit(*UnitData);
-				FString Result = FString::Printf(TEXT("ASDLocation : %.0f, %.0f, %.0f\tUnitData : %s"), HitResult.ImpactPoint.X, HitResult.ImpactPoint.Y, HitResult.ImpactPoint.Z, *UnitData->Info.InfoSetting.Tag.ToString());
-				//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, *Result);
+				GetWorld()->GetTimerManager().ClearTimer(SpawnUnitTimer);
+				UE_LOG(LogTemp, Error, TEXT("ASDLocation : %.0f, %.0f, %.0f"), HitResult.ImpactPoint.X, HitResult.ImpactPoint.Y, HitResult.ImpactPoint.Z);
+				return;
 			}
-			//UE_LOG(LogTemp, Error, TEXT("HitResult : %s"), *HitResult.ImpactPoint.ToString());
 		}
 	}
-	SetupInputMode();
 }
 
 bool ABattlePlayerController::UseMeatValue(float Value)
@@ -367,6 +389,98 @@ bool ABattlePlayerController::UseManaValue(float Value)
 	}
 
 	return false;
+}
+
+bool ABattlePlayerController::UseCoolTime(FGameplayTag InTag)
+{
+	if (!IsUnitUsingEnable(InTag)) return false;
+	FUnitData* UnitData = UsinAllyUnits.Find(InTag);
+
+	UnitData->Info.InfoSetting.CoolTime.Current = UnitData->Info.InfoSetting.CoolTime.BaseMax;
+
+	FTimerDelegate CoolTimeDelegate;
+	float TickInterval = 0.01f;
+	CoolTimeDelegate.BindUObject(this, &ABattlePlayerController::Internal_UnitCoolTimeTick, UnitData->Info.InfoSetting.Tag, TickInterval);
+
+	FTimerHandle* CoolTimeHandle = nullptr;
+	if (FTimerHandle* InternalCoolTimeHandle = CoolTimeHandles.Find(InTag))
+	{
+		CoolTimeHandle = InternalCoolTimeHandle;
+	}
+	else
+	{
+		CoolTimeHandle = &CoolTimeHandles.Add(InTag, FTimerHandle());
+	}
+
+	if (CoolTimeHandle)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(*CoolTimeHandle);
+		GetWorld()->GetTimerManager().SetTimer(*CoolTimeHandle, CoolTimeDelegate, TickInterval, true);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool ABattlePlayerController::IsUnitUsingEnable(FGameplayTag InTag)
+{
+	if (!InTag.IsValid()) return false;
+	if (!UsinAllyUnits.Contains(InTag)) return false;
+
+	FUnitData UnitData = *UsinAllyUnits.Find(InTag);
+
+	//쿨타임 체크하고 고기 코스트 체크
+	if (UnitData.Info.InfoSetting.CoolTime.Current <= 0.0f && 
+		UnitData.Info.InfoSetting.MeatCost <= MeatValue.Current)
+	{
+		return true;
+	}
+	
+	return false;
+}
+
+bool ABattlePlayerController::UsingUnitCost(FGameplayTag InTag)
+{
+	if (!IsUnitUsingEnable(InTag)) return false;
+	FUnitData* UnitData = UsinAllyUnits.Find(InTag);
+
+	// 고기 사용
+	if (!UseMeatValue(UnitData->Info.InfoSetting.MeatCost))
+	{
+		return false;
+	}
+
+	// 쿨타임 돌기
+	if (!UseCoolTime(InTag))
+	{
+		return false;
+	}
+
+	return true;
+}
+
+void ABattlePlayerController::Internal_UnitCoolTimeTick(FGameplayTag InTag, float TickInterval)
+{
+	if (FUnitData* UnitData = UsinAllyUnits.Find(InTag))
+	{
+		float& CurrentCoolTime = UnitData->Info.InfoSetting.CoolTime.Current;
+		float& MaxCoolTime = UnitData->Info.InfoSetting.CoolTime.BaseMax;
+		CurrentCoolTime -= TickInterval;
+		CurrentCoolTime = FMath::Clamp(CurrentCoolTime, 0.0f, MaxCoolTime);
+
+		// 사용할 수 있게되면 타이머 정지
+		if (CurrentCoolTime <= 0.0f)
+		{
+			FTimerHandle* TimerHandle = CoolTimeHandles.Find(InTag);
+			if (TimerHandle)
+			{
+				GetWorld()->GetTimerManager().ClearTimer(*TimerHandle);
+				return;
+			}
+		}
+	}
 }
 
 // ========================================================

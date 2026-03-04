@@ -6,6 +6,7 @@
 #include "UObject/NoExportTypes.h"
 #include "GameplayTagContainer.h"
 #include "Data/DataAssets/DATargetPriorityWeight.h"
+#include "DataInfo/CommonData/Stats/FBattleStats.h"
 #include "BaseUnitData.generated.h"
 
 class UATTAnimPlayData;
@@ -57,6 +58,10 @@ public:
 	// 해당 유닛의 고기 기본 사용량
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")
 	float MeatCost = 10.0f;
+
+	// 아군 생성 쿨 타임
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")
+	FRegenStat CoolTime;
 
 	// 해당 객체의 이름
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")

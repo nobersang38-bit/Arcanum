@@ -28,8 +28,8 @@ class ARCANUM_API UInBattleHUDWidget : public UUserWidget
 #pragma region 언리얼 기본 생성 및 초기화
 protected:
 	virtual void NativeConstruct() override;
-	// 드롭 이벤트 처리
-	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+	//// 드롭 이벤트 처리
+	//virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 #pragma endregion
 
 

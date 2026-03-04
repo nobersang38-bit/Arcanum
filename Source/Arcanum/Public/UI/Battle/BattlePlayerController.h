@@ -125,6 +125,9 @@ protected:
 	UFUNCTION()
 	void SpawnUnit(FGameplayTag InTag);
 
+	UFUNCTION()
+	void Internal_SpawnUnit();
+
 	// 사용할 고기
 	UFUNCTION()
 	bool UseMeatValue(float Value);
@@ -132,7 +135,24 @@ protected:
 	// 사용할 마나
 	UFUNCTION()
 	bool UseManaValue(float Value);
+
+	// 쿨타임
+	UFUNCTION()
+	bool UseCoolTime(FGameplayTag InTag);
 #pragma endregion
+
+#pragma region 내부 함수
+	UFUNCTION()
+	bool IsUnitUsingEnable(FGameplayTag InTag);
+
+	UFUNCTION()
+	bool UsingUnitCost(FGameplayTag InTag);
+
+	// 쿨타임을 계속 줄임
+	UFUNCTION()
+	void Internal_UnitCoolTimeTick(FGameplayTag InTag, float TickInterval);
+#pragma endregion
+
 
 
 #pragma region 인풋모드 설정
@@ -193,6 +213,9 @@ protected:
 	UPROPERTY()
 	TMap<FGameplayTag, FUnitData> UsinAllyUnits;
 
+	UPROPERTY()
+	TMap<FGameplayTag, FTimerHandle> CoolTimeHandles;
+
 	// Todo KDH : 데이터 가져오게 변경해야함
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FRegenStat MeatValue;
@@ -202,8 +225,12 @@ protected:
 
 	FTimerHandle MeatTimer;
 	FTimerHandle ManaTimer;
+	FTimerHandle SpawnUnitTimer;
 
 	FGameplayTag SpawnTag;
+
+	FVector SpawnLocationBackup = FVector::ZeroVector;
+	int32 TrySpawnUnit = 0;
 
 private:
 	FTimerHandle PlayerLocationProgressTimeHandle;
