@@ -13,6 +13,8 @@
 void UARGameInstance::Init()
 {
     Super::Init();
+
+    InitializeGameData();
 }
 void UARGameInstance::InitializeGameData()
 {

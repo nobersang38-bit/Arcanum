@@ -5,6 +5,7 @@
 #include "DataInfo/PlayerData/FPlayerData.h"
 #include "Core/Interfaces/IPlayerAccountService.h"
 #include "DataInfo/BattleCharacter/Equipment/DataTable/DTEquipment.h"
+#include "DataInfo/BattleCharacter/CharacterInfo/DataTable/DTCharacterBaseInfo.h"
 #include "DataInfo/GachaData/DataTable/DTGachaBannerData.h"
 #include "ARPlayerAccountService.generated.h"
 
@@ -32,6 +33,8 @@ struct FShopItemPools
 };
 
 class UARGameInstance;
+struct FGachaItemResult;
+enum class EHUDIndex : uint8;
 
 /**
  * PlayerAccountService
@@ -84,8 +87,18 @@ public:
     static const FPlayerQuest GetQuestState(const UObject* WorldContextObject);
 #pragma endregion
 
+#pragma region 레벨 변경 시 호출 함수
+	/** 레벨 변경 후 되돌아올때, 현재 HUD 위치 저장하는 함수*/
+	static void SetHUDIndex(const UObject* WorldContextObject, const int HudIndex);
+	static void SetHUDIndex(const UObject* WorldContextObject, const EHUDIndex HudIndex);
+	static int32 GetHUDIndex(const UObject* WorldContextObject);
+#pragma endregion
+
+
 #pragma region PlayerData Updater
 public:
+	/** 간편 재화 추가 */
+	static const bool AddCurrency(const UObject* WorldContextObject, FGameplayTag Tag, int64 Amount);
 	/** 플레이어 재화 변경할때*/
 	static const FPlayerCurrency UpdateCurrency(const UObject* WorldContextObject, const FPlayerData& PlayerData, FGameplayTag Tag, int64 Amount);
 private:
@@ -172,7 +185,10 @@ public:
 	static const FDTGachaBannerDataRow* GetGachaBannerData(const UObject* WorldContextObject, FGameplayTag InBannerTag);
 	static void GetActiveGachaBannerRows(const UObject* WorldContextObject, TArray<const FDTGachaBannerDataRow*>& OutRows);
 	static bool RequestGachaExecution(const UObject* WorldContextObject, const FPlayerData& PlayerData, FGameplayTag BannerTag, FCurrencyCost Cost, int32 PullCount);
+	static TArray<FGachaItemResult> GenerateGachaResults(const FDTGachaBannerDataRow* BannerData, int32 PullCount);
 private:
+	static FGameplayTag DetermineGrade(const TArray<FGachaRarityProbability>& Probabilities);
+	static FGameplayTag GetRandomTagFromDT(UDataTable* Table);
 #pragma endregion
 
 };

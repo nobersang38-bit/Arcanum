@@ -66,8 +66,57 @@ const FPlayerQuest FPlayerAccountService::GetQuestState(const UObject* WorldCont
 	return GetPlayerDataCopy(WorldContextObject).QuestState;
 }
 // ========================================================
+// 레벨 변경 시 호출 함수
+// ========================================================
+void FPlayerAccountService::SetHUDIndex(const UObject* WorldContextObject, const int HudIndex)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) {
+		UE_LOG(LogTemp, Error, TEXT("Invalid WorldContext or GameInstance!"));
+		return;
+	}
+
+	GI->HUDIndex = static_cast<EHUDIndex>(GI->HUDIndex);
+}
+void FPlayerAccountService::SetHUDIndex(const UObject* WorldContextObject, const EHUDIndex HudIndex)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) {
+		UE_LOG(LogTemp, Error, TEXT("Invalid WorldContext or GameInstance!"));
+		return;
+	}
+
+	GI->HUDIndex = HudIndex;
+}
+int32 FPlayerAccountService::GetHUDIndex(const UObject* WorldContextObject)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+
+	if (!GI) {
+		UE_LOG(LogTemp, Error, TEXT("Invalid WorldContext or GameInstance!"));
+		return 0;
+	}
+
+	return static_cast<int32>(GI->HUDIndex);
+}
+// ========================================================
 // PlayerData Updater
 // ========================================================
+const bool FPlayerAccountService::AddCurrency(const UObject* WorldContextObject, FGameplayTag Tag, int64 Amount)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI || !Tag.IsValid() || Amount == 0) return false;
+
+	int64 CurrentOwned = GI->GetCurrencyAmount(Tag);
+	if (Amount < 0 && CurrentOwned < FMath::Abs(Amount)) {
+		UE_LOG(LogTemp, Warning, TEXT("UpdateCurrency Failed: Not enough currency."));
+		return false;
+	}
+
+	GI->AddCurrency(Tag, Amount);
+	GI->SavePlayerData();
+	return true;
+}
 const FPlayerCurrency FPlayerAccountService::UpdateCurrency(const UObject* WorldContextObject, const FPlayerData& PlayerData, FGameplayTag Tag, int64 Amount)
 {
 	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
@@ -207,36 +256,6 @@ bool FPlayerAccountService::PurchaseEquipment(const UObject* WorldContextObject,
 
 	GI->SavePlayerData();
 	return true;
-
-	//if (!GameInstance) return false;
-
-	//UGameDataSubsystem* DataSubsystem = GameInstance->GetSubsystem<UGameDataSubsystem>();
-	//if (!DataSubsystem) return false;
-
-	//FPlayerData& PlayerData = GameInstance->GetPlayerData();
-	//const FDTEquipmentInfoRow* Row = DataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, RowName);
-
-	//if (!Row) return false;
-	//if (Row->BaseInfoSteps.IsEmpty()) return false;
-
-	//FCurrencyData* CurrencyData = PlayerData.PlayerCurrency.CurrencyDatas.Find(Arcanum::PlayerData::Currencies::NonRegen::Gold::Value);
-
-	//if (!CurrencyData) return false;
-
-	//const int64 Price = static_cast<int64>(Row->BuyPrice);
-	//if (CurrencyData->CurrAmount < Price) return false;
-
-	//FEquipmentInfo NewEquip;
-	//NewEquip.ItemTag = Row->ItemTag;
-	//NewEquip.ItemGuid = FGuid::NewGuid();
-	//NewEquip.CurrUpgradeLevel = 0;
-	//NewEquip.Equipment = Row->BaseInfoSteps[0];
-	//PlayerData.Inventory.Add(MoveTemp(NewEquip));
-	//CurrencyData->CurrAmount -= Price;
-
-	//GameInstance->SavePlayerData();
-
-	//return true;
 }
 const FDTEquipmentInfoRow* FPlayerAccountService::GetItemDefinition(UGameDataSubsystem* DataSubsystem, const FGameplayTag& ItemTag)
 {
@@ -614,14 +633,89 @@ void FPlayerAccountService::GetActiveGachaBannerRows(const UObject* WorldContext
 }
 bool FPlayerAccountService::RequestGachaExecution(const UObject* WorldContextObject, const FPlayerData& PlayerData,FGameplayTag BannerTag, FCurrencyCost Cost, int32 PullCount)
 {
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	if (!World) return false;
+
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return false;
+
+	UGameDataSubsystem* DataSubsystem = GI->GetSubsystem<UGameDataSubsystem>();
+	if (!DataSubsystem) return false;
+
+	UDataTable** TablePtr = DataSubsystem->MasterDataTables.Find(Arcanum::DataTable::GachaTable);
+	if (!TablePtr || !(*TablePtr)) return false;
+
+	TArray<FDTGachaBannerDataRow*> AllRows;
+	(*TablePtr)->GetAllRows<FDTGachaBannerDataRow>(TEXT("GachaContext"), AllRows);
+	FDTGachaBannerDataRow* SelectedBannerData = nullptr;
+	for (auto* Row : AllRows) {
+		if (Row->BannerTag == BannerTag) {
+			SelectedBannerData = Row;
+			break;
+		}
+	}
+	if (!SelectedBannerData) return false;
+
 	int64 SpendAmount = (PullCount == 1) ? (int64)Cost.SinglePullCost : (int64)Cost.MultiPullCost;
+	FPlayerCurrency PlayerCurrency = GetPlayerCurrency(WorldContextObject);
+	FCurrencyData* TargetData = PlayerCurrency.CurrencyDatas.Find(Cost.ConsumptionCurrencyTag);
+
+	if (!TargetData || TargetData->CurrAmount < SpendAmount) return false;
+
 	UpdateCurrency(WorldContextObject, PlayerData, Cost.ConsumptionCurrencyTag, -SpendAmount);
-
-	// 4. 가챠 결과 계산 (가챠 로직 전담 클래스가 있다면 호출)
-	// TArray<FGachaItemResult> Results = GenerateGachaResults(BannerTag, PullCount);
-
-	// 5. 결과 아이템 지급 (인벤토리 추가)
-	// GrantGachaRewards(WorldContextObject, Results);
+	GI->GachaItemResult = GenerateGachaResults(SelectedBannerData, PullCount);
 
 	return true;
+}
+TArray<FGachaItemResult> FPlayerAccountService::GenerateGachaResults(const FDTGachaBannerDataRow* BannerData, int32 PullCount)
+{
+	TArray<FGachaItemResult> Results;
+	if (!BannerData) return Results;
+
+	for (int32 i = 0; i < PullCount; ++i) {
+		FGameplayTag SelectedGradeTag = DetermineGrade(BannerData->RarityProbabilities);
+		const FGachaGradePool* SelectedPool = BannerData->GradePools.FindByPredicate([&](const FGachaGradePool& Pool) { return Pool.GradeTag == SelectedGradeTag; });
+
+		if (!SelectedPool) continue;
+		float RandRoll = FMath::FRand();
+		if (SelectedPool->PickupCharacters.Num() > 0 && RandRoll <= SelectedPool->PickupRatio) {
+			int32 RandomIdx = FMath::RandRange(0, SelectedPool->PickupCharacters.Num() - 1);
+			Results.Add({ SelectedPool->PickupCharacters[RandomIdx], nullptr });
+		}
+		else {
+			UDataTable* TargetDT = SelectedPool->CommonPoolTable.LoadSynchronous();
+			if (TargetDT) {
+				FGameplayTag RandomItemTag = GetRandomTagFromDT(TargetDT);
+				Results.Add({ RandomItemTag, TargetDT });
+			}
+		}
+	}
+
+	return Results;
+}
+FGameplayTag FPlayerAccountService::DetermineGrade(const TArray<FGachaRarityProbability>& Probabilities)
+{
+	float RandVal = FMath::FRand();
+	float CumulativeProb = 0.0f;
+
+	for (const auto& Prob : Probabilities) {
+		CumulativeProb += Prob.Probability;
+		if (RandVal <= CumulativeProb) return Prob.GradeTag;
+	}
+	return Probabilities.Last().GradeTag;
+}
+
+FGameplayTag FPlayerAccountService::GetRandomTagFromDT(UDataTable* Table)
+{
+	if (!Table) return FGameplayTag::EmptyTag;
+
+	TArray<FName> RowNames = Table->GetRowNames();
+	if (RowNames.Num() == 0) return FGameplayTag::EmptyTag;
+
+	int32 RandomIdx = FMath::RandRange(0, RowNames.Num() - 1);
+	FName TargetRowName = RowNames[RandomIdx];
+
+	auto* RowData = Table->FindRow<FDTCharacterBaseInfoRow>(TargetRowName, TEXT("GachaContext"));
+	if (RowData) return RowData->BattleCharacterInfo.CharacterTag;
+	else return FGameplayTag::EmptyTag;
 }

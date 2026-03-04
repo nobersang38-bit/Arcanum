@@ -25,6 +25,37 @@ enum class EGameErrCode : uint8
 };
 
 
+UENUM(BlueprintType)
+enum class EHUDIndex : uint8
+{
+    BattleMenu = 0,
+    CharacterMenu = 1,
+    EnhancementMenu = 2,
+    ShopMenu = 3,
+    GachaMenu = 4,
+};
+
+USTRUCT(BlueprintType)
+struct FGachaItemResult
+{
+    GENERATED_BODY()
+
+    // 1. 뽑힌 대상의 식별자 (캐릭터 태그, 아이템 태그 등)
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    FGameplayTag ItemTag;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TSoftObjectPtr<UDataTable> SourceTable;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    int32 Quantity = 1;
+
+    FGachaItemResult() {}
+    FGachaItemResult(FGameplayTag InTag, UDataTable* InTable, int32 InQty = 1)
+        : ItemTag(InTag), SourceTable(InTable), Quantity(InQty) {
+    }
+};
+
 /* 재화 변경 알림 */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCurrencyChanged); //
 
@@ -93,6 +124,11 @@ protected:
     const FString SaveSlotName = TEXT("MainSaveSlot");
 #pragma endregion
 
+#pragma region 저장 안하는 놈들
+private:
+    UPROPERTY(Transient) EHUDIndex HUDIndex = EHUDIndex::CharacterMenu;
+    UPROPERTY(Transient) TArray<FGachaItemResult> GachaItemResult;
+#pragma endregion
 
 
 

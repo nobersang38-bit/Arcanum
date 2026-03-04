@@ -3,12 +3,14 @@
 #include "UI/Lobby/Contents/Gacha/SubLayout/GachaProbabilityWidget.h"
 #include "UI/Lobby/Contents/Gacha/SubLayout/GachaBannerButtonWidget.h"
 
-#include "Core/ARPlayerAccountService.h"
-
 #include "Components/Image.h"
 #include "Components/Button.h"
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
+
+#include "Core/ARGameInstance.h"
+#include "Core/ARPlayerAccountService.h"
+#include "Kismet/GameplayStatics.h"
 
 // ========================================================
 // 언리얼 기본생성 / 초기화
@@ -117,6 +119,8 @@ void UGachaHUDWidget::UpdateDetailedImage(TSoftObjectPtr<UTexture2D> NewTexture)
 // ========================================================
 void UGachaHUDWidget::RequestGacha(int32 InPullCount)
 {
+    FPlayerAccountService::UpdateCurrency(this, ParentLobby->CachedPlayerData, Arcanum::PlayerData::Currencies::NonRegen::Soul::Value, 10000);
+    ParentLobby->CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
     if (!CurrentSelectedButton) {
         UE_LOG(LogTemp, Warning, TEXT("No Banner Selected!"));
         return;
@@ -127,8 +131,8 @@ void UGachaHUDWidget::RequestGacha(int32 InPullCount)
 
     if (bSuccess) {
         UE_LOG(LogTemp, Log, TEXT("Gacha Request Success: %d Times"), InPullCount);
-
-        /// Todo : 가챠레벨로 진입(현재 창 Transit으로 Gameinstance쪽에 저장해야함)
+        FPlayerAccountService::SetHUDIndex(this, EHUDIndex::GachaMenu);
+        UGameplayStatics::OpenLevel(GetWorld(), FName("GachaMap"));
     }
     else UE_LOG(LogTemp, Error, TEXT("Gacha Request Failed (Insufficient Currency?)"));
     
@@ -142,7 +146,7 @@ void UGachaHUDWidget::HandleProbabilityButtonClicked()
         ESlateVisibility CurrentVis = ProbabilityWidget->GetVisibility();
         ProbabilityWidget->SetVisibility(CurrentVis == ESlateVisibility::Visible ? ESlateVisibility::Collapsed : ESlateVisibility::Visible);
         if (ProbabilityWidget->GetVisibility() == ESlateVisibility::Visible) {
-            // ProbabilityWidget->UpdateData(CurrentBannerData);
+             //ProbabilityWidget->UpdateData(CurrentBannerData);
         }
     }
 }
