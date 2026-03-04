@@ -39,21 +39,51 @@ void UCharacterInfo::SetCharacterName(FName CharacterName)
     }
 }
 
-void UCharacterInfo::SetStarCharcterInfo(int32 Grade)
+void UCharacterInfo::SetStarCharcterInfo(int32 StarGrade)
 {
     if (GradeStarsText)
     {
         FString Stars;
 
-        if (Grade > 0) {
-
-            for (int32 i = 1; i < Grade; i++)
-            {
-                Stars += TEXT("★");
-            }
+        // 1부터 시작함 (1일때 보유만, 2 - 1성)
+        for (int32 i = 1; i < StarGrade; i++)
+        {
+            Stars += TEXT("★");
         }
 
         GradeStarsText->SetText(FText::FromString(Stars));
+    }
+}
+
+void UCharacterInfo::SetGradeCharcterInfo(int32 Grade)
+{
+    FText TargetText;
+    FLinearColor TargetColor = FLinearColor::Black;
+
+    switch (Grade)
+    {
+    case 0:  
+        TargetText = FText::FromString(TEXT("Common")); 
+        TargetColor = FLinearColor::White; 
+        break;
+    case 1:  
+        TargetText = FText::FromString(TEXT("Rare"));   
+        TargetColor = FLinearColor(0.7f, 0.3f, 1.0f, 1.0f); 
+        break;
+    case 2:  
+        TargetText = FText::FromString(TEXT("Epic"));   
+        TargetColor = FLinearColor::Yellow; 
+        break;
+    default: return; 
+    }
+
+    if (GradeText)
+    {
+        GradeText->SetText(TargetText);
+
+        FSlateFontInfo NewFontInfo = GradeText->GetFont();
+        NewFontInfo.OutlineSettings.OutlineColor = TargetColor;
+        GradeText->SetFont(NewFontInfo);
     }
 }
 

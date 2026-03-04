@@ -36,7 +36,10 @@ public:
 	void SetCharacterName(FName CharacterName);
 
 	UFUNCTION(BlueprintCallable)
-	void SetStarCharcterInfo(int32 Grade);
+	void SetStarCharcterInfo(int32 StarGrade);
+
+	UFUNCTION(BlueprintCallable)
+	void SetGradeCharcterInfo(int32 Grade);
 	
 	//UFUNCTION(BlueprintCallable)
 	//void SetCharcterInfo();
@@ -51,6 +54,9 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> GradeStarsText;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> GradeText;
 	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> CharacterInfoText;

@@ -151,6 +151,7 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
 {
     UE_LOG(LogTemp, Warning, TEXT("클릭한 캐릭터 슬롯 태그 : %s"), *CharacterName.ToString());
     int32 CharacterStar = 0;
+    int32 CharacterGrade = 0;
 
     // 선택된 캐릭터만 bSelection true로 변경하기
     for (int32 i = 0; i < ParentLobby->CachedPlayerData.OwnedCharacters.Num(); i++)
@@ -166,6 +167,7 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
         if (bIsSelected)
         {
             CharacterStar = TargetData.CharacterInfo.CurrentLevel;
+            CharacterGrade = GetGradePriority(TargetData.CharacterInfo.CurrGrade);
         }
 
         if (CreatedCharacterSlots.IsValidIndex(i))
@@ -185,6 +187,7 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
             InfoWidget->SetCharacterName(CharacterName);
             InfoWidget->SetStarCharcterInfo(CharacterStar);
             InfoWidget->SetEnhanceButtonEnabled(SlotCharacterOwned);
+            InfoWidget->SetGradeCharcterInfo(CharacterGrade);
         }
     }
     
