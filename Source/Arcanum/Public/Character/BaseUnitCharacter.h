@@ -10,22 +10,17 @@
 #include "Interface/UnitDataInterface.h"
 #include "Interface/RuntimeUnitDataInterface.h"
 #include "Interface/CombatInterface.h"
+#include "Interface/PoolingInterface.h"
 #include "BaseUnitCharacter.generated.h"
 
 // 김도현
 // 베이스 유닛 클래스
 UCLASS()
-class ARCANUM_API ABaseUnitCharacter : public ACharacter, public ITeamInterface, public IUnitDataInterface, public IRuntimeUnitDataInterface, public ICombatInterface
+class ARCANUM_API ABaseUnitCharacter : public ACharacter, public ITeamInterface, public IUnitDataInterface, public IRuntimeUnitDataInterface, public ICombatInterface, public IPoolingInterface
 {
 	GENERATED_BODY()
 public:
 #pragma region Debug
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "00_Test")
-	//float Speed = 400.0f;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "00_Test")
-	//float Range = 200.0f;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "00_Test")
 	bool RandomRvoWeight = false;
 #pragma endregion
@@ -33,9 +28,11 @@ public:
 	ABaseUnitCharacter();
 
 public:
+	void SetUnit(FUnitData InUnitData);
+
 	virtual FGameplayTag GetTeamTag() override;
 
-	//class UCharacterBattleStatsComponent* GetCharacterBattleStatsComponent() { return CharacterBattleStatsComponent; }
+	class UCharacterBattleStatsComponent* GetCharacterBattleStatsComponent() { return CharacterBattleStatsComponent; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -46,13 +43,17 @@ protected:
 
 	// IUnitDataInterface을(를) 통해 상속됨
 	const FUnitData& GetUnitData() override;
+	virtual bool GetIsDead() override;
+
+	void UnitActivate();
+	void UnitDeactive();
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<class UUnitCombatComponent> UnitCombatComponent = nullptr;
+	TObjectPtr<class UUnitCombatComponent> UnitCombatComponent0 = nullptr;
 
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	//TObjectPtr<class UCharacterBattleStatsComponent> CharacterBattleStatsComponent = nullptr;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<class UCharacterBattleStatsComponent> CharacterBattleStatsComponent = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<class UWidgetComponent> HealthBarComponent = nullptr;
@@ -60,6 +61,9 @@ protected:
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MainData")
 	FDataTableRowHandle DTUnitDataRowHandle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MainData")
+	TObjectPtr<UDataTable> DTUnitDataTable = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MainData")
 	FUnitData UnitData;
@@ -79,5 +83,11 @@ private:
 	UFUNCTION()
 	void RecievedDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
+	void UpdateUnitData();
 
+	bool IsSetupUnit = false;
+
+	// IPoolingInterface을(를) 통해 상속됨
+	void ActivateItem() override;
+	void DeactiveItem() override;
 };

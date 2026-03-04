@@ -20,14 +20,19 @@ class ARCANUM_API UBattleHealthBarWidget : public UUserWidget
 protected:
 	virtual void NativeConstruct() override;
 #pragma endregion
+
+
 public:
 	UFUNCTION()
 	void SetHealthProgress(float CurrentHealth, float MaxHealth);
 
+
+#pragma region 위젯 바인딩
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UProgressBar> HealthProgress = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UTextBlock> HealthText = nullptr;
+#pragma endregion
 };

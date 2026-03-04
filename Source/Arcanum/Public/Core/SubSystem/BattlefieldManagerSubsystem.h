@@ -7,6 +7,9 @@
 #include "Data/Types/CombatStageData.h"
 #include "Data/Types/MatchData.h"
 #include "DataInfo/PlayerData/FPlayerData.h"
+#include "Data/DataAssets/EnemyWaveData.h"
+#include "Data/Types/UnitData.h"
+#include "Data/Types/BattleStageInfo.h"
 #include "BattlefieldManagerSubsystem.generated.h"
 
 USTRUCT(BlueprintType)
@@ -16,6 +19,10 @@ struct FInBattleData
 public:
 	FPlayerBattleData PlayerBattleData;
 	FBattleCharacterData BattleCharacterData;
+	FBattleStageInfo BattleStageInfo;
+	
+	UPROPERTY()
+	TArray<FUnitData> AllyUnits;
 };
 
 
@@ -43,30 +50,47 @@ public:
 	FORCEINLINE void SetStageData(const FCombatStageData& InData) { StageData = InData; }
 
 	UFUNCTION(BlueprintCallable)
-	ACharacter* GetAllyNexus() const;
+	AActor* GetBasement(FGameplayTag InTeamTag) const;
 
-	UFUNCTION(BlueprintCallable)
-	ACharacter* GetEnemyNexus() const;
+	FBasementStat GetBasementStat(FGameplayTag InTeamTag) const;
 
-	UFUNCTION(BlueprintCallable)
-	void SetAllyNexus(ACharacter* InNexus);
-
-	UFUNCTION(BlueprintCallable)
-	void SetEnemyNexus(ACharacter* InNexus);
+	UFUNCTION()
+	void AddBasement(AActor* InNexus, FGameplayTag InTeamTag);
 
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE ABattlefieldManagerActor* GetBattlefieldManagerActor() { return BattlefieldManagerActor.Get(); }
 
 	UFUNCTION()
 	void SetABattlefieldManagerActor(ABattlefieldManagerActor* InBattlefieldManagerActor);
+
+	UFUNCTION()
+	const TArray<FUnitData>& GetUsingAllyUnitData();
+
+	UFUNCTION()
+	FUnitData GetAllyUnitData(FGameplayTag InUnitTag, bool& OutResult) const;
+	UFUNCTION()
+	FUnitData GetEnemyUnitData(FGameplayTag InUnitTag, bool& OutResult) const;
+
+	UFUNCTION()
+	void StartTime();
+
+	UFUNCTION()
+	void StopTime();
+
 #pragma endregion
+
+#pragma region 디버그
+	void DebugSetUsingAllyUnits();
+#pragma endregion
+
 
 #pragma region 중요정보 및 설정
 
 	// 현재 스테이지 플레이 정보(진행중인지, 종료했는지 종료됐다면 승리했는지)
 	FORCEINLINE const FMatchData& GetCurrentMatchData() { return CurrentMatchData; }
 
-	void SetPlayerData(const FPlayerData& InPlayerData, FInBattleData& OutInBattleData);
+	FORCEINLINE const FInBattleData& GetInBattleData() const { return InBattleData; }
+	void SetInBattleData(const FPlayerData& InPlayerData, FInBattleData& OutInBattleData);
 	/*
 	필요한 정보
 	유닛들
@@ -79,21 +103,42 @@ public:
 
 protected:
 	UFUNCTION()
-	void SetCurrentMatchData(const FMatchData& InData);
+	void CheckMatchEnded(int32 Time);
+
+#pragma region 디버그
+	void SetupUnits();
+#pragma endregion
+
 
 protected:
 #pragma region 스테이지 기본설정
 	FCombatStageData StageData;
-
-	UPROPERTY()
-	TWeakObjectPtr<ACharacter> AllyNexus = nullptr;
-	UPROPERTY()
-	TWeakObjectPtr<ACharacter> EnemyNexus = nullptr;
 
 	FMatchData CurrentMatchData;
 
 	UPROPERTY()
 	TWeakObjectPtr<ABattlefieldManagerActor> BattlefieldManagerActor = nullptr;
 #pragma endregion
+
 	FInBattleData InBattleData;
+
+	UPROPERTY()
+	TMap<FGameplayTag, AActor*> Basements;
+
+	UPROPERTY()
+	TMap<FGameplayTag, FBasementStat> BasementStats;
+
+	UPROPERTY()
+	TMap<FGameplayTag, FUnitData> AllyUnitDatas;
+
+	UPROPERTY()
+	TMap<FGameplayTag, FUnitData> EnemyUnitDatas;
+
+protected:
+#pragma region 디버그(나중에 삭제)
+	void DebugBasementSet();
+	UFUNCTION()
+	void DebugEndedMessage(const FMatchData& MatchData);
+#pragma endregion
+
 };

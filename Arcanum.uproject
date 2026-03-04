@@ -11,7 +11,8 @@
 			"AdditionalDependencies": [
 				"Engine",
 				"DeveloperSettings",
-				"UMG"
+				"UMG",
+				"CoreUObject"
 			]
 		}
 	],
@@ -50,6 +51,14 @@
 		{
 			"Name": "LinuxDeviceProfileSelector",
 			"Enabled": false
+		},
+		{
+			"Name": "AnimToTexture",
+			"Enabled": true
+		},
+		{
+			"Name": "CommonUI",
+			"Enabled": true
 		}
 	]
 }

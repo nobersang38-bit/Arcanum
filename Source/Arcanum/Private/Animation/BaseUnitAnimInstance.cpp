@@ -31,6 +31,8 @@ void UBaseUnitAnimInstance::TickUpdate()
 	if (OwnerCharacter.IsValid())
 	{
 		Velocity = OwnerCharacter->GetVelocity().SquaredLength();
+		VelocityRatio = Velocity * VelocityRatioFactor;
+		VelocityRatio = FMath::Clamp(VelocityRatio, 0.0f, 1.0f);
 	}
 }
 

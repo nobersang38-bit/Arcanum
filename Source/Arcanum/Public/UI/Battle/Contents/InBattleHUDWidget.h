@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "NativeGameplayTags.h"
 #include "InBattleHUDWidget.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnClickActionButton);
@@ -27,6 +28,8 @@ class ARCANUM_API UInBattleHUDWidget : public UUserWidget
 #pragma region 언리얼 기본 생성 및 초기화
 protected:
 	virtual void NativeConstruct() override;
+	// 드롭 이벤트 처리
+	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 #pragma endregion
 
 
@@ -81,6 +84,13 @@ protected:
 
 	UFUNCTION()
 	void ToggleAutoManualMode(bool bIsChecked);
+
+public:
+	UFUNCTION()
+	const FGameplayTag& GetSelectUnitTag() const {return SelectedUnitTag;}
+
+	UFUNCTION()
+	const FVector& GetSelectUnitDropLocation() const {return SelectedUnitDropLocation;}
 #pragma endregion
 
 #pragma region 플레이어 유닛, 코스트 패널
@@ -129,4 +139,7 @@ protected:
 	TObjectPtr<UBattleAllyUnitPanelWidget> PlayerInfoPanel = nullptr;
 #pragma endregion
 
+private:
+	FGameplayTag SelectedUnitTag;
+	FVector SelectedUnitDropLocation;
 };

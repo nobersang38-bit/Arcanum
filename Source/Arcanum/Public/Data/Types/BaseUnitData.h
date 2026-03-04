@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "GameplayTagContainer.h"
+#include "Data/DataAssets/DATargetPriorityWeight.h"
 #include "BaseUnitData.generated.h"
 
 class UATTAnimPlayData;
@@ -18,11 +19,11 @@ struct FUnitRuntimeData
 public:
 	// 나를 때리려고하는 적은 누구누구인가
 	UPROPERTY()
-	TSet<TWeakObjectPtr<ACharacter>> AttackingTargets;
+	TSet<TWeakObjectPtr<AActor>> AttackingTargets;
 
 	// 내가 발견한 엘리트 적, 엘리트 적이 없다면 비어있음
 	UPROPERTY()
-	TSet<TWeakObjectPtr<ACharacter>> Elites;
+	TSet<TWeakObjectPtr<AActor>> Elites;
 };
 
 // 김도현
@@ -53,6 +54,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")
 	TSubclassOf<class ABaseUnitCharacter> CharacterType = nullptr;
 
+	// 해당 유닛의 고기 기본 사용량
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")
+	float MeatCost = 10.0f;
+
 	// 해당 객체의 이름
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")
 	FText Name = FText::FromString(TEXT("이름"));
@@ -63,11 +68,11 @@ public:
 
 	// 인게임의 유닛을 선택하거나 작게 보여줄 아이콘
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")
-	TSoftObjectPtr<UTexture2D> Icon = nullptr;
+	TObjectPtr<UTexture2D> Icon = nullptr;
 
 	// 대량 1:2비율의 인물화같은 느낌의 텍스처, 캐릭터 선택창의 캐릭터 선택 패널등에 사용
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")
-	TSoftObjectPtr<UTexture2D> Portrait = nullptr;
+	TObjectPtr<UTexture2D> Portrait = nullptr;
 };
 
 USTRUCT(BlueprintType)
@@ -201,10 +206,10 @@ public:
 	float AttackRate = 1.5f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
-	TSoftObjectPtr<class UBehaviorTree> BehaviorTree = nullptr;
+	TObjectPtr<class UBehaviorTree> BehaviorTree = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
-	TSoftObjectPtr<class UDATargetPriorityWeight> TargetPriorityWeight = nullptr;
+	FTargetPriorityWeightData TargetPriorityWeightData;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
 	FName BBTargetActorName = FName(TEXT("TargetActor"));

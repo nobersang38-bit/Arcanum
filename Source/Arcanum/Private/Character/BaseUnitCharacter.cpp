@@ -14,7 +14,7 @@
 #include "Component/UnitCombatComponent.h"
 #include "Data/Rows/AllyUnitsDataRow.h"
 #include "Data/Rows/EnemyUnitsDataRow.h"
-//#include "Component/Stats/CharacterBattleStatsComponent.h"
+#include "Component/Stats/CharacterBattleStatsComponent.h"
 #include "Components/WidgetComponent.h"
 //#include "UI/CharacterHUD/CharacterHealthWidget.h"
 #include "Kismet/GameplayStatics.h"
@@ -22,6 +22,7 @@
 #include "GameplayTagsManager.h"
 #include "Object/Actor/BattlefieldManagerActor.h"
 #include "Animation/BaseUnitAnimInstance.h"
+#include "UI/InGame/UnitHealthWidget.h"
 
 // Sets default values
 ABaseUnitCharacter::ABaseUnitCharacter()
@@ -29,8 +30,8 @@ ABaseUnitCharacter::ABaseUnitCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	UnitCombatComponent = CreateDefaultSubobject<UUnitCombatComponent>(TEXT("UnitCombatComponent"));
-	//CharacterBattleStatsComponent = CreateDefaultSubobject<UCharacterBattleStatsComponent>(TEXT("CharacterBattleStatsComponent"));
+	UnitCombatComponent0 = CreateDefaultSubobject<UUnitCombatComponent>(TEXT("UnitCombatComponent"));
+	CharacterBattleStatsComponent = CreateDefaultSubobject<UCharacterBattleStatsComponent>(TEXT("CharacterBattleStatsComponent"));
 	HealthBarComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBarComponent"));
 
 	HealthBarComponent->SetupAttachment(RootComponent);
@@ -40,6 +41,14 @@ ABaseUnitCharacter::ABaseUnitCharacter()
 	GetCharacterMovement()->SetRVOAvoidanceWeight(0.0f);
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+}
+
+void ABaseUnitCharacter::SetUnit(FUnitData InUnitData)
+{
+	UnitData = InUnitData;
+	IsSetupUnit = true;
+	DataInitialize();
 }
 
 FGameplayTag ABaseUnitCharacter::GetTeamTag()
@@ -58,38 +67,7 @@ void ABaseUnitCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-//	DataInitialize();
-//	if (UUserWidget* TempHealthWidgetUser = Cast<UUserWidget>(HealthBarComponent->GetWidget()))
-//	{
-//		if (UCharacterHealthWidget* TempHealthWidget = Cast<UCharacterHealthWidget>(TempHealthWidgetUser))
-//		{
-//			CharacterBattleStatsComponent->OnCharacterRegenStatChanged.AddUObject(TempHealthWidget, &UCharacterHealthWidget::SetPercent);
-//			float CurrentHealth = 0.0f;
-//			float MaxHealth = 0.0f;
-//
-//			//Arcanum.BattleStat.Character.Regen.Health
-//			const TArray<FRegenStat>& RegenStats = CharacterBattleStatsComponent->GetRegenStats();
-//			for (int i = 0; i < RegenStats.Num(); i++)
-//			{
-//				if (RegenStats[i].ParentTag == Arcanum::BattleStat::Character::Regen::Health::Root)
-//				{
-//					CurrentHealth = RegenStats[i].Current;
-//					MaxHealth = RegenStats[i].GetTotalMax();
-//					break;
-//				}
-//			}
-//			TempHealthWidget->SetPercent(CurrentHealth, MaxHealth);
-//		}
-//	}
-//	OnTakeAnyDamage.AddDynamic(this, &ABaseUnitCharacter::RecievedDamage);
-//
-//#pragma region Debug
-//	if (RandomRvoWeight)
-//	{
-//		GetCharacterMovement()->SetRVOAvoidanceWeight(FMath::FRandRange(0.0f, 1.0f));
-//	}
-//#pragma endregion
-
+	DataInitialize();
 }
 
 void ABaseUnitCharacter::PossessedBy(AController* NewController)
@@ -105,17 +83,7 @@ void ABaseUnitCharacter::PostEditChangeProperty(FPropertyChangedEvent& PropertyC
 
 	if (MemberPropertyName == GET_MEMBER_NAME_CHECKED(ABaseUnitCharacter, DTUnitDataRowHandle))
 	{
-		if (DTUnitDataRowHandle.DataTable && !DTUnitDataRowHandle.RowName.IsNone()) 
-		{
-			if (const FAllyUnitsDataRow* AllyRow = DTUnitDataRowHandle.DataTable->FindRow<FAllyUnitsDataRow>(DTUnitDataRowHandle.RowName, TEXT("Load")))
-			{
-				if (AllyRow) UnitData = (*AllyRow).UnitData;
-			}
-			else if(const FEnemyUnitsDataRow* EnemyRow = DTUnitDataRowHandle.DataTable->FindRow<FEnemyUnitsDataRow>(DTUnitDataRowHandle.RowName, TEXT("Load")))
-			{
-				if (EnemyRow) UnitData = (*EnemyRow).UnitData;
-			}
-		}
+		UpdateUnitData();
 	}
 }
 #endif
@@ -157,7 +125,7 @@ void ABaseUnitCharacter::AnimSetting()
 
 float ABaseUnitCharacter::GetAttackPower()
 {
-	/*float AttackPower = 0.0f;
+	float AttackPower = 0.0f;
 	const TArray<FNonRegenStat>& NonRegenStats = CharacterBattleStatsComponent->GetNonRegenStats();
 	for (int i = 0; i < NonRegenStats.Num(); i++)
 	{
@@ -167,30 +135,82 @@ float ABaseUnitCharacter::GetAttackPower()
 			break;
 		}
 	}
-	return AttackPower;*/
-
-	return 0.0f;
+	return AttackPower;
 }
 
 void ABaseUnitCharacter::DataInitialize()
 {
+	CharacterBattleStatsComponent->OnCharacterRegenStatChanged.RemoveAll(this);
+	// Todo KDH : 임시
+	CharacterBattleStatsComponent->ChangeStatValue(Arcanum::BattleStat::Character::Regen::Health::Root, 100.0f, this);
+	if (!IsSetupUnit)
+	{
+		UpdateUnitData();
+	}
 	AnimSetting();
+
+	if (UUserWidget* TempHealthWidgetUser = Cast<UUserWidget>(HealthBarComponent->GetWidget()))
+	{
+		if (UUnitHealthWidget* TempHealthWidget = Cast<UUnitHealthWidget>(TempHealthWidgetUser))
+		{
+			CharacterBattleStatsComponent->OnCharacterRegenStatChanged.AddUObject(TempHealthWidget, &UUnitHealthWidget::SetPercent);
+			float CurrentHealth = 0.0f;
+			float MaxHealth = 0.0f;
+
+			//Arcanum.BattleStat.Character.Regen.Health
+			const TArray<FRegenStat>& RegenStats = CharacterBattleStatsComponent->GetRegenStats();
+			for (int i = 0; i < RegenStats.Num(); i++)
+			{
+				if (RegenStats[i].ParentTag == Arcanum::BattleStat::Character::Regen::Health::Root)
+				{
+					CurrentHealth = RegenStats[i].Current;
+					MaxHealth = RegenStats[i].GetTotalMax();
+					break;
+				}
+			}
+			TempHealthWidget->SetPercentFloat(CurrentHealth, MaxHealth);
+		}
+	}
+	OnTakeAnyDamage.RemoveDynamic(this, &ABaseUnitCharacter::RecievedDamage);
+	OnTakeAnyDamage.AddDynamic(this, &ABaseUnitCharacter::RecievedDamage);
+
+#pragma region Debug
+	if (RandomRvoWeight)
+	{
+		GetCharacterMovement()->SetRVOAvoidanceWeight(FMath::FRandRange(0.0f, 1.0f));
+	}
+#pragma endregion
 }
 
 FUnitRuntimeData& ABaseUnitCharacter::GetUnitRuntimeData()
 {
-	return UnitCombatComponent->GetUnitRuntimeData();
+	return UnitCombatComponent0->GetUnitRuntimeData();
 }
 
 void ABaseUnitCharacter::OnAttackNotifyTriggered()
 {
-	UnitCombatComponent->SendDamage(GetAttackPower());
+	UnitCombatComponent0->SendDamage(GetAttackPower());
 }
 
 // 데미지 받기
 void ABaseUnitCharacter::RecievedDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
-	//GetCharacterBattleStatsComponent()->ChangeStatValue(Arcanum::BattleStat::Character::Regen::Health::Root, -(FMath::Abs(Damage)), DamageCauser);
+	GetCharacterBattleStatsComponent()->ChangeStatValue(Arcanum::BattleStat::Character::Regen::Health::Root, -(FMath::Abs(Damage)), DamageCauser);
+}
+
+void ABaseUnitCharacter::UpdateUnitData()
+{
+	if (DTUnitDataRowHandle.DataTable && !DTUnitDataRowHandle.RowName.IsNone())
+	{
+		if (const FAllyUnitsDataRow* AllyRow = DTUnitDataRowHandle.DataTable->FindRow<FAllyUnitsDataRow>(DTUnitDataRowHandle.RowName, TEXT("Load")))
+		{
+			if (AllyRow) UnitData = (*AllyRow).UnitData;
+		}
+		else if (const FEnemyUnitsDataRow* EnemyRow = DTUnitDataRowHandle.DataTable->FindRow<FEnemyUnitsDataRow>(DTUnitDataRowHandle.RowName, TEXT("Load")))
+		{
+			if (EnemyRow) UnitData = (*EnemyRow).UnitData;
+		}
+	}
 }
 
 const FUnitData& ABaseUnitCharacter::GetUnitData()
@@ -198,3 +218,46 @@ const FUnitData& ABaseUnitCharacter::GetUnitData()
 	return UnitData;
 }
 
+bool ABaseUnitCharacter::GetIsDead()
+{
+	if (UnitCombatComponent0)
+	{
+		return UnitCombatComponent0->GetIsDead();
+	}
+	return true;
+}
+
+void ABaseUnitCharacter::UnitActivate()
+{
+	DataInitialize();
+	if (UnitCombatComponent0)
+	{
+		UnitCombatComponent0->UnitActivate();
+	}
+}
+
+void ABaseUnitCharacter::UnitDeactive()
+{
+	if (UnitCombatComponent0)
+	{
+		UnitCombatComponent0->UnitDeactive();
+	}
+}
+
+void ABaseUnitCharacter::ActivateItem()
+{
+	UnitActivate();
+	if (HealthBarComponent)
+	{
+		HealthBarComponent->SetHiddenInGame(false);
+	}
+}
+
+void ABaseUnitCharacter::DeactiveItem()
+{
+	UnitDeactive();
+	if (HealthBarComponent)
+	{
+		HealthBarComponent->SetHiddenInGame(true);
+	}
+}

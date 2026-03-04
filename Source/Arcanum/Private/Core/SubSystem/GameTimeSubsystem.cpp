@@ -48,16 +48,13 @@ void UGameTimeSubsystem::Tick(float DeltaTime)
 		FDateTime CurrentTimeKST = FDateTime::UtcNow() + FTimespan(9, 0, 0);
 		FTimespan Diff = ShopEndTime - CurrentTimeKST;
 
-		int32 RemainingSeconds = FMath::Max(0, static_cast<int32>(Diff.GetTotalSeconds()));
+		const int32 RemainingAfter = static_cast<int32>(Diff.GetTotalSeconds());
+		const int32 RemainingSeconds = FMath::Max(0, RemainingAfter);
+
 		if (RemainingSeconds != LastShopSecond)
 		{
 			LastShopSecond = RemainingSeconds;
 			OnShopSecondChanged.Broadcast(RemainingSeconds);
-
-			if (RemainingSeconds <= 0)
-			{
-				StopShop();
-			}
 		}
 	}
 }
