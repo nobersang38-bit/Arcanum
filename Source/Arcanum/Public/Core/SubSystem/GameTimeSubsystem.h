@@ -85,6 +85,7 @@ public:
 	FOnBannerSecondChanged OnShopSecondChanged;
 
 	/* 상점 시간 주기 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Time|Shop")
 	int32 ShopRefreshSeconds = 6;
 
 private:

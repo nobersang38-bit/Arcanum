@@ -13,6 +13,7 @@ class UUniformGridPanel;
 class UCommonDialog;
 class UCharacterInfo;
 class UWidgetSwitcher;
+class UInventorySlot;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEnhanceOKClicked);
 
@@ -27,7 +28,7 @@ class ARCANUM_API UCharacterHUDWidget : public UUserWidget
 #pragma region 언리얼 기본 생성
 protected:
 	virtual void NativeConstruct() override;
-	//virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry,const FPointerEvent& InMouseEvent) override;
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry,const FPointerEvent& InMouseEvent) override;
 #pragma endregion
 
 #pragma region 바인딩
@@ -41,6 +42,12 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCharacterInfo> CharacterInfo;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UInventorySlot> WeaponList;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UInventorySlot> EquipmentList;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCommonDialog> EnhancementConfirm;
@@ -72,8 +79,13 @@ protected:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Slot")
 	TSubclassOf<URoundedSlotWidget> RoundedSlotWidgetClass;
 
+
+
 	UFUNCTION()
 	void ShowEnhancementConfirm();
+
+	UFUNCTION()
+	void SetupEquipment();
 
 public:
 	UPROPERTY(BlueprintAssignable)

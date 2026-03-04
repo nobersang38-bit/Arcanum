@@ -45,8 +45,9 @@ struct FItemDefinition
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int32 MaxUpgradeLevel = 5;
 
+    /** 태그, 레벨(이거 어짜피 FEquipmentInfo 복사뜨기 때문에 관리포인트 만들기 싫어서 여기다가 그냥 넣어놓음) */
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TArray<FGameplayTag> Skills;
+    TMap<FGameplayTag, int32> Skills;
 };
 
 USTRUCT(BlueprintType)
