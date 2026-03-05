@@ -77,6 +77,10 @@ public:
 	UFUNCTION()
 	void StopTime();
 
+	UFUNCTION()
+	void OnTimeChange(int32 Time);
+
+
 #pragma endregion
 
 #pragma region 디버그
@@ -91,6 +95,9 @@ public:
 
 	FORCEINLINE const FInBattleData& GetInBattleData() const { return InBattleData; }
 	void SetInBattleData(const FPlayerData& InPlayerData, FInBattleData& OutInBattleData);
+
+	UFUNCTION()
+	void MatchEnded(const FMatchData& MatchData);
 	/*
 	필요한 정보
 	유닛들

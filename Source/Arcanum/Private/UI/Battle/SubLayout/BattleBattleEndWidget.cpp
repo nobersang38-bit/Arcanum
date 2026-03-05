@@ -23,6 +23,15 @@ void UBattleBattleEndWidget::NativeConstruct()
 
 void UBattleBattleEndWidget::SetStar(int32 StarNum)
 {
+	if (StarNum == -1)
+	{
+		for (int i = 0; i < StarBackgrounds.Num(); i++)
+		{
+			StarBackgrounds[i]->SetVisibility(ESlateVisibility::Hidden);
+		}
+		return;
+	}
+
 	for (int i = 0; i < StarBackgrounds.Num(); i++)
 	{
 		StarBackgrounds[i]->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
@@ -45,11 +54,11 @@ void UBattleBattleEndWidget::SetVictoryText(bool IsVictory)
 {
 	if (IsVictory)
 	{
-		ClearTimeText->SetText(FText::FromString(TEXT("승리")));
+		BattleEndResultText->SetText(FText::FromString(TEXT("승리")));
 	}
 	else
 	{
-		ClearTimeText->SetText(FText::FromString(TEXT("패배")));
+		BattleEndResultText->SetText(FText::FromString(TEXT("패배")));
 	}
 }
 

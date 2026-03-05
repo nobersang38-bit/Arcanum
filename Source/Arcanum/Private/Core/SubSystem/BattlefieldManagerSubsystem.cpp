@@ -16,6 +16,7 @@
 void UBattlefieldManagerSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
+	OnMatchEnded.AddUObject(this, &UBattlefieldManagerSubsystem::MatchEnded);
 
 	/// 02/26 수정 : 서비스레이어 거치도록
 	SetInBattleData(FPlayerAccountService::GetPlayerDataCopy(this), InBattleData);
@@ -23,7 +24,6 @@ void UBattlefieldManagerSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 	SetupUnits();
 	DebugBasementSet();
 	DebugSetUsingAllyUnits();
-	OnMatchEnded.AddUObject(this, &UBattlefieldManagerSubsystem::DebugEndedMessage);
 	//UARGameInstance* GameInstance = nullptr;
 	//GameInstance = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	//if (GameInstance)
@@ -109,6 +109,7 @@ void UBattlefieldManagerSubsystem::StartTime()
 
 		TimeSubsystem->OnStageSecondChanged.RemoveDynamic(this, &UBattlefieldManagerSubsystem::CheckMatchEnded);
 		TimeSubsystem->OnStageSecondChanged.AddDynamic(this, &UBattlefieldManagerSubsystem::CheckMatchEnded);
+		TimeSubsystem->OnStageSecondChanged.AddDynamic(this, &UBattlefieldManagerSubsystem::OnTimeChange);
 	}
 }
 
@@ -117,6 +118,11 @@ void UBattlefieldManagerSubsystem::StopTime()
 	UGameTimeSubsystem* TimeSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameTimeSubsystem>();
 	if (TimeSubsystem)
 	TimeSubsystem->StopStage();
+}
+
+void UBattlefieldManagerSubsystem::OnTimeChange(int32 Time)
+{
+	CurrentMatchData.EndTimeSecond = Time;
 }
 
 void UBattlefieldManagerSubsystem::DebugSetUsingAllyUnits()
@@ -131,6 +137,9 @@ void UBattlefieldManagerSubsystem::CheckMatchEnded(int32 Time)
 	if (Time <= 0)
 	{
 		FMatchData MatchData;
+
+		MatchData.EndTimeSecond = CurrentMatchData.EndTimeSecond;
+
 		MatchData.bIsVictory = false;
 		MatchData.CurrentMatchState = EMatchState::Ended;
 		OnMatchEnded.Broadcast(MatchData);
@@ -208,4 +217,18 @@ void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerDa
 	}
 
 	OutInBattleData.PlayerBattleData = InPlayerData.PlayerBattleData;
+}
+
+void UBattlefieldManagerSubsystem::MatchEnded(const FMatchData& MatchData)
+{
+	UGameInstance* GI = GetWorld()->GetGameInstance();
+	if (GI)
+	{
+		UGameTimeSubsystem* GameTimeSubsystem = GI->GetSubsystem<UGameTimeSubsystem>();
+		if (GameTimeSubsystem)
+		{
+			GameTimeSubsystem->StopStage();
+			OnMatchEnded.Clear();
+		}
+	}
 }

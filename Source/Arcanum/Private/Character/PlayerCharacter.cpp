@@ -96,6 +96,9 @@ void APlayerCharacter::RecievedDamage(AActor* DamagedActor, float Damage, const 
 		if (BattleSubsystem)
 		{
 			FMatchData MatchData;
+
+			MatchData.EndTimeSecond = BattleSubsystem->GetCurrentMatchData().EndTimeSecond;
+
 			MatchData.bIsVictory = false;
 			MatchData.CurrentMatchState = EMatchState::Ended;
 			BattleSubsystem->OnMatchEnded.Broadcast(MatchData);

@@ -72,7 +72,7 @@ void UBasementCombatComponent::RecievedDamage(AActor* DamagedActor, float Damage
 					{
 						MatchData.bIsVictory = true;
 					}
-
+					MatchData.EndTimeSecond = BattleSubsystem->GetCurrentMatchData().EndTimeSecond;
 					BattleSubsystem->OnMatchEnded.Broadcast(MatchData);
 				}
 			}

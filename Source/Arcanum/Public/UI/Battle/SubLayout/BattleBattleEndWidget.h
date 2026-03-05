@@ -25,6 +25,7 @@ protected:
 public:
 	FOnInBattleLobbyButtonClick OnInBattleLobbyButtonClick;
 
+	// -1이면 백그라운드도 숨기기
 	UFUNCTION()
 	void SetStar(int32 StarNum);
 

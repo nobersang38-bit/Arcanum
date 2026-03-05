@@ -19,6 +19,7 @@ class UBattleToggleWidget;
 class UBattleCostBarWidget;
 class UBattleHealthBarWidget;
 class UBattleStageProgressWidget;
+class UBattleBattleEndWidget;
 
 UCLASS()
 class ARCANUM_API UInBattleHUDWidget : public UUserWidget
@@ -51,6 +52,11 @@ public:
 	UFUNCTION()
 	void SetTime(int32 TimeMS);
 #pragma endregion
+
+#pragma region 스테이지 종료
+	UBattleBattleEndWidget* GetBattleEndWidget() const { return BattleEndCanvas; }
+#pragma endregion
+
 
 
 #pragma region 전투 관련 버튼들
@@ -137,6 +143,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UBattleAllyUnitPanelWidget> PlayerInfoPanel = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UBattleBattleEndWidget> BattleEndCanvas = nullptr;
 #pragma endregion
 
 private:

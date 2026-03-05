@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "DataInfo/CommonData/Stats/FBattleStats.h"
 #include "Data/Types/UnitData.h"
+#include "Data/Types/MatchData.h"
 #include "BattlePlayerController.generated.h"
 
 class UInputMappingContext;
@@ -141,6 +142,16 @@ protected:
 	bool UseCoolTime(FGameplayTag InTag);
 #pragma endregion
 
+#pragma region 전투 종료
+	UFUNCTION()
+	void BattleEnd(const FMatchData& MatchData);
+
+	UFUNCTION()
+	void OpenLobbyLevel();
+#pragma endregion
+
+
+
 #pragma region 내부 함수
 	UFUNCTION()
 	bool IsUnitUsingEnable(FGameplayTag InTag);
@@ -238,4 +249,5 @@ protected:
 private:
 	FTimerHandle PlayerLocationProgressTimeHandle;
 	bool bIsAutoManual = false;
+	float StageTimeSecond = 0.0f;
 };

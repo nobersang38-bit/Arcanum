@@ -16,6 +16,8 @@
 #include "Core/SubSystem/PoolingSubsystem.h"
 #include "Character/PlayerCharacter.h"
 #include "UI/Battle/SubLayout/BattleAllyUnitSlotWidget.h"
+#include "UI/Battle/SubLayout/BattleBattleEndWidget.h"
+#include "Kismet/GameplayStatics.h"
 
 // ========================================================
 // 언리얼 기본 생성
@@ -35,6 +37,11 @@ void ABattlePlayerController::BeginPlay()
 		if (HUDWidgetInstance)
 		{
 			HUDWidgetInstance->AddToViewport();
+
+			if (HUDWidgetInstance->GetBattleEndWidget())
+			{
+				HUDWidgetInstance->GetBattleEndWidget()->OnInBattleLobbyButtonClick.AddDynamic(this, &ABattlePlayerController::OpenLobbyLevel);
+			}
 		}
 	}
 	SetupMainHUDWidget();
@@ -77,6 +84,8 @@ void ABattlePlayerController::BeginPlay()
 			UE_LOG(LogTemp, Error, TEXT("UsinAllyUnits : %s"), *UsinAllyUnits[i].Info.InfoSetting.Tag.ToString());
 		}*/
 		SetAllyUsingWidget();
+
+		BattleSubsystem->OnMatchEnded.AddUObject(this, &ABattlePlayerController::BattleEnd);
 	}
 
 	if (TimeSubsystem)
@@ -191,7 +200,8 @@ void ABattlePlayerController::UpdatePlayerLocationProgress()
 
 void ABattlePlayerController::UpdateStageTime(int32 TimeSecond)
 {
-	HUDWidgetInstance->SetTime(TimeSecond);
+	StageTimeSecond = TimeSecond;
+	HUDWidgetInstance->SetTime(StageTimeSecond);
 }
 
 void ABattlePlayerController::SetAllyUsingWidget()
@@ -442,6 +452,42 @@ bool ABattlePlayerController::UseCoolTime(FGameplayTag InTag)
 	{
 		return false;
 	}
+}
+
+void ABattlePlayerController::BattleEnd(const FMatchData& MatchData)
+{
+	if (HUDWidgetInstance)
+	{
+		UBattleBattleEndWidget* BattleEndWidget = HUDWidgetInstance->GetBattleEndWidget();
+		if (BattleEndWidget)
+		{
+			BattleEndWidget->SetVictoryText(MatchData.bIsVictory);
+			UE_LOG(LogTemp, Error, TEXT("MatchData.bIsVictory = %d"), MatchData.bIsVictory);
+			BattleEndWidget->SetClearTimeText(MatchData.EndTimeSecond);
+
+			UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+			if (BattleSubsystem)
+			{
+				float Result = static_cast<float>(MatchData.EndTimeSecond) / static_cast<float>(BattleSubsystem->GetInBattleData().BattleStageInfo.StageLimitTime);
+
+				Result *= 3.0f;
+				UE_LOG(LogTemp, Error, TEXT("Result : %f"), Result);
+				BattleEndWidget->SetStar(FMath::Clamp<int32>(FMath::RoundToInt(Result), 0, 3));
+			}
+			else
+			{
+				BattleEndWidget->SetStar(3);
+			}
+
+			BattleEndWidget->SetVisibility(ESlateVisibility::Visible);
+		}
+	}
+}
+
+void ABattlePlayerController::OpenLobbyLevel()
+{
+	// Todo KDH 로비 열기
+	UGameplayStatics::OpenLevel(this, FName("LobbyMap"));
 }
 
 bool ABattlePlayerController::IsUnitUsingEnable(FGameplayTag InTag)
