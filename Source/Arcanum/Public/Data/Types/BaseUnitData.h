@@ -60,8 +60,11 @@ public:
 	float MeatCost = 10.0f;
 
 	// 아군 생성 쿨 타임
+	UPROPERTY()
+	float CurrentCoolTime;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")
-	FRegenStat CoolTime;
+	float CoolTime;
 
 	// 해당 객체의 이름
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")

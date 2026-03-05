@@ -426,7 +426,7 @@ bool ABattlePlayerController::UseCoolTime(FGameplayTag InTag)
 	FUnitData* UnitData = UsinAllyUnits.Find(InTag);
 	if(!UnitData) return false;
 
-	UnitData->Info.InfoSetting.CoolTime.Current = UnitData->Info.InfoSetting.CoolTime.BaseMax;
+	UnitData->Info.InfoSetting.CurrentCoolTime = UnitData->Info.InfoSetting.CoolTime;
 
 	FTimerDelegate CoolTimeDelegate;
 	float TickInterval = 0.01f;
@@ -498,7 +498,7 @@ bool ABattlePlayerController::IsUnitUsingEnable(FGameplayTag InTag)
 	FUnitData UnitData = *UsinAllyUnits.Find(InTag);
 
 	//쿨타임 체크하고 고기 코스트 체크
-	if (UnitData.Info.InfoSetting.CoolTime.Current <= 0.0f && 
+	if (UnitData.Info.InfoSetting.CurrentCoolTime <= 0.0f && 
 		UnitData.Info.InfoSetting.MeatCost <= MeatValue.Current)
 	{
 		return true;
@@ -531,8 +531,8 @@ void ABattlePlayerController::Internal_UnitCoolTimeTick(FGameplayTag InTag, floa
 {
 	if (FUnitData* UnitData = UsinAllyUnits.Find(InTag))
 	{
-		float& CurrentCoolTime = UnitData->Info.InfoSetting.CoolTime.Current;
-		float& MaxCoolTime = UnitData->Info.InfoSetting.CoolTime.BaseMax;
+		float& CurrentCoolTime = UnitData->Info.InfoSetting.CurrentCoolTime;
+		float& MaxCoolTime = UnitData->Info.InfoSetting.CoolTime;
 		CurrentCoolTime -= TickInterval;
 		CurrentCoolTime = FMath::Clamp(CurrentCoolTime, 0.0f, MaxCoolTime);
 
