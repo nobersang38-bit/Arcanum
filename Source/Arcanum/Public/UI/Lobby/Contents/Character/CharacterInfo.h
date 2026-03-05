@@ -10,6 +10,7 @@ class UCommonBtnWidget;
 class UTextBlock;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEnhanceBtnClicked);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSetPlayerBtnClicked,FText, CharactNameTxt);
 
 /*
  * 역할 : 김유진
@@ -47,7 +48,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetEnhanceButtonEnabled(bool bIsCharacterOwned, int32 RequiredSoul);
 	UFUNCTION(BlueprintCallable)
+	void SetPlayerButtonEnabled(bool bIsCharacterOwned);
 
+	UFUNCTION(BlueprintCallable)
 	void SetEnhanceBtnText(const FText& InText);
 
 protected:
@@ -73,8 +76,13 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnEnhanceBtnClicked OnEnhanceBtnClicked;
 
+	UPROPERTY(BlueprintAssignable)
+	FOnSetPlayerBtnClicked OnSetPlayerBtnClicked;
+
 private:
 	UFUNCTION()
 	void ClickCharacterEnhanceBtn();
+	UFUNCTION()
+	void ClickSetPlayerBtn();
 
 };

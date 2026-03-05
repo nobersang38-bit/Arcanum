@@ -31,6 +31,7 @@ void UCharacterHUDWidget::NativeConstruct()
     if (CharacterInfo)
     {
         CharacterInfo->OnEnhanceBtnClicked.AddDynamic(this, &UCharacterHUDWidget::CharacterEnhancement);
+        CharacterInfo->OnSetPlayerBtnClicked.AddDynamic(this, &UCharacterHUDWidget::SetPlayerCharacter);
     }
     
     if (WeaponList)
@@ -119,7 +120,7 @@ void UCharacterHUDWidget::InitCharacterHUD()
             NewSlot->SetRoundBackgroundColor(FLinearColor::White);
         }
         CreatedCharacterSlots.Add(NewSlot);*/
-        if (ParentLobby->CachedPlayerData.OwnedCharacters[i].bSelection)
+        if (ParentLobby->CachedPlayerData.OwnedCharacters[i].bSelection) 
         {
             SelectedIndex = i;
         }
@@ -149,6 +150,33 @@ void UCharacterHUDWidget::CharacterEnhancement()
 }
 
 // ========================================================
+// 캐릭터창 - 장착 버튼
+// ========================================================
+void UCharacterHUDWidget::SetPlayerCharacter(FText CharacterName)
+{
+    // 클릭한 캐릭터 bSelection true로 변경
+    UE_LOG(LogTemp, Log, TEXT("캐릭터 장착 버튼 클릭"));
+
+    for (int32 i = 0; i < ParentLobby->CachedPlayerData.OwnedCharacters.Num(); i++)
+    {
+        FBattleCharacterData& TargetData = ParentLobby->CachedPlayerData.OwnedCharacters[i];
+
+        FGameplayTag CharacterTag = TargetData.CharacterInfo.BattleCharacterInitData.CharacterTag;
+        FName SetPlayerName = GetLeafNameFromTag(CharacterTag);
+
+        if (CharacterName.ToString().Equals(SetPlayerName.ToString()))
+        {
+            TargetData.bSelection = true;
+        }
+        else {
+            TargetData.bSelection = false;
+        }
+    }
+
+    InitCharacterHUD();
+}
+
+// ========================================================
 // 캐릭터 슬롯 클릭
 // ========================================================
 void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlot, FName CharacterName, bool SlotCharacterOwned)
@@ -160,7 +188,7 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
     UARGameInstance* GI = Cast<UARGameInstance>(GetGameInstance());
     UGameDataSubsystem* DataSubsystem = GI->GetSubsystem<UGameDataSubsystem>();
 
-    // 선택된 캐릭터만 bSelection true로 변경하기
+   
     for (int32 i = 0; i < ParentLobby->CachedPlayerData.OwnedCharacters.Num(); i++)
     {
         FBattleCharacterData& TargetData = ParentLobby->CachedPlayerData.OwnedCharacters[i];
@@ -169,12 +197,12 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
         FName ListCharacterName = GetLeafNameFromTag(CharacterTag);
 
         bool bIsSelected = (ListCharacterName == CharacterName);
-        TargetData.bSelection = bIsSelected;
-
+        //TargetData.bSelection = bIsSelected;
+        
         if (bIsSelected)
         {
             TargetGradeIndex =  (TargetData.CharacterInfo.CurrentGrade > 0)? TargetData.CharacterInfo.CurrentGrade - 1 : 0;
-            CharacterStar = TargetData.CharacterInfo.CurrentLevel;
+            CharacterStar = TargetGradeIndex;
             CharacterGrade = GetGradePriority(TargetData.CharacterInfo.CurrGrade);
             RequiredSoul = TargetData.CharacterInfo.BattleCharacterInitData.RequiredShardCount[GetCurrentGrade];
 
@@ -223,8 +251,27 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
 
         if (CreatedCharacterSlots.IsValidIndex(i))
         {
-            CreatedCharacterSlots[i]->SetRoundBackgroundColor( bIsSelected ? (FLinearColor(1.0f, 0.4f, 0.7f, 1.0f)) : FLinearColor::White);
+            FLinearColor SlotColor;
+
+            // 장착중인 캐릭터 - 노랑
+            if (TargetData.bSelection)
+            {
+                SlotColor = FLinearColor::Yellow;
+            }
+            // 장착X, 클릭된 캐릭터 - 핑크
+            else if (bIsSelected)
+            {
+                SlotColor = FLinearColor(1.0f, 0.4f, 0.7f, 1.0f);
+            }
+            // 일반 슬롯 - 흰색
+            else
+            {
+                SlotColor = FLinearColor::White;
+            }
+
+            CreatedCharacterSlots[i]->SetRoundBackgroundColor(SlotColor);
         }
+        
     }
 
     // 캐릭터 info창 바꾸기
@@ -238,6 +285,7 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
             InfoWidget->SetCharacterName(CharacterName);
             InfoWidget->SetStarCharcterInfo(CharacterStar);
             InfoWidget->SetEnhanceButtonEnabled(SlotCharacterOwned, RequiredSoul);
+            InfoWidget->SetPlayerButtonEnabled(SlotCharacterOwned);
             InfoWidget->SetGradeCharcterInfo(CharacterGrade);
             InfoWidget->SetCharcterInfo(FinalText);
             InfoWidget->SetEnhanceBtnText(ButtonText);

@@ -29,6 +29,11 @@ void UCharacterInfo::NativeConstruct()
 		CharacterEnhanceBtn->OnClicked.RemoveDynamic(this, &UCharacterInfo::ClickCharacterEnhanceBtn);
 		CharacterEnhanceBtn->OnClicked.AddDynamic(this, &UCharacterInfo::ClickCharacterEnhanceBtn);
 	}
+    
+	if (SetPlayerBtn) {
+        SetPlayerBtn->OnClicked.RemoveDynamic(this, &UCharacterInfo::ClickSetPlayerBtn);
+        SetPlayerBtn->OnClicked.AddDynamic(this, &UCharacterInfo::ClickSetPlayerBtn);
+	}
 }
 
 void UCharacterInfo::SetCharacterName(FName CharacterName)
@@ -36,6 +41,7 @@ void UCharacterInfo::SetCharacterName(FName CharacterName)
     if (CharacterNameText)
     {
         CharacterNameText->SetText(FText::FromName(CharacterName));
+        CharactNameTxt = (FText::FromName(CharacterName));
     }
 }
 
@@ -45,8 +51,8 @@ void UCharacterInfo::SetStarCharcterInfo(int32 StarGrade)
     {
         FString Stars;
 
-        // 1부터 시작함 (1일때 보유만, 2 - 1성)
-        for (int32 i = 1; i < StarGrade; i++)
+       
+        for (int32 i = 0; i < StarGrade; i++)
         {
             Stars += TEXT("★");
         }
@@ -103,6 +109,14 @@ void UCharacterInfo::SetEnhanceButtonEnabled(bool bIsCharacterOwned,int32 Requir
     }
 }
 
+void UCharacterInfo::SetPlayerButtonEnabled(bool bIsCharacterOwned)
+{
+    if (SetPlayerBtn)
+    {
+        SetPlayerBtn->SetIsEnabled(bIsCharacterOwned);
+    }
+}
+
 void UCharacterInfo::SetEnhanceBtnText(const FText& InText)
 {
     if (CharacterEnhanceBtn)
@@ -114,4 +128,9 @@ void UCharacterInfo::SetEnhanceBtnText(const FText& InText)
 void UCharacterInfo::ClickCharacterEnhanceBtn()
 {
 	OnEnhanceBtnClicked.Broadcast();
+}
+
+void UCharacterInfo::ClickSetPlayerBtn()
+{
+    OnSetPlayerBtnClicked.Broadcast(CharactNameTxt);
 }

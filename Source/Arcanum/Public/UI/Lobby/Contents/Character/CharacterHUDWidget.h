@@ -93,6 +93,8 @@ protected:
 
 	UFUNCTION()
 	void CharacterEnhancement();
+	UFUNCTION()
+	void SetPlayerCharacter(FText CharacterName);
 
 	UFUNCTION()
 	void SetupEquipment();
