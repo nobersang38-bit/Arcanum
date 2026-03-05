@@ -71,9 +71,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
 	FGameplayTag EnemyUnitInfoTag = Arcanum::DataTable::EnemyUnitInfo;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
-	TSubclassOf<class ABaseUnitCharacter> EnemyUnitClass = nullptr;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting", meta = (MakeEditWidget = true))
 	FVector SpawnLocation = FVector::ZeroVector;
 
@@ -92,7 +89,7 @@ private:
 	float InternalTime = 0.0f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TMap<FGameplayTag, FUnitData> UsingUnits;
+	TMap<FGameplayTag, FUnitInfoSetting> UsingUnits;
 
 	// 유닛 태그, 유닛 스폰 계산 타입, 지난시간
 	UPROPERTY()

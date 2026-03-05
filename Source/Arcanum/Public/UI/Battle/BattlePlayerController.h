@@ -162,6 +162,11 @@ protected:
 	// 쿨타임을 계속 줄임
 	UFUNCTION()
 	void Internal_UnitCoolTimeTick(FGameplayTag InTag, float TickInterval);
+
+	// 쿨타임 하나로 테스트
+	UFUNCTION()
+	void Internal_UnitsCoolTimeTick(float DeltaTime);
+
 #pragma endregion
 
 
@@ -222,7 +227,7 @@ protected:
 
 protected:
 	UPROPERTY()
-	TMap<FGameplayTag, FUnitData> UsinAllyUnits;
+	TMap<FGameplayTag, FUnitInfoSetting> UsingAllyUnits;
 
 	UPROPERTY()
 	TMap<FGameplayTag, class UBattleAllyUnitSlotWidget*> UsingAllyUnitSlots;

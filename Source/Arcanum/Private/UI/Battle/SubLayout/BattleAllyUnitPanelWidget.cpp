@@ -40,7 +40,7 @@ void UBattleAllyUnitPanelWidget::SetManaCostProgress(float CurrentMana, float Ma
 	ManaCostBar->SetCostProgress(CurrentMana, MaxMana);
 }
 
-UBattleAllyUnitSlotWidget* UBattleAllyUnitPanelWidget::AddUnitSlot(const FUnitData& UnitData)
+UBattleAllyUnitSlotWidget* UBattleAllyUnitPanelWidget::AddUnitSlot(const FUnitInfoSetting& UnitData)
 {
 	// 첫번째와 마지막 인덱스는 스페이서를 사용중이기에 제외 시키고 검사
 
@@ -107,7 +107,7 @@ UBattleAllyUnitSlotWidget* UBattleAllyUnitPanelWidget::AddUnitSlot(const FUnitDa
 	}
 	if (UnitSlot)
 	{
-		UnitSlot->SetUnitInfo(UnitData.Info.InfoSetting.MeatCost, UnitData.Info.InfoSetting.Icon, UnitData.Info.InfoSetting.Tag);
+		UnitSlot->SetUnitInfo(UnitData.MeatCost, UnitData.Icon, UnitData.Tag);
 
 		//UE_LOG(LogTemp, Error, TEXT("아이콘 세팅"));
 	}

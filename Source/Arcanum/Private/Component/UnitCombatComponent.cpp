@@ -423,6 +423,7 @@ void UUnitCombatComponent::Death(const FRegenStat& InData)
 		bIsDead = true;
 		StateChange(EUnitState::Death);
 		OwnerAIC->BrainComponent->StopLogic(TEXT("정지"));
+		OwnerCapsuleComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		//OwnerCharacter->StopAnimMontage();
 		UAnimMontage* DeathMontage = nullptr;
 		int32 IDX = 0;

@@ -51,10 +51,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info", meta = (Categories = "Arcanum.Unit"))
 	FGameplayTag Tag;
 
-	// 해당 유닛의 클래스
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")
-	TSubclassOf<class ABaseUnitCharacter> CharacterType = nullptr;
-
 	// 해당 유닛의 고기 기본 사용량
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")
 	float MeatCost = 10.0f;
@@ -83,7 +79,7 @@ public:
 	TObjectPtr<UTexture2D> Portrait = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")
-	TSoftClassPtr<class ABaseUnitCharacter> AllyUnitClass = nullptr;
+	TSoftClassPtr<class ABaseUnitCharacter> UnitClass = nullptr;
 };
 
 USTRUCT(BlueprintType)
@@ -253,7 +249,7 @@ struct FBaseUnitData
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Info")
 	FUnitInfoSetting InfoSetting;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim")

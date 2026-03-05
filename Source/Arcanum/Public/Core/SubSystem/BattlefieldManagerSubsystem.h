@@ -22,7 +22,7 @@ public:
 	FBattleStageInfo BattleStageInfo;
 	
 	UPROPERTY()
-	TArray<FUnitData> AllyUnits;
+	TArray<FUnitInfoSetting> AllyUnits;
 };
 
 
@@ -64,12 +64,12 @@ public:
 	void SetABattlefieldManagerActor(ABattlefieldManagerActor* InBattlefieldManagerActor);
 
 	UFUNCTION()
-	const TArray<FUnitData>& GetUsingAllyUnitData();
+	const TArray<FUnitInfoSetting>& GetUsingAllyUnitData();
 
 	UFUNCTION()
-	FUnitData GetAllyUnitData(FGameplayTag InUnitTag, bool& OutResult) const;
+	FUnitInfoSetting GetAllyUnitData(FGameplayTag InUnitTag, bool& OutResult) const;
 	UFUNCTION()
-	FUnitData GetEnemyUnitData(FGameplayTag InUnitTag, bool& OutResult) const;
+	FUnitInfoSetting GetEnemyUnitData(FGameplayTag InUnitTag, bool& OutResult) const;
 
 	UFUNCTION()
 	void StartTime();
@@ -136,10 +136,10 @@ protected:
 	TMap<FGameplayTag, FBasementStat> BasementStats;
 
 	UPROPERTY()
-	TMap<FGameplayTag, FUnitData> AllyUnitDatas;
+	TMap<FGameplayTag, FUnitInfoSetting> AllyUnitDatas;
 
 	UPROPERTY()
-	TMap<FGameplayTag, FUnitData> EnemyUnitDatas;
+	TMap<FGameplayTag, FUnitInfoSetting> EnemyUnitDatas;
 
 protected:
 #pragma region 디버그(나중에 삭제)
