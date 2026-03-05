@@ -17,7 +17,7 @@ class UWidgetSwitcher;
 class UInventorySlot;
 class ULobbyHUD;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEnhanceOKClicked);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnhanceOKClicked,int32, RequiredSoul);
 
 /**
  *  김유진
@@ -59,7 +59,7 @@ protected:
 	TObjectPtr<UInventorySlot> EquipmentList;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UCommonDialog> EnhancementConfirm;
+	TObjectPtr<UCommonDialog> SetPlayerConfirm;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<USquareSlotWidget> Weapon1Slot;
@@ -92,11 +92,15 @@ protected:
 	TArray<URoundedSlotWidget*> CreatedCharacterSlots;
 
 	UFUNCTION()
-	void ShowEnhancementConfirm();
+	void CharacterEnhancement();
 
 	UFUNCTION()
 	void SetupEquipment();
 	int GetCurrentGrade;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 RequiredSoul;
+
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnEnhanceOKClicked OnEnhanceOKClicked;
@@ -105,15 +109,16 @@ public:
 
 private:
 	UFUNCTION()
-	void OnEnhancementCommonDialog(EDialogResult res);
-	
-	UFUNCTION()
 	void OnSquareSlotClicked(USquareSlotWidget* ClickedSlot, int32 SlotIndex);
 
 	UFUNCTION()
 	void OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlot, FName CharacterName, bool SlotCharacterOwned);
 
 	int32 NumColumns = 3;
+	int32 CharacterStar = 0;
+	int32 CharacterGrade = 0;
+	int32 TargetGradeIndex = 0;
+	FText FinalText;
 #pragma endregion
 
 };

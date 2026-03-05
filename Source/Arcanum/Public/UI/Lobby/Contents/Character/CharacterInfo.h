@@ -41,12 +41,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetGradeCharcterInfo(int32 Grade);
 	
-	//UFUNCTION(BlueprintCallable)
-	//void SetCharcterInfo();
+	UFUNCTION(BlueprintCallable)
+	void SetCharcterInfo(const FText& InText);
 
 	UFUNCTION(BlueprintCallable)
-	void SetEnhanceButtonEnabled(bool bIsCharacterOwned);
+	void SetEnhanceButtonEnabled(bool bIsCharacterOwned, int32 RequiredSoul);
+	UFUNCTION(BlueprintCallable)
 
+	void SetEnhanceBtnText(const FText& InText);
 
 protected:
 	UPROPERTY(meta = (BindWidget))
@@ -63,6 +65,9 @@ protected:
 	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCommonBtnWidget> CharacterEnhanceBtn;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UCommonBtnWidget> SetPlayerBtn;
 
 public:
 	UPROPERTY(BlueprintAssignable)

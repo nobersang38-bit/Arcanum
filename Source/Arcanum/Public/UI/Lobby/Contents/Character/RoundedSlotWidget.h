@@ -55,4 +55,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slot")
 	bool SlotCharacterOwned;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slot")
+	bool bClicked;
 };

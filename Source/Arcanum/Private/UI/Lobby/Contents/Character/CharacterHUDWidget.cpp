@@ -10,6 +10,10 @@
 #include "UI/Lobby/LobbyHUD.h"
 #include "GameplayTags/ArcanumTags.h"
 
+#include "Core/ARGameInstance.h"
+#include "Core/SubSystem/GameDataSubsystem.h"
+#include "DataInfo/BattleCharacter/BattleStats/DataTable/DTBattleStats.h"
+
 void UCharacterHUDWidget::NativeConstruct()
 {
     Super::NativeConstruct();
@@ -26,7 +30,7 @@ void UCharacterHUDWidget::NativeConstruct()
 
     if (CharacterInfo)
     {
-        CharacterInfo->OnEnhanceBtnClicked.AddDynamic(this, &UCharacterHUDWidget::ShowEnhancementConfirm);
+        CharacterInfo->OnEnhanceBtnClicked.AddDynamic(this, &UCharacterHUDWidget::CharacterEnhancement);
     }
     
     if (WeaponList)
@@ -70,6 +74,8 @@ FReply UCharacterHUDWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry,
 
 void UCharacterHUDWidget::InitCharacterHUD()
 {
+    int32 SelectedIndex = INDEX_NONE;
+
     CharacterGridPanel->ClearChildren();
     CreatedCharacterSlots.Empty();
 
@@ -81,6 +87,7 @@ void UCharacterHUDWidget::InitCharacterHUD()
         UTexture2D* CharacterIcon = CharacterIconSoftPtr.LoadSynchronous();
 
         GetCurrentGrade = ParentLobby->CachedPlayerData.OwnedCharacters[i].CharacterInfo.CurrentGrade; // 0 이면 보유X , 0 초과는 보유 및 강화
+        
         bool hasOwned = false;
         FGameplayTag CharacterTag = ParentLobby->CachedPlayerData.OwnedCharacters[i].CharacterInfo.BattleCharacterInitData.CharacterTag;
         FName CharacterName = GetLeafNameFromTag(CharacterTag);
@@ -103,7 +110,7 @@ void UCharacterHUDWidget::InitCharacterHUD()
             GridSlot->SetColumn(i % NumColumns);
         }
 
-        if (ParentLobby->CachedPlayerData.OwnedCharacters[i].bSelection)
+     /*   if (ParentLobby->CachedPlayerData.OwnedCharacters[i].bSelection)
         {
             NewSlot->SetRoundBackgroundColor(FLinearColor(1.0f, 0.4f, 0.7f, 1.0f));
         }
@@ -111,7 +118,24 @@ void UCharacterHUDWidget::InitCharacterHUD()
         {
             NewSlot->SetRoundBackgroundColor(FLinearColor::White);
         }
+        CreatedCharacterSlots.Add(NewSlot);*/
+        if (ParentLobby->CachedPlayerData.OwnedCharacters[i].bSelection)
+        {
+            SelectedIndex = i;
+        }
+
         CreatedCharacterSlots.Add(NewSlot);
+    }
+    if (SelectedIndex != INDEX_NONE && CreatedCharacterSlots.IsValidIndex(SelectedIndex))
+    {
+        auto& Data = ParentLobby->CachedPlayerData.OwnedCharacters[SelectedIndex];
+
+        FGameplayTag CharacterTag = Data.CharacterInfo.BattleCharacterInitData.CharacterTag;
+        FName CharacterName = GetLeafNameFromTag(CharacterTag);
+
+        bool hasOwned = Data.CharacterInfo.CurrentGrade > 0;
+
+        OnCharacterSlotSelected(CreatedCharacterSlots[SelectedIndex], CharacterName, hasOwned);
     }
 }
 
@@ -119,29 +143,9 @@ void UCharacterHUDWidget::InitCharacterHUD()
 // 캐릭터창 - 강화하기 버튼
 // ========================================================
 
-void UCharacterHUDWidget::ShowEnhancementConfirm()
+void UCharacterHUDWidget::CharacterEnhancement()
 {
-    // 강화확인창 띄우기
-    if (EnhancementConfirm)
-    {
-        EnhancementConfirm->SetVisibility(ESlateVisibility::Visible);
-
-        EnhancementConfirm->OnResult.RemoveDynamic(this, &UCharacterHUDWidget::OnEnhancementCommonDialog);
-        EnhancementConfirm->OnResult.AddDynamic(this, &UCharacterHUDWidget::OnEnhancementCommonDialog);
-    }
-}
-
-void UCharacterHUDWidget::OnEnhancementCommonDialog(EDialogResult res)
-{
-    if (res == EDialogResult::OK)
-    {
-        OnEnhanceOKClicked.Broadcast();
-        EnhancementConfirm->SetVisibility(ESlateVisibility::Hidden);
-    }
-    else if (res == EDialogResult::Cancel)
-    {
-        EnhancementConfirm->SetVisibility(ESlateVisibility::Hidden);
-    }
+    OnEnhanceOKClicked.Broadcast(RequiredSoul);
 }
 
 // ========================================================
@@ -150,8 +154,11 @@ void UCharacterHUDWidget::OnEnhancementCommonDialog(EDialogResult res)
 void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlot, FName CharacterName, bool SlotCharacterOwned)
 {
     UE_LOG(LogTemp, Warning, TEXT("클릭한 캐릭터 슬롯 태그 : %s"), *CharacterName.ToString());
-    int32 CharacterStar = 0;
-    int32 CharacterGrade = 0;
+
+    FString CombinedInfoString;
+
+    UARGameInstance* GI = Cast<UARGameInstance>(GetGameInstance());
+    UGameDataSubsystem* DataSubsystem = GI->GetSubsystem<UGameDataSubsystem>();
 
     // 선택된 캐릭터만 bSelection true로 변경하기
     for (int32 i = 0; i < ParentLobby->CachedPlayerData.OwnedCharacters.Num(); i++)
@@ -166,8 +173,52 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
 
         if (bIsSelected)
         {
+            TargetGradeIndex =  (TargetData.CharacterInfo.CurrentGrade > 0)? TargetData.CharacterInfo.CurrentGrade - 1 : 0;
             CharacterStar = TargetData.CharacterInfo.CurrentLevel;
             CharacterGrade = GetGradePriority(TargetData.CharacterInfo.CurrGrade);
+            RequiredSoul = TargetData.CharacterInfo.BattleCharacterInitData.RequiredShardCount[GetCurrentGrade];
+
+            if (FDTBattleStatsContainerRow* BattleRow = DataSubsystem->GetRow<FDTBattleStatsContainerRow>(Arcanum::DataTable::BattleStats, ListCharacterName)) {
+                if (BattleRow->GradeDataSteps.IsValidIndex(TargetGradeIndex)) {
+                    const FGradeStatData& CurrentStats = BattleRow->GradeDataSteps[TargetGradeIndex];
+                    for (const FRegenStat& RStat : CurrentStats.RegenStats)
+                    {
+                        FString TagString = RStat.ParentTag.IsValid() ? GetLeafNameFromTag(RStat.ParentTag).ToString() : TEXT("NoTag");
+                     /*   UE_LOG(LogTemp, Log, TEXT("%s | Base(Max/Tick): %.1f / %.2f "),
+                            *TagString,
+                            RStat.BaseMax,
+                            RStat.BaseTick
+                        );*/
+
+                        FString RowString = FString::Printf(TEXT("%.1f ( %.2f )"),RStat.BaseMax, RStat.BaseTick);
+
+                        if (CombinedInfoString.IsEmpty())
+                        {
+                            CombinedInfoString = RowString;
+                        }
+                        else
+                        {
+                            CombinedInfoString += LINE_TERMINATOR + RowString; // LINE_TERMINATOR \n 역할
+                        }
+                    }
+                    for (const FNonRegenStat& NRStat : CurrentStats.NonRegenStats)
+                    {
+                        FString TagString = NRStat.TagName.IsValid() ? GetLeafNameFromTag(NRStat.TagName).ToString() : TEXT("NoTag");
+                        float TotalValue = NRStat.BaseValue + NRStat.BonusValue + NRStat.ModifierValue;
+
+                        FString RowString = FString::Printf(TEXT("%.2f"), TotalValue);
+                        if (CombinedInfoString.IsEmpty())
+                        {
+                            CombinedInfoString = RowString;
+                        }
+                        else
+                        {
+                            CombinedInfoString += LINE_TERMINATOR + RowString; 
+                        }
+                    }
+                }
+            }
+            FinalText = FText::FromString(CombinedInfoString);
         }
 
         if (CreatedCharacterSlots.IsValidIndex(i))
@@ -181,13 +232,15 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
     {
         CharacterSwitcher->SetActiveWidgetIndex(0);
         UCharacterInfo* InfoWidget = Cast<UCharacterInfo>(CharacterSwitcher->GetWidgetAtIndex(0));
-
+        FText ButtonText = FText::Format(FText::FromString(TEXT("강화 : {0} 소울")), FText::AsNumber(RequiredSoul));
         if (InfoWidget)
         {
             InfoWidget->SetCharacterName(CharacterName);
             InfoWidget->SetStarCharcterInfo(CharacterStar);
-            InfoWidget->SetEnhanceButtonEnabled(SlotCharacterOwned);
+            InfoWidget->SetEnhanceButtonEnabled(SlotCharacterOwned, RequiredSoul);
             InfoWidget->SetGradeCharcterInfo(CharacterGrade);
+            InfoWidget->SetCharcterInfo(FinalText);
+            InfoWidget->SetEnhanceBtnText(ButtonText);
         }
     }
     

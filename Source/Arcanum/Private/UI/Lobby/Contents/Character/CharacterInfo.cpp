@@ -7,17 +7,17 @@ void UCharacterInfo::NativePreConstruct()
 {
 	Super::NativePreConstruct();
 
-    FText DefaultName = FText::FromString(TEXT("캐릭터 이름"));
-    FText DefaultInfo = FText::FromString(TEXT("등급\n성급\n체력\n마나"));
+    //FText DefaultName = FText::FromString(TEXT("캐릭터 이름"));
+    //FText DefaultInfo = FText::FromString(TEXT("등급\n성급\n체력\n마나"));
 
     if (CharacterNameText)
     {
-        CharacterNameText->SetText(CharactNameTxt.IsEmpty() ? DefaultName : CharactNameTxt);
+        CharacterNameText->SetText(CharactNameTxt.IsEmpty() ? FText::GetEmpty() : CharactNameTxt);
     }
 
     if (CharacterInfoText)
     {
-        CharacterInfoText->SetText(CharacInfoTxt.IsEmpty() ? DefaultInfo : CharacInfoTxt);
+        CharacterInfoText->SetText(CharacInfoTxt.IsEmpty() ? FText::GetEmpty() : CharacInfoTxt);
     }
 }
 
@@ -87,11 +87,27 @@ void UCharacterInfo::SetGradeCharcterInfo(int32 Grade)
     }
 }
 
-void UCharacterInfo::SetEnhanceButtonEnabled(bool bIsCharacterOwned)
+void UCharacterInfo::SetCharcterInfo(const FText& InText)
+{
+    if (CharacterInfoText)
+    {
+        CharacterInfoText->SetText(InText);
+    }
+}
+
+void UCharacterInfo::SetEnhanceButtonEnabled(bool bIsCharacterOwned,int32 RequiredSoul)
 {
     if (CharacterEnhanceBtn)
     {
         CharacterEnhanceBtn->SetIsEnabled(bIsCharacterOwned);
+    }
+}
+
+void UCharacterInfo::SetEnhanceBtnText(const FText& InText)
+{
+    if (CharacterEnhanceBtn)
+    {
+        CharacterEnhanceBtn->SetButtonText(InText);
     }
 }
 
