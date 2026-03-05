@@ -7,7 +7,6 @@
 #include "UI/Lobby/Contents/Inventory/InventoryHUDWidget.h"
 #include "DataInfo/BattleCharacter/Equipment/DataTable/DTEquipment.h"
 #include "DataInfo/ItemData/DataTable/DTPotionInfoRow.h"
-#include "DataInfo/InventoryData/DataTable/DTInventoryRuleItem.h"
 #include "DataInfo/ItemData/DataTable/DTItemCatalogRow.h"
 //#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -22,6 +21,9 @@
 void ULobbyHUD::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
+
 
 	if (ExitCommonDialog) ExitCommonDialog->SetVisibility(ESlateVisibility::Collapsed);
 	if (BackgroundBlur) BackgroundBlur->SetVisibility(ESlateVisibility::Collapsed);
@@ -81,6 +83,8 @@ void ULobbyHUD::NativeConstruct()
 	{
 		InventoryHUDWidget->OnInventorySlotSelected.RemoveDynamic(this, &ULobbyHUD::HandleInventorySlotSelected);
 		InventoryHUDWidget->OnInventorySlotSelected.AddDynamic(this, &ULobbyHUD::HandleInventorySlotSelected);
+
+		InventoryHUDWidget->InitInventorySlots(GetInventoryCapacity());
 	}
 
 	if (InventorySortBtn)
@@ -91,7 +95,6 @@ void ULobbyHUD::NativeConstruct()
 
 	BindGameInstanceEvents();
 	BuildEquipmentRowCache();
-	BuildInventoryRuleTableCache();
 	RefreshAllLobbyUI();
 
 	InitShop();
@@ -104,15 +107,6 @@ void ULobbyHUD::NativeConstruct()
 		UE_LOG(LogTemp, Warning, TEXT("CharacterDataTable is nullptr!"));
 		return;
 	}
-
-	/// 02/26 수정 : 서비스레이어 거치도록
-	CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
-	//if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance())) {
-	//	CachedPlayerData = gameInstance->GetPlayerDataCopy();
-	//	RefreshLobbyCurrencyUI();
-	//}
-
-	RefreshLobbyCurrencyUI();
 }
 
 void ULobbyHUD::RefreshAllLobbyUI()
@@ -279,7 +273,7 @@ void ULobbyHUD::RefreshInventoryUI()
 	{
 		if (UARGameInstance* const gameInstance = Cast<UARGameInstance>(GetGameInstance()))
 		{
-			const int32 slotCount = FMath::Max(1, GetInventoryCapacityFromRuleTable());
+			const int32 slotCount = FMath::Max(1, GetInventoryCapacity());
 
 			TArray<FInventoryViewSlot> viewSlots;
 			viewSlots.Reserve(slotCount);
@@ -319,40 +313,6 @@ void ULobbyHUD::BuildEquipmentRowCache()
 			}
 		}
 	}
-}
-
-void ULobbyHUD::BuildInventoryRuleTableCache()
-{
-	InventoryRuleRow = nullptr;
-
-	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
-	{
-		if (UGameDataSubsystem* dataSubsystem = gameInstance->GetSubsystem<UGameDataSubsystem>())
-		{
-			if (UDataTable* const* tablePtr = dataSubsystem->MasterDataTables.Find(Arcanum::DataTable::InventoryRule))
-			{
-				if (*tablePtr)
-				{
-					InventoryRuleRow = (*tablePtr)->FindRow<FDTInventoryRuleItem>(FName("Default"), TEXT("BuildInventoryRuleTableCache"));
-				}
-			}
-		}
-	}
-
-	if (InventoryHUDWidget)
-	{
-		InventoryHUDWidget->InitInventorySlots(GetInventoryCapacityFromRuleTable());
-	}
-}
-
-int32 ULobbyHUD::GetInventoryCapacityFromRuleTable() const
-{
-	if (InventoryRuleRow)
-	{
-		return FMath::Max(0, InventoryRuleRow->Capacity);
-	}
-
-	return 0;
 }
 
 void ULobbyHUD::BuildInventoryViewSlots(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const

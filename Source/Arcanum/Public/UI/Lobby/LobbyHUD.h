@@ -52,6 +52,9 @@ public:
 	UFUNCTION()
 	void HandleCurrencyChanged();
 
+	/* 플레이어 데이터 캐시 Getter */
+	const FPlayerData& GetCachedPlayerData() const { return CachedPlayerData; }
+
 private:
 	FPlayerData CachedPlayerData;
 #pragma endregion
@@ -164,14 +167,8 @@ protected:
 	/* 장비 DT 캐시 구축(로비 진입 시 1회) */
 	void BuildEquipmentRowCache();
 
-	/* 인벤 룰 DT 캐시 */
-	void BuildInventoryRuleTableCache();
-
-	/* 룰 테이블 기반 인벤 최대 슬롯 */
-	int32 GetInventoryCapacityFromRuleTable() const;
-
-	/* SlotTag의 정렬 순서 조회 */
-	int32 GetSlotOrderFromRuleTable(const FGameplayTag& InSlotTag) const;
+	/* Getter : 인벤 총 생성 슬롯 */
+	int32 GetInventoryCapacity() const { return FMath::Max(0, CachedPlayerData.InventoryCapacity); }
 
 private:
 	/* 물약 앞쪽부터 그 뒤 장비 정렬 */

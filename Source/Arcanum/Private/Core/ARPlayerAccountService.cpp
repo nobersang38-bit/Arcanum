@@ -3,7 +3,6 @@
 #include "Core/SubSystem/GameTimeSubsystem.h"
 #include "Core/SubSystem/GameDataSubsystem.h"
 #include "DataInfo/ItemData/DataTable/DTPotionInfoRow.h"
-#include "DataInfo/InventoryData/DataTable/DTInventoryRuleItem.h"
 #include "DataInfo/ItemData/DataTable/DTItemCatalogRow.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -219,9 +218,7 @@ bool FPlayerAccountService::PurchaseEquipment(const UObject* WorldContextObject,
 	NewEquip.CurrUpgradeLevel = 0;
 	NewEquip.Equipment = Row->BaseInfoSteps[0];
 
-	// 인벤 용량 체크: 장비+스택 점유 칸으로 체크
-	const FDTInventoryRuleItem* ruleRow = GetInventoryRuleRow(WorldContextObject);
-	const int32 maxSlots = ruleRow ? FMath::Max(0, ruleRow->Capacity) : 0;
+	const int32 maxSlots = FMath::Max(0, GI->GetPlayerData().InventoryCapacity);
 
 	// 장비 점유 칸
 	int32 usedEquipSlots = 0;
@@ -512,9 +509,8 @@ bool FPlayerAccountService::PurchaseShopSlot(const UObject* InWorldContextObject
 	// 물약 구매
 	if (catalogRow->StorePolicyTag.MatchesTagExact(Arcanum::Inventory::Store::Stack))
 	{
-		// 인벤 용량만 InventoryRule에서 가져옴
-		const FDTInventoryRuleItem* ruleRow = GetInventoryRuleRow(InWorldContextObject);
-		const int32 maxSlots = ruleRow ? FMath::Max(0, ruleRow->Capacity) : 0;
+		// 인벤 용량 가져옴
+		const int32 maxSlots = FMath::Max(0, GI->GetPlayerData().InventoryCapacity);
 
 		// 장비 점유 칸
 		int32 usedEquipSlots = 0;
@@ -652,9 +648,8 @@ bool FPlayerAccountService::PurchaseStackItemByRowName(const UObject* InWorldCon
 	const int64 totalPrice = static_cast<int64>(catalogRow->BuyPrice) * static_cast<int64>(InBuyCount);
 	if (gold->CurrAmount < totalPrice) return false;
 
-	// 용량(Capacity)만 InventoryRule DT에서
-	const FDTInventoryRuleItem* ruleRow = GetInventoryRuleRow(InWorldContextObject);
-	const int32 maxSlots = ruleRow ? FMath::Max(0, ruleRow->Capacity) : 0;
+	// 인벤 용량 가져옴
+	const int32 maxSlots = FMath::Max(0, GI->GetPlayerData().InventoryCapacity);
 
 	// 장비 점유 칸(유효 Guid)
 	int32 usedEquipSlots = 0;
@@ -891,25 +886,6 @@ void FPlayerAccountService::SetNextShopRefreshTime(UARGameInstance* InGameInstan
 			InGameInstance->NextShopRefreshTime = currentTimeKST + FTimespan(0, 0, gameTimeSubsystem->ShopRefreshSeconds);
 		}
 	}
-}
-
-const FDTInventoryRuleItem* FPlayerAccountService::GetInventoryRuleRow(const UObject* WorldContextObject)
-{
-	UARGameInstance* Gi = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
-	if (!Gi) return nullptr;
-
-	if (UGameDataSubsystem* dataSubsystem = Gi->GetSubsystem<UGameDataSubsystem>())
-	{
-		if (UDataTable* const* tablePtr = dataSubsystem->MasterDataTables.Find(Arcanum::DataTable::InventoryRule))
-		{
-			if (*tablePtr)
-			{
-				return (*tablePtr)->FindRow<FDTInventoryRuleItem>(FName("Default"), TEXT("InventoryRule"));
-			}
-		}
-	}
-
-	return nullptr;
 }
 
 void FPlayerAccountService::BuildCatalogRowNamesByStorePolicy(UARGameInstance* InGameInstance, const FGameplayTag& InStorePolicyTag, TArray<FName>& OutRowNames)

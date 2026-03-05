@@ -7,7 +7,6 @@
 #include "DataInfo/BattleCharacter/Equipment/DataTable/DTEquipment.h"
 #include "DataInfo/GachaData/DataTable/DTGachaBannerData.h"
 #include "DataInfo/ItemData/DataTable/DTPotionInfoRow.h"
-#include "DataInfo/InventoryData/DataTable/DTInventoryRuleItem.h"
 #include "DataInfo/ItemData/DataTable/DTItemCatalogRow.h"
 #include "DataInfo/InventoryData/Data/InventoryViewSlot.h"
 #include "ARPlayerAccountService.generated.h"
@@ -195,9 +194,6 @@ private:
 
 	/* 다음 갱신 시각 설정 (현재시간 + 10분) */
 	static void SetNextShopRefreshTime(UARGameInstance* InGameInstance);
-
-	/* InventoryRule DT의 Default Row를 조회 */
-	static const FDTInventoryRuleItem* GetInventoryRuleRow(const UObject* WorldContextObject);
 
 	/* ItemCatalog에서 StorePolicyTag로 RowName 목록 수집 */
 	static void BuildCatalogRowNamesByStorePolicy(
