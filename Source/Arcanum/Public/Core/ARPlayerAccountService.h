@@ -48,6 +48,7 @@ enum class EHUDIndex : uint8;
  * - 추후 해당 로직 및 GameInstance(DB)는 서버로 그대로 옮기면 됨.
  */
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSaveCompleted, bool, bSuccess);
 
 class FPlayerAccountService : public IPlayerAccountService
 {
@@ -116,8 +117,12 @@ private:
 
 #pragma region 로그인 관련
 public:
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	static FOnSaveCompleted OnSaveCompleted;
 	static bool LoadPlayerData(const UObject* WorldContextObject);
 	static bool SavePlayerData(const UObject* WorldContextObject);
+private:
+	static bool SavePlayerData(UARGameInstance* GI);
 #pragma endregion
 
 

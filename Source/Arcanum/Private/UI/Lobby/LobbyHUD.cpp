@@ -114,8 +114,20 @@ void ULobbyHUD::NativeConstruct()
 	//}
 	ClickCharacterMenuBtn();
 	RefreshLobbyCurrencyUI();
-}
 
+	FPlayerAccountService::OnSaveCompleted.RemoveDynamic(this, &ULobbyHUD::HandleSaveCompleted);
+	FPlayerAccountService::OnSaveCompleted.AddDynamic(this, &ULobbyHUD::HandleSaveCompleted);
+}
+void ULobbyHUD::HandleSaveCompleted(bool bSuccess)
+{
+	if (bSuccess) {
+		RefreshAllLobbyUI();
+		UE_LOG(LogTemp, Log, TEXT("HUD: 저장이 성공적으로 완료되었습니다!"));
+	}
+	else {
+		UE_LOG(LogTemp, Error, TEXT("HUD: 저장 실패!"));
+	}
+}
 void ULobbyHUD::RefreshAllLobbyUI()
 {
 	CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
