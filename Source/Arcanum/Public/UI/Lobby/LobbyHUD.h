@@ -36,6 +36,8 @@ class ARCANUM_API ULobbyHUD : public UUserWidget
 #pragma region 언리얼 기본 생성
 protected:
 	virtual void NativeConstruct() override;
+	/** 플레이어 데이터 저장 성공 시 갱신용 함수*/
+	UFUNCTION() void HandleSaveCompleted(bool bSuccess);
 #pragma endregion
 
 #pragma region 데이터 캐시

@@ -12,6 +12,8 @@
 #include "DataInfo/PlayerData/PlayerGacha/FPlayerGacha.h"
 #pragma endregion
 
+// 스태틱 관련 
+FOnSaveCompleted FPlayerAccountService::OnSaveCompleted;
 
 // ========================================================
 // 인터페이스(추후 서버 대비용 예시)
@@ -122,7 +124,7 @@ const bool FPlayerAccountService::AddCurrency(const UObject* WorldContextObject,
 	}
 
 	GI->AddCurrency(Tag, Amount);
-	GI->SavePlayerData();
+	SavePlayerData(GI);
 	return true;
 }
 const FPlayerCurrency FPlayerAccountService::UpdateCurrency(const UObject* WorldContextObject, const FPlayerData& PlayerData, FGameplayTag Tag, int64 Amount)
@@ -138,7 +140,7 @@ const FPlayerCurrency FPlayerAccountService::UpdateCurrency(const UObject* World
 	}
 
 	GI->AddCurrency(Tag, Amount);
-	GI->SavePlayerData();
+	SavePlayerData(GI);
 	return GI->GetPlayerDataCopy().PlayerCurrency;
 }
 bool FPlayerAccountService::VerifyCurrency(UARGameInstance* GI, FPlayerData CachedData)
@@ -177,11 +179,22 @@ bool FPlayerAccountService::SavePlayerData(const UObject* WorldContextObject)
 {
 	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
 	if (!GI) {
-		UE_LOG(LogTemp, Error, TEXT("SavePlayerData: GameInstance not found!"));
+		UE_LOG(LogTemp, Error, TEXT("SavePlayerData(WorldContext): GameInstance not found!"));
+		return false;
+	}
+	return SavePlayerData(GI);
+}
+bool FPlayerAccountService::SavePlayerData(UARGameInstance* GI)
+{
+	if (!GI) {
+		UE_LOG(LogTemp, Error, TEXT("SavePlayerData: GameInstance is Null!"));
 		return false;
 	}
 
-	return GI->SavePlayerData();
+	bool bFinalResult = GI->SavePlayerData();
+	OnSaveCompleted.Broadcast(bFinalResult);
+
+	return bFinalResult;
 }
 // ========================================================
 // Battle Widget 관련
@@ -290,7 +303,7 @@ bool FPlayerAccountService::PurchaseEquipment(const UObject* WorldContextObject,
 	PlayerData.Inventory.Add(MoveTemp(NewEquip));
 	CurrencyData->CurrAmount -= Price;
 
-	GI->SavePlayerData();
+	SavePlayerData(GI);
 	return true;
 
 
@@ -569,7 +582,7 @@ bool FPlayerAccountService::PurchasePotion(const UObject* InWorldContextObject, 
 
 	currencyData->CurrAmount -= totalPrice;
 
-	Gi->SavePlayerData();
+	SavePlayerData(Gi);
 
 	return true;
 }
