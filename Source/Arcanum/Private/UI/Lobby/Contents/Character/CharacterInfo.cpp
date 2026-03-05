@@ -116,12 +116,13 @@ void UCharacterInfo::SetCharcterInfo(const FText& InText)
 // ========================================================
 // 캐릭터에 따른 강화 버튼 활성화/비활성화
 // ========================================================
-void UCharacterInfo::SetEnhanceButtonEnabled(bool bIsCharacterOwned,int32 RequiredSoul, int EnhancementLevel)
+void UCharacterInfo::SetEnhanceButtonEnabled(bool bIsCharacterOwned,int32 InRequiredSoul, int64 CurrentSoul, int EnhancementLevel)
 {
+    RequiredSoul = InRequiredSoul;
     // 일단은 최대 강화 (성급) 3으로 제한
     if (CharacterEnhanceBtn)
     {
-        bool bShouldEnable = bIsCharacterOwned && (EnhancementLevel < 3);
+        bool bShouldEnable = bIsCharacterOwned && (EnhancementLevel < 3) && (CurrentSoul >= RequiredSoul);
         CharacterEnhanceBtn->SetIsEnabled(bShouldEnable);
     }
 }
@@ -153,7 +154,7 @@ void UCharacterInfo::SetEnhanceBtnText(const FText& InText)
 // ========================================================
 void UCharacterInfo::ClickCharacterEnhanceBtn()
 {
-	OnEnhanceBtnClicked.Broadcast();
+	OnEnhanceBtnClicked.Broadcast(CharactNameTxt, RequiredSoul);
 }
 
 // ========================================================

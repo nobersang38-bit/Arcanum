@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "UI/DataType/EDialogResult.h"
 #include "GameplayTags/ArcanumTags.h"
+#include "Core/ARGameInstance.h"
+#include "Core/SubSystem/GameDataSubsystem.h"
 #include "CharacterHUDWidget.generated.h"
 
 class URoundedSlotWidget;
@@ -93,15 +95,17 @@ protected:
 	TArray<URoundedSlotWidget*> CreatedCharacterSlots;
 
 	UFUNCTION()
-	void CharacterEnhancement();
+	void CharacterEnhancement(FText CharacterName,int32 InRequiredSoul);
 	UFUNCTION()
 	void SetPlayerCharacter(FText CharacterName);
+
+	UFUNCTION()
+	void UpdateCharacterInfo(FName CharacterName, bool SlotCharacterOwned, FText ButtonText, int64 soulAmount);
 
 	UFUNCTION()
 	void SetupEquipment();
 	int GetCurrentGrade;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 RequiredSoul;
 
 public:
@@ -109,11 +113,9 @@ public:
 	FOnEnhanceOKClicked OnEnhanceOKClicked;
 
 	void InitCharacterHUD();
-
 private:
 	UFUNCTION()
 	void OnSquareSlotClicked(USquareSlotWidget* ClickedSlot, int32 SlotIndex);
-
 	UFUNCTION()
 	void OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlot, FName CharacterName, bool SlotCharacterOwned);
 
@@ -121,6 +123,9 @@ private:
 	int32 CharacterGrade = 0;
 	int32 TargetGradeIndex = 0;
 	FText FinalText;
+	FString CombinedInfoString;
+	FText ButtonText;
+	
 #pragma endregion
 
 };

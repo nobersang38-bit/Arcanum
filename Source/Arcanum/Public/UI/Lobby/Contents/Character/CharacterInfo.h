@@ -9,7 +9,7 @@
 class UCommonBtnWidget;
 class UTextBlock;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEnhanceBtnClicked);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEnhanceBtnClicked, FText, CharacterNameTxt, int32, RequiredSoul);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSetPlayerBtnClicked,FText, CharactNameTxt);
 
 /*
@@ -46,7 +46,7 @@ public:
 	void SetCharcterInfo(const FText& InText);
 
 	UFUNCTION(BlueprintCallable)
-	void SetEnhanceButtonEnabled(bool bIsCharacterOwned, int32 RequiredSoul, int EnhancementLevel);
+	void SetEnhanceButtonEnabled(bool bIsCharacterOwned, int32 RequiredSoul, int64 CurrentSoul, int EnhancementLevel);
 	UFUNCTION(BlueprintCallable)
 	void SetPlayerButtonEnabled(bool bIsCharacterOwned);
 
@@ -72,13 +72,14 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCommonBtnWidget> SetPlayerBtn;
 
+
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnEnhanceBtnClicked OnEnhanceBtnClicked;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnSetPlayerBtnClicked OnSetPlayerBtnClicked;
-
+	int32 RequiredSoul;
 private:
 	UFUNCTION()
 	void ClickCharacterEnhanceBtn();

@@ -151,27 +151,10 @@ void ULobbyHUD::ClickBattleMenuBtn()
 
 void ULobbyHUD::ClickCharacterMenuBtn()
 {
-	/// TODO : 캐릭터 위젯 띄우기
-
-	/*if (CharacterWidgetClass)
-	{
-		if (!CharacterWidget)
-		{
-			CharacterWidget = CreateWidget<UCharacterHUDWidget>(GetWorld(), CharacterWidgetClass);
-			if (CharacterWidget)
-			{
-				CharacterWidget->AddToViewport();
-			}
-		}
-	}*/
-	if (WidgetSwitcher)
-	{
-		WidgetSwitcher->SetActiveWidgetIndex(1);
-	}
-	TArray<FName> RowNames = CharacterDataTable->GetRowNames();
-	for (const FName& RowName : RowNames)
-	{
-		UE_LOG(LogTemp, Log, TEXT("RowName: %s"), *RowName.ToString());
+	if (UCharacterHUDWidget* CharacterWidget = Cast<UCharacterHUDWidget>(WidgetSwitcher->GetWidgetAtIndex(1))) {
+		CharacterWidget->SetParentLobby(this);
+		CharacterWidget->InitCharacterHUD();
+		WidgetSwitcher->SetActiveWidget(CharacterWidget);
 	}
 }
 
