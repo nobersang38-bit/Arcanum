@@ -24,7 +24,7 @@ class ARCANUM_API UCharacterInfo : public UUserWidget
 	
 #pragma region 언리얼 기본 생성
 protected:
-	virtual void NativePreConstruct() override;
+	//virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
 #pragma endregion
 public:

@@ -38,6 +38,7 @@ protected:
 	// 캐릭터창, 유닛창, 장비창, 캐릭터 설명창, 캐릭터 강화창, 장비 인벤토리
 public:
 	void SetParentLobby(ULobbyHUD* InLobby) { ParentLobby = InLobby; }
+
 private:
 	UPROPERTY()
 	TObjectPtr<ULobbyHUD> ParentLobby;

@@ -48,7 +48,7 @@ void UCharacterHUDWidget::NativeConstruct()
         return;
 
     // 유닛창 테스트용
-      for (int32 Index = 0; Index < 8; ++Index)
+      for (int32 Index = 0; Index < 12; ++Index)
     {
 
         URoundedSlotWidget* NewSlot = CreateWidget<URoundedSlotWidget>(GetWorld(), RoundedSlotWidgetClass);
@@ -196,7 +196,7 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
             TargetGradeIndex =  (TargetData.CharacterInfo.CurrentGrade > 0)? TargetData.CharacterInfo.CurrentGrade - 1 : 0;
             CharacterStar = TargetGradeIndex;
             CharacterGrade = GetGradePriority(TargetData.CharacterInfo.CurrGrade);
-            RequiredSoul = TargetData.CharacterInfo.BattleCharacterInitData.RequiredShardCount[GetCurrentGrade];
+            RequiredSoul = TargetData.CharacterInfo.BattleCharacterInitData.RequiredShardCount[TargetGradeIndex];
 
             if (FDTBattleStatsContainerRow* BattleRow = DataSubsystem->GetRow<FDTBattleStatsContainerRow>(Arcanum::DataTable::BattleStats, ListCharacterName)) {
                 if (BattleRow->GradeDataSteps.IsValidIndex(TargetGradeIndex)) {
@@ -271,7 +271,9 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
     {
         CharacterSwitcher->SetActiveWidgetIndex(0);
         UCharacterInfo* InfoWidget = Cast<UCharacterInfo>(CharacterSwitcher->GetWidgetAtIndex(0));
+
         FText ButtonText = FText::Format(FText::FromString(TEXT("강화 : {0} 소울")), FText::AsNumber(RequiredSoul));
+        
         if (InfoWidget)
         {
             InfoWidget->SetCharacterName(CharacterName);

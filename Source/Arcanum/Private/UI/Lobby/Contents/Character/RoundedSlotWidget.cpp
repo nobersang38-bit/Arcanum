@@ -19,6 +19,9 @@ FReply URoundedSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, 
     return FReply::Handled();
 }
 
+// ========================================================
+// 캐릭터 슬롯 배경색 설정
+// ========================================================
 void URoundedSlotWidget::SetRoundBackgroundColor(FLinearColor NewColor)
 {
     if (BackgroundColor)
@@ -27,6 +30,9 @@ void URoundedSlotWidget::SetRoundBackgroundColor(FLinearColor NewColor)
     }
 }
 
+// ========================================================
+// 캐릭터 아이콘 설정
+// ========================================================
 void URoundedSlotWidget::SetIconImage(UTexture2D* CharacterIcon, bool OwnedCharacter, FName CharacterName)
 {
     if (!IconImage) return;
@@ -45,7 +51,6 @@ void URoundedSlotWidget::SetIconImage(UTexture2D* CharacterIcon, bool OwnedChara
 
         SlotCharacterName = CharacterName;
         SlotCharacterOwned = OwnedCharacter;
-        //SlotCharacterName = GetLeafNameFromTag(CharacterTag);
     }
     else
     {

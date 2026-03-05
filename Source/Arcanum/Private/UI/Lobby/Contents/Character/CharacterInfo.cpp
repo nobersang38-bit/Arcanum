@@ -3,23 +3,23 @@
 #include "Components/TextBlock.h"
 #include "UI/Common/CommonBtnWidget.h"
 
-void UCharacterInfo::NativePreConstruct()
-{
-	Super::NativePreConstruct();
-
-    //FText DefaultName = FText::FromString(TEXT("캐릭터 이름"));
-    //FText DefaultInfo = FText::FromString(TEXT("등급\n성급\n체력\n마나"));
-
-    if (CharacterNameText)
-    {
-        CharacterNameText->SetText(CharactNameTxt.IsEmpty() ? FText::GetEmpty() : CharactNameTxt);
-    }
-
-    if (CharacterInfoText)
-    {
-        CharacterInfoText->SetText(CharacInfoTxt.IsEmpty() ? FText::GetEmpty() : CharacInfoTxt);
-    }
-}
+//void UCharacterInfo::NativePreConstruct()
+//{
+//	Super::NativePreConstruct();
+//
+//    //FText DefaultName = FText::FromString(TEXT("캐릭터 이름"));
+//    //FText DefaultInfo = FText::FromString(TEXT("등급\n성급\n체력\n마나"));
+//
+//    if (CharacterNameText)
+//    {
+//        CharacterNameText->SetText(CharactNameTxt.IsEmpty() ? FText::GetEmpty() : CharactNameTxt);
+//    }
+//
+//    if (CharacterInfoText)
+//    {
+//        CharacterInfoText->SetText(CharacInfoTxt.IsEmpty() ? FText::GetEmpty() : CharacInfoTxt);
+//    }
+//}
 
 void UCharacterInfo::NativeConstruct()
 {
@@ -36,6 +36,9 @@ void UCharacterInfo::NativeConstruct()
 	}
 }
 
+// ========================================================
+// 캐릭터 정보창 - 이름 입력
+// ========================================================
 void UCharacterInfo::SetCharacterName(FName CharacterName)
 {
     if (CharacterNameText)
@@ -45,6 +48,9 @@ void UCharacterInfo::SetCharacterName(FName CharacterName)
     }
 }
 
+// ========================================================
+// 캐릭터 정보창 - 별 등급 입력
+// ========================================================
 void UCharacterInfo::SetStarCharcterInfo(int32 StarGrade)
 {
     if (GradeStarsText)
@@ -61,6 +67,9 @@ void UCharacterInfo::SetStarCharcterInfo(int32 StarGrade)
     }
 }
 
+// ========================================================
+// 캐릭터 정보창 - 등급 입력 (일반, 레어, 영웅)
+// ========================================================
 void UCharacterInfo::SetGradeCharcterInfo(int32 Grade)
 {
     FText TargetText;
@@ -93,6 +102,9 @@ void UCharacterInfo::SetGradeCharcterInfo(int32 Grade)
     }
 }
 
+// ========================================================
+// 캐릭터 정보창 - 체력, 마나 등등 정보 입력
+// ========================================================
 void UCharacterInfo::SetCharcterInfo(const FText& InText)
 {
     if (CharacterInfoText)
@@ -101,6 +113,9 @@ void UCharacterInfo::SetCharcterInfo(const FText& InText)
     }
 }
 
+// ========================================================
+// 캐릭터 보유에 따른 강화 버튼 활성화/비활성화
+// ========================================================
 void UCharacterInfo::SetEnhanceButtonEnabled(bool bIsCharacterOwned,int32 RequiredSoul)
 {
     if (CharacterEnhanceBtn)
@@ -109,6 +124,9 @@ void UCharacterInfo::SetEnhanceButtonEnabled(bool bIsCharacterOwned,int32 Requir
     }
 }
 
+// ========================================================
+// 캐릭터 보유에 따른 장착 버튼 활성화/비활성화
+// ========================================================
 void UCharacterInfo::SetPlayerButtonEnabled(bool bIsCharacterOwned)
 {
     if (SetPlayerBtn)
@@ -117,6 +135,9 @@ void UCharacterInfo::SetPlayerButtonEnabled(bool bIsCharacterOwned)
     }
 }
 
+// ========================================================
+// 강화 버튼 텍스트 설정
+// ========================================================
 void UCharacterInfo::SetEnhanceBtnText(const FText& InText)
 {
     if (CharacterEnhanceBtn)
@@ -125,11 +146,17 @@ void UCharacterInfo::SetEnhanceBtnText(const FText& InText)
     }
 }
 
+// ========================================================
+// 강화 버튼 클릭 처리 함수
+// ========================================================
 void UCharacterInfo::ClickCharacterEnhanceBtn()
 {
 	OnEnhanceBtnClicked.Broadcast();
 }
 
+// ========================================================
+// 장착 버튼 클릭 처리 함수
+// ========================================================
 void UCharacterInfo::ClickSetPlayerBtn()
 {
     OnSetPlayerBtnClicked.Broadcast(CharactNameTxt);
