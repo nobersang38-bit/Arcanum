@@ -16,7 +16,7 @@ struct FEnemyBasement
 };
 
 /**
- * @brief 개별 장비데이터를 보관하는 구조체
+ * @brief 적 스폰정보
  */
 USTRUCT(BlueprintType)
 struct FEnemySpawnInfo
@@ -26,10 +26,12 @@ struct FEnemySpawnInfo
     UPROPERTY(EditAnywhere)
     FGameplayTag EnemyTag;
 
+    /** Todo : 추후 적 캐릭터 BP로 변경해줘야함*/
     UPROPERTY(EditAnywhere)
-    float SpawnTime;
+    TSoftClassPtr<AActor> EnemyClass;
 
+    /** 적 계수*/
     UPROPERTY(EditAnywhere)
-    int32 Count;
+    float SpawnMultiplier;
 };
 
