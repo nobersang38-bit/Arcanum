@@ -45,6 +45,7 @@ void UCharacterHUDWidget::NativeConstruct()
     }
 
     if (!CharacterGridPanel || !RoundedSlotWidgetClass)
+
         return;
 
     // 유닛창 테스트용

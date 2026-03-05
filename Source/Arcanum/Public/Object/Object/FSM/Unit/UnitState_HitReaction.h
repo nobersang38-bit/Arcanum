@@ -7,7 +7,7 @@
 #include "UnitState_HitReaction.generated.h"
 
 /**
- * 
+ * 김도현
  */
 UCLASS()
 class ARCANUM_API UUnitState_HitReaction : public UUnitStateBase

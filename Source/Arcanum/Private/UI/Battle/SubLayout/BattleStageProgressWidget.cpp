@@ -35,3 +35,12 @@ void UBattleStageProgressWidget::SetTime(int32 TimeMS)
 	FString ResultString = FString::Printf(TEXT("%d분 %d초 %d"), Minutes, Seconds, Milli);
 	TimeText->SetText(FText::FromString(ResultString));
 }
+
+void UBattleStageProgressWidget::SetTimeSecond(int32 TimeSecond)
+{
+	int32 Minutes = TimeSecond / 60;
+	int32 Seconds = (TimeSecond % 60);
+
+	FString ResultString = FString::Printf(TEXT("%d분 %d초"), Minutes, Seconds);
+	TimeText->SetText(FText::FromString(ResultString));
+}

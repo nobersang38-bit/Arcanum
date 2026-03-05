@@ -26,7 +26,6 @@ class UInventoryHUDWidget;
 struct FDTEquipmentInfoRow;
 struct FDTPotionInfoRow;
 struct FDTInventoryRuleItem;
-struct FDTCharacterBaseInfoRow;
 class UDataTable;
 
 UCLASS()
@@ -51,7 +50,7 @@ public:
 	UFUNCTION()
 	void HandleCurrencyChanged();
 
-	public:
+public:
 	FPlayerData CachedPlayerData;
 #pragma endregion
 
@@ -139,16 +138,12 @@ protected:
 #pragma endregion
 
 #pragma region 캐릭터
-protected:
-	/* 캐릭터 DT 캐시 구축 */
-	//void BuildCharacterRowCache();
-
-	/* CharacterTag -> 캐릭터 DT RowPtr */
-	//TMap<FGameplayTag, const FDTCharacterBaseInfoRow*> CharacterRowByTag;
-
-	//protected:
-	//UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	//TObjectPtr<UCharacterHUDWidget> CharacterHUDWidget;
+//protected:
+//	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+//	TSubclassOf<UCharacterHUDWidget> CharacterWidgetClass;
+//
+//private:
+//	UCharacterHUDWidget* CharacterWidget = nullptr;
 #pragma endregion
 
 #pragma region 강화

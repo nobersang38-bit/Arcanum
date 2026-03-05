@@ -15,7 +15,7 @@ class UUnitDataInterface : public UInterface
 };
 
 /**
- * 
+ * 김도현
  */
 class ARCANUM_API IUnitDataInterface
 {

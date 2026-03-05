@@ -8,8 +8,7 @@
 #include "DataInfo/BattleCharacter/Equipment/DataTable/DTEquipment.h"
 #include "DataInfo/ItemData/Potion/DTPotionInfoRow.h"
 #include "DataInfo/InventoryData/DataTable/DTInventoryRuleItem.h"
-#include "DataInfo/BattleCharacter/CharacterInfo/DataTable/DTCharacterBaseInfo.h"
-#include "DataInfo/BattleCharacter/BattleStats/DataTable/DTBattleStats.h"
+#include "UI/Lobby/Contents/Gacha/GachaHUDWidget.h"
 //#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/HorizontalBox.h"
@@ -89,8 +88,6 @@ void ULobbyHUD::NativeConstruct()
 		InventorySortBtn->OnClicked.RemoveDynamic(this, &ULobbyHUD::ClickInventorySortBtn);
 		InventorySortBtn->OnClicked.AddDynamic(this, &ULobbyHUD::ClickInventorySortBtn);
 	}
-	
-	//BuildCharacterRowCache();
 
 	BindGameInstanceEvents();
 	BuildEquipmentRowCache();
@@ -145,6 +142,7 @@ void ULobbyHUD::HandleCurrencyChanged()
 
 void ULobbyHUD::ClickBattleMenuBtn()
 {
+	/// TODO : 전투 위젯 띄우기
 	if (WidgetSwitcher)
 	{
 		WidgetSwitcher->SetActiveWidgetIndex(0);
@@ -153,10 +151,27 @@ void ULobbyHUD::ClickBattleMenuBtn()
 
 void ULobbyHUD::ClickCharacterMenuBtn()
 {
-	if (UCharacterHUDWidget* CharacterWidget = Cast<UCharacterHUDWidget>(WidgetSwitcher->GetWidgetAtIndex(1))) {
-		CharacterWidget->SetParentLobby(this);
-		CharacterWidget->InitCharacterHUD();
-		WidgetSwitcher->SetActiveWidget(CharacterWidget);
+	/// TODO : 캐릭터 위젯 띄우기
+
+	/*if (CharacterWidgetClass)
+	{
+		if (!CharacterWidget)
+		{
+			CharacterWidget = CreateWidget<UCharacterHUDWidget>(GetWorld(), CharacterWidgetClass);
+			if (CharacterWidget)
+			{
+				CharacterWidget->AddToViewport();
+			}
+		}
+	}*/
+	if (WidgetSwitcher)
+	{
+		WidgetSwitcher->SetActiveWidgetIndex(1);
+	}
+	TArray<FName> RowNames = CharacterDataTable->GetRowNames();
+	for (const FName& RowName : RowNames)
+	{
+		UE_LOG(LogTemp, Log, TEXT("RowName: %s"), *RowName.ToString());
 	}
 }
 
@@ -178,7 +193,10 @@ void ULobbyHUD::ClickShopMenuBtn()
 
 void ULobbyHUD::ClickGachaMenuBtn()
 {
-	if (WidgetSwitcher) WidgetSwitcher->SetActiveWidgetIndex(4);
+	if (UGachaHUDWidget* GachaWidget = Cast<UGachaHUDWidget>(WidgetSwitcher->GetWidgetAtIndex(4))) {
+		GachaWidget->SetParentLobby(this);
+		WidgetSwitcher->SetActiveWidget(GachaWidget);
+	}
 }
 
 void ULobbyHUD::ClickSettingBtn()
@@ -235,54 +253,6 @@ void ULobbyHUD::RefreshLobbyCurrencyUI()
 		CurrencyWidget->RefreshCurrencyUI(CachedPlayerData);
 	}
 }
-
-// ========================================================
-// 캐릭터
-// ========================================================
-//void ULobbyHUD::BuildCharacterRowCache()
-//{
-//	CharacterRowByTag.Reset();
-//
-//	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
-//	{
-//		if (UGameDataSubsystem* dataSubsystem = gameInstance->GetSubsystem<UGameDataSubsystem>())
-//		{
-//			//UDataTable* const* tablePtr = dataSubsystem->MasterDataTables.Find(Arcanum::DataTable::CharacterInfo);
-//
-//			/*if (!tablePtr || !(*tablePtr)) { return; }
-//
-//			UDataTable* table = *tablePtr;
-//
-//			TArray<FDTCharacterBaseInfoRow*> rows;
-//			table->GetAllRows(TEXT("BuildCharacterRowCache"), rows);
-//
-//			for (FDTCharacterBaseInfoRow* row : rows)
-//			{
-//				if (row)
-//				{
-//					UE_LOG(LogTemp, Log, TEXT("CharacterTag: %s"), *row->BattleCharacterInfo.CharacterTag.ToString());
-//				}
-//			}*/
-//
-//			UDataTable* const* tablePtr = dataSubsystem->MasterDataTables.Find(Arcanum::DataTable::BattleStats);
-//
-//			if (!tablePtr || !(*tablePtr)) { return; }
-//
-//			UDataTable* table = *tablePtr;
-//
-//			TArray<FDTBattleStatsContainerRow*> rows;
-//			table->GetAllRows(TEXT("BuildCharacterRowCache"), rows);
-//
-//			for (FDTBattleStatsContainerRow* row : rows)
-//			{
-//				if (row)
-//				{
-//					UE_LOG(LogTemp, Log, TEXT("CharacterTag: %s"), *row->BattleCharacterTag.ToString());
-//				}
-//			}
-//		}
-//	}
-//}
 
 // ========================================================
 // 인벤토리

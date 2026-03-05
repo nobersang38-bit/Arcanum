@@ -5,10 +5,13 @@
 #include "DataInfo/PlayerData/FPlayerData.h"
 #include "Core/Interfaces/IPlayerAccountService.h"
 #include "DataInfo/BattleCharacter/Equipment/DataTable/DTEquipment.h"
+#include "DataInfo/BattleCharacter/CharacterInfo/DataTable/DTCharacterBaseInfo.h"
 #include "DataInfo/GachaData/DataTable/DTGachaBannerData.h"
+
 #include "DataInfo/ItemData/Potion/DTPotionInfoRow.h"
 #include "DataInfo/InventoryData/DataTable/DTInventoryRuleItem.h"
 #include "DataInfo/ItemData/Data/InventoryViewSlot.h"
+
 #include "ARPlayerAccountService.generated.h"
 
 UENUM(BlueprintType)
@@ -17,14 +20,6 @@ enum class EShopRarityType : uint8
 	Common,
 	Set,
 	Legendary
-};
-
-UENUM(BlueprintType)
-enum class EDisposeType : uint8
-{
-	Sell,                // 판매(골드)
-	DisassembleItem,     // 장비/무기 분해(소울)
-	DisassembleCharacter // 캐릭터 분해(조각)
 };
 
 USTRUCT(BlueprintType)
@@ -43,6 +38,8 @@ struct FShopItemPools
 };
 
 class UARGameInstance;
+struct FGachaItemResult;
+enum class EHUDIndex : uint8;
 
 /**
  * PlayerAccountService
@@ -74,36 +71,46 @@ public:
 	static const FPlayerData GetPlayerDataCopy(const UObject* WorldContextObject);
 	// 재화
 	UFUNCTION(BlueprintCallable)
-	const FPlayerCurrency GetPlayerCurrency(const UObject* WorldContextObject);
+	static const FPlayerCurrency GetPlayerCurrency(const UObject* WorldContextObject);
 	// 전투 기본 데이터
 	UFUNCTION(BlueprintCallable)
-	const FPlayerBattleData GetPlayerBattleData(const UObject* WorldContextObject);
+	static const FPlayerBattleData GetPlayerBattleData(const UObject* WorldContextObject);
 	// 보유 캐릭터
 	UFUNCTION(BlueprintCallable)
-	const TArray<FBattleCharacterData> GetOwnedCharacters(const UObject* WorldContextObject);
+	static const TArray<FBattleCharacterData> GetOwnedCharacters(const UObject* WorldContextObject);
 	// 인벤토리
 	UFUNCTION(BlueprintCallable)
-	const TArray<FEquipmentInfo> GetInventory(const UObject* WorldContextObject);
+	static const TArray<FEquipmentInfo> GetInventory(const UObject* WorldContextObject);
 	// 스테이지 진행도
 	UFUNCTION(BlueprintCallable)
-	const TMap<FGameplayTag, FStageProgressData> GetStageProgressMap(const UObject* WorldContextObject);
+	static const TMap<FGameplayTag, FStageProgressData> GetStageProgressMap(const UObject* WorldContextObject);
 	// 가챠 상태
 	UFUNCTION(BlueprintCallable)
-	const FGachaData GetGachaState(const UObject* WorldContextObject);
+	static const FGachaData GetGachaState(const UObject* WorldContextObject);
 	// 퀘스트 상태
 	UFUNCTION(BlueprintCallable)
-	const FPlayerQuest GetQuestState(const UObject* WorldContextObject);
+	static const FPlayerQuest GetQuestState(const UObject* WorldContextObject);
 #pragma endregion
+
+#pragma region 레벨 변경 시 호출 함수
+	/** 레벨 변경 후 되돌아올때, 현재 HUD 위치 저장하는 함수*/
+	static void SetHUDIndex(const UObject* WorldContextObject, const int HudIndex);
+	static void SetHUDIndex(const UObject* WorldContextObject, const EHUDIndex HudIndex);
+	static int32 GetHUDIndex(const UObject* WorldContextObject);
+#pragma endregion
+
 
 #pragma region PlayerData Updater
 public:
+	/** 간편 재화 추가 */
+	static const bool AddCurrency(const UObject* WorldContextObject, FGameplayTag Tag, int64 Amount);
 	/** 플레이어 재화 변경할때*/
-	const FPlayerCurrency UpdateCurrency(const UObject* WorldContextObject, const FPlayerData& PlayerData, FGameplayTag Tag, int64 Amount);
+	static const FPlayerCurrency UpdateCurrency(const UObject* WorldContextObject, const FPlayerData& PlayerData, FGameplayTag Tag, int64 Amount);
 private:
 	/** 치트 방지용*/
-	bool VerifyCurrency(UARGameInstance* GI, FPlayerData CachedData);
+	static bool VerifyCurrency(UARGameInstance* GI, FPlayerData CachedData);
 	/** 세이브 삭제, 강제종료 */
-	void VerifiedFailure(UARGameInstance* GI);
+	static void VerifiedFailure(UARGameInstance* GI);
 #pragma endregion
 
 
@@ -116,8 +123,7 @@ public:
 
 #pragma region Battle Widget 관련
 public:
-	/* 스테이지 입장 시 상점 타이머 정지 */
-	static void StopShopOnBattleStart(const UObject* WorldContextObject);
+
 #pragma endregion
 
 #pragma region Character Widget 관련
@@ -202,8 +208,9 @@ private:
 
 #pragma region Gacha Widget 관련
 public:
-	const FDTGachaBannerDataRow* GetGachaBannerData(const UObject* WorldContextObject, FGameplayTag InBannerTag);
-	void GetActiveGachaBannerRows(const UObject* WorldContextObject, TArray<const FDTGachaBannerDataRow*>& OutRows);
+	static const FDTGachaBannerDataRow* GetGachaBannerData(const UObject* WorldContextObject, FGameplayTag InBannerTag);
+	static void GetActiveGachaBannerRows(const UObject* WorldContextObject, TArray<const FDTGachaBannerDataRow*>& OutRows);
+	static bool ExecuteGacha(const UObject* WorldContextObject, const FPlayerData& PlayerData, FGameplayTag BannerTag, FCurrencyCost Cost, int32 PullCount);
 #pragma endregion
 
 };

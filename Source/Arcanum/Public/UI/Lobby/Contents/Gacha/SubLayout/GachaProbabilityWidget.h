@@ -12,9 +12,9 @@ class UGachaProbabilityRowWidget;
 UCLASS()
 class ARCANUM_API UGachaProbabilityWidget : public UUserWidget
 {
-	GENERATED_BODY()
-	
-#pragma region 언리얼 기본생성
+    GENERATED_BODY()
+
+    #pragma region 언리얼 기본생성
 protected:
     virtual void NativeConstruct() override;
 #pragma endregion
@@ -32,7 +32,7 @@ protected:
     UPROPERTY(meta = (BindWidget))
     TObjectPtr<UVerticalBox> ProbabilityListContainer;
 
-    /** 한 줄을 구성할 위젯 클래스 (별도로 하나 만드시는 게 좋습니다) */
+    /** 한 줄을 구성할 위젯 클래스 */
     UPROPERTY(EditAnywhere, Category = "Gacha|Settings")
     TSubclassOf<UGachaProbabilityRowWidget> ProbabilityRowClass;
 

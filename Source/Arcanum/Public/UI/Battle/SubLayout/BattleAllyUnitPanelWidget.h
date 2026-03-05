@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Data/Types/UnitData.h"
 #include "BattleAllyUnitPanelWidget.generated.h"
 
 /**
@@ -18,7 +19,12 @@ class ARCANUM_API UBattleAllyUnitPanelWidget : public UUserWidget
 #pragma region 언리얼 기본 생성
 protected:
 	virtual void NativeConstruct() override;
+
+
+
+#if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
 #pragma endregion
 
 
@@ -31,7 +37,7 @@ public:
 
 	// 맨 뒤에 슬롯 추가
 	UFUNCTION()
-	void AddUnitSlot();
+	UBattleAllyUnitSlotWidget* AddUnitSlot(const FUnitData& UnitData);
 
 	// 인덱스 추가 안하면 마지막 제거, 첫번째 인덱스와 마지막 인덱스는 스페이서가 있어서 0을 넣으면 1부터 검사하고, -1을 넣으면 마지막 인덱스인 스페이서를 제외하여 제거함
 	UFUNCTION()

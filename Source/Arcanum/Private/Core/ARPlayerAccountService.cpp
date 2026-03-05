@@ -2,9 +2,16 @@
 #include "Core/ARGameInstance.h"
 #include "Core/SubSystem/GameTimeSubsystem.h"
 #include "Core/SubSystem/GameDataSubsystem.h"
+
 #include "DataInfo/ItemData/Potion/DTPotionInfoRow.h"
 #include "DataInfo/InventoryData/DataTable/DTInventoryRuleItem.h"
+
 #include "Kismet/GameplayStatics.h"
+
+#pragma region 가챠 관련
+#include "DataInfo/PlayerData/PlayerGacha/FPlayerGacha.h"
+#pragma endregion
+
 
 // ========================================================
 // 인터페이스(추후 서버 대비용 예시)
@@ -67,13 +74,68 @@ const FPlayerQuest FPlayerAccountService::GetQuestState(const UObject* WorldCont
 	return GetPlayerDataCopy(WorldContextObject).QuestState;
 }
 // ========================================================
+// 레벨 변경 시 호출 함수
+// ========================================================
+void FPlayerAccountService::SetHUDIndex(const UObject* WorldContextObject, const int HudIndex)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) {
+		UE_LOG(LogTemp, Error, TEXT("Invalid WorldContext or GameInstance!"));
+		return;
+	}
+
+	GI->HUDIndex = static_cast<EHUDIndex>(GI->HUDIndex);
+}
+void FPlayerAccountService::SetHUDIndex(const UObject* WorldContextObject, const EHUDIndex HudIndex)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) {
+		UE_LOG(LogTemp, Error, TEXT("Invalid WorldContext or GameInstance!"));
+		return;
+	}
+
+	GI->HUDIndex = HudIndex;
+}
+int32 FPlayerAccountService::GetHUDIndex(const UObject* WorldContextObject)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+
+	if (!GI) {
+		UE_LOG(LogTemp, Error, TEXT("Invalid WorldContext or GameInstance!"));
+		return 0;
+	}
+
+	return static_cast<int32>(GI->HUDIndex);
+}
+// ========================================================
 // PlayerData Updater
 // ========================================================
+const bool FPlayerAccountService::AddCurrency(const UObject* WorldContextObject, FGameplayTag Tag, int64 Amount)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI || !Tag.IsValid() || Amount == 0) return false;
+
+	int64 CurrentOwned = GI->GetCurrencyAmount(Tag);
+	if (Amount < 0 && CurrentOwned < FMath::Abs(Amount)) {
+		UE_LOG(LogTemp, Warning, TEXT("UpdateCurrency Failed: Not enough currency."));
+		return false;
+	}
+
+	GI->AddCurrency(Tag, Amount);
+	GI->SavePlayerData();
+	return true;
+}
 const FPlayerCurrency FPlayerAccountService::UpdateCurrency(const UObject* WorldContextObject, const FPlayerData& PlayerData, FGameplayTag Tag, int64 Amount)
 {
 	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
 	if (!GI || !Tag.IsValid() || Amount == 0) return GetPlayerCurrency(WorldContextObject);
 	if (!VerifyCurrency(GI, PlayerData)) return GetPlayerCurrency(WorldContextObject);
+
+	int64 CurrentOwned = GI->GetCurrencyAmount(Tag);
+	if (Amount < 0 && CurrentOwned < FMath::Abs(Amount)) {
+		UE_LOG(LogTemp, Warning, TEXT("UpdateCurrency Failed: Not enough currency."));
+		return GI->GetPlayerDataCopy().PlayerCurrency;
+	}
 
 	GI->AddCurrency(Tag, Amount);
 	GI->SavePlayerData();
@@ -124,19 +186,7 @@ bool FPlayerAccountService::SavePlayerData(const UObject* WorldContextObject)
 // ========================================================
 // Battle Widget 관련
 // ========================================================
-void FPlayerAccountService::StopShopOnBattleStart(const UObject* WorldContextObject)
-{
-	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
-	if (!GI) return;
 
-	GI->PausedShopRemainingSeconds = FPlayerAccountService::GetShopRemainingSeconds(WorldContextObject);
-	GI->bShopPaused = true;
-
-	if (UGameTimeSubsystem* gameTimeSubsystem = GI->GetSubsystem<UGameTimeSubsystem>())
-	{
-		gameTimeSubsystem->StopShop();
-	}
-}
 // ========================================================
 // Character Widget 관련
 // ========================================================
@@ -780,7 +830,6 @@ FDateTime FPlayerAccountService::GetCurrentTimeKST()
 {
 	return FDateTime::UtcNow() + FTimespan(9, 0, 0);
 }
-
 // ========================================================
 // Gacha Widget 관련
 // ========================================================
@@ -830,8 +879,33 @@ void FPlayerAccountService::GetActiveGachaBannerRows(const UObject* WorldContext
 
 	FDateTime Now = FDateTime::UtcNow();
 	for (const auto* Row : AllRows) {
-		if (Now >= Row->StartTime && Now <= Row->EndTime) OutRows.Add(Row);
-	}
+		FDateTime StartDate, EndDate;
+		bool bStartOk = FDateTime::Parse(Row->StartTime, StartDate);
+		bool bEndOk = FDateTime::Parse(Row->EndTime, EndDate);
 
+		if (bStartOk && bEndOk) {
+			if (Now >= StartDate && Now <= EndDate) OutRows.Add(Row);
+		}
+		else UE_LOG(LogTemp, Error, TEXT("Date Parsing Failed: %s"), *Row->StartTime);
+	}
 	OutRows.Sort([](const FDTGachaBannerDataRow& A, const FDTGachaBannerDataRow& B) { return A.DisplayPriority < B.DisplayPriority; });
+}
+bool FPlayerAccountService::ExecuteGacha(const UObject* WorldContextObject, const FPlayerData& PlayerData, FGameplayTag BannerTag, FCurrencyCost Cost, int32 PullCount)
+{
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	if (!World) return false;
+
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return false;
+
+	int64 SpendAmount = (PullCount == 1) ? (int64)Cost.SinglePullCost : (int64)Cost.MultiPullCost;
+	FPlayerCurrency PlayerCurrency = GetPlayerCurrency(WorldContextObject);
+	FCurrencyData* TargetData = PlayerCurrency.CurrencyDatas.Find(Cost.ConsumptionCurrencyTag);
+
+	if (!TargetData || TargetData->CurrAmount < SpendAmount) return false;
+	const FDTGachaBannerDataRow* BannerData = GetGachaBannerData(WorldContextObject, BannerTag);
+	if (!BannerData) return false;
+
+	UpdateCurrency(WorldContextObject, PlayerData, Cost.ConsumptionCurrencyTag, -SpendAmount);
+	return GI->GenerateResults(BannerData, PullCount);
 }

@@ -30,7 +30,7 @@ ABaseUnitCharacter::ABaseUnitCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	UnitCombatComponent = CreateDefaultSubobject<UUnitCombatComponent>(TEXT("UnitCombatComponent"));
+	UnitCombatComponent0 = CreateDefaultSubobject<UUnitCombatComponent>(TEXT("UnitCombatComponent"));
 	CharacterBattleStatsComponent = CreateDefaultSubobject<UCharacterBattleStatsComponent>(TEXT("CharacterBattleStatsComponent"));
 	HealthBarComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBarComponent"));
 
@@ -48,7 +48,7 @@ void ABaseUnitCharacter::SetUnit(FUnitData InUnitData)
 {
 	UnitData = InUnitData;
 	IsSetupUnit = true;
-	//DataInitialize();
+	DataInitialize();
 }
 
 FGameplayTag ABaseUnitCharacter::GetTeamTag()
@@ -68,37 +68,6 @@ void ABaseUnitCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	DataInitialize();
-	if (UUserWidget* TempHealthWidgetUser = Cast<UUserWidget>(HealthBarComponent->GetWidget()))
-	{
-		if (UUnitHealthWidget* TempHealthWidget = Cast<UUnitHealthWidget>(TempHealthWidgetUser))
-		{
-			CharacterBattleStatsComponent->OnCharacterRegenStatChanged.AddUObject(TempHealthWidget, &UUnitHealthWidget::SetPercent);
-			float CurrentHealth = 0.0f;
-			float MaxHealth = 0.0f;
-
-			//Arcanum.BattleStat.Character.Regen.Health
-			const TArray<FRegenStat>& RegenStats = CharacterBattleStatsComponent->GetRegenStats();
-			for (int i = 0; i < RegenStats.Num(); i++)
-			{
-				if (RegenStats[i].ParentTag == Arcanum::BattleStat::Character::Regen::Health::Root)
-				{
-					CurrentHealth = RegenStats[i].Current;
-					MaxHealth = RegenStats[i].GetTotalMax();
-					break;
-				}
-			}
-			TempHealthWidget->SetPercent(CurrentHealth, MaxHealth);
-		}
-	}
-	OnTakeAnyDamage.AddDynamic(this, &ABaseUnitCharacter::RecievedDamage);
-
-#pragma region Debug
-	if (RandomRvoWeight)
-	{
-		GetCharacterMovement()->SetRVOAvoidanceWeight(FMath::FRandRange(0.0f, 1.0f));
-	}
-#pragma endregion
-
 }
 
 void ABaseUnitCharacter::PossessedBy(AController* NewController)
@@ -171,21 +140,56 @@ float ABaseUnitCharacter::GetAttackPower()
 
 void ABaseUnitCharacter::DataInitialize()
 {
+	CharacterBattleStatsComponent->OnCharacterRegenStatChanged.RemoveAll(this);
+	// Todo KDH : 임시
+	CharacterBattleStatsComponent->ChangeStatValue(Arcanum::BattleStat::Character::Regen::Health::Root, 100.0f, this);
 	if (!IsSetupUnit)
 	{
 		UpdateUnitData();
 	}
 	AnimSetting();
+
+	if (UUserWidget* TempHealthWidgetUser = Cast<UUserWidget>(HealthBarComponent->GetWidget()))
+	{
+		if (UUnitHealthWidget* TempHealthWidget = Cast<UUnitHealthWidget>(TempHealthWidgetUser))
+		{
+			CharacterBattleStatsComponent->OnCharacterRegenStatChanged.AddUObject(TempHealthWidget, &UUnitHealthWidget::SetPercent);
+			float CurrentHealth = 0.0f;
+			float MaxHealth = 0.0f;
+
+			//Arcanum.BattleStat.Character.Regen.Health
+			const TArray<FRegenStat>& RegenStats = CharacterBattleStatsComponent->GetRegenStats();
+			for (int i = 0; i < RegenStats.Num(); i++)
+			{
+				if (RegenStats[i].ParentTag == Arcanum::BattleStat::Character::Regen::Health::Root)
+				{
+					CurrentHealth = RegenStats[i].Current;
+					MaxHealth = RegenStats[i].GetTotalMax();
+					break;
+				}
+			}
+			TempHealthWidget->SetPercentFloat(CurrentHealth, MaxHealth);
+		}
+	}
+	OnTakeAnyDamage.RemoveDynamic(this, &ABaseUnitCharacter::RecievedDamage);
+	OnTakeAnyDamage.AddDynamic(this, &ABaseUnitCharacter::RecievedDamage);
+
+#pragma region Debug
+	if (RandomRvoWeight)
+	{
+		GetCharacterMovement()->SetRVOAvoidanceWeight(FMath::FRandRange(0.0f, 1.0f));
+	}
+#pragma endregion
 }
 
 FUnitRuntimeData& ABaseUnitCharacter::GetUnitRuntimeData()
 {
-	return UnitCombatComponent->GetUnitRuntimeData();
+	return UnitCombatComponent0->GetUnitRuntimeData();
 }
 
 void ABaseUnitCharacter::OnAttackNotifyTriggered()
 {
-	UnitCombatComponent->SendDamage(GetAttackPower());
+	UnitCombatComponent0->SendDamage(GetAttackPower());
 }
 
 // 데미지 받기
@@ -214,3 +218,46 @@ const FUnitData& ABaseUnitCharacter::GetUnitData()
 	return UnitData;
 }
 
+bool ABaseUnitCharacter::GetIsDead()
+{
+	if (UnitCombatComponent0)
+	{
+		return UnitCombatComponent0->GetIsDead();
+	}
+	return true;
+}
+
+void ABaseUnitCharacter::UnitActivate()
+{
+	DataInitialize();
+	if (UnitCombatComponent0)
+	{
+		UnitCombatComponent0->UnitActivate();
+	}
+}
+
+void ABaseUnitCharacter::UnitDeactive()
+{
+	if (UnitCombatComponent0)
+	{
+		UnitCombatComponent0->UnitDeactive();
+	}
+}
+
+void ABaseUnitCharacter::ActivateItem()
+{
+	UnitActivate();
+	if (HealthBarComponent)
+	{
+		HealthBarComponent->SetHiddenInGame(false);
+	}
+}
+
+void ABaseUnitCharacter::DeactiveItem()
+{
+	UnitDeactive();
+	if (HealthBarComponent)
+	{
+		HealthBarComponent->SetHiddenInGame(true);
+	}
+}

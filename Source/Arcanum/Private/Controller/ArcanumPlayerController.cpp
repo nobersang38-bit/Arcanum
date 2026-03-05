@@ -20,13 +20,13 @@ AArcanumPlayerController::AArcanumPlayerController()
 	CachedDestination = FVector::ZeroVector;
 	FollowTime = 0.f;
 
-	static ConstructorHelpers::FObjectFinder<UTouchInterface>
-		touchInterface(TEXT("/Game/Controller/TI_VirtualJoystick.TI_VirtualJoystick"));
+	/*static ConstructorHelpers::FObjectFinder<UTouchInterface>
+		touchInterface(TEXT("/Game/Controller/TI_VirtualJoystick.TI_VirtualJoystick"));*/
 
-	if (touchInterface.Succeeded())
+	/*if (touchInterface.Succeeded())
 	{
 		DefaultTouchInterface = touchInterface.Object;
-	}
+	}*/
 
 	bShowMouseCursor = true;
 }
