@@ -78,6 +78,9 @@ public:
 	// 대량 1:2비율의 인물화같은 느낌의 텍스처, 캐릭터 선택창의 캐릭터 선택 패널등에 사용
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")
 	TObjectPtr<UTexture2D> Portrait = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")
+	TSoftClassPtr<class ABaseUnitCharacter> AllyUnitClass = nullptr;
 };
 
 USTRUCT(BlueprintType)
@@ -110,6 +113,20 @@ enum class EAnimMode : uint8
 {
 	AnimBlueprint    UMETA(DisplayName = "AnimBlueprint"),
 	AnimToTexture    UMETA(DisplayName = "AnimToTexture"),
+};
+
+USTRUCT(BlueprintType)
+struct FUnitMontageSet
+{
+	GENERATED_BODY()
+public:
+	// 몽타주
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<class UAnimMontage> Montage = nullptr;
+
+	// 후딜
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float AttackRate = 1.5f;
 };
 
 USTRUCT(BlueprintType)
@@ -163,7 +180,7 @@ public:
 
 #pragma region Attacks
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim", meta = (EditCondition = "AnimMode == EAnimMode::AnimBlueprint", EditConditionHides))
-	TArray<TObjectPtr<class UAnimMontage>> Attacks;
+	TArray<FUnitMontageSet> Attacks;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim", meta = (EditCondition = "AnimMode == EAnimMode::AnimToTexture", EditConditionHides))
 	TArray<TObjectPtr<UATTAnimPlayData>> AttacksATTData;
@@ -207,8 +224,8 @@ public:
 	float AttackRange = 10000.0f;
 
 	// 공격 주기
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
-	float AttackRate = 1.5f;
+	/*UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
+	float AttackRate = 1.5f;*/
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
 	TObjectPtr<class UBehaviorTree> BehaviorTree = nullptr;
@@ -218,6 +235,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
 	FName BBTargetActorName = FName(TEXT("TargetActor"));
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
+	FName BBAttackRangeName = FName(TEXT("AttackRange"));
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
 	FAITickParams AITickParams;

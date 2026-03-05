@@ -9,6 +9,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Core/SubSystem/BattlefieldManagerSubsystem.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
+#include "BehaviorTree/Blackboard/BlackboardKeyType_Float.h"
 #include "Interface/TeamInterface.h"
 #include "GameplayTags/ArcanumTags.h"
 #include "BehaviorTree/BehaviorTree.h"
@@ -141,6 +142,13 @@ void UUnitCombatComponent::AIInitialize()
 				if (!UnitData.Info.AISetting.BBTargetActorName.IsNone())
 				{
 					TargetActorKey = BBComp->GetKeyID(UnitData.Info.AISetting.BBTargetActorName);
+				}
+
+				if (!UnitData.Info.AISetting.BBAttackRangeName.IsNone())
+				{
+					AttackRangeKey = BBComp->GetKeyID(UnitData.Info.AISetting.BBAttackRangeName);
+					BBComp->SetValue<UBlackboardKeyType_Float>(AttackRangeKey, UnitData.Info.AISetting.AttackRange);
+					BBComp->SetValue<UBlackboardKeyType_Float>(BBComp->GetKeyID(FName("MoveRange")), UnitData.Info.AISetting.AttackRange - 10.0f);
 				}
 			}
 		}
@@ -388,7 +396,7 @@ bool UUnitCombatComponent::IsCanAttackRange()
 	{
 		FVector OutPoint;
 		float Distance = TargetActor->ActorGetDistanceToCollision(GetOwner()->GetActorLocation(), ECollisionChannel::ECC_Pawn, OutPoint);
-		Distance *= Distance;
+		//Distance *= Distance;
 		//float Distance = (TargetActor->GetActorLocation() - GetOwner()->GetActorLocation()).SquaredLength();
 		if (Distance <= UnitData.Info.AISetting.AttackRange)
 		{

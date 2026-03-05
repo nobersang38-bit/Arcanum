@@ -23,6 +23,7 @@
 #include "Object/Actor/BattlefieldManagerActor.h"
 #include "Animation/BaseUnitAnimInstance.h"
 #include "UI/InGame/UnitHealthWidget.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 ABaseUnitCharacter::ABaseUnitCharacter()
@@ -247,6 +248,7 @@ void ABaseUnitCharacter::UnitDeactive()
 void ABaseUnitCharacter::ActivateItem()
 {
 	UnitActivate();
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	if (HealthBarComponent)
 	{
 		HealthBarComponent->SetHiddenInGame(false);
@@ -256,6 +258,7 @@ void ABaseUnitCharacter::ActivateItem()
 void ABaseUnitCharacter::DeactiveItem()
 {
 	UnitDeactive();
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	if (HealthBarComponent)
 	{
 		HealthBarComponent->SetHiddenInGame(true);

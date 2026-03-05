@@ -47,8 +47,8 @@ void ABattlePlayerController::BeginPlay()
 	SetupMainHUDWidget();
 	SetupInputMode();
 
-	MeatValue.BaseMax = 100.0f;
-	MeatValue.Current = 100.0f;
+	MeatValue.BaseMax = 1000000.0f;
+	MeatValue.Current = 1000000.0f;
 	MeatValue.BaseTick = 2.0f;
 
 	ManaValue.BaseMax = 100.0f;

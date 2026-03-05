@@ -165,6 +165,7 @@ private:
 	TWeakObjectPtr<AActor> TargetBasement = nullptr;
 
 	FBlackboard::FKey TargetActorKey;
+	FBlackboard::FKey AttackRangeKey;
 
 #pragma endregion
 
