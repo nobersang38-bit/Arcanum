@@ -6,7 +6,7 @@
 #include "UI/Lobby/Contents/Inventory/InventoryItemSlotWidget.h"
 #include "UI/Lobby/Contents/Inventory/InventoryHUDWidget.h"
 #include "DataInfo/BattleCharacter/Equipment/DataTable/DTEquipment.h"
-#include "DataInfo/ItemData/Potion/DTPotionInfoRow.h"
+#include "DataInfo/ItemData/DataTable/DTPotionInfoRow.h"
 #include "DataInfo/InventoryData/DataTable/DTInventoryRuleItem.h"
 #include "DataInfo/ItemData/DataTable/DTItemCatalogRow.h"
 //#include "Kismet/GameplayStatics.h"
@@ -255,7 +255,22 @@ void ULobbyHUD::RefreshLobbyCurrencyUI()
 // ========================================================
 void ULobbyHUD::HandleInventorySlotSelected(const FInventoryViewSlot& InSlot)
 {
-	SelectedInventoryItemGuid = InSlot.ItemGuid;
+	SelectedInventoryItemGuid.Invalidate();
+	SelectedStackItemTag = FGameplayTag();
+	SelectedStackItemCount = 0;
+
+	if (InSlot.Type == EInventoryViewSlotType::Equipment)
+	{
+		SelectedInventoryItemGuid = InSlot.ItemGuid;
+		return;
+	}
+
+	if (InSlot.Type == EInventoryViewSlotType::StackItem)
+	{
+		SelectedStackItemTag = InSlot.ItemTag;
+		SelectedStackItemCount = InSlot.StackCount;
+		return;
+	}
 }
 
 void ULobbyHUD::RefreshInventoryUI()
@@ -306,35 +321,6 @@ void ULobbyHUD::BuildEquipmentRowCache()
 	}
 }
 
-const FDTEquipmentInfoRow* ULobbyHUD::FindEquipmentRowByTag(const FGameplayTag& InItemTag) const
-{
-	if (InItemTag.IsValid())
-	{
-		if (const FDTEquipmentInfoRow* const* found = EquipmentRowByTag.Find(InItemTag))
-		{
-			return *found;
-		}
-	}
-
-	return nullptr;
-}
-
-const FDTItemCatalogRow* ULobbyHUD::FindItemCatalogRowByTag(const FGameplayTag& InItemTag) const
-{
-	if (InItemTag.IsValid())
-	{
-		if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
-		{
-			if (UGameDataSubsystem* dataSubsystem = gameInstance->GetSubsystem<UGameDataSubsystem>())
-			{
-				return dataSubsystem->GetRow<FDTItemCatalogRow>(Arcanum::DataTable::ItemCatalog, InItemTag.GetTagName());
-			}
-		}
-	}
-
-	return nullptr;
-}
-
 void ULobbyHUD::BuildInventoryRuleTableCache()
 {
 	InventoryRuleRow = nullptr;
@@ -349,17 +335,6 @@ void ULobbyHUD::BuildInventoryRuleTableCache()
 				{
 					InventoryRuleRow = (*tablePtr)->FindRow<FDTInventoryRuleItem>(FName("Default"), TEXT("BuildInventoryRuleTableCache"));
 				}
-			}
-		}
-	}
-
-	if (InventoryRuleRow)
-	{
-		for (const FInventorySlotOrderItem& item : InventoryRuleRow->SlotOrders)
-		{
-			if (item.SlotTag.IsValid())
-			{
-				SlotOrderByTag.Add(item.SlotTag, item.Order);
 			}
 		}
 	}
@@ -380,21 +355,6 @@ int32 ULobbyHUD::GetInventoryCapacityFromRuleTable() const
 	return 0;
 }
 
-int32 ULobbyHUD::GetSlotOrderFromRuleTable(const FGameplayTag& InSlotTag) const
-{
-	if (!InSlotTag.IsValid())
-	{
-		return 999;
-	}
-
-	if (const int32* found = SlotOrderByTag.Find(InSlotTag))
-	{
-		return *found;
-	}
-
-	return 999;
-}
-
 void ULobbyHUD::BuildInventoryViewSlots(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const
 {
 	OutSlots.Reset();
@@ -403,13 +363,13 @@ void ULobbyHUD::BuildInventoryViewSlots(TArray<FInventoryViewSlot>& OutSlots, in
 
 	if (bInventorySortedView)
 	{
-		AppendPotionSlots(OutSlots, slotCount);
-		AppendEquipmentSlotsSorted(OutSlots, slotCount);
+		AppendStackItemSlots(OutSlots, slotCount);
+		AppendGuidSlotsSorted(OutSlots, slotCount);
 	}
 	else
 	{
-		AppendEquipmentSlotsRaw(OutSlots, slotCount);
-		AppendPotionSlots(OutSlots, slotCount);
+		AppendGuidSlots(OutSlots, slotCount);
+		AppendStackItemSlots(OutSlots, slotCount);
 	}
 }
 
@@ -421,39 +381,44 @@ void ULobbyHUD::ClickInventorySortBtn()
 
 }
 
-void ULobbyHUD::AppendPotionSlots(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const
+void ULobbyHUD::AppendStackItemSlots(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const
 {
 	if (InSlotLimit <= 0) return;
 	if (OutSlots.Num() >= InSlotLimit) return;
 
-	TArray<FGameplayTag> potionTags;
-	CachedPlayerData.StackCounts.GetKeys(potionTags);
+	UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance());
+	if (!gameInstance) return;
 
-	potionTags.Sort([](const FGameplayTag& InA, const FGameplayTag& InB)
+	UGameDataSubsystem* dataSubsystem = gameInstance->GetSubsystem<UGameDataSubsystem>();
+	if (!dataSubsystem) return;
+
+	TArray<FGameplayTag> itemTags;
+	CachedPlayerData.StackCounts.GetKeys(itemTags);
+
+	itemTags.Sort([](const FGameplayTag& InA, const FGameplayTag& InB)
 		{
 			return InA.GetTagName().LexicalLess(InB.GetTagName());
 		});
 
-
-	for (const FGameplayTag& potionTag : potionTags)
+	for (const FGameplayTag& itemTag : itemTags)
 	{
 		if (OutSlots.Num() >= InSlotLimit) break;
 
-		const int32 totalCount = CachedPlayerData.StackCounts.FindRef(potionTag);
+		const int32 totalCount = CachedPlayerData.StackCounts.FindRef(itemTag);
 		if (totalCount <= 0) continue;
 
-		const FDTItemCatalogRow* catalogRow = FindItemCatalogRowByTag(potionTag);
+		const FDTItemCatalogRow* catalogRow = dataSubsystem->FindItemCatalogRowByTag(itemTag);
 		if (!catalogRow) continue;
 
 		const int32 maxStack = FMath::Max(1, catalogRow->MaxStack);
 
-		for (int32 remainingStack = totalCount; remainingStack > 0 && OutSlots.Num() < InSlotLimit; remainingStack -= maxStack)
+		for (int32 remaining = totalCount; remaining > 0 && OutSlots.Num() < InSlotLimit; remaining -= maxStack)
 		{
 			FInventoryViewSlot slot;
 			slot.Type = EInventoryViewSlotType::StackItem;
-			slot.ItemTag = potionTag;
+			slot.ItemTag = itemTag;
 
-			const int32 stack = FMath::Min(maxStack, remainingStack);
+			const int32 stack = FMath::Min(maxStack, remaining);
 			slot.StackCount = stack;
 
 			slot.Icon = catalogRow->Icon;
@@ -464,80 +429,84 @@ void ULobbyHUD::AppendPotionSlots(TArray<FInventoryViewSlot>& OutSlots, int32 In
 	}
 }
 
-void ULobbyHUD::AppendEquipmentSlotsRaw(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const
+void ULobbyHUD::AppendGuidSlots(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const
 {
 	if (InSlotLimit <= 0) return;
 	if (OutSlots.Num() >= InSlotLimit) return;
+
+	UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance());
+	if (!gameInstance) return;
+
+	UGameDataSubsystem* dataSubsystem = gameInstance->GetSubsystem<UGameDataSubsystem>();
+	if (!dataSubsystem) return;
 
 	for (int32 i = 0; i < CachedPlayerData.Inventory.Num(); i++)
 	{
 		if (OutSlots.Num() >= InSlotLimit) break;
 
 		const FEquipmentInfo& equip = CachedPlayerData.Inventory[i];
+		if (!equip.ItemGuid.IsValid()) continue;
 
-		if (equip.ItemGuid.IsValid())
+		FInventoryViewSlot slot;
+		slot.Type = EInventoryViewSlotType::Equipment;
+
+		slot.ItemGuid = equip.ItemGuid;
+		slot.ItemTag = equip.ItemTag;
+		slot.StackCount = 0;
+		slot.UpgradeLevel = equip.CurrUpgradeLevel;
+
+		if (const FDTItemCatalogRow* catalogRow = dataSubsystem->FindItemCatalogRowByTag(equip.ItemTag))
 		{
-			if (const FDTEquipmentInfoRow* equipRow = FindEquipmentRowByTag(equip.ItemTag))
-			{
-				FInventoryViewSlot slot;
-				slot.Type = EInventoryViewSlotType::Equipment;
-				slot.ItemTag = equip.ItemTag;
-				slot.ItemGuid = equip.ItemGuid;
-				slot.UpgradeLevel = equip.CurrUpgradeLevel;
-
-				slot.Icon = equipRow->Icon;
-
-				OutSlots.Add(MoveTemp(slot));
-			}
+			slot.Icon = catalogRow->Icon;
 		}
+
+		OutSlots.Add(MoveTemp(slot));
 	}
 }
 
-void ULobbyHUD::AppendEquipmentSlotsSorted(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const
+void ULobbyHUD::AppendGuidSlotsSorted(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const
 {
 	if (InSlotLimit <= 0) return;
 	if (OutSlots.Num() >= InSlotLimit) return;
 
+	UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance());
+	if (!gameInstance) return;
+
+	UGameDataSubsystem* dataSubsystem = gameInstance->GetSubsystem<UGameDataSubsystem>();
+	if (!dataSubsystem) return;
+
 	// 정렬에 필요한 정보 (장비 + DT로우 + 슬롯 우선순위)
-	struct FEquipSortItem
+	struct FGuidSortItem
 	{
 		const FEquipmentInfo* Equip = nullptr;
-		const FDTEquipmentInfoRow* Row = nullptr;
-		int32 SlotOrder = 999;
+		const FDTItemCatalogRow* CatalogRow = nullptr;
+		int32 SortOrder = 0;
 	};
 
 	// 캐시된 인벤토리에서 정렬 가능한 장비만 추출
-	TArray<FEquipSortItem> items;
+	TArray<FGuidSortItem> items;
 	items.Reserve(CachedPlayerData.Inventory.Num());
 
 	for (int32 i = 0; i < CachedPlayerData.Inventory.Num(); i++)
 	{
 		const FEquipmentInfo& equip = CachedPlayerData.Inventory[i];
+		if (!equip.ItemGuid.IsValid()) continue;
 
-		if (equip.ItemGuid.IsValid())
-		{
-			if (const FDTEquipmentInfoRow* equipRow = FindEquipmentRowByTag(equip.ItemTag))
-			{
-				const int32 order = GetSlotOrderFromRuleTable(equipRow->SlotTag);
+		FGuidSortItem item;
+		item.Equip = &equip;
 
-				// SlotOrders에 없는 장비도 맨 뒤에 표시
-				// if (order != 999) {}
-				FEquipSortItem item;
-				item.Equip = &equip;
-				item.Row = equipRow;
-				item.SlotOrder = order;
+		item.CatalogRow = dataSubsystem->FindItemCatalogRowByTag(equip.ItemTag);
+		item.SortOrder = item.CatalogRow ? item.CatalogRow->SortOrder : 0;
 
-				items.Add(item);
-			}
-		}
+		items.Add(item);
 	}
 
 	// 정렬 기준: (1)슬롯 우선순위 -> (2)강화 내림차순 -> (3)태그명 사전순
-	items.Sort([](const FEquipSortItem& InA, const FEquipSortItem& InB)
+	items.Sort([](const FGuidSortItem& InA, const FGuidSortItem& InB)
 		{
-			if (InA.SlotOrder != InB.SlotOrder)
+			if (InA.SortOrder != InB.SortOrder)
 			{
-				return InA.SlotOrder < InB.SlotOrder;
+				return InA.SortOrder < InB.SortOrder;
 			}
 
 			const int32 aUp = InA.Equip ? InA.Equip->CurrUpgradeLevel : 0;
@@ -560,22 +529,23 @@ void ULobbyHUD::AppendEquipmentSlotsSorted(TArray<FInventoryViewSlot>& OutSlots,
 	{
 		if (OutSlots.Num() >= InSlotLimit) break;
 
-		if (const FEquipmentInfo* equip = items[i].Equip)
+		const FEquipmentInfo* equip = items[i].Equip;
+		if (!equip) continue;
+
+		FInventoryViewSlot slot;
+		slot.Type = EInventoryViewSlotType::Equipment;
+
+		slot.ItemGuid = equip->ItemGuid;
+		slot.ItemTag = equip->ItemTag;
+		slot.StackCount = 0;
+		slot.UpgradeLevel = equip->CurrUpgradeLevel;
+
+		if (items[i].CatalogRow)
 		{
-			FInventoryViewSlot slot;
-			slot.Type = EInventoryViewSlotType::Equipment;
-			slot.ItemTag = equip->ItemTag;
-			slot.ItemGuid = equip->ItemGuid;
-			slot.UpgradeLevel = equip->CurrUpgradeLevel;
-
-			// 로우 데이터가 유효할 때만 아이콘 할당
-			if (const FDTEquipmentInfoRow* row = items[i].Row)
-			{
-				slot.Icon = row->Icon;
-			}
-
-			OutSlots.Add(MoveTemp(slot));
+			slot.Icon = items[i].CatalogRow->Icon;
 		}
+
+		OutSlots.Add(MoveTemp(slot));
 	}
 }
 
@@ -724,20 +694,6 @@ void ULobbyHUD::BuildShopRuntimeCache()
 	UGameDataSubsystem* dataSubsystem = gameInstance->GetSubsystem<UGameDataSubsystem>();
 	if (!dataSubsystem) return;
 
-	// ItemCatalog 메타로 상점 슬롯 UI 채우기
-	auto fillByCatalog = [&](int32 InSlotIndex, const FGameplayTag& InItemTag)
-		{
-			if (!InItemTag.IsValid()) return;
-
-			const FDTItemCatalogRow* catalogRow = dataSubsystem->GetRow<FDTItemCatalogRow>(Arcanum::DataTable::ItemCatalog, InItemTag.GetTagName());
-			if (!catalogRow) return;
-
-			CachedShopIcons[InSlotIndex] = catalogRow->Icon;
-			CachedShopNames[InSlotIndex] = catalogRow->DisplayName;
-			CachedShopDescs[InSlotIndex] = catalogRow->Desc;
-			CachedShopPrices[InSlotIndex] = catalogRow->BuyPrice;
-		};
-
 	for (int32 slotIndex = 0; slotIndex < slotCount; slotIndex++)
 	{
 		if (!gameInstance->CurrentShopKeys.IsValidIndex(slotIndex)) continue;
@@ -767,28 +723,6 @@ void ULobbyHUD::BuildShopRuntimeCache()
 		}
 
 		CachedShopRowNames[slotIndex] = key.RowName;
-
-		// 포션(전용 DT -> ItemTag 뽑아서 카탈로그로 표시)
-		if (key.TableTag.MatchesTagExact(Arcanum::DataTable::Potion))
-		{
-			const FDTPotionInfoRow* potionRow =	dataSubsystem->GetRow<FDTPotionInfoRow>(Arcanum::DataTable::Potion, key.RowName);
-			if (!potionRow || !potionRow->PotionTag.IsValid()) continue;
-
-			fillByCatalog(slotIndex, potionRow->PotionTag);
-
-			CachedShopSoldOutStates[slotIndex] = false;
-			continue;
-		}
-
-		// 장비(전용 DT -> ItemTag 뽑아서 카탈로그로 표시)
-		if (key.TableTag.MatchesTagExact(Arcanum::DataTable::Equipment))
-		{
-			const FDTEquipmentInfoRow* equipRow = dataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, key.RowName);
-			if (!equipRow || !equipRow->ItemTag.IsValid()) continue;
-
-			fillByCatalog(slotIndex, equipRow->ItemTag);
-			continue;
-		}
 	}
 }
 

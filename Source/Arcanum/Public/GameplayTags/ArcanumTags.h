@@ -216,8 +216,6 @@ namespace Arcanum {
 		{
 			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Equipment);
 			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Potion);
-			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Material);
-			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Character);
 		}
 		namespace Potion
 		{
@@ -236,7 +234,6 @@ namespace Arcanum {
 		{
 			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Guid);
 			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Stack);
-			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Character);
 		}
 	}
 }

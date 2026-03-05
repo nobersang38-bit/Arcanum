@@ -5,7 +5,7 @@
 #include "UI/DataType/EDialogResult.h"
 #include "UI/Lobby/Contents/Character/CharacterHUDWidget.h"
 #include "DataInfo/PlayerData/FPlayerData.h"
-#include "DataInfo/ItemData/Data/InventoryViewSlot.h"
+#include "DataInfo/InventoryData/Data/InventoryViewSlot.h"
 #include "LobbyHUD.generated.h"
 
 /*
@@ -173,12 +173,6 @@ protected:
 	/* SlotTag의 정렬 순서 조회 */
 	int32 GetSlotOrderFromRuleTable(const FGameplayTag& InSlotTag) const;
 
-	/* 캐시에서 ItemTag로 RowPtr 찾기 */
-	const FDTEquipmentInfoRow* FindEquipmentRowByTag(const FGameplayTag& InItemTag) const;
-
-	/* 캐시에서 PotionTag로 RowPtr 찾기 */
-	const FDTItemCatalogRow* FindItemCatalogRowByTag(const FGameplayTag& InItemTag) const;
-
 private:
 	/* 물약 앞쪽부터 그 뒤 장비 정렬 */
 	void BuildInventoryViewSlots(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const;
@@ -187,14 +181,14 @@ private:
 	UFUNCTION()
 	void ClickInventorySortBtn();
 
-	/* 포션 스택(20) */
-	void AppendPotionSlots(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const;
+	/* 스택형 아이템을 추가 */
+	void AppendStackItemSlots(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const;
 
-	/* 장비 원본순으로 */
-	void AppendEquipmentSlotsRaw(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const;
+	/* Guid 아이템을 슬롯에 추가 */
+	void AppendGuidSlots(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const;
 
-	/* 장비 정렬(강화순 투구/갑옷/장갑/신발) */
-	void AppendEquipmentSlotsSorted(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const;
+	/* Guid 아이템을 강화+태그명 기준 정렬 */
+	void AppendGuidSlotsSorted(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const;
 
 
 protected:

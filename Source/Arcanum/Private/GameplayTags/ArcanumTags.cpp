@@ -193,8 +193,6 @@ namespace Arcanum {
 		{
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Equipment, "Arcanum.Items.Type.Equipment", "아이템 타입: 장비");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Potion, "Arcanum.Items.Type.Potion", "아이템 타입: 포션");
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Material, "Arcanum.Items.Type.Material", "아이템 타입: 재료");
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Character, "Arcanum.Items.Type.Character", "아이템 타입: 캐릭터");
 		}
 		namespace Potion
 		{
@@ -213,7 +211,6 @@ namespace Arcanum {
 		{
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Guid, "Arcanum.Inventory.Store.Guid", "저장 정책: 비중첩(GUID 1개=1칸)");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Stack, "Arcanum.Inventory.Store.Stack", "저장 정책: 스택(TMap Tag->Count)");
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Character, "Arcanum.Inventory.Store.Character", "저장 정책: 캐릭터 저장");
 		}
 	}
 }

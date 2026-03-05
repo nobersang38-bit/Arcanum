@@ -7,7 +7,7 @@
 #include "DataInfo/PlayerData/PlayerBattleData/DataTable/DTPlayerBattleStats.h"
 #include "DataInfo/BattleCharacter/CharacterInfo/DataTable/DTCharacterBaseInfo.h"
 #include "DataInfo/BattleCharacter/Equipment/DataTable/DTEquipment.h"
-#include "DataInfo/ItemData/Potion/DTPotionInfoRow.h"
+#include "DataInfo/ItemData/DataTable/DTPotionInfoRow.h"
 
 // ========================================================
 // 초기화 관련

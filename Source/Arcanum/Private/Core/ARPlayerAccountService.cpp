@@ -2,7 +2,7 @@
 #include "Core/ARGameInstance.h"
 #include "Core/SubSystem/GameTimeSubsystem.h"
 #include "Core/SubSystem/GameDataSubsystem.h"
-#include "DataInfo/ItemData/Potion/DTPotionInfoRow.h"
+#include "DataInfo/ItemData/DataTable/DTPotionInfoRow.h"
 #include "DataInfo/InventoryData/DataTable/DTInventoryRuleItem.h"
 #include "DataInfo/ItemData/DataTable/DTItemCatalogRow.h"
 #include "Kismet/GameplayStatics.h"
@@ -201,8 +201,7 @@ bool FPlayerAccountService::PurchaseEquipment(const UObject* WorldContextObject,
 
 	if (!Row->ItemTag.IsValid()) return false;
 
-	const FDTItemCatalogRow* CatalogRow =
-		DataSubsystem->GetRow<FDTItemCatalogRow>(Arcanum::DataTable::ItemCatalog, Row->ItemTag.GetTagName());
+	const FDTItemCatalogRow* CatalogRow = DataSubsystem->FindItemCatalogRowByTag(Row->ItemTag);
 	if (!CatalogRow) return false;
 
 	FCurrencyData* CurrencyData = PlayerData.PlayerCurrency.CurrencyDatas.Find(Arcanum::PlayerData::Currencies::NonRegen::Gold::Value);
@@ -242,7 +241,7 @@ bool FPlayerAccountService::PurchaseEquipment(const UObject* WorldContextObject,
 		const int32 count = pair.Value;
 		if (!itemTag.IsValid() || count <= 0) continue;
 
-		const FDTItemCatalogRow* stackCatalog = DataSubsystem->GetRow<FDTItemCatalogRow>(Arcanum::DataTable::ItemCatalog, itemTag.GetTagName());
+		const FDTItemCatalogRow* stackCatalog = DataSubsystem->FindItemCatalogRowByTag(itemTag);
 		if (!stackCatalog) continue;
 
 		const int32 maxStack = FMath::Max(1, stackCatalog->MaxStack);
@@ -299,8 +298,8 @@ bool FPlayerAccountService::SellItemByGuid(const UObject* WorldContextObject, co
 
 	if (!InItemGuid.IsValid()) return false;
 
-	UGameDataSubsystem* dataSubsytem = GI->GetSubsystem<UGameDataSubsystem>();
-	if (!dataSubsytem) return false;
+	UGameDataSubsystem* dataSubsystem = GI->GetSubsystem<UGameDataSubsystem>();
+	if (!dataSubsystem) return false;
 
 	// PlayerData에서 GUID로 장비 찾기
 	FPlayerData& playerData = GI->GetPlayerData();
@@ -318,7 +317,7 @@ bool FPlayerAccountService::SellItemByGuid(const UObject* WorldContextObject, co
 
 	const FEquipmentInfo& equipment = playerData.Inventory[foundIndex];
 
-	const FDTItemCatalogRow* catalogRow = dataSubsytem->GetRow<FDTItemCatalogRow>(Arcanum::DataTable::ItemCatalog, equipment.ItemTag.GetTagName());
+	const FDTItemCatalogRow* catalogRow = dataSubsystem->FindItemCatalogRowByTag(equipment.ItemTag);
 	if (!catalogRow) return false;
 
 	const int64 sellPrice = static_cast<int64>(catalogRow->SellPrice);
@@ -360,8 +359,7 @@ bool FPlayerAccountService::SellStackItemByTag(const UObject* WorldContextObject
 	if (!currentCountPtr || *currentCountPtr < InSellCount) return false;
 
 	// 판매가
-	const FDTItemCatalogRow* catalogRow =
-		dataSubsystem->GetRow<FDTItemCatalogRow>(Arcanum::DataTable::ItemCatalog, InItemTag.GetTagName());
+	const FDTItemCatalogRow* catalogRow = dataSubsystem->FindItemCatalogRowByTag(InItemTag);
 	if (!catalogRow) return false;
 
 	const int64 sellPricePerOne = static_cast<int64>(catalogRow->SellPrice);
@@ -498,8 +496,7 @@ bool FPlayerAccountService::PurchaseShopSlot(const UObject* InWorldContextObject
 	UGameDataSubsystem* dataSubsystem = GI->GetSubsystem<UGameDataSubsystem>();
 	if (!dataSubsystem) return false;
 
-	const FDTItemCatalogRow* catalogRow =
-		dataSubsystem->GetRow<FDTItemCatalogRow>(Arcanum::DataTable::ItemCatalog, key.RowName);
+	const FDTItemCatalogRow* catalogRow = dataSubsystem->GetRow<FDTItemCatalogRow>(Arcanum::DataTable::ItemCatalog, key.RowName);
 	if (!catalogRow) return false;
 
 	if (!catalogRow->ItemTag.IsValid() || !catalogRow->StorePolicyTag.IsValid()) return false;
@@ -512,13 +509,14 @@ bool FPlayerAccountService::PurchaseShopSlot(const UObject* InWorldContextObject
 	const int64 price = static_cast<int64>(catalogRow->BuyPrice);
 	if (gold->CurrAmount < price) return false;
 
+	// 물약 구매
 	if (catalogRow->StorePolicyTag.MatchesTagExact(Arcanum::Inventory::Store::Stack))
 	{
 		// 인벤 용량만 InventoryRule에서 가져옴
 		const FDTInventoryRuleItem* ruleRow = GetInventoryRuleRow(InWorldContextObject);
 		const int32 maxSlots = ruleRow ? FMath::Max(0, ruleRow->Capacity) : 0;
 
-		// 장비 점유 칸(유효 Guid)
+		// 장비 점유 칸
 		int32 usedEquipSlots = 0;
 		for (int32 i = 0; i < playerData.Inventory.Num(); i++)
 		{
@@ -528,7 +526,7 @@ bool FPlayerAccountService::PurchaseShopSlot(const UObject* InWorldContextObject
 			}
 		}
 
-		// 현재 스택 점유 칸(카탈로그 MaxStack 기준)
+		// 현재 스택 점유 칸
 		int32 currentStackSlots = 0;
 		for (const TPair<FGameplayTag, int32>& pair : playerData.StackCounts)
 		{
@@ -536,8 +534,7 @@ bool FPlayerAccountService::PurchaseShopSlot(const UObject* InWorldContextObject
 			const int32 count = pair.Value;
 			if (!itemTag.IsValid() || count <= 0) continue;
 
-			const FDTItemCatalogRow* stackCatalog =
-				dataSubsystem->GetRow<FDTItemCatalogRow>(Arcanum::DataTable::ItemCatalog, itemTag.GetTagName());
+			const FDTItemCatalogRow* stackCatalog = dataSubsystem->FindItemCatalogRowByTag(itemTag);
 			if (!stackCatalog) continue;
 
 			const int32 maxStack = FMath::Max(1, stackCatalog->MaxStack);
@@ -561,10 +558,11 @@ bool FPlayerAccountService::PurchaseShopSlot(const UObject* InWorldContextObject
 		gold->CurrAmount -= price;
 
 		GI->SavePlayerData();
+
 		return true;
 	}
 
-	// Guid: 장비
+	// 장비 구매
 	if (catalogRow->StorePolicyTag.MatchesTagExact(Arcanum::Inventory::Store::Guid))
 	{
 		if (!AddGuidByCatalog(InWorldContextObject, catalogRow)) return false;
@@ -640,8 +638,7 @@ bool FPlayerAccountService::PurchaseStackItemByRowName(const UObject* InWorldCon
 	UGameDataSubsystem* dataSubsystem = GI->GetSubsystem<UGameDataSubsystem>();
 	if (!dataSubsystem) return false;
 
-	const FDTItemCatalogRow* catalogRow =
-		dataSubsystem->GetRow<FDTItemCatalogRow>(Arcanum::DataTable::ItemCatalog, InCatalogRowName);
+	const FDTItemCatalogRow* catalogRow = dataSubsystem->GetRow<FDTItemCatalogRow>(Arcanum::DataTable::ItemCatalog, InCatalogRowName);
 	if (!catalogRow) return false;
 
 	if (!catalogRow->ItemTag.IsValid()) return false;
@@ -677,8 +674,7 @@ bool FPlayerAccountService::PurchaseStackItemByRowName(const UObject* InWorldCon
 		const int32 count = pair.Value;
 		if (!itemTag.IsValid() || count <= 0) continue;
 
-		const FDTItemCatalogRow* stackCatalog =
-			dataSubsystem->GetRow<FDTItemCatalogRow>(Arcanum::DataTable::ItemCatalog, itemTag.GetTagName());
+		const FDTItemCatalogRow* stackCatalog = dataSubsystem->FindItemCatalogRowByTag(itemTag);
 		if (!stackCatalog) continue;
 
 		const int32 maxStack = FMath::Max(1, stackCatalog->MaxStack);
@@ -730,43 +726,42 @@ void FPlayerAccountService::GenerateShopItems(UARGameInstance* InGameInstance, i
 	const int32 totalCount = equipmentCount + potionCount;
 	if (totalCount <= 0) return;
 
-	// Guid 풀
-	TArray<FGameplayTag> guidItemTags;
-	BuildCatalogItemTagsByStorePolicy(InGameInstance, Arcanum::Inventory::Store::Guid, guidItemTags);
+	// Guid 풀(RowName 풀)
+	TArray<FName> guidRowNames;
+	BuildCatalogRowNamesByStorePolicy(InGameInstance, Arcanum::Inventory::Store::Guid, guidRowNames);
 
-	// Stack 풀
-	TArray<FGameplayTag> stackItemTags;
-	BuildCatalogItemTagsByStorePolicy(InGameInstance, Arcanum::Inventory::Store::Stack, stackItemTags);
+	// Stack 풀(RowName 풀)
+	TArray<FName> stackRowNames;
+	BuildCatalogRowNamesByStorePolicy(InGameInstance, Arcanum::Inventory::Store::Stack, stackRowNames);
 
 	// 장비 구간 갱신
 	for (int32 i = 0; i < equipmentCount; i++)
 	{
-		if (InGameInstance->CurrentShopKeys.IsValidIndex(i))
-		{
-			FShopProductKey key;
-			key.TableTag = Arcanum::DataTable::ItemCatalog;
-			key.RowName = PickCatalogRowNameFromTags(guidItemTags);
+		if (!InGameInstance->CurrentShopKeys.IsValidIndex(i)) continue;
 
-			InGameInstance->CurrentShopKeys[i] = key;
-		}
+		FShopProductKey key;
+		key.TableTag = Arcanum::DataTable::ItemCatalog;
+		key.RowName = PickCatalogRowNameFromRowNames(guidRowNames);
+
+		InGameInstance->CurrentShopKeys[i] = key;
 	}
 
 	// 스택 구간 고정/유지 옵션 처리
 	for (int32 j = 0; j < potionCount; j++)
 	{
 		const int32 dstIndex = equipmentCount + j;
-		if (InGameInstance->CurrentShopKeys.IsValidIndex(dstIndex))
+
+		if (!InGameInstance->CurrentShopKeys.IsValidIndex(dstIndex)) continue;
+
+		if (bInRefreshEquipmentOnly)
 		{
-			if (bInRefreshEquipmentOnly)
-			{
-				const FShopProductKey& existing = InGameInstance->CurrentShopKeys[dstIndex];
-				if (existing.TableTag.IsValid() && !existing.RowName.IsNone()) continue;
-			}
+			const FShopProductKey& existing = InGameInstance->CurrentShopKeys[dstIndex];
+			if (existing.TableTag.IsValid() && !existing.RowName.IsNone()) continue;
 		}
 
 		FShopProductKey key;
 		key.TableTag = Arcanum::DataTable::ItemCatalog;
-		key.RowName = PickCatalogRowNameFromTags(stackItemTags);
+		key.RowName = PickCatalogRowNameFromRowNames(stackRowNames);
 
 		InGameInstance->CurrentShopKeys[dstIndex] = key;
 	}
@@ -917,9 +912,9 @@ const FDTInventoryRuleItem* FPlayerAccountService::GetInventoryRuleRow(const UOb
 	return nullptr;
 }
 
-void FPlayerAccountService::BuildCatalogItemTagsByStorePolicy(UARGameInstance* InGameInstance, const FGameplayTag& InStorePolicyTag, TArray<FGameplayTag>& OutItemTags)
+void FPlayerAccountService::BuildCatalogRowNamesByStorePolicy(UARGameInstance* InGameInstance, const FGameplayTag& InStorePolicyTag, TArray<FName>& OutRowNames)
 {
-	OutItemTags.Reset();
+	OutRowNames.Reset();
 	if (!InGameInstance || !InStorePolicyTag.IsValid()) return;
 
 	UGameDataSubsystem* dataSubsystem = InGameInstance->GetSubsystem<UGameDataSubsystem>();
@@ -932,20 +927,27 @@ void FPlayerAccountService::BuildCatalogItemTagsByStorePolicy(UARGameInstance* I
 
 	for (const TPair<FName, uint8*>& pair : table->GetRowMap())
 	{
-		if (const FDTItemCatalogRow* row = reinterpret_cast<const FDTItemCatalogRow*>(pair.Value))
+		const FDTItemCatalogRow* row = reinterpret_cast<const FDTItemCatalogRow*>(pair.Value);
+		if (!row) continue;
+		if (!row->StorePolicyTag.IsValid()) continue;
+
+		if (row->StorePolicyTag.MatchesTagExact(InStorePolicyTag))
 		{
-			if (row->ItemTag.IsValid())
-			{
-				if (row->StorePolicyTag.IsValid())
-				{
-					if (row->StorePolicyTag.MatchesTagExact(InStorePolicyTag))
-					{
-						OutItemTags.Add(row->ItemTag);
-					}
-				}
-			}
+			OutRowNames.Add(pair.Key);
 		}
 	}
+}
+
+FName FPlayerAccountService::PickCatalogRowNameFromRowNames(TArray<FName>& InOutRowNames)
+{
+	if (InOutRowNames.Num() <= 0) return NAME_None;
+
+	const int32 randomIndex = FMath::RandRange(0, InOutRowNames.Num() - 1);
+	const FName picked = InOutRowNames[randomIndex];
+
+	InOutRowNames.RemoveAtSwap(randomIndex, 1, EAllowShrinking::No);
+
+	return picked;
 }
 
 FPlayerAccountService::FAddGuidHandler
@@ -992,12 +994,13 @@ bool FPlayerAccountService::AddGuidFromEquipment(const UObject* WorldContextObje
 	FPlayerData& playerData = GI->GetPlayerData();
 
 	FEquipmentInfo newEquip;
-	newEquip.ItemTag = equipRow->ItemTag;
+	newEquip.ItemTag = InCatalogRow->ItemTag;
 	newEquip.ItemGuid = FGuid::NewGuid();
 	newEquip.CurrUpgradeLevel = 0;
 	newEquip.Equipment = equipRow->BaseInfoSteps[0];
 
 	playerData.Inventory.Add(MoveTemp(newEquip));
+
 	return true;
 }
 
@@ -1011,28 +1014,6 @@ FName FPlayerAccountService::PickCatalogRowNameFromTags(TArray<FGameplayTag>& In
 	InOutItemTags.RemoveAtSwap(randomIndex, 1, EAllowShrinking::No);
 
 	return pickedTag.GetTagName();
-}
-
-void FPlayerAccountService::FillShopStackItemSlots(UARGameInstance* InGameInstance, int32 InStartIndex, int32 InCount)
-{
-	if (!InGameInstance) return;
-	if (InCount <= 0) return;
-
-	TArray<FGameplayTag> stackItemTags;
-	BuildCatalogItemTagsByStorePolicy(InGameInstance, Arcanum::Inventory::Store::Stack, stackItemTags);
-
-	for (int32 j = 0; j < InCount; j++)
-	{
-		const int32 dstIndex = InStartIndex + j;
-
-		if (!InGameInstance->CurrentShopKeys.IsValidIndex(dstIndex)) continue;
-
-		FShopProductKey key;
-		key.TableTag = Arcanum::DataTable::ItemCatalog;
-		key.RowName = PickCatalogRowNameFromTags(stackItemTags);
-
-		InGameInstance->CurrentShopKeys[dstIndex] = key;
-	}
 }
 
 FDateTime FPlayerAccountService::GetCurrentTimeKST()

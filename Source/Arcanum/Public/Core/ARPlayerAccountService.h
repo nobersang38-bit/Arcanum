@@ -6,10 +6,10 @@
 #include "Core/Interfaces/IPlayerAccountService.h"
 #include "DataInfo/BattleCharacter/Equipment/DataTable/DTEquipment.h"
 #include "DataInfo/GachaData/DataTable/DTGachaBannerData.h"
-#include "DataInfo/ItemData/Potion/DTPotionInfoRow.h"
+#include "DataInfo/ItemData/DataTable/DTPotionInfoRow.h"
 #include "DataInfo/InventoryData/DataTable/DTInventoryRuleItem.h"
 #include "DataInfo/ItemData/DataTable/DTItemCatalogRow.h"
-#include "DataInfo/ItemData/Data/InventoryViewSlot.h"
+#include "DataInfo/InventoryData/Data/InventoryViewSlot.h"
 #include "ARPlayerAccountService.generated.h"
 
 UENUM(BlueprintType)
@@ -199,15 +199,18 @@ private:
 	/* InventoryRule DT의 Default Row를 조회 */
 	static const FDTInventoryRuleItem* GetInventoryRuleRow(const UObject* WorldContextObject);
 
-	/* 카탈로그에서 특정 StorePolicyTag 아이템 태그 목록 뽑기 */
-	static void BuildCatalogItemTagsByStorePolicy(
-	UARGameInstance* InGameInstance,
-	const FGameplayTag& InStorePolicyTag,
-	TArray<FGameplayTag>& OutItemTags);
+	/* ItemCatalog에서 StorePolicyTag로 RowName 목록 수집 */
+	static void BuildCatalogRowNamesByStorePolicy(
+		UARGameInstance* InGameInstance,
+		const FGameplayTag& InStorePolicyTag,
+		TArray<FName>& OutRowNames);
+
+	/* RowName 목록에서 하나 랜덤 선택 후 목록에서 제거 */
+	static FName PickCatalogRowNameFromRowNames(TArray<FName>& InOutRowNames);
 
 	using FAddGuidHandler = bool(*)(const UObject* WorldContextObject, const FDTItemCatalogRow* InCatalogRow);
 
-	// DetailTableTag에 맞는 Guid 생성 핸들러를 반환(등록표)
+	/* DetailTableTag에 맞는 Guid 아이템 핸들러 */
 	static FAddGuidHandler FindGuidAddHandler(const FGameplayTag& InDetailTableTag);
 
 	/* Guid 아이템을 카탈로그 정보로 인스턴스 생성해 인벤에 추가 */
@@ -218,10 +221,6 @@ private:
 
 	/* ItemTag 목록에서 랜덤으로 하나 뽑아 RowName로 반환 */
 	static FName PickCatalogRowNameFromTags(TArray<FGameplayTag>& InOutItemTags);
-
-	/* potion 구간 채우기  */
-	static void FillShopStackItemSlots(UARGameInstance* InGameInstance, int32 InStartIndex,	int32 InCount);
-
 #pragma endregion
 
 #pragma region Gacha Widget 관련

@@ -28,9 +28,7 @@ void UInventoryItemSlotWidget::SetSlotData(const FInventoryViewSlot& InSlot, int
 void UInventoryItemSlotWidget::ClearSlot(int32 InSlotIndex)
 {
 	SlotIndex = InSlotIndex;
-
 	ViewSlot = FInventoryViewSlot();
-
 	bSelected = false;
 
 	RefreshSlotUI();
@@ -115,8 +113,7 @@ void UInventoryItemSlotWidget::RefreshSlotUI()
 		// Potion
 		else 
 		{
-			if (ViewSlot.StackCount > 0)
-			{
+			if (ViewSlot.StackCount > 0)			{
 				StackOrUpgradeText->SetVisibility(ESlateVisibility::Visible);
 				StackOrUpgradeText->SetText(FText::FromString(FString::Printf(TEXT("x%d"), ViewSlot.StackCount)));
 			}

@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
-#include "DataInfo/InventoryData/Data/FInventoryRuleItemData.h"
 #include "DTInventoryRuleItem.generated.h"
 
 /**
@@ -19,8 +18,4 @@ public:
 	/* 인벤 총 슬롯 수 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 Capacity = 100;
-
-	/* SlotTag별 정렬 규칙 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FInventorySlotOrderItem> SlotOrders;
 };
