@@ -99,6 +99,12 @@ void ABattlePlayerController::BeginPlay()
 		}
 	}
 
+	float CoolTImeTickInterval = 0.05f;
+	FTimerDelegate CoolTimeDelegate;
+	CoolTimeDelegate.BindUObject(this, &ABattlePlayerController::Internal_UnitsCoolTimeTick, CoolTImeTickInterval);
+	GetWorld()->GetTimerManager().ClearTimer(CoolTimeTimer);
+	GetWorld()->GetTimerManager().SetTimer(CoolTimeTimer, CoolTimeDelegate, CoolTImeTickInterval, true);
+
 	SetBossHealthProgress(0.0f, 0.0f);
 
 	GetWorld()->GetTimerManager().ClearTimer(PlayerLocationProgressTimeHandle);
@@ -429,7 +435,7 @@ bool ABattlePlayerController::UseCoolTime(FGameplayTag InTag)
 
 	UnitData->CurrentCoolTime = UnitData->CoolTime;
 
-	FTimerDelegate CoolTimeDelegate;
+	/*FTimerDelegate CoolTimeDelegate;
 	float TickInterval = 0.01f;
 	CoolTimeDelegate.BindUObject(this, &ABattlePlayerController::Internal_UnitCoolTimeTick, UnitData->Tag, TickInterval);
 
@@ -452,7 +458,8 @@ bool ABattlePlayerController::UseCoolTime(FGameplayTag InTag)
 	else
 	{
 		return false;
-	}
+	}*/
+	return true;
 }
 
 void ABattlePlayerController::BattleEnd(const FMatchData& MatchData)
@@ -514,54 +521,29 @@ bool ABattlePlayerController::UsingUnitCost(FGameplayTag InTag)
 	FUnitInfoSetting* UnitData = UsingAllyUnits.Find(InTag);
 
 	// 고기 사용
-	if (!UseMeatValue(UnitData->MeatCost))
-	{
-		return false;
-	}
+	UseMeatValue(UnitData->MeatCost);
 
 	// 쿨타임 돌기
-	if (!UseCoolTime(InTag))
-	{
-		return false;
-	}
+	UseCoolTime(InTag);
 
 	return true;
 }
 
-void ABattlePlayerController::Internal_UnitCoolTimeTick(FGameplayTag InTag, float TickInterval)
-{
-	if (FUnitInfoSetting* UnitData = UsingAllyUnits.Find(InTag))
-	{
-		float& CurrentCoolTime = UnitData->CurrentCoolTime;
-		float& MaxCoolTime = UnitData->CoolTime;
-		CurrentCoolTime -= TickInterval;
-		CurrentCoolTime = FMath::Clamp(CurrentCoolTime, 0.0f, MaxCoolTime);
-
-		if (UBattleAllyUnitSlotWidget** SlotWidget = UsingAllyUnitSlots.Find(InTag))
-		{
-			(*SlotWidget)->SetCoolTimeProgress(CurrentCoolTime, MaxCoolTime);
-		}
-
-		// 사용할 수 있게되면 타이머 정지
-		if (CurrentCoolTime <= 0.0f)
-		{
-			FTimerHandle* TimerHandle = CoolTimeHandles.Find(InTag);
-			if (TimerHandle)
-			{
-				GetWorld()->GetTimerManager().ClearTimer(*TimerHandle);
-				return;
-			}
-		}
-	}
-}
-
 void ABattlePlayerController::Internal_UnitsCoolTimeTick(float DeltaTime)
 {
-	for (auto UsingAllyUnit : UsingAllyUnits)
+	for (auto& UsingAllyUnit : UsingAllyUnits)
 	{
 		if (UsingAllyUnit.Value.CurrentCoolTime > 0.0f)
 		{
-			UsingAllyUnit.Value.CurrentCoolTime -= DeltaTime;
+			float& CurrentCoolTime = UsingAllyUnit.Value.CurrentCoolTime;
+			const float& MaxCoolTime = UsingAllyUnit.Value.CoolTime;
+
+			CurrentCoolTime -= DeltaTime;
+
+			if (UBattleAllyUnitSlotWidget** SlotWidget = UsingAllyUnitSlots.Find(UsingAllyUnit.Key))
+			{
+				(*SlotWidget)->SetCoolTimeProgress(CurrentCoolTime, MaxCoolTime);
+			}
 		}
 	}
 }

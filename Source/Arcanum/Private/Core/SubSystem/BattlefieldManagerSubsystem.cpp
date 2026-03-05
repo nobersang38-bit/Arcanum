@@ -128,8 +128,9 @@ void UBattlefieldManagerSubsystem::DebugSetUsingAllyUnits()
 {
 	InBattleData.AllyUnits.Empty();
 	bool Result = false;
-	InBattleData.AllyUnits.Add(GetAllyUnitData(Arcanum::Unit::Faction::Ally::Army::Root, Result));
 	InBattleData.AllyUnits.Add(GetAllyUnitData(Arcanum::Unit::Faction::Ally::Bard::Root, Result));
+	InBattleData.AllyUnits.Add(GetAllyUnitData(Arcanum::Unit::Faction::Ally::Army::Root, Result));
+	InBattleData.AllyUnits.Add(GetAllyUnitData(Arcanum::Unit::Faction::Ally::Maid::Root, Result));
 }
 
 void UBattlefieldManagerSubsystem::CheckMatchEnded(int32 Time)

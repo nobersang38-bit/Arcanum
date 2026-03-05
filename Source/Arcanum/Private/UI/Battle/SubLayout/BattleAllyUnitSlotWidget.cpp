@@ -17,8 +17,13 @@ void UBattleAllyUnitSlotWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	Button->OnClicked.RemoveDynamic(this, &UBattleAllyUnitSlotWidget::ClickUnitSlot);
 	Button->OnClicked.AddDynamic(this, &UBattleAllyUnitSlotWidget::ClickUnitSlot);
+
+	Button->OnPressed.RemoveDynamic(this, &UBattleAllyUnitSlotWidget::PressUnitSlot);
 	Button->OnPressed.AddDynamic(this, &UBattleAllyUnitSlotWidget::PressUnitSlot);
+
+	Button->OnReleased.RemoveDynamic(this, &UBattleAllyUnitSlotWidget::ReleasedUnitSlot);
 	Button->OnReleased.AddDynamic(this, &UBattleAllyUnitSlotWidget::ReleasedUnitSlot);
 
 	/*Button->OnPressed.AddDynamic()
@@ -122,13 +127,15 @@ void UBattleAllyUnitSlotWidget::SetActivateCost(bool InIsDisable)
 void UBattleAllyUnitSlotWidget::SetCoolTimeProgress(float CurrentProgress, float MaxProgress)
 {
 	SetProgressesVisible(true);
+	CurrentProgress = FMath::Clamp(CurrentProgress, 0.0f, MaxProgress);
 	if (CoolTimeProgress)
 	{
-		CoolTimeProgress->SetPercent(CurrentProgress / MaxProgress + 0.00001f);
+		UE_LOG(LogTemp, Error, TEXT("current : %f, Max : %f"), CurrentProgress, MaxProgress);
+		CoolTimeProgress->SetPercent(CurrentProgress / MaxProgress + 0.0001f);
 	}
 	if (CoolTimeText)
 	{
-		FString Result = FString::Printf(TEXT("%d"), FMath::RoundToInt(CurrentProgress));
+		FString Result = FString::Printf(TEXT("%d"), FMath::CeilToInt32(CurrentProgress));
 		CoolTimeText->SetText(FText::FromString(Result));
 	}
 

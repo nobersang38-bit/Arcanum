@@ -42,75 +42,43 @@ void UBattleAllyUnitPanelWidget::SetManaCostProgress(float CurrentMana, float Ma
 
 UBattleAllyUnitSlotWidget* UBattleAllyUnitPanelWidget::AddUnitSlot(const FUnitInfoSetting& UnitData)
 {
-	// 첫번째와 마지막 인덱스는 스페이서를 사용중이기에 제외 시키고 검사
-
 	if (!UnitPanel || !UnitSlotWidgetClass) return nullptr;
 
+	// 1. 마지막 자식(오른쪽 스페이서)을 미리 찾아둡니다.
+	int32 ChildCount = UnitPanel->GetChildrenCount();
+	UWidget* RightSpacer = (ChildCount > 0) ? UnitPanel->GetChildAt(ChildCount - 1) : nullptr;
+
+	// 2. 마지막 스페이서가 있다면 잠시 패널에서 떼어냅니다. (전체 삭제 X)
+	if (RightSpacer)
+	{
+		UnitPanel->RemoveChild(RightSpacer);
+	}
+
+	// 3. 새로운 유닛 슬롯 생성 및 추가 (이 시점에서는 마지막 위치에 붙음)
 	UBattleAllyUnitSlotWidget* UnitSlot = CreateWidget<UBattleAllyUnitSlotWidget>(this, UnitSlotWidgetClass);
-
-	// 1. 기존 자식 위젯들과 그들의 '슬롯 설정'을 저장할 구조체/배열 준비
-	struct FSlotInfo
-	{
-		UWidget* Widget;
-		FSlateChildSize Size;
-		FMargin Padding;
-		EVerticalAlignment VAlign;
-		EHorizontalAlignment HAlign;
-	};
-	TArray<FSlotInfo> CurrentChildrenInfo;
-
-	// 2. 현재 자식들의 설정값 백업
-	for (int32 i = 0; i < UnitPanel->GetChildrenCount(); ++i)
-	{
-		UWidget* Child = UnitPanel->GetChildAt(i);
-		UHorizontalBoxSlot* HBoxSlot = Cast<UHorizontalBoxSlot>(Child->Slot);
-
-		FSlotInfo Info;
-		Info.Widget = Child;
-		if (HBoxSlot)
-		{
-			Info.Size = HBoxSlot->GetSize();
-			Info.Padding = HBoxSlot->GetPadding();
-			Info.VAlign = HBoxSlot->GetVerticalAlignment();
-			Info.HAlign = HBoxSlot->GetHorizontalAlignment();
-		}
-		CurrentChildrenInfo.Add(Info);
-	}
-
-	// 3. 새 유닛 슬롯을 위한 정보 세팅 (기본값)
-	FSlotInfo NewSlotInfo;
-	NewSlotInfo.Widget = UnitSlot;
-	NewSlotInfo.Size.SizeRule = ESlateSizeRule::Automatic; // 필요에 따라 Fill로 변경 가능
-	NewSlotInfo.Padding = FMargin(0.0f); // 새 유닛 슬롯의 여백 설정
-
-	// 4. 원하는 위치(마지막 스페이서 앞)에 삽입
-	int32 InsertIndex = CurrentChildrenInfo.Num() - 1;
-	if (InsertIndex < 0) InsertIndex = 0;
-	CurrentChildrenInfo.Insert(NewSlotInfo, InsertIndex);
-
-	// 5. 패널 비우기 (이때 기존 슬롯 데이터가 파괴됨)
-	UnitPanel->ClearChildren();
-
-	// 6. 백업한 설정값들을 그대로 적용하며 다시 추가
-	for (const FSlotInfo& Info : CurrentChildrenInfo)
-	{
-		UHorizontalBoxSlot* NewSlot = UnitPanel->AddChildToHorizontalBox(Info.Widget);
-
-		// 기존 위젯의 설정값 복구 (새로 추가한 UnitSlot도 포함하여 설정 적용)
-		if (NewSlot)
-		{
-			NewSlot->SetSize(Info.Size);
-			NewSlot->SetPadding(Info.Padding);
-			NewSlot->SetVerticalAlignment(Info.VAlign);
-			NewSlot->SetHorizontalAlignment(Info.HAlign);
-		}
-	}
 	if (UnitSlot)
 	{
+		UHorizontalBoxSlot* NewSlot = UnitPanel->AddChildToHorizontalBox(UnitSlot);
+		if (NewSlot)
+		{
+			NewSlot->SetSize(ESlateSizeRule::Automatic);
+			NewSlot->SetHorizontalAlignment(HAlign_Fill);
+			NewSlot->SetVerticalAlignment(VAlign_Fill);
+		}
 		UnitSlot->SetUnitInfo(UnitData.MeatCost, UnitData.Icon, UnitData.Tag);
-
-		//UE_LOG(LogTemp, Error, TEXT("아이콘 세팅"));
 	}
+
+	// 4. 아까 떼어냈던 마지막 스페이서를 다시 추가합니다. (이제 유닛 슬롯 오른쪽으로 감)
+	if (RightSpacer)
+	{
+		UHorizontalBoxSlot* ReAddedSpacerSlot = UnitPanel->AddChildToHorizontalBox(RightSpacer);
+		// 필요하다면 여기서 스페이서의 슬롯 설정(Size 등)을 다시 해줍니다.
+		if (ReAddedSpacerSlot)
+		{
+			ReAddedSpacerSlot->SetSize(ESlateSizeRule::Fill); // 스페이서라면 보통 Fill
+		}
+	}
+
 	return UnitSlot;
 }
 

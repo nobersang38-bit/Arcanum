@@ -161,14 +161,9 @@ protected:
 
 	// 쿨타임을 계속 줄임
 	UFUNCTION()
-	void Internal_UnitCoolTimeTick(FGameplayTag InTag, float TickInterval);
-
-	// 쿨타임 하나로 테스트
-	UFUNCTION()
 	void Internal_UnitsCoolTimeTick(float DeltaTime);
 
 #pragma endregion
-
 
 
 #pragma region 인풋모드 설정
@@ -232,9 +227,6 @@ protected:
 	UPROPERTY()
 	TMap<FGameplayTag, class UBattleAllyUnitSlotWidget*> UsingAllyUnitSlots;
 
-	UPROPERTY()
-	TMap<FGameplayTag, FTimerHandle> CoolTimeHandles;
-
 	// Todo KDH : 데이터 가져오게 변경해야함
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FRegenStat MeatValue;
@@ -244,6 +236,7 @@ protected:
 
 	FTimerHandle MeatTimer;
 	FTimerHandle ManaTimer;
+	FTimerHandle CoolTimeTimer;
 	FTimerHandle SpawnUnitTimer;
 
 	FGameplayTag SpawnTag;
