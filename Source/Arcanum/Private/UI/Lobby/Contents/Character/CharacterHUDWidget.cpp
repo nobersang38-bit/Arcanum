@@ -133,42 +133,6 @@ void UCharacterHUDWidget::InitCharacterHUD()
 }
 
 // ========================================================
-// 캐릭터창 - 강화하기 버튼
-// ========================================================
-
-void UCharacterHUDWidget::CharacterEnhancement()
-{
-    OnEnhanceOKClicked.Broadcast(RequiredSoul);
-}
-
-// ========================================================
-// 캐릭터창 - 장착 버튼
-// ========================================================
-void UCharacterHUDWidget::SetPlayerCharacter(FText CharacterName)
-{
-    // 클릭한 캐릭터 bSelection true로 변경
-    UE_LOG(LogTemp, Log, TEXT("캐릭터 장착 버튼 클릭"));
-
-    for (int32 i = 0; i < ParentLobby->CachedPlayerData.OwnedCharacters.Num(); i++)
-    {
-        FBattleCharacterData& TargetData = ParentLobby->CachedPlayerData.OwnedCharacters[i];
-
-        FGameplayTag CharacterTag = TargetData.CharacterInfo.BattleCharacterInitData.CharacterTag;
-        FName SetPlayerName = GetLeafNameFromTag(CharacterTag);
-
-        if (CharacterName.ToString().Equals(SetPlayerName.ToString()))
-        {
-            TargetData.bSelection = true;
-        }
-        else {
-            TargetData.bSelection = false;
-        }
-    }
-
-    InitCharacterHUD();
-}
-
-// ========================================================
 // 캐릭터 슬롯 클릭
 // ========================================================
 void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlot, FName CharacterName, bool SlotCharacterOwned)
@@ -176,6 +140,7 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
     UE_LOG(LogTemp, Warning, TEXT("클릭한 캐릭터 슬롯 태그 : %s"), *CharacterName.ToString());
 
     FString CombinedInfoString;
+    FText ButtonText;
 
     UARGameInstance* GI = Cast<UARGameInstance>(GetGameInstance());
     UGameDataSubsystem* DataSubsystem = GI->GetSubsystem<UGameDataSubsystem>();
@@ -196,7 +161,17 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
             TargetGradeIndex =  (TargetData.CharacterInfo.CurrentGrade > 0)? TargetData.CharacterInfo.CurrentGrade - 1 : 0;
             CharacterStar = TargetGradeIndex;
             CharacterGrade = GetGradePriority(TargetData.CharacterInfo.CurrGrade);
-            RequiredSoul = TargetData.CharacterInfo.BattleCharacterInitData.RequiredShardCount[TargetGradeIndex];
+
+            // 최대 강화를 넘지 않기 위해
+            if (TargetGradeIndex < 3)
+            {
+                RequiredSoul = TargetData.CharacterInfo.BattleCharacterInitData.RequiredShardCount[TargetGradeIndex];
+                ButtonText = FText::Format(FText::FromString(TEXT("강화 : {0} 소울")), FText::AsNumber(RequiredSoul));
+            }
+            else
+            {
+                ButtonText = FText::FromString(TEXT("최대 강화"));
+            }
 
             if (FDTBattleStatsContainerRow* BattleRow = DataSubsystem->GetRow<FDTBattleStatsContainerRow>(Arcanum::DataTable::BattleStats, ListCharacterName)) {
                 if (BattleRow->GradeDataSteps.IsValidIndex(TargetGradeIndex)) {
@@ -272,13 +247,13 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
         CharacterSwitcher->SetActiveWidgetIndex(0);
         UCharacterInfo* InfoWidget = Cast<UCharacterInfo>(CharacterSwitcher->GetWidgetAtIndex(0));
 
-        FText ButtonText = FText::Format(FText::FromString(TEXT("강화 : {0} 소울")), FText::AsNumber(RequiredSoul));
+      
         
         if (InfoWidget)
         {
             InfoWidget->SetCharacterName(CharacterName);
             InfoWidget->SetStarCharcterInfo(CharacterStar);
-            InfoWidget->SetEnhanceButtonEnabled(SlotCharacterOwned, RequiredSoul);
+            InfoWidget->SetEnhanceButtonEnabled(SlotCharacterOwned, RequiredSoul, TargetGradeIndex);
             InfoWidget->SetPlayerButtonEnabled(SlotCharacterOwned);
             InfoWidget->SetGradeCharcterInfo(CharacterGrade);
             InfoWidget->SetCharcterInfo(FinalText);
@@ -287,6 +262,44 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
     }
     
 }
+
+
+// ========================================================
+// 캐릭터창 - 강화하기 버튼
+// ========================================================
+
+void UCharacterHUDWidget::CharacterEnhancement()
+{
+    OnEnhanceOKClicked.Broadcast(RequiredSoul);
+}
+
+// ========================================================
+// 캐릭터창 - 장착 버튼
+// ========================================================
+void UCharacterHUDWidget::SetPlayerCharacter(FText CharacterName)
+{
+    // 클릭한 캐릭터 bSelection true로 변경
+    UE_LOG(LogTemp, Log, TEXT("캐릭터 장착 버튼 클릭"));
+
+    for (int32 i = 0; i < ParentLobby->CachedPlayerData.OwnedCharacters.Num(); i++)
+    {
+        FBattleCharacterData& TargetData = ParentLobby->CachedPlayerData.OwnedCharacters[i];
+
+        FGameplayTag CharacterTag = TargetData.CharacterInfo.BattleCharacterInitData.CharacterTag;
+        FName SetPlayerName = GetLeafNameFromTag(CharacterTag);
+
+        if (CharacterName.ToString().Equals(SetPlayerName.ToString()))
+        {
+            TargetData.bSelection = true;
+        }
+        else {
+            TargetData.bSelection = false;
+        }
+    }
+
+    InitCharacterHUD();
+}
+
 
 // ========================================================
 // 무기, 장비 슬롯 클릭

@@ -46,7 +46,7 @@ public:
 	void SetCharcterInfo(const FText& InText);
 
 	UFUNCTION(BlueprintCallable)
-	void SetEnhanceButtonEnabled(bool bIsCharacterOwned, int32 RequiredSoul);
+	void SetEnhanceButtonEnabled(bool bIsCharacterOwned, int32 RequiredSoul, int EnhancementLevel);
 	UFUNCTION(BlueprintCallable)
 	void SetPlayerButtonEnabled(bool bIsCharacterOwned);
 
