@@ -39,6 +39,7 @@ void UCharacterHUDWidget::NativeConstruct()
     }
 
     if (!CharacterGridPanel || !RoundedSlotWidgetClass)
+
         return;
 
     int32 NumColumns = 3;

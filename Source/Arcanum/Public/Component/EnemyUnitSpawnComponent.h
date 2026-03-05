@@ -74,10 +74,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
 	TSubclassOf<class ABaseUnitCharacter> EnemyUnitClass = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting", meta = (MakeEditWidget = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting", meta = (MakeEditWidget = true))
 	FVector SpawnLocation = FVector::ZeroVector;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting", meta = (MakeEditWidget = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting", meta = (MakeEditWidget = true))
 	FRotator SpawnRotator = FRotator::ZeroRotator;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")

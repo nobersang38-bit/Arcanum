@@ -15,7 +15,7 @@ class UTeamInterface : public UInterface
 };
 
 /**
- * 
+ * 김도현
  */
 class ARCANUM_API ITeamInterface
 {

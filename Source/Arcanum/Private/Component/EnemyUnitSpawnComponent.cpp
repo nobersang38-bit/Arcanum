@@ -9,6 +9,7 @@
 #include "Data/Rows/DTBattleStageInfo.h"
 #include "Data/Rows/EnemyUnitsDataRow.h"
 #include "Character/BaseUnitCharacter.h"
+#include "Core/SubSystem/PoolingSubsystem.h"
 
 // Sets default values for this component's properties
 UEnemyUnitSpawnComponent::UEnemyUnitSpawnComponent()
@@ -49,11 +50,11 @@ void UEnemyUnitSpawnComponent::BeginPlay()
 					StageDifficult = StageDifficult.RightChop(LastDot + 1);
 				}
 
-if (StageName.FindLastChar('.', LastDot))
-{
-	// 찾은 인덱스 다음(+1)부터 끝까지 남기고 앞은 다 자릅니다.
-	StageName = StageName.RightChop(LastDot + 1);
-}
+				if (StageName.FindLastChar('.', LastDot))
+				{
+					// 찾은 인덱스 다음(+1)부터 끝까지 남기고 앞은 다 자릅니다.
+					StageName = StageName.RightChop(LastDot + 1);
+				}
 
 			}
 			else
@@ -85,7 +86,7 @@ if (StageName.FindLastChar('.', LastDot))
 				{
 					if (StageTag.MatchesTag(BattleStageInfos[i]->StageTag) && StageTag.IsValid())
 					{
-						EnemyWaveData = BattleStageInfos[i]->EnemyWaveDataInfo.EnemyWaveDataInfo;
+						EnemyWaveData = BattleStageInfos[i]->BattleStageInfo.EnemyWaveDataInfo;
 						break;
 					}
 				}
@@ -163,7 +164,7 @@ void UEnemyUnitSpawnComponent::WaveStart()
 				if (WaveTag.IsValid())
 				{
 					bool bIsDataSuccess = false;
-					UE_LOG(LogTemp, Warning, TEXT("WaveTag : %s"), *WaveTag.ToString());
+					//UE_LOG(LogTemp, Warning, TEXT("WaveTag : %s"), *WaveTag.ToString());
 					FUnitData UnitData = BattlefieldManagerSubsystem->GetEnemyUnitData(WaveTag, bIsDataSuccess);
 					if (!bIsDataSuccess) continue;
 
@@ -171,15 +172,34 @@ void UEnemyUnitSpawnComponent::WaveStart()
 					FVector ResultSpawnLocation = GetOwner()->GetActorTransform().TransformPosition(SpawnLocation);
 					Transform.SetLocation(ResultSpawnLocation);
 					Transform.SetRotation(SpawnRotator.Quaternion());
-					AActor* EnemyUnitInstance = UGameplayStatics::BeginDeferredActorSpawnFromClass(GetWorld(), EnemyUnitClass, Transform, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-					ABaseUnitCharacter* EnemyUnitCharacter = Cast<ABaseUnitCharacter>(EnemyUnitInstance);
-					if (EnemyUnitCharacter)
-					{
-						EnemyUnitCharacter->SetUnit(UnitData);
+					FVector Scale = FVector(1.0f, 1.0f, 1.0f);
+					Transform.SetScale3D(Scale);
 
-						EnemyUnitCharacter->FinishSpawning(Transform);
-						*Time = 0.0f;
-						break;
+					// 스폰
+					UPoolingSubsystem* PoolingSubsystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
+					if (PoolingSubsystem)
+					{
+						if (EnemyUnitClass)
+						{
+							AActor* EnemyUnitInstance = PoolingSubsystem->SpawnFromPool(EnemyUnitClass, Transform);
+							ABaseUnitCharacter* EnemyUnitCharacter = Cast<ABaseUnitCharacter>(EnemyUnitInstance);
+							if (EnemyUnitCharacter)
+							{
+								EnemyUnitCharacter->SetUnit(UnitData);
+								*Time = 0.0f;
+								break;
+							}
+						}
+						/*AActor* EnemyUnitInstance = UGameplayStatics::BeginDeferredActorSpawnFromClass(GetWorld(), EnemyUnitClass, Transform, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+						ABaseUnitCharacter* EnemyUnitCharacter = Cast<ABaseUnitCharacter>(EnemyUnitInstance);
+						if (EnemyUnitCharacter)
+						{
+							EnemyUnitCharacter->SetUnit(UnitData);
+
+							EnemyUnitCharacter->FinishSpawning(Transform);
+							*Time = 0.0f;
+							break;
+						}*/
 					}
 				}
 			}

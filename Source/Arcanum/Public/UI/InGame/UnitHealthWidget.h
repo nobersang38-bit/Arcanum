@@ -17,7 +17,8 @@ class ARCANUM_API UUnitHealthWidget : public UUserWidget
 public:
 	UFUNCTION()
 	void SetPercent(const FRegenStat& InHealthData);
-	void SetPercent(float CurrentHealth, float MaxHealth);
+	UFUNCTION()
+	void SetPercentFloat(float CurrentHealth, float MaxHealth);
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))

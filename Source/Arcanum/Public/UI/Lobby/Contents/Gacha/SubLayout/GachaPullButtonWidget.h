@@ -28,7 +28,7 @@ protected:
 	
 public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    int32 PullCount = 1; // 1 or 10
+    int32 PullCount = 1;
 
     UPROPERTY(meta = (BindWidget))
     TObjectPtr<UButton> PullButton;

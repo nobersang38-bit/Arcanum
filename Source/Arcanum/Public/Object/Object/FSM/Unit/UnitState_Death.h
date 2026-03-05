@@ -7,7 +7,7 @@
 #include "UnitState_Death.generated.h"
 
 /**
- * 
+ * 김도현
  */
 UCLASS()
 class ARCANUM_API UUnitState_Death : public UUnitStateBase

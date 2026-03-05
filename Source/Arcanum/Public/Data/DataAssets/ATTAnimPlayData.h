@@ -31,7 +31,7 @@ public:
 	TSubclassOf<UAnimNotifyState> AnimNotifyState = nullptr;
 };
 /**
- * 
+ * 김도현
  */
 UCLASS()
 class ARCANUM_API UATTAnimPlayData : public UDataAsset

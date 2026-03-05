@@ -24,4 +24,13 @@ void UBattleHealthBarWidget::SetHealthProgress(float CurrentHealth, float MaxHea
 		FString ResultString = FString::Printf(TEXT("%d/%d"), FMath::RoundToInt(CurrentHealth), FMath::RoundToInt(MaxHealth));
 		HealthText->SetText(FText::FromString(ResultString));
 	}
+
+	if (CurrentHealth <= 0.0f)
+	{
+		SetVisibility(ESlateVisibility::Hidden);
+	}
+	else if (GetVisibility() == ESlateVisibility::Hidden)
+	{
+		SetVisibility(ESlateVisibility::HitTestInvisible);
+	}
 }

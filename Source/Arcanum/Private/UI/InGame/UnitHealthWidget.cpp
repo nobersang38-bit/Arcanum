@@ -19,7 +19,7 @@ void UUnitHealthWidget::SetPercent(const FRegenStat& InHealthData)
 	}
 }
 
-void UUnitHealthWidget::SetPercent(float CurrentHealth, float MaxHealth)
+void UUnitHealthWidget::SetPercentFloat(float CurrentHealth, float MaxHealth)
 {
 	HealthProgress->SetPercent(CurrentHealth / MaxHealth);
 	FString PercentText = FString::Printf(TEXT("%.0f/%.0f"), CurrentHealth, MaxHealth);

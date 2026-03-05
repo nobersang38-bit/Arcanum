@@ -28,6 +28,9 @@ public:
 	UFUNCTION()
 	void SetTime(int32 TimeMS);
 
+	UFUNCTION()
+	void SetTimeSecond(int32 TimeSecond);
+
 
 #pragma region 위젯 바인딩
 protected:

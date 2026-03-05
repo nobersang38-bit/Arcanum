@@ -1,4 +1,5 @@
 #include "UI/Lobby/Contents/Gacha/SubLayout/GachaBannerButtonWidget.h"
+
 #include "Components/Button.h"
 #include "Components/Image.h"
 #include "Components/Border.h"
@@ -22,7 +23,7 @@ void UGachaBannerButtonWidget::NativeConstruct()
         BannerButton->OnClicked.AddDynamic(this, &UGachaBannerButtonWidget::HandleClicked);
 
         BannerButton->SetBackgroundColor(FLinearColor(1.f, 1.f, 1.f, 0.f));
-        
+
         FButtonStyle NewStyle = BannerButton->WidgetStyle;
         if (NormalTexture.IsValid()) NewStyle.Normal.SetResourceObject(NormalTexture.Get());
         if (HoverTexture.IsValid())  NewStyle.Hovered.SetResourceObject(HoverTexture.Get());
@@ -59,4 +60,15 @@ void UGachaBannerButtonWidget::SetBannerTexture(UTexture2D* InNormal, UTexture2D
     if (InClick)  NewStyle.Pressed.SetResourceObject(InClick);
 
     BannerButton->SetStyle(NewStyle);
+}
+void UGachaBannerButtonWidget::UpdateBannerData(const FDTGachaBannerDataRow* InData)
+{
+    if (!InData) return;
+
+    BannerTag = InData->BannerTag;
+    if (InData->BannerImage.IsValid()) SetBannerTexture(InData->BannerImage.Get());
+    else {
+        UTexture2D* LoadedTex = InData->BannerImage.LoadSynchronous();
+        if (LoadedTex) SetBannerTexture(LoadedTex);
+    }
 }
