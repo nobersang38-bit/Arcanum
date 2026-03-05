@@ -10,11 +10,11 @@
 
 class URoundedSlotWidget;
 class USquareSlotWidget;
-class UUniformGridPanel;
 class UCommonDialog;
 class UCharacterInfo;
 class UWidgetSwitcher;
 class UInventorySlot;
+class UWrapBox;
 class ULobbyHUD;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnhanceOKClicked,int32, RequiredSoul);
@@ -44,10 +44,10 @@ private:
 	//ParentLobby->CachedPlayer
 protected:
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UUniformGridPanel> CharacterGridPanel;
+	TObjectPtr<UWrapBox> CharacterGridPanel;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UUniformGridPanel> UnitGridPanel;
+	TObjectPtr<UWrapBox> UnitGridPanel;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCharacterInfo> CharacterInfo;
@@ -116,7 +116,6 @@ private:
 	UFUNCTION()
 	void OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlot, FName CharacterName, bool SlotCharacterOwned);
 
-	int32 NumColumns = 3;
 	int32 CharacterStar = 0;
 	int32 CharacterGrade = 0;
 	int32 TargetGradeIndex = 0;

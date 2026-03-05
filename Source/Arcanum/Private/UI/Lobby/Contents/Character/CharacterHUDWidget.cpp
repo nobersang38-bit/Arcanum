@@ -3,8 +3,8 @@
 #include "UI/Lobby/Contents/Character/CharacterInfo.h"
 #include "UI/Lobby/Contents/Character/SquareSlotWidget.h"
 #include "UI/Lobby/Contents/Character/InventorySlot.h"
-#include "Components/UniformGridSlot.h"
-#include "Components/UniformGridPanel.h"
+#include "Components/WrapBox.h"
+#include "Components/WrapBoxSlot.h"
 #include "Components/WidgetSwitcher.h"
 #include "UI/Common/CommonDialog.h"
 #include "UI/Lobby/LobbyHUD.h"
@@ -50,19 +50,16 @@ void UCharacterHUDWidget::NativeConstruct()
     // 유닛창 테스트용
       for (int32 Index = 0; Index < 8; ++Index)
     {
-        // 1️ 동적 생성
+
         URoundedSlotWidget* NewSlot = CreateWidget<URoundedSlotWidget>(GetWorld(), RoundedSlotWidgetClass);
         if (!NewSlot)
             continue;
 
-        // 2️ GridPanel에 추가
-        UUniformGridSlot* GridSlot = UnitGridPanel->AddChildToUniformGrid(NewSlot);
-
-        if (GridSlot)
+        UWrapBoxSlot* WrapSlot = UnitGridPanel->AddChildToWrapBox(NewSlot);
+        if (WrapSlot)
         {
-            // 3️ 위치 지정
-            GridSlot->SetRow(Index / NumColumns);
-            GridSlot->SetColumn(Index % NumColumns);
+            WrapSlot->SetHorizontalAlignment(HAlign_Fill);
+            WrapSlot->SetVerticalAlignment(VAlign_Fill);
         }
     }
    
@@ -72,6 +69,10 @@ FReply UCharacterHUDWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry,
 {
     return FReply::Handled();
 }
+
+// ========================================================
+// 캐릭터창 - 캐릭터 슬롯 불러오기
+// ========================================================
 
 void UCharacterHUDWidget::InitCharacterHUD()
 {
@@ -103,23 +104,14 @@ void UCharacterHUDWidget::InitCharacterHUD()
         if (!NewSlot)
             continue;
 
-        UUniformGridSlot* GridSlot = CharacterGridPanel->AddChildToUniformGrid(NewSlot);
+        UWrapBoxSlot* WrapSlot = CharacterGridPanel->AddChildToWrapBox(NewSlot);
 
-        if (GridSlot)
+        if (WrapSlot)
         {
-            GridSlot->SetRow(i / NumColumns);
-            GridSlot->SetColumn(i % NumColumns);
+            WrapSlot->SetHorizontalAlignment(HAlign_Fill);
+            WrapSlot->SetVerticalAlignment(VAlign_Fill);
         }
 
-     /*   if (ParentLobby->CachedPlayerData.OwnedCharacters[i].bSelection)
-        {
-            NewSlot->SetRoundBackgroundColor(FLinearColor(1.0f, 0.4f, 0.7f, 1.0f));
-        }
-        else
-        {
-            NewSlot->SetRoundBackgroundColor(FLinearColor::White);
-        }
-        CreatedCharacterSlots.Add(NewSlot);*/
         if (ParentLobby->CachedPlayerData.OwnedCharacters[i].bSelection) 
         {
             SelectedIndex = i;

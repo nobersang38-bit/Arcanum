@@ -10,7 +10,7 @@ class UCommonBtnWidget;
 class UTextBlock;
 class USquareSlotWidget;
 class UUniformGridPanel;
-
+class UWrapBox;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSetItemBtnClicked);
 /**
  * 
@@ -47,5 +47,5 @@ protected:
 	TObjectPtr<UTextBlock> ItemInfoText;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UUniformGridPanel> ItemGridPanel;
+	TObjectPtr<UWrapBox> ItemGridPanel;
 };
