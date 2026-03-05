@@ -71,11 +71,12 @@ FReply UCharacterHUDWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry,
 }
 
 // ========================================================
-// 캐릭터창 - 캐릭터 슬롯 불러오기
+// 캐릭터창 초기화
 // ========================================================
 
 void UCharacterHUDWidget::InitCharacterHUD()
 {
+    // 캐릭터 목록창 생성하기
     int32 SelectedIndex = INDEX_NONE;
 
     CharacterGridPanel->ClearChildren();
@@ -100,7 +101,6 @@ void UCharacterHUDWidget::InitCharacterHUD()
         NewSlot->SetIconImage(CharacterIcon, hasOwned, CharacterName);
         NewSlot->OnCharacterSlotClicked.AddDynamic(this, &UCharacterHUDWidget::OnCharacterSlotSelected);
 
-
         if (!NewSlot)
             continue;
 
@@ -119,6 +119,7 @@ void UCharacterHUDWidget::InitCharacterHUD()
 
         CreatedCharacterSlots.Add(NewSlot);
     }
+
     if (SelectedIndex != INDEX_NONE && CreatedCharacterSlots.IsValidIndex(SelectedIndex))
     {
         auto& Data = ParentLobby->CachedPlayerData.OwnedCharacters[SelectedIndex];
@@ -145,6 +146,10 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
     UARGameInstance* GI = Cast<UARGameInstance>(GetGameInstance());
     UGameDataSubsystem* DataSubsystem = GI->GetSubsystem<UGameDataSubsystem>();
 
+    FCurrencyData* soulData = ParentLobby->CachedPlayerData.PlayerCurrency.CurrencyDatas.Find(Arcanum::PlayerData::Currencies::NonRegen::Soul::Value);
+    const int64 soulAmount = (soulData) ? soulData->CurrAmount : 0;
+
+    UE_LOG(LogTemp, Log, TEXT("%d"), soulAmount);
    
     for (int32 i = 0; i < ParentLobby->CachedPlayerData.OwnedCharacters.Num(); i++)
     {
@@ -247,8 +252,6 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
         CharacterSwitcher->SetActiveWidgetIndex(0);
         UCharacterInfo* InfoWidget = Cast<UCharacterInfo>(CharacterSwitcher->GetWidgetAtIndex(0));
 
-      
-        
         if (InfoWidget)
         {
             InfoWidget->SetCharacterName(CharacterName);
@@ -270,7 +273,9 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
 
 void UCharacterHUDWidget::CharacterEnhancement()
 {
+    
     OnEnhanceOKClicked.Broadcast(RequiredSoul);
+
 }
 
 // ========================================================
