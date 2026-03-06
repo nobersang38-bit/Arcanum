@@ -29,17 +29,21 @@ struct FStageDataInfo
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FGameplayTag StageTag;
+
+    /** 용례
+    if(StageData.StageLevel.IsValid()) UGameplayStatics::OpenLevelBySoftObjectPtr(this, StageData.StageLevel);
+    */
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FText StageName;
+    TSoftObjectPtr<UWorld> StageLevel;
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FText StageDesc;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FEnemyBasement EnemyBasement;
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TArray<FEnemySpawnInfo> SpawnInfos;
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TSoftObjectPtr<UTexture2D> StageImg;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<FEnemySpawnInfo> SpawnInfos;
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FStageReward Reward;
 };

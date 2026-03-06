@@ -8,9 +8,9 @@
 #include "DataInfo/BattleCharacter/CharacterInfo/DataTable/DTCharacterBaseInfo.h"
 #include "DataInfo/GachaData/DataTable/DTGachaBannerData.h"
 
-#include "DataInfo/ItemData/Potion/DTPotionInfoRow.h"
-#include "DataInfo/InventoryData/DataTable/DTInventoryRuleItem.h"
-#include "DataInfo/ItemData/Data/InventoryViewSlot.h"
+#include "DataInfo/ItemData/DataTable/DTPotionInfoRow.h"
+#include "DataInfo/ItemData/DataTable/DTItemCatalogRow.h"
+#include "DataInfo/InventoryData/Data/InventoryViewSlot.h"
 
 #include "ARPlayerAccountService.generated.h"
 
@@ -20,6 +20,14 @@ enum class EShopRarityType : uint8
 	Common,
 	Set,
 	Legendary
+};
+
+UENUM(BlueprintType)
+enum class EDisposeType : uint8
+{
+	Sell,                // 판매(골드)
+	DisassembleItem,     // 장비/무기 분해(소울)
+	DisassembleCharacter // 캐릭터 분해(조각)
 };
 
 USTRUCT(BlueprintType)
@@ -48,6 +56,7 @@ enum class EHUDIndex : uint8;
  * - 추후 해당 로직 및 GameInstance(DB)는 서버로 그대로 옮기면 됨.
  */
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSaveCompleted, bool, bSuccess);
 
 class FPlayerAccountService : public IPlayerAccountService
 {
@@ -116,14 +125,19 @@ private:
 
 #pragma region 로그인 관련
 public:
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	static FOnSaveCompleted OnSaveCompleted;
 	static bool LoadPlayerData(const UObject* WorldContextObject);
 	static bool SavePlayerData(const UObject* WorldContextObject);
+private:
+	static bool SavePlayerData(UARGameInstance* GI);
 #pragma endregion
 
 
 #pragma region Battle Widget 관련
 public:
-
+	/* 스테이지 입장 시 상점 타이머 정지 */
+	static void StopShopOnBattleStart(const UObject* WorldContextObject);
 #pragma endregion
 
 #pragma region Character Widget 관련
@@ -143,9 +157,14 @@ public:
 	static bool PurchaseEquipment(const UObject* WorldContextObject, FName RowName);
 	/** */
 	static const FDTEquipmentInfoRow* GetItemDefinition(UGameDataSubsystem* DataSubsystem, const FGameplayTag& ItemTag);
+	/* 장비 DT에서 ItemTag로 Row를 찾는다 */
+	//static const FDTEquipmentInfoRow* GetRowByItemTag(const UObject* WorldContextObject, const FGameplayTag& InItemTag);
 
-	/* 인벤 아이템 판매 */
+	/* Guid(장비) 아이템 판매 */
 	static bool SellItemByGuid(const UObject* WorldContextObject, const FGuid& InItemGuid);
+
+	/* stack(물약) 아이템 판매 */
+	static bool SellStackItemByTag(const UObject* WorldContextObject, const FGameplayTag& InItemTag, int32 InSellCount);
 
 	/* 상점 진입 시 초기화 (저장시간 확인 후 유지/갱신 판정) */
 	static void InitializeShop(const UObject* WorldContextObject, int32 InEquipmentSlotCount, int32 InPotionSlotCount);
@@ -171,14 +190,11 @@ public:
 	/* 현재 시간 반환 */
 	static FDateTime GetCurrentTimeKST();
 
-	// ===================
-	// 포션 관련
-	// ===================
-	/* 포션 보유 수량 조회 */
-	static int32 GetPotionCount(const UObject* WorldContextObject, const FGameplayTag& InPotionTag);
+	/* 스택 보유 수량 조회 */
+	static int32 GetStackItemCountByTag(const UObject* WorldContextObject, const FGameplayTag& InItemTag);
 
-	/* 포션 구매(스택형) - 구매 성공 시 수량 증가(최대 20스택) + 골드 차감 */
-	static bool PurchasePotion(const UObject* WorldContextObject, FName InPotionRowName, int32 InBuyCount);
+	/* 스택형 아이템 구매 */
+	static bool PurchaseStackItemByRowName(const UObject* WorldContextObject, FName InCatalogRowName, int32 InBuyCount);
 
 private:
 	/* 상점 슬롯 전체 생성 */
@@ -199,12 +215,30 @@ private:
 	/* 다음 갱신 시각 설정 (현재시간 + 10분) */
 	static void SetNextShopRefreshTime(UARGameInstance* InGameInstance);
 
-	/* InventoryRule DT의 Default Row를 조회 */
-	static const FDTInventoryRuleItem* GetInventoryRuleRow(const UObject* WorldContextObject);
+	/* ItemCatalog에서 StorePolicyTag로 RowName 목록 수집 */
+	static void BuildCatalogRowNamesByStorePolicy(
+		UARGameInstance* InGameInstance,
+		const FGameplayTag& InStorePolicyTag,
+		TArray<FName>& OutRowNames);
 
-	/* InventoryRuleRow 기준으로 ItemTag의 최대 스택 수를 계산  */
-	static int32 GetMaxStackByItemTag(const FDTInventoryRuleItem* InRuleRow, const FGameplayTag& InItemTag);
+	/* RowName 목록에서 하나 랜덤 선택 후 목록에서 제거 */
+	static FName PickCatalogRowNameFromRowNames(TArray<FName>& InOutRowNames);
+
+	using FAddGuidHandler = bool(*)(const UObject* WorldContextObject, const FDTItemCatalogRow* InCatalogRow);
+
+	/* DetailTableTag에 맞는 Guid 아이템 핸들러 */
+	static FAddGuidHandler FindGuidAddHandler(const FGameplayTag& InDetailTableTag);
+
+	/* Guid 아이템을 카탈로그 정보로 인스턴스 생성해 인벤에 추가 */
+	static bool AddGuidByCatalog(const UObject* WorldContextObject, const FDTItemCatalogRow* InCatalogRow);
+
+	/* Equipment 전용: 카탈로그 DetailRowName으로 장비 인스턴스 생성 후 Inventory에 추가 */
+	static bool AddGuidFromEquipment(const UObject* WorldContextObject, const FDTItemCatalogRow* InCatalogRow);
+
+	/* ItemTag 목록에서 랜덤으로 하나 뽑아 RowName로 반환 */
+	static FName PickCatalogRowNameFromTags(TArray<FGameplayTag>& InOutItemTags);
 #pragma endregion
+
 
 #pragma region Gacha Widget 관련
 public:

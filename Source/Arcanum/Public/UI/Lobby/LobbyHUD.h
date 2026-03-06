@@ -5,7 +5,7 @@
 #include "UI/DataType/EDialogResult.h"
 #include "UI/Lobby/Contents/Character/CharacterHUDWidget.h"
 #include "DataInfo/PlayerData/FPlayerData.h"
-#include "DataInfo/ItemData/Data/InventoryViewSlot.h"
+#include "DataInfo/InventoryData/Data/InventoryViewSlot.h"
 #include "LobbyHUD.generated.h"
 
 /*
@@ -14,6 +14,7 @@
  * 2. 설정, 종료 버튼 관리
  */
 
+class UDataTable;
 class UCommonBtnWidget;
 class UCommonDialog;
 class UHorizontalBox;
@@ -26,7 +27,8 @@ class UInventoryHUDWidget;
 struct FDTEquipmentInfoRow;
 struct FDTPotionInfoRow;
 struct FDTInventoryRuleItem;
-class UDataTable;
+struct FDTItemCatalogRow;
+
 
 UCLASS()
 class ARCANUM_API ULobbyHUD : public UUserWidget
@@ -36,6 +38,8 @@ class ARCANUM_API ULobbyHUD : public UUserWidget
 #pragma region 언리얼 기본 생성
 protected:
 	virtual void NativeConstruct() override;
+	/** 플레이어 데이터 저장 성공 시 갱신용 함수*/
+	UFUNCTION() void HandleSaveCompleted(bool bSuccess);
 #pragma endregion
 
 #pragma region 데이터 캐시
@@ -49,6 +53,9 @@ public:
 	/* 재화 변경 알림 수신 */
 	UFUNCTION()
 	void HandleCurrencyChanged();
+
+	/* 플레이어 데이터 캐시 Getter */
+	const FPlayerData& GetCachedPlayerData() const { return CachedPlayerData; }
 
 public:
 	FPlayerData CachedPlayerData;
@@ -162,26 +169,8 @@ protected:
 	/* 장비 DT 캐시 구축(로비 진입 시 1회) */
 	void BuildEquipmentRowCache();
 
-	/* 포션 DT 캐시 */
-	void BuildPotionRowCache();
-
-	/* 인벤 룰 DT 캐시 */
-	void BuildInventoryRuleTableCache();
-
-	/* 룰 테이블 기반 인벤 최대 슬롯 */
-	int32 GetInventoryCapacityFromRuleTable() const;
-
-	/* 아이템 태그 기반 MaxStack 조회 */
-	bool FindMaxStackByItemTag(const FGameplayTag& InItemTag, int32& OutMaxStack) const;
-
-	/* SlotTag의 정렬 순서 조회 */
-	int32 GetSlotOrderFromRuleTable(const FGameplayTag& InSlotTag) const;
-
-	/* 캐시에서 ItemTag로 RowPtr 찾기 */
-	const FDTEquipmentInfoRow* FindEquipmentRowByTag(const FGameplayTag& InItemTag) const;
-
-	/* 캐시에서 PotionTag로 RowPtr 찾기 */
-	const FDTPotionInfoRow* FindPotionRowByTag(const FGameplayTag& InPotionTag) const;
+	/* Getter : 인벤 총 생성 슬롯 */
+	int32 GetInventoryCapacity() const { return FMath::Max(0, CachedPlayerData.InventoryCapacity); }
 
 private:
 	/* 물약 앞쪽부터 그 뒤 장비 정렬 */
@@ -191,14 +180,14 @@ private:
 	UFUNCTION()
 	void ClickInventorySortBtn();
 
-	/* 포션 스택(20) */
-	void AppendPotionSlots(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const;
+	/* 스택형 아이템을 추가 */
+	void AppendStackItemSlots(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const;
 
-	/* 장비 원본순으로 */
-	void AppendEquipmentSlotsRaw(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const;
+	/* Guid 아이템을 슬롯에 추가 */
+	void AppendGuidSlots(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const;
 
-	/* 장비 정렬(강화순 투구/갑옷/장갑/신발) */
-	void AppendEquipmentSlotsSorted(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const;
+	/* Guid 아이템을 강화+태그명 기준 정렬 */
+	void AppendGuidSlotsSorted(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const;
 
 
 protected:
@@ -209,6 +198,14 @@ protected:
 	/* 현재 선택된 인벤 아이템 */
 	UPROPERTY()
 	FGuid SelectedInventoryItemGuid;
+
+	/* 마지막으로 선택된 스택 아이템 태그 */
+	UPROPERTY()
+	FGameplayTag SelectedStackItemTag;
+	// 마지막으로 선택된 스택 슬롯에 보이는 개수(슬롯 단위)
+	UPROPERTY()
+	int32 SelectedStackItemCount = 0;
+
 
 	/* 인벤 정렬 버튼 */
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
@@ -227,9 +224,6 @@ private:
 
 	/* ItemTag -> 장비 DT RowPtr 캐시 */
 	TMap<FGameplayTag, const FDTEquipmentInfoRow*> EquipmentRowByTag;
-
-	/* PotionTag -> 포션 DT RowPtr 캐시 */
-	TMap<FGameplayTag, const FDTPotionInfoRow*> PotionRowByTag;
 
 	/* 정렬 토글 상태 (true 정렬)*/
 	UPROPERTY()
@@ -302,7 +296,6 @@ private:
 	UPROPERTY()
 	TArray<int64> CachedShopPrices;
 #pragma endregion
-
 
 #pragma endregion
 

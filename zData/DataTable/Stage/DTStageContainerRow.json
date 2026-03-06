@@ -2,145 +2,64 @@
   {
 	"Name": "Normal_Stage1",
 	"StageData":{
-    "StageName": "Normal_Stage1",
     "StageTag": "Arcanum.BattleStage.Normal.Stage1",
+	"StageLevel" : "",
 	"StageDesc" : "이 스테이지는 노말 스테이지1",
-	"EnemyBasement" : {
-		"CommandCenterHP" : {
-			"TagName" : "",
-			"BaseValue" : 500,
-			"BonusValue": 100,
-			"ModifierValue" :0.0
-		}
-	},
+	"EnemyBasement" : { "CommandCenterHP" : { "TagName" : "", "BaseValue" : 500, "BonusValue": 0, "ModifierValue" :0.0 } },
 	"StageImg":"/Game/Assets/UI/",
 	"SpawnInfos": [
-	  {
-		"EnemyTag" : "",
-		"Health": 100,
-		"AttackPower": 100,
-		"AttackSpeed": 10.0,
-		"MoveSpeed": 5.0,
-		"SpawnTime" : 1.0,
-		"Count" : 10
-	  },
-	    {
-		"EnemyTag" : "",
-		"Health": 150,
-		"AttackPower": 150,
-		"AttackSpeed": 10.0,
-		"MoveSpeed": 5.0,
-		"SpawnTime" : 5.0,
-		"Count" : 5
-	  }
+		{ "EnemyTag": "",
+      	  "EnemyClass": "",
+      	  "SpawnMultiplier": 1.0
+    	},
+    	{ "EnemyTag": "",
+      	  "EnemyClass": "",
+          "SpawnMultiplier": 1.0
+    	}
 	],
-	"Reward" : 
-	{
-		"Gold" : 100,
-		"Gem" : 5,
-		"Soul" : 1
-	},
-	"StarCount" : 0, 
-	"BestClearTimeMS" : 0.0
+	"Reward" :  { "Gold" : 100, "Gem" : 5, "Soul" : 1 }
 	}
   },
   {
 	"Name": "Normal_Stage2",
 	"StageData":{
-    "StageName": "Normal_Stage2",
     "StageTag": "Arcanum.BattleStage.Normal.Stage2",
-	"StageDesc" : "이 스테이지는 노말 스테이지2",
-	"EnemyBasement" : {
-		"CommandCenterHP" : {
-			"TagName" : "",
-			"BaseValue" : 500,
-			"BonusValue": 100,
-			"ModifierValue" :0.0
-		}
-	},
+	"StageLevel" : "",
+	"StageDesc" : "이 스테이지는 노말 스테이지1",
+	"EnemyBasement" : { "CommandCenterHP" : { "TagName" : "", "BaseValue" : 600, "BonusValue": 0, "ModifierValue" :0.0 } },
 	"StageImg":"/Game/Assets/UI/",
 	"SpawnInfos": [
-	  {
-		"EnemyTag" : "",
-		"Health": 100,
-		"AttackPower": 100,
-		"AttackSpeed": 10.0,
-		"MoveSpeed": 5.0,
-		"SpawnTime" : 1.0,
-		"Count" : 10
-	  },
-	    {
-		"EnemyTag" : "",
-		"Health": 150,
-		"AttackPower": 150,
-		"AttackSpeed": 10.0,
-		"MoveSpeed": 5.0,
-		"SpawnTime" : 5.0,
-		"Count" : 5
-	  }
+		{ "EnemyTag": "",
+      	  "EnemyClass": "",
+      	  "SpawnMultiplier": 1.0
+    	},
+    	{ "EnemyTag": "",
+      	  "EnemyClass": "",
+          "SpawnMultiplier": 1.01
+    	}
 	],
-	"Reward" : 
-	{
-		"Gold" : 100,
-		"Gem" : 5,
-		"Soul" : 1
-	},
-	"StarCount" : 0, 
-	"BestClearTimeMS" : 0.0
+	"Reward" :  { "Gold" : 150, "Gem" : 5, "Soul" : 2 }
 	}
   },
   {
 	"Name": "Normal_Stage3",
 	"StageData":{
-    "StageName": "Normal_Stage3",
     "StageTag": "Arcanum.BattleStage.Normal.Stage3",
-	"StageDesc" : "이 스테이지는 노말 스테이지3",
-	"EnemyBasement" : {
-		"CommandCenterHP" : {
-			"TagName" : "",
-			"BaseValue" : 1000,
-			"BonusValue": 200,
-			"ModifierValue" :0.0
-		}
-	},
+	"StageLevel" : "",
+	"StageDesc" : "이 스테이지는 노말 스테이지1",
+	"EnemyBasement" : { "CommandCenterHP" : { "TagName" : "", "BaseValue" : 700, "BonusValue": 0, "ModifierValue" :0.0 } },
 	"StageImg":"/Game/Assets/UI/",
 	"SpawnInfos": [
-	  {
-		"EnemyTag" : "",
-		"Health": 100,
-		"AttackPower": 100,
-		"AttackSpeed": 10.0,
-		"MoveSpeed": 5.0,
-		"SpawnTime" : 1.0,
-		"Count" : 10
-	  },
-	    {
-		"EnemyTag" : "",
-		"Health": 150,
-		"AttackPower": 150,
-		"AttackSpeed": 10.0,
-		"MoveSpeed": 5.0,
-		"SpawnTime" : 5.0,
-		"Count" : 5
-	  },
-	   {
-		"EnemyTag" : "",
-		"Health": 300,
-		"AttackPower": 200,
-		"AttackSpeed": 10.0,
-		"MoveSpeed": 2.0,
-		"SpawnTime" : 10.0,
-		"Count" : 1
-	  }
+		{ "EnemyTag": "",
+      	  "EnemyClass": "",
+      	  "SpawnMultiplier": 1.01
+    	},
+    	{ "EnemyTag": "",
+      	  "EnemyClass": "",
+          "SpawnMultiplier": 1.01
+    	}
 	],
-	"Reward" : 
-	{
-		"Gold" : 100,
-		"Gem" : 5,
-		"Soul" : 1
-	},
-	"StarCount" : 0, 
-	"BestClearTimeMS" : 0.0
+	"Reward" :  { "Gold" : 200, "Gem" : 6, "Soul" : 3 }
 	}
   }
 ]
