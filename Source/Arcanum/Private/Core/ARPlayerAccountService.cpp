@@ -109,6 +109,31 @@ int32 FPlayerAccountService::GetHUDIndex(const UObject* WorldContextObject)
 
 	return static_cast<int32>(GI->HUDIndex);
 }
+void FPlayerAccountService::SetCurrentStageTag(const UObject* WorldContextObject, FGameplayTag CurrentStageTag)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+
+	if (!GI) {
+		UE_LOG(LogTemp, Error, TEXT("Invalid WorldContext or GameInstance!"));
+		return;
+	}
+
+	GI->CurrentStageTag = CurrentStageTag;
+}
+void FPlayerAccountService::ChangedLevel(const UObject* WorldContextObject, TSoftObjectPtr<UWorld> StageLevel)
+{
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	if (World) {
+		UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+		if (!GI) {
+			UE_LOG(LogTemp, Error, TEXT("Invalid WorldContext or GameInstance!"));
+			return;
+		}
+		GI->PendingStageLevel = StageLevel;
+	}
+	const FName MainStageName = TEXT("/Game/Level/CombatStage/MainStage");
+	UGameplayStatics::OpenLevel(WorldContextObject, MainStageName);
+}
 // ========================================================
 // PlayerData Updater
 // ========================================================
@@ -199,6 +224,23 @@ bool FPlayerAccountService::SavePlayerData(UARGameInstance* GI)
 // ========================================================
 // Battle Widget 관련
 // ========================================================
+bool FPlayerAccountService::GetStageData(const UObject* WorldContextObject, TArray<FDTStageDataRow*>& OutRows)
+{
+	OutRows.Empty();
+
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	if (!World) return false;
+
+	UGameDataSubsystem* DataSubsystem = World->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
+	if (!DataSubsystem) return false;
+
+	UDataTable** TablePtr = DataSubsystem->MasterDataTables.Find(Arcanum::DataTable::StageInfo);
+	if (!TablePtr || !(*TablePtr)) return false;
+
+	(*TablePtr)->GetAllRows<FDTStageDataRow>(TEXT("StageContext"), OutRows);
+
+	return OutRows.Num() > 0;
+}
 void FPlayerAccountService::StopShopOnBattleStart(const UObject* WorldContextObject)
 {
 	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
