@@ -165,6 +165,7 @@ void ULobbyHUD::ClickCharacterMenuBtn()
 	if (UCharacterHUDWidget* CharacterWidget = Cast<UCharacterHUDWidget>(WidgetSwitcher->GetWidgetAtIndex(1))) {
 		CharacterWidget->SetParentLobby(this);
 		CharacterWidget->InitCharacterHUD();
+		CharacterWidget->InitWeaponInventory();
 		WidgetSwitcher->SetActiveWidget(CharacterWidget);
 	}
 }
@@ -520,7 +521,7 @@ void ULobbyHUD::InitShop()
 {
 	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
 	{
-		FPlayerAccountService::InitializeShop(gameInstance, EquipmentShopSlotCount, PotionShopSlotCount);
+		//FPlayerAccountService::InitializeShop(gameInstance, EquipmentShopSlotCount, PotionShopSlotCount);
 	}
 }
 
@@ -539,33 +540,33 @@ void ULobbyHUD::RefreshShopUI()
 			CachedShopPrices
 		);
 
-		if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+		/*if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
 		{
 			const int32 remaining = FPlayerAccountService::GetShopRemainingSeconds(gameInstance);
 
 			HandleShopSecondChanged(remaining);
-		}
+		}*/
 	}
 }
 
 void ULobbyHUD::BindShopTimer()
 {
-	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
-	{
-		if (UGameTimeSubsystem* gameTimeSubsystem = gameInstance->GetSubsystem<UGameTimeSubsystem>())
-		{
-			gameTimeSubsystem->OnShopSecondChanged.RemoveDynamic(this, &ULobbyHUD::HandleShopSecondChanged);
-			gameTimeSubsystem->OnShopSecondChanged.AddDynamic(this, &ULobbyHUD::HandleShopSecondChanged);
-		}
+	//if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+	//{
+	//	if (UGameTimeSubsystem* gameTimeSubsystem = gameInstance->GetSubsystem<UGameTimeSubsystem>())
+	//	{
+	//		gameTimeSubsystem->OnShopSecondChanged.RemoveDynamic(this, &ULobbyHUD::HandleShopSecondChanged);
+	//		gameTimeSubsystem->OnShopSecondChanged.AddDynamic(this, &ULobbyHUD::HandleShopSecondChanged);
+	//	}
 
-		const int32 remaining = FPlayerAccountService::GetShopRemainingSeconds(gameInstance);
-		HandleShopSecondChanged(remaining);
-	}
+	//	const int32 remaining = FPlayerAccountService::GetShopRemainingSeconds(gameInstance);
+	//	HandleShopSecondChanged(remaining);
+	//}
 }
 
 void ULobbyHUD::HandleShopSecondChanged(int32 InRemainingSeconds)
 {
-	if (InRemainingSeconds == 0)
+	/*if (InRemainingSeconds == 0)
 	{
 		if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
 		{
@@ -590,43 +591,43 @@ void ULobbyHUD::HandleShopSecondChanged(int32 InRemainingSeconds)
 	if (ShopHUDWidget)
 	{
 		ShopHUDWidget->SetShopRemainingSeconds(InRemainingSeconds);
-	}
+	}*/
 }
 
 void ULobbyHUD::TryPurchaseSelectedItem(int32 InSlotIndex)
 {
-	if (FPlayerAccountService::PurchaseShopSlot(this, InSlotIndex))
+	/*if (FPlayerAccountService::PurchaseShopSlot(this, InSlotIndex))
 	{
 		if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
 		{
 			RefreshShopUI();
 			RefreshAllLobbyUI();
 		}
-	}
+	}*/
 }
 
 void ULobbyHUD::TrySellSelectedItem()
 {
-	if (SelectedInventoryItemGuid.IsValid())
-	{
-		if (FPlayerAccountService::SellItemByGuid(this, SelectedInventoryItemGuid))
-		{
-			SelectedInventoryItemGuid.Invalidate();
-			RefreshAllLobbyUI();
-		}
+	//if (SelectedInventoryItemGuid.IsValid())
+	//{
+	//	if (FPlayerAccountService::SellItemByGuid(this, SelectedInventoryItemGuid))
+	//	{
+	//		SelectedInventoryItemGuid.Invalidate();
+	//		RefreshAllLobbyUI();
+	//	}
 
-		return;
-	}
+	//	return;
+	//}
 
-	if (SelectedStackItemTag.IsValid() && SelectedStackItemCount > 0)
-	{
-		if (FPlayerAccountService::SellStackItemByTag(this, SelectedStackItemTag, SelectedStackItemCount))
-		{
-			SelectedStackItemTag = FGameplayTag();
-			SelectedStackItemCount = 0;
-			RefreshAllLobbyUI();
-		}
-	}
+	//if (SelectedStackItemTag.IsValid() && SelectedStackItemCount > 0)
+	//{
+	///*	if (FPlayerAccountService::SellStackItemByTag(this, SelectedStackItemTag, SelectedStackItemCount))
+	//	{
+	//		SelectedStackItemTag = FGameplayTag();
+	//		SelectedStackItemCount = 0;
+	//		RefreshAllLobbyUI();
+	//	}*/
+	//}
 }
 
 void ULobbyHUD::BuildShopRuntimeCache()
@@ -692,7 +693,7 @@ void ULobbyHUD::BuildShopRuntimeCache()
 
 void ULobbyHUD::RestartShopTimer()
 {
-	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+	/*if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
 	{
 		if (gameInstance->bShopPaused && gameInstance->PausedShopRemainingSeconds > 0)
 		{
@@ -707,7 +708,7 @@ void ULobbyHUD::RestartShopTimer()
 				gameTimeSubsystem->StartShop(gameInstance->NextShopRefreshTime);
 			}
 		}
-	}
+	}*/
 }
 
 void ULobbyHUD::OnExitCommonDialog(EDialogResult res)

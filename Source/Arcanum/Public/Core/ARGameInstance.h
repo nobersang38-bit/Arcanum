@@ -197,22 +197,22 @@ public:
 #pragma endregion
 
 #pragma region 테스트 코드
-    UFUNCTION(BlueprintCallable)
-    bool TestPurchaseEquipment(FName ItemRowName)
-    {
-        bool bSuccess = FPlayerAccountService::PurchaseEquipment(this, ItemRowName);
+    //UFUNCTION(BlueprintCallable)
+    //bool TestPurchaseEquipment(FName ItemRowName)
+    //{
+    //    bool bSuccess = FPlayerAccountService::PurchaseEquipment(this, ItemRowName);
 
-        if (bSuccess)
-        {
-            SavePlayerData();
-            UE_LOG(LogTemp, Warning, TEXT("Purchase Success & Saved"));
-        }
-        else
-        {
-            UE_LOG(LogTemp, Warning, TEXT("Purchase Failed"));
-        }
+    //    if (bSuccess)
+    //    {
+    //        SavePlayerData();
+    //        UE_LOG(LogTemp, Warning, TEXT("Purchase Success & Saved"));
+    //    }
+    //    else
+    //    {
+    //        UE_LOG(LogTemp, Warning, TEXT("Purchase Failed"));
+    //    }
 
-        return bSuccess;
-    }
+    //    return bSuccess;
+    //}
 #pragma endregion
 };

@@ -11,9 +11,9 @@
 #include "DataInfo/BattleCharacter/CharacterInfo/DataTable/DTCharacterBaseInfo.h"
 #include "DataInfo/GachaData/DataTable/DTGachaBannerData.h"
 
-#include "DataInfo/ItemData/Potion/DTPotionInfoRow.h"
-#include "DataInfo/InventoryData/DataTable/DTInventoryRuleItem.h"
-#include "DataInfo/ItemData/Data/InventoryViewSlot.h"
+//#include "DataInfo/ItemData/Potion/DTPotionInfoRow.h"
+//#include "DataInfo/InventoryData/DataTable/DTInventoryRuleItem.h"
+//#include "DataInfo/ItemData/Data/InventoryViewSlot.h"
 
 #include "ARPlayerAccountService.generated.h"
 
@@ -146,76 +146,76 @@ public:
 
 #pragma endregion
 
-#pragma region Shop Widget 관련
-public:
-	/** DT의 장비목록을 반환하는 함수*/
-	TArray<FName> GetEquipmentList(const UObject* WorldContextObject);
-	/** 상점에서 구매시 사용하는 함수*/
-	static bool PurchaseEquipment(const UObject* WorldContextObject, FName RowName);
-	/** */
-	static const FDTEquipmentInfoRow* GetItemDefinition(UGameDataSubsystem* DataSubsystem, const FGameplayTag& ItemTag);
-
-	/* 인벤 아이템 판매 */
-	static bool SellItemByGuid(const UObject* WorldContextObject, const FGuid& InItemGuid);
-
-	/* 상점 진입 시 초기화 (저장시간 확인 후 유지/갱신 판정) */
-	static void InitializeShop(const UObject* WorldContextObject, int32 InEquipmentSlotCount, int32 InPotionSlotCount);
-
-	/* 상점 강제 갱신 (10분 만료시) */
-	static void RefreshShop(const UObject* WorldContextObject, int32 InEquipmentSlotCount, int32 InPotionSlotCount);
-
-	/* 상점 슬롯 데이터 조회: TableTag + RowName을 함께 반환 */
-	static bool GetShopSlotData(const UObject* WorldContextObject, int32 InSlotIndex, FGameplayTag& OutTableTag, FName& OutRowName, bool& OutSoldOut);
-
-	/* 상점 슬롯 구매(TableTag 기준으로 포션 / 장비 분기) */
-	static bool PurchaseShopSlot(const UObject* WorldContextObject, int32 InSlotIndex);
-
-	/* 구매 성공 후 슬롯 품절 처리 */
-	static bool SetShopSlotSoldOut(const UObject* WorldContextObject, int32 InSlotIndex);
-
-	/* 저장된 상점 시간이 유효한지 확인 */
-	static bool IsShopRefreshExpired(const UObject* WorldContextObject);
-
-	/* 다음 갱신 시각 기준 남은 초 계산 (UI 타이머 표시용) */
-	static int32 GetShopRemainingSeconds(const UObject* WorldContextObject);
-
-	/* 현재 시간 반환 */
-	static FDateTime GetCurrentTimeKST();
-
-	// ===================
-	// 포션 관련
-	// ===================
-	/* 포션 보유 수량 조회 */
-	static int32 GetPotionCount(const UObject* WorldContextObject, const FGameplayTag& InPotionTag);
-
-	/* 포션 구매(스택형) - 구매 성공 시 수량 증가(최대 20스택) + 골드 차감 */
-	static bool PurchasePotion(const UObject* WorldContextObject, FName InPotionRowName, int32 InBuyCount);
-
-private:
-	/* 상점 슬롯 전체 생성 */
-	static void GenerateShopItems(UARGameInstance* InGameInstance, int32 InEquipmentSlotCount, int32 InPotionSlotCount, bool bInRefreshEquipmentOnly);
-
-	/* 상점 아이템 후보군 구성 (일반/세트/전설 분류) */
-	static void BuildShopItemPools(UARGameInstance* InGameInstance, FShopItemPools& OutItemPools);
-
-	/* 상점 등급 확률 판정 (일반/세트/전설) */
-	static EShopRarityType PickShopRarityType(UARGameInstance* InGameInstance);
-
-	/* 상점 아이템 1개 선택 */
-	static FName PickShopItemRow(EShopRarityType InRarityType, FShopItemPools& InOutItemPools);
-
-	/* 상점 저장 데이터 초기화 */
-	static void ResetShopSoldOutStates(UARGameInstance* InGameInstance, int32 InEquipmentSlotCount);
-
-	/* 다음 갱신 시각 설정 (현재시간 + 10분) */
-	static void SetNextShopRefreshTime(UARGameInstance* InGameInstance);
-
-	/* InventoryRule DT의 Default Row를 조회 */
-	static const FDTInventoryRuleItem* GetInventoryRuleRow(const UObject* WorldContextObject);
-
-	/* InventoryRuleRow 기준으로 ItemTag의 최대 스택 수를 계산  */
-	static int32 GetMaxStackByItemTag(const FDTInventoryRuleItem* InRuleRow, const FGameplayTag& InItemTag);
-#pragma endregion
+//#pragma region Shop Widget 관련
+//public:
+//	/** DT의 장비목록을 반환하는 함수*/
+//	TArray<FName> GetEquipmentList(const UObject* WorldContextObject);
+//	/** 상점에서 구매시 사용하는 함수*/
+//	static bool PurchaseEquipment(const UObject* WorldContextObject, FName RowName);
+//	/** */
+//	static const FDTEquipmentInfoRow* GetItemDefinition(UGameDataSubsystem* DataSubsystem, const FGameplayTag& ItemTag);
+//
+//	/* 인벤 아이템 판매 */
+//	static bool SellItemByGuid(const UObject* WorldContextObject, const FGuid& InItemGuid);
+//
+//	/* 상점 진입 시 초기화 (저장시간 확인 후 유지/갱신 판정) */
+//	static void InitializeShop(const UObject* WorldContextObject, int32 InEquipmentSlotCount, int32 InPotionSlotCount);
+//
+//	/* 상점 강제 갱신 (10분 만료시) */
+//	static void RefreshShop(const UObject* WorldContextObject, int32 InEquipmentSlotCount, int32 InPotionSlotCount);
+//
+//	/* 상점 슬롯 데이터 조회: TableTag + RowName을 함께 반환 */
+//	static bool GetShopSlotData(const UObject* WorldContextObject, int32 InSlotIndex, FGameplayTag& OutTableTag, FName& OutRowName, bool& OutSoldOut);
+//
+//	/* 상점 슬롯 구매(TableTag 기준으로 포션 / 장비 분기) */
+//	static bool PurchaseShopSlot(const UObject* WorldContextObject, int32 InSlotIndex);
+//
+//	/* 구매 성공 후 슬롯 품절 처리 */
+//	static bool SetShopSlotSoldOut(const UObject* WorldContextObject, int32 InSlotIndex);
+//
+//	/* 저장된 상점 시간이 유효한지 확인 */
+//	static bool IsShopRefreshExpired(const UObject* WorldContextObject);
+//
+//	/* 다음 갱신 시각 기준 남은 초 계산 (UI 타이머 표시용) */
+//	static int32 GetShopRemainingSeconds(const UObject* WorldContextObject);
+//
+//	/* 현재 시간 반환 */
+//	static FDateTime GetCurrentTimeKST();
+//
+//	// ===================
+//	// 포션 관련
+//	// ===================
+//	/* 포션 보유 수량 조회 */
+//	static int32 GetPotionCount(const UObject* WorldContextObject, const FGameplayTag& InPotionTag);
+//
+//	/* 포션 구매(스택형) - 구매 성공 시 수량 증가(최대 20스택) + 골드 차감 */
+//	static bool PurchasePotion(const UObject* WorldContextObject, FName InPotionRowName, int32 InBuyCount);
+//
+//private:
+//	/* 상점 슬롯 전체 생성 */
+//	static void GenerateShopItems(UARGameInstance* InGameInstance, int32 InEquipmentSlotCount, int32 InPotionSlotCount, bool bInRefreshEquipmentOnly);
+//
+//	/* 상점 아이템 후보군 구성 (일반/세트/전설 분류) */
+//	static void BuildShopItemPools(UARGameInstance* InGameInstance, FShopItemPools& OutItemPools);
+//
+//	/* 상점 등급 확률 판정 (일반/세트/전설) */
+//	static EShopRarityType PickShopRarityType(UARGameInstance* InGameInstance);
+//
+//	/* 상점 아이템 1개 선택 */
+//	static FName PickShopItemRow(EShopRarityType InRarityType, FShopItemPools& InOutItemPools);
+//
+//	/* 상점 저장 데이터 초기화 */
+//	static void ResetShopSoldOutStates(UARGameInstance* InGameInstance, int32 InEquipmentSlotCount);
+//
+//	/* 다음 갱신 시각 설정 (현재시간 + 10분) */
+//	static void SetNextShopRefreshTime(UARGameInstance* InGameInstance);
+//
+//	/* InventoryRule DT의 Default Row를 조회 */
+//	//static const FDTInventoryRuleItem* GetInventoryRuleRow(const UObject* WorldContextObject);
+//
+//	/* InventoryRuleRow 기준으로 ItemTag의 최대 스택 수를 계산  */
+//	//static int32 GetMaxStackByItemTag(const FDTInventoryRuleItem* InRuleRow, const FGameplayTag& InItemTag);
+//#pragma endregion
 
 #pragma region Gacha Widget 관련
 public:
