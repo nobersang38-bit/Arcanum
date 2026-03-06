@@ -8,6 +8,8 @@
 #include "Data/Types/MatchData.h"
 #include "DataInfo/PlayerData/FPlayerData.h"
 #include "Data/DataAssets/EnemyWaveData.h"
+#include "GameplayTags/ArcanumTags.h"
+#include "NativeGameplayTags.h"
 #include "Data/Types/UnitData.h"
 #include "Data/Types/BattleStageInfo.h"
 #include "BattlefieldManagerSubsystem.generated.h"
@@ -21,7 +23,7 @@ public:
 
 	FBattleStageInfo BattleStageInfo;
 
-	FPlayerBattleData PlayerBattleStat;
+	FGradeStatData PlayerBattleStat;
 	
 	UPROPERTY()
 	TArray<FUnitInfoSetting> AllyUnits;
@@ -154,4 +156,7 @@ protected:
 	void DebugPlayerCharacterSet();
 #pragma endregion
 
+	public:
+		const FGameplayTag AllyTeamTag = Arcanum::Unit::Faction::Ally::Root;
+		const FGameplayTag EnemyTeamTag = Arcanum::Unit::Faction::Enemy::Root;
 };

@@ -24,7 +24,7 @@ void UBasementCombatComponent::BeginPlay()
 
 	if (UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
 	{
-		SetBasementStat(BattleSubsystem->GetBasementStat(Arcanum::Unit::Faction::Enemy::Root));
+		SetBasementStat(BattleSubsystem->GetBasementStat(BattleSubsystem->EnemyTeamTag));
 	}
 }
 
@@ -40,16 +40,16 @@ void UBasementCombatComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 void UBasementCombatComponent::SetBasementStat(const FBasementStat& InBasementStat)
 {
 	BasementStat = InBasementStat;
-	BasementStat.CommandCenterMaxHP = BasementStat.CommandCenterCurrentHP;
+	BasementStat.CommandCenterHP.Current = BasementStat.CommandCenterHP.BaseMax;
 }
 
 void UBasementCombatComponent::RecievedDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
-	float Health = BasementStat.CommandCenterCurrentHP.BaseValue;
-	BasementStat.CommandCenterCurrentHP.BaseValue = FMath::Clamp(Health - Damage, 0, FLT_MAX);
-	OnBasementChangeHealth.Broadcast(BasementStat.CommandCenterCurrentHP.BaseValue, BasementStat.CommandCenterMaxHP.BaseValue);
+	float Health = BasementStat.CommandCenterHP.Current;
+	BasementStat.CommandCenterHP.Current = FMath::Clamp(Health - Damage, 0, FLT_MAX);
+	OnBasementChangeHealth.Broadcast(BasementStat.CommandCenterHP.Current, BasementStat.CommandCenterHP.BaseMax);
 
-	if (BasementStat.CommandCenterCurrentHP.BaseValue <= 0.0f)
+	if (BasementStat.CommandCenterHP.Current <= 0.0f)
 	{
 		UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 		if (BattleSubsystem)
@@ -64,11 +64,11 @@ void UBasementCombatComponent::RecievedDamage(AActor* DamagedActor, float Damage
 					FMatchData MatchData;
 					MatchData.CurrentMatchState = EMatchState::Ended;
 
-					if (OwnerTag == AllyTag)
+					if (OwnerTag == BattleSubsystem->AllyTeamTag)
 					{
 						MatchData.bIsVictory = false;
 					}
-					else if(OwnerTag == EnemyTag)
+					else if(OwnerTag == BattleSubsystem->EnemyTeamTag)
 					{
 						MatchData.bIsVictory = true;
 					}

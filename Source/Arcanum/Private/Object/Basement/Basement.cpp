@@ -54,8 +54,8 @@ void ABasement::BeginPlay()
 			BasementCombatComponent->OnBasementChangeHealth.AddDynamic(TempHealthWidget, &UUnitHealthWidget::SetPercentFloat);
 
 			FBasementStat Stat = BasementCombatComponent->GetBasementStat();
-			float CurrentHealth = Stat.CommandCenterCurrentHP.BaseValue;
-			float MaxHealth = Stat.CommandCenterMaxHP.BaseValue;
+			float CurrentHealth = Stat.CommandCenterHP.Current;
+			float MaxHealth = Stat.CommandCenterHP.BaseMax;
 			TempHealthWidget->SetPercentFloat(CurrentHealth, MaxHealth);
 		}
 	}

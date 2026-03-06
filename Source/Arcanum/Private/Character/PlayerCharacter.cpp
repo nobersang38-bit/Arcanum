@@ -47,6 +47,8 @@ void APlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 	
 	// 기본 캐릭터 ID 태그
+	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	TeamTag = BattleSubsystem->AllyTeamTag;
 	FGameplayTag PlayerID = FGameplayTag::RequestGameplayTag(TEXT("Arcanum.Player.ID.Elara"));
 	GameplayTags.AddTag(PlayerID);
 
@@ -207,5 +209,49 @@ void APlayerCharacter::PlayerBasicAttack()
 			UGameplayStatics::ApplyDamage(OutOverlaps[i].GetActor(), 30.0f, GetController(), this, nullptr);
 		}
 	}
+}
+
+void APlayerCharacter::SetupStat()
+{
+	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+
+	RegenStats.Empty();
+
+	if (BattleSubsystem)
+	{
+		const FGradeStatData& GradeStatData = BattleSubsystem->GetInBattleData().PlayerBattleStat;
+		for (int i = 0; i < GradeStatData.RegenStats.Num(); i++)
+		{
+			RegenStats.Add(GradeStatData.RegenStats[i].ParentTag, GradeStatData.RegenStats[i]);
+		}
+
+		for (int i = 0; i < GradeStatData.RegenStats.Num(); i++)
+		{
+			NonRegenStats.Add(GradeStatData.NonRegenStats[i].TagName, GradeStatData.NonRegenStats[i]);
+		}
+	}
+}
+
+FRegenStat* APlayerCharacter::FindRegenStat(FGameplayTag InTag)
+{
+	if (FRegenStat* RegenStat = RegenStats.Find(InTag))
+	{
+		return RegenStat;
+	}
+	return nullptr;
+}
+
+FNonRegenStat* APlayerCharacter::FindNonRegenStat(FGameplayTag InTag)
+{
+	if (FNonRegenStat* NonRegenStat = NonRegenStats.Find(InTag))
+	{
+		return NonRegenStat;
+	}
+	return nullptr;
+}
+
+void APlayerCharacter::AddCurrentStat(FGameplayTag InTag, float InValue)
+{
+
 }
 
