@@ -33,7 +33,6 @@ class ARCANUM_API UCharacterHUDWidget : public UUserWidget
 #pragma region 언리얼 기본 생성
 protected:
 	virtual void NativeConstruct() override;
-	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry,const FPointerEvent& InMouseEvent) override;
 #pragma endregion
 
 #pragma region 바인딩
@@ -106,6 +105,10 @@ protected:
 	void SetupEquipment();
 	int GetCurrentGrade;
 
+	// 무기, 장비 슬롯
+	UPROPERTY()
+	TArray<USquareSlotWidget*> EquipmentSlots;
+	
 	int32 RequiredSoul;
 
 public:
@@ -125,11 +128,17 @@ private:
 	UFUNCTION()
 	void OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlot, FName CharacterName, bool SlotCharacterOwned);
 
+	UPROPERTY()
 	int32 CharacterStar = 0;
+	UPROPERTY()
 	int32 CharacterGrade = 0;
+	UPROPERTY()
 	int32 TargetGradeIndex = 0;
+	UPROPERTY()
 	FText FinalText;
+	UPROPERTY()
 	FString CombinedInfoString;
+	UPROPERTY() 
 	FText ButtonText;
 	
 #pragma endregion

@@ -24,16 +24,18 @@ void UCharacterHUDWidget::NativeConstruct()
         DataSubsystem = GI->GetSubsystem<UGameDataSubsystem>();
     }
 
-    // 무기 슬롯 (Slot Index 모두 0으로 설정)
-    Weapon1Slot->OnSlotClicked.AddDynamic(this, &UCharacterHUDWidget::OnSquareSlotClicked);
-    Weapon2Slot->OnSlotClicked.AddDynamic(this, &UCharacterHUDWidget::OnSquareSlotClicked);
-    LegendaryWeaponSlot->OnSlotClicked.AddDynamic(this, &UCharacterHUDWidget::OnSquareSlotClicked);
+    EquipmentSlots.Add(Weapon1Slot);
+    EquipmentSlots.Add(Weapon2Slot);
+    EquipmentSlots.Add(LegendaryWeaponSlot);
+    EquipmentSlots.Add(HelmetSlot);
+    EquipmentSlots.Add(ChestSlot);
+    EquipmentSlots.Add(GloveSlot);
+    EquipmentSlots.Add(BootsSlot);
 
-    // 장비 슬롯 (순서대로 1,2,3,4)
-    HelmetSlot->OnSlotClicked.AddDynamic(this, &UCharacterHUDWidget::OnSquareSlotClicked);
-    ChestSlot->OnSlotClicked.AddDynamic(this, &UCharacterHUDWidget::OnSquareSlotClicked);
-    GloveSlot->OnSlotClicked.AddDynamic(this, &UCharacterHUDWidget::OnSquareSlotClicked);
-    BootsSlot->OnSlotClicked.AddDynamic(this, &UCharacterHUDWidget::OnSquareSlotClicked);
+    for (auto& EquipSlot : EquipmentSlots)
+    {
+        EquipSlot->OnSlotClicked.AddDynamic(this, &UCharacterHUDWidget::OnSquareSlotClicked);
+    }
 
     if (CharacterInfo)
     {
@@ -55,7 +57,7 @@ void UCharacterHUDWidget::NativeConstruct()
 
         return;
 
-    // 유닛창 테스트용
+    /// Test : 유닛창 테스트용
       for (int32 Index = 0; Index < 12; ++Index)
     {
 
@@ -70,12 +72,54 @@ void UCharacterHUDWidget::NativeConstruct()
             WrapSlot->SetVerticalAlignment(VAlign_Fill);
         }
     }
-   
-}
 
-FReply UCharacterHUDWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
-{
-    return FReply::Handled();
+     // // 정렬에 필요한 정보 (장비 + DT로우 + 슬롯 우선순위)
+     // struct FGuidSortItem
+     // {
+     //     const FEquipmentInfo* Equip = nullptr;
+     //     const FDTItemCatalogRow* CatalogRow = nullptr;
+     //     int32 SortOrder = 0;
+     // };
+     // // 캐시된 인벤토리에서 정렬 가능한 장비만 추출
+     // TArray<FGuidSortItem> items;
+     // items.Reserve(ParentLobby->CachedPlayerData.Inventory.Num());
+
+     // for (int32 i = 0; i < ParentLobby->CachedPlayerData.Inventory.Num(); i++)
+     // {
+     //     const FEquipmentInfo& equip = ParentLobby->CachedPlayerData.Inventory[i];
+     //     if (!equip.ItemGuid.IsValid()) continue;
+
+     //     FGuidSortItem item;
+     //     item.Equip = &equip;
+
+     //     item.CatalogRow = DataSubsystem->FindItemCatalogRowByTag(equip.ItemTag);
+     //     item.SortOrder = item.CatalogRow ? item.CatalogRow->SortOrder : 0;
+
+     //     items.Add(item);
+     // }
+     // // 정렬된 결과를 UI 슬롯 구조체로 변환해서 OutSlots에 채움
+	    //for (int32 i = 0; i < items.Num(); i++)
+	    //{
+		   // //if (OutSlots.Num() >= InSlotLimit) break;
+
+		   // const FEquipmentInfo* equip = items[i].Equip;
+		   // if (!equip) continue;
+
+		   // FInventoryViewSlot slot;
+		   // slot.Type = EInventoryViewSlotType::Equipment;
+
+		   // slot.ItemGuid = equip->ItemGuid;
+		   // slot.ItemTag = equip->ItemTag;
+		   // slot.StackCount = 0;
+		   // slot.UpgradeLevel = equip->CurrUpgradeLevel;
+
+		   // if (items[i].CatalogRow)
+		   // {
+			  //  slot.Icon = items[i].CatalogRow->Icon;
+		   // }
+
+		   // //OutSlots.Add(MoveTemp(slot));
+	    //}
 }
 
 // ========================================================
@@ -146,8 +190,6 @@ void UCharacterHUDWidget::InitCharacterHUD()
 // ========================================================
 void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlot, FName CharacterName, bool SlotCharacterOwned)
 {
-    UE_LOG(LogTemp, Warning, TEXT("클릭한 캐릭터 슬롯 태그 : %s"), *CharacterName.ToString());
-
     FCurrencyData* soulData = ParentLobby->CachedPlayerData.PlayerCurrency.CurrencyDatas.Find(Arcanum::PlayerData::Currencies::NonRegen::Soul::Value);
     const int64 soulAmount = (soulData) ? soulData->CurrAmount : 0;
 
@@ -161,7 +203,6 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
         FName ListCharacterName = GetLeafNameFromTag(CharacterTag);
 
         bool bIsSelected = (ListCharacterName == CharacterName);
-        //TargetData.bSelection = bIsSelected;
         
         if (bIsSelected)
         {
@@ -186,12 +227,6 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
                     for (const FRegenStat& RStat : CurrentStats.RegenStats)
                     {
                         FString TagString = RStat.ParentTag.IsValid() ? GetLeafNameFromTag(RStat.ParentTag).ToString() : TEXT("NoTag");
-                     /*   UE_LOG(LogTemp, Log, TEXT("%s | Base(Max/Tick): %.1f / %.2f "),
-                            *TagString,
-                            RStat.BaseMax,
-                            RStat.BaseTick
-                        );*/
-
                         FString RowString = FString::Printf(TEXT("%.1f ( %.2f )"),RStat.BaseMax, RStat.BaseTick);
 
                         if (CombinedInfoString.IsEmpty())
@@ -244,16 +279,10 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
             {
                 SlotColor = FLinearColor::White;
             }
-
             CreatedCharacterSlots[i]->SetRoundBackgroundColor(SlotColor);
         }
-  
-        
     }
-
-    
 }
-
 
 // ========================================================
 // 캐릭터창 - 강화하기 버튼
@@ -262,8 +291,6 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
 void UCharacterHUDWidget::CharacterEnhancement(FText InCharacterName, int32 InRequiredSoul)
 {
     // 이미 보유하고 있는 캐릭터, 소울이 충분한 경우에만 클릭이 되도록 해놓음
-    UE_LOG(LogTemp, Log, TEXT("캐릭터 강화 버튼 클릭"));
-    
     // 소울 소비
      FCurrencyData* soulData = ParentLobby->CachedPlayerData.PlayerCurrency.CurrencyDatas.Find(Arcanum::PlayerData::Currencies::NonRegen::Soul::Value);
      const int64 soulAmount = (soulData) ? soulData->CurrAmount : 0;
@@ -308,12 +335,6 @@ void UCharacterHUDWidget::CharacterEnhancement(FText InCharacterName, int32 InRe
                     for (const FRegenStat& RStat : CurrentStats.RegenStats)
                     {
                         FString TagString = RStat.ParentTag.IsValid() ? GetLeafNameFromTag(RStat.ParentTag).ToString() : TEXT("NoTag");
-                        /*   UE_LOG(LogTemp, Log, TEXT("%s | Base(Max/Tick): %.1f / %.2f "),
-                               *TagString,
-                               RStat.BaseMax,
-                               RStat.BaseTick
-                           );*/
-
                         FString RowString = FString::Printf(TEXT("%.1f ( %.2f )"), RStat.BaseMax, RStat.BaseTick);
 
                         if (CombinedInfoString.IsEmpty())
@@ -346,12 +367,8 @@ void UCharacterHUDWidget::CharacterEnhancement(FText InCharacterName, int32 InRe
             // Info창 다시 불러오기
             UpdateCharacterInfo(SelectedCharacterName, true, FinalText, ButtonText, soulAmount);
         }
-        
     }
-     
   }
-
-
 
 // ========================================================
 // 캐릭터창 - 장착 버튼
@@ -374,7 +391,6 @@ void UCharacterHUDWidget::SetPlayerCharacter(FText CharacterName)
             TargetData.bSelection = false;
         }
     }
-
     InitCharacterHUD();
 }
 
@@ -407,49 +423,46 @@ void UCharacterHUDWidget::UpdateCharacterInfo(FName CharacterName, bool SlotChar
 
 void UCharacterHUDWidget::OnSquareSlotClicked(USquareSlotWidget* ClickedSlot, int32 SlotIndex)
 {
-    UE_LOG(LogTemp, Warning, TEXT("Clicked Slot Index: %d"), SlotIndex);
-
-    switch (SlotIndex)
+    if (CharacterSwitcher)
     {
-    case 0:
-        if (CharacterSwitcher)
+        UWidget* ActiveWidget = nullptr;
+        for (auto& EquipSlot : EquipmentSlots)
         {
-        UE_LOG(LogTemp, Warning, TEXT("무기 슬롯 Clicked"));
-            CharacterSwitcher->SetActiveWidgetIndex(1);
-            UInventorySlot* InvenWidget = Cast<UInventorySlot>(CharacterSwitcher->GetWidgetAtIndex(1));
+            EquipSlot->SetSquareBackgroundColor(
+                EquipSlot == ClickedSlot ? FLinearColor(1.0f, 0.4f, 0.7f, 1.0f) : FLinearColor::White
+            );
         }
-        break;
 
-    case 1:
-        UE_LOG(LogTemp, Warning, TEXT("투구 슬롯 Clicked"));
-        if (CharacterSwitcher)
+        switch (SlotIndex)
         {
-            CharacterSwitcher->SetActiveWidgetIndex(2);
-            //UCharacterInfo* InfoWidget = Cast<UCharacterInfo>(CharacterSwitcher->GetWidgetAtIndex(2));
+        case 0:  // 무기 슬롯
+            UE_LOG(LogTemp, Warning, TEXT("무기 슬롯 Clicked"));
+            ActiveWidget = CharacterSwitcher->GetWidgetAtIndex(1);
+            break;
+        case 1:  // 투구 슬롯
+            UE_LOG(LogTemp, Warning, TEXT("투구 슬롯 Clicked"));
+            ActiveWidget = CharacterSwitcher->GetWidgetAtIndex(2);
+            break;
+        case 2:  // 갑옷 슬롯
+            UE_LOG(LogTemp, Warning, TEXT("갑옷 슬롯 Clicked"));
+            break;
+        case 3:  // 장갑 슬롯
+            UE_LOG(LogTemp, Warning, TEXT("장갑 슬롯 Clicked"));
+            break;
+        case 4:  // 신발 슬롯
+            UE_LOG(LogTemp, Warning, TEXT("신발 슬롯 Clicked"));
+            break;
+        default:
+            ActiveWidget = CharacterSwitcher->GetWidgetAtIndex(0);
+            break;
         }
-        break;
 
-    case 2:
-        UE_LOG(LogTemp, Warning, TEXT("갑옷 슬롯Clicked"));
-        break;
-
-    case 3:
-        UE_LOG(LogTemp, Warning, TEXT("장갑 슬롯 Clicked"));
-        break;
-
-    case 4:
-        UE_LOG(LogTemp, Warning, TEXT("신발 슬롯 Clicked"));
-        break;
-
-    default:
-        if (CharacterSwitcher)
+        if (ActiveWidget)
         {
-            CharacterSwitcher->SetActiveWidgetIndex(0);
+            CharacterSwitcher->SetActiveWidget(ActiveWidget);
         }
-        break;
     }
 }
-
 
 // ========================================================
 // 무기, 장비 장착 버튼클릭
@@ -462,4 +475,3 @@ void UCharacterHUDWidget::SetupEquipment()
         CharacterSwitcher->SetActiveWidgetIndex(0);
     }
 }
-

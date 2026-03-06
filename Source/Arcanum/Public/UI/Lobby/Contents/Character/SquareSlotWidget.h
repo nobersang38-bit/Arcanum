@@ -22,15 +22,20 @@ protected:
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry,const FPointerEvent& InMouseEvent) override;
 
 public:
-
 	UPROPERTY(BlueprintAssignable, Category = "Slot")
 	FOnWeaponSlotClicked OnSlotClicked;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FLinearColor RoundColor = FLinearColor::White;
+	FLinearColor BackColor = FLinearColor::White;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UTexture2D> IconImg;
+
+	UFUNCTION(BlueprintCallable)
+	void SetSquareBackgroundColor(FLinearColor NewColor);
+
+	UFUNCTION(BlueprintCallable)
+	void SetItemIconImage(UTexture2D* ItemIcon, bool bIsEquipped);
 
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
