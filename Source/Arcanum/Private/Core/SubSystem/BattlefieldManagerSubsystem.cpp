@@ -154,7 +154,7 @@ void UBattlefieldManagerSubsystem::SetupUnits()
 	{
 		UGameDataSubsystem* GameDataSubsystem = GameInstance->GetSubsystem<UGameDataSubsystem>();
 		const TMap<FGameplayTag, UDataTable*> DataTables = GameDataSubsystem->MasterDataTables;
-		UE_LOG(LogTemp, Warning, TEXT("데이터 테이블 길이 %d"), DataTables.Num());
+		//UE_LOG(LogTemp, Warning, TEXT("데이터 테이블 길이 %d"), DataTables.Num());
 		if (const UDataTable* AllyUnitDataTable = DataTables.FindRef(Arcanum::DataTable::AllyUnitInfo))
 		{
 			TArray<FUnitsDataRow*> AllyUnitsDatArray;
@@ -163,8 +163,8 @@ void UBattlefieldManagerSubsystem::SetupUnits()
 			{
 				AllyUnitDatas.Add(Row->UnitData.Tag, Row->UnitData);
 				FString Result = FString::Printf(TEXT("AllyUnitDatas : %s"), *Row->UnitData.Tag.ToString());
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, *Result);
-				UE_LOG(LogTemp, Warning, TEXT("AllyUnitDatas : %s"), *Row->UnitData.Tag.ToString());
+				//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, *Result);
+				//UE_LOG(LogTemp, Warning, TEXT("AllyUnitDatas : %s"), *Row->UnitData.Tag.ToString());
 			}
 		}
 
@@ -175,7 +175,7 @@ void UBattlefieldManagerSubsystem::SetupUnits()
 			for (auto Row : EnemyUnitsDatArray)
 			{
 				EnemyUnitDatas.Add(Row->UnitData.Tag, Row->UnitData);
-				UE_LOG(LogTemp, Warning, TEXT("EnemyUnitDatas : %s"), *Row->UnitData.Tag.ToString());
+				//UE_LOG(LogTemp, Warning, TEXT("EnemyUnitDatas : %s"), *Row->UnitData.Tag.ToString());
 			}
 		}
 	}
