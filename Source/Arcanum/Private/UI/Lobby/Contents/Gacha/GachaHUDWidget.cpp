@@ -134,8 +134,8 @@ void UGachaHUDWidget::RequestGacha(int32 InPullCount)
 
     if (bSuccess) {
         UE_LOG(LogTemp, Log, TEXT("Gacha Request Success: %d Times"), InPullCount);
-        FPlayerAccountService::SetHUDIndex(this, EHUDIndex::GachaMenu);
-        UGameplayStatics::OpenLevel(GetWorld(), FName("GachaMap"));
+ /*       FPlayerAccountService::SetHUDIndex(this, EHUDIndex::GachaMenu);
+        UGameplayStatics::OpenLevel(GetWorld(), FName("GachaMap"));*/
     }
     else UE_LOG(LogTemp, Error, TEXT("Gacha Request Failed (Insufficient Currency?)"));
 

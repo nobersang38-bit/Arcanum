@@ -198,6 +198,7 @@ bool UARGameInstance::GenerateResults(const FDTGachaBannerDataRow* BannerData, i
         if (Pool) {
             FGachaItemResult Result = ResolvePickup(BannerData, *Pool, BannerState, Grade);
             Results.Add(Result);
+
         }
     }
 

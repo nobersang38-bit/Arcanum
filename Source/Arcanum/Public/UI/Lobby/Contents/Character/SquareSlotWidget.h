@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "NativeGameplayTags.h"
 #include "SquareSlotWidget.generated.h"
 
 class UImage;
@@ -46,6 +47,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slot")
 	int32 SlotIndex;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slot")
+	FGameplayTag WeaponTag;
 
 
 };

@@ -415,6 +415,19 @@ void UCharacterHUDWidget::OnSquareSlotClicked(USquareSlotWidget* ClickedSlot, in
 }
 
 // ========================================================
+// 무기, 장비 인벤토리 출력
+// ========================================================
+void UCharacterHUDWidget::InitWeaponInventory()
+{
+    TArray<FEquipmentInfo> WeaponInventory = ParentLobby->CachedPlayerData.Inventory;
+   
+    if (WeaponList)
+    {
+        WeaponList->CreateWeaponItems(WeaponInventory);
+    }
+}
+
+// ========================================================
 // 무기, 장비 장착 버튼클릭
 // ========================================================
 

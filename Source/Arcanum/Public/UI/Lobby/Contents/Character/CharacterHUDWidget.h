@@ -122,6 +122,7 @@ public:
 	UGameDataSubsystem* DataSubsystem;
 
 	void InitCharacterHUD();
+	void InitWeaponInventory();
 private:
 	UFUNCTION()
 	void OnSquareSlotClicked(USquareSlotWidget* ClickedSlot, int32 SlotIndex);

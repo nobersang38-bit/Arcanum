@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "DataInfo/BattleCharacter/Equipment/Data/FEquipmentData.h"
 #include "InventorySlot.generated.h"
 
 class UCommonBtnWidget;
@@ -33,6 +34,8 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnSetupBtnClicked OnSetupBtnClicked;
 
+	UFUNCTION()
+	void CreateWeaponItems(TArray<FEquipmentInfo> WeaponList);
 private:
 	UFUNCTION()
 	void ClickEquipSetupBtn();
@@ -49,5 +52,8 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UWrapBox> EquipGridPanel;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slot")
+	TSubclassOf<USquareSlotWidget> USquareSlotWidgetClass;
 
 };

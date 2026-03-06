@@ -4,6 +4,9 @@
 #include "UI/Lobby/Contents/Character/InventorySlot.h"
 #include "Components/Textblock.h"
 #include "UI/Common/CommonBtnWidget.h"
+#include "UI/Lobby/Contents/Character/SquareSlotWidget.h"
+#include "Components/WrapBox.h"
+#include "Components/WrapBoxSlot.h"
 
 void UInventorySlot::NativePreConstruct()
 {
@@ -31,6 +34,21 @@ void UInventorySlot::NativeConstruct()
     }
 }
 
+void UInventorySlot::CreateWeaponItems(TArray<FEquipmentInfo> WeaponList)
+{
+    for (int32 i = 0; i < WeaponList.Num(); i++)
+    {
+        USquareSlotWidget* NewSlot = CreateWidget<USquareSlotWidget>(GetWorld(), USquareSlotWidgetClass);
+        UWrapBoxSlot* WrapSlot = EquipGridPanel->AddChildToWrapBox(NewSlot);
+
+        if (WrapSlot)
+        {
+            WrapSlot->SetHorizontalAlignment(HAlign_Fill);
+            WrapSlot->SetVerticalAlignment(VAlign_Fill);
+        }
+    }
+}
+
 // ========================================================
 // 장착 버튼 클릭
 // ========================================================
@@ -38,3 +56,5 @@ void UInventorySlot::ClickEquipSetupBtn()
 {
     OnSetupBtnClicked.Broadcast();
 }
+
+
