@@ -4,12 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "DataInfo/StageData/StageInfo/DataTable/FDTStageDataRow.h"
+#include "DataInfo/StageData/StageInfo/Data/FStageDataInfo.h"
 #include "BattleHUDWidget.generated.h"
 
 class UItemSlot;
 class USquareSlotWidget;
 class UCommonBtnWidget;
 class UStageList;
+class UScrollBox;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnShowItemUnitList,int32, Index);
 /**
@@ -47,6 +50,17 @@ protected:
 
 	UFUNCTION()
 	void SetItemUnit();
+
+#pragma region 배틀 배너
+protected:
+	UPROPERTY(meta = (BindWidget)) TObjectPtr<UScrollBox> StageScrollBox;
+	UPROPERTY(EditAnywhere) TSubclassOf<UStageList> StageListClass;
+private:
+	TArray<FDTStageDataRow*> StageDatas;
+	UFUNCTION() void OnStageClicked(UStageList* ClickedStage);
+	TArray<UStageList*> StageWidgets;
+	UStageList* CurrentSelectedStage = nullptr;
+#pragma endregion
 
 private:
 	UFUNCTION()
