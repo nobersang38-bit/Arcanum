@@ -2,13 +2,6 @@
 #include "UI/Lobby/Contents/Character/SquareSlotWidget.h"
 #include "UI/Lobby/Contents/Battle/ItemSlot.h"
 #include "UI/Common/CommonBtnWidget.h"
-#include "UI/Lobby/Contents/Battle/StageList.h"
-#include "Components/ScrollBox.h"
-#include "Components/Spacer.h"
-
-#include "Core/ARGameInstance.h"
-#include "Core/ARPlayerAccountService.h"
-
 
 void UBattleHUDWidget::NativeConstruct()
 {
@@ -32,42 +25,12 @@ void UBattleHUDWidget::NativeConstruct()
 
     if (ItemListSlot)
     {
-        ItemListSlot->OnSetItemBtnClicked.RemoveDynamic(this, &UBattleHUDWidget::SetItemUnit);
         ItemListSlot->OnSetItemBtnClicked.AddDynamic(this, &UBattleHUDWidget::SetItemUnit);
     }
     if (UnitListSlot)
     {
-        UnitListSlot->OnSetItemBtnClicked.RemoveDynamic(this, &UBattleHUDWidget::SetItemUnit);
         UnitListSlot->OnSetItemBtnClicked.AddDynamic(this, &UBattleHUDWidget::SetItemUnit);
     }
-  
-    if (FPlayerAccountService::GetStageData(this, StageDatas)) {
-        if (!StageScrollBox || !StageListClass) return;
-        StageWidgets.Empty();
-
-        for (FDTStageDataRow* RowPtr : StageDatas) {
-            if (!RowPtr) continue;
-
-            UStageList* StageWidget = CreateWidget<UStageList>(this, StageListClass);
-            if (StageWidget) {
-                StageWidget->StageTag = RowPtr->StageData.StageTag;
-                StageWidget->StgName = RowPtr->StageData.StageName;
-                StageWidget->StgInfo = RowPtr->StageData.StageDesc;
-                StageWidget->StageImg = RowPtr->StageData.StageImg.Get();
-                StageWidget->OnStageClicked.RemoveDynamic(this, &UBattleHUDWidget::OnStageClicked);
-                StageWidget->OnStageClicked.AddDynamic(this, &UBattleHUDWidget::OnStageClicked);
-                StageScrollBox->AddChild(StageWidget);
-                StageWidgets.Add(StageWidget);
-
-                USpacer* Spacer = NewObject<USpacer>(this);
-                if (Spacer) {
-                    Spacer->SetSize(FVector2D(0.f, 10.f));
-                    StageScrollBox->AddChild(Spacer);
-                }
-            }
-        }
-    }
-    if (StageWidgets.Num() > 0 && StageWidgets[0]) OnStageClicked(StageWidgets[0]);
 }
 
 void UBattleHUDWidget::SetItemUnit()
@@ -99,22 +62,6 @@ void UBattleHUDWidget::OnBattleSlotClicked(USquareSlotWidget* ClickedSlot, int32
 
 void UBattleHUDWidget::EnterGame()
 {
-    FPlayerAccountService::SetHUDIndex(this, EHUDIndex::BattleMenu);
-    FPlayerAccountService::SetCurrentStageTag(this, CurrentSelectedStage->StageTag);
-
-    FDTStageDataRow** FoundRowPtr = StageDatas.FindByPredicate([&](const FDTStageDataRow* Row) { return Row && Row->StageData.StageTag == CurrentSelectedStage->StageTag; });
-    if (FoundRowPtr && *FoundRowPtr) {
-        FDTStageDataRow* TargetRow = *FoundRowPtr;
-        FPlayerAccountService::ChangedLevel(this, TargetRow->StageData.StageLevel);
-
-        UE_LOG(LogTemp, Log, TEXT("게임 시작"));
-    }
-}
-
-
-void UBattleHUDWidget::OnStageClicked(UStageList* ClickedStage)
-{
-    if (CurrentSelectedStage) CurrentSelectedStage->SetSelected(false);
-    CurrentSelectedStage = ClickedStage;
-    if (CurrentSelectedStage) CurrentSelectedStage->SetSelected(true);
+    // 선택한 스테이지, 장착한 아이템, 장착한 유닛 정보 가져와야함
+    UE_LOG(LogTemp, Log, TEXT("게임 시작"));
 }

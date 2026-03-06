@@ -12,6 +12,4 @@ class ARCANUM_API ABattleGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 	
-protected:
-	virtual void BeginPlay() override;
 };

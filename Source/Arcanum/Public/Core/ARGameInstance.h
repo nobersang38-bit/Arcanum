@@ -151,7 +151,6 @@ protected:
 
 #pragma region 저장 안하는 놈들
 public:
-    UPROPERTY(Transient) TSoftObjectPtr<UWorld> PendingStageLevel;
     UPROPERTY(Transient) FGameplayTag CurrentStageTag;
 private:
     UPROPERTY(Transient) EHUDIndex HUDIndex = EHUDIndex::CharacterMenu;
