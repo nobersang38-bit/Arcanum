@@ -12,8 +12,7 @@
 #include "Components/SphereComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "Component/UnitCombatComponent.h"
-#include "Data/Rows/AllyUnitsDataRow.h"
-#include "Data/Rows/EnemyUnitsDataRow.h"
+#include "Data/Rows/UnitsDataRow.h"
 #include "Component/Stats/CharacterBattleStatsComponent.h"
 #include "Components/WidgetComponent.h"
 //#include "UI/CharacterHUD/CharacterHealthWidget.h"
@@ -23,6 +22,7 @@
 #include "Object/Actor/BattlefieldManagerActor.h"
 #include "Animation/BaseUnitAnimInstance.h"
 #include "UI/InGame/UnitHealthWidget.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 ABaseUnitCharacter::ABaseUnitCharacter()
@@ -44,9 +44,9 @@ ABaseUnitCharacter::ABaseUnitCharacter()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
-void ABaseUnitCharacter::SetUnit(FUnitData InUnitData)
+void ABaseUnitCharacter::SetUnit(FUnitInfoSetting InUnitData)
 {
-	UnitData = InUnitData;
+	UnitData.Info.InfoSetting = InUnitData;
 	IsSetupUnit = true;
 	DataInitialize();
 }
@@ -81,9 +81,13 @@ void ABaseUnitCharacter::PostEditChangeProperty(FPropertyChangedEvent& PropertyC
 
 	const FName MemberPropertyName = (PropertyChangedEvent.MemberProperty != nullptr) ? PropertyChangedEvent.MemberProperty->GetFName() : NAME_None;
 
-	if (MemberPropertyName == GET_MEMBER_NAME_CHECKED(ABaseUnitCharacter, DTUnitDataRowHandle))
+	if (MemberPropertyName == GET_MEMBER_NAME_CHECKED(ABaseUnitCharacter, UnitData))
 	{
-		UpdateUnitData();
+		if (USkeletalMesh* SkelMesh = UnitData.Info.AnimSetting.SkeletalMesh.LoadSynchronous())
+		{
+			GetMesh()->SetSkeletalMesh(SkelMesh);
+		}
+		//UpdateUnitData();
 	}
 }
 #endif
@@ -202,13 +206,13 @@ void ABaseUnitCharacter::UpdateUnitData()
 {
 	if (DTUnitDataRowHandle.DataTable && !DTUnitDataRowHandle.RowName.IsNone())
 	{
-		if (const FAllyUnitsDataRow* AllyRow = DTUnitDataRowHandle.DataTable->FindRow<FAllyUnitsDataRow>(DTUnitDataRowHandle.RowName, TEXT("Load")))
+		if (const FUnitsDataRow* AllyRow = DTUnitDataRowHandle.DataTable->FindRow<FUnitsDataRow>(DTUnitDataRowHandle.RowName, TEXT("Load")))
 		{
-			if (AllyRow) UnitData = (*AllyRow).UnitData;
+			if (AllyRow) UnitData.Info.InfoSetting = (*AllyRow).UnitData;
 		}
-		else if (const FEnemyUnitsDataRow* EnemyRow = DTUnitDataRowHandle.DataTable->FindRow<FEnemyUnitsDataRow>(DTUnitDataRowHandle.RowName, TEXT("Load")))
+		else if (const FUnitsDataRow* EnemyRow = DTUnitDataRowHandle.DataTable->FindRow<FUnitsDataRow>(DTUnitDataRowHandle.RowName, TEXT("Load")))
 		{
-			if (EnemyRow) UnitData = (*EnemyRow).UnitData;
+			if (EnemyRow) UnitData.Info.InfoSetting = (*EnemyRow).UnitData;
 		}
 	}
 }
@@ -234,6 +238,7 @@ void ABaseUnitCharacter::UnitActivate()
 	{
 		UnitCombatComponent0->UnitActivate();
 	}
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void ABaseUnitCharacter::UnitDeactive()
@@ -247,6 +252,7 @@ void ABaseUnitCharacter::UnitDeactive()
 void ABaseUnitCharacter::ActivateItem()
 {
 	UnitActivate();
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	if (HealthBarComponent)
 	{
 		HealthBarComponent->SetHiddenInGame(false);
@@ -256,6 +262,7 @@ void ABaseUnitCharacter::ActivateItem()
 void ABaseUnitCharacter::DeactiveItem()
 {
 	UnitDeactive();
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	if (HealthBarComponent)
 	{
 		HealthBarComponent->SetHiddenInGame(true);

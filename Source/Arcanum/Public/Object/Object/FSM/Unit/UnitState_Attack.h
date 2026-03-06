@@ -36,4 +36,7 @@ protected:
 	FTimerHandle FocusTargetActorTimerHandle;
 	float RotateInterval = 0.5f;
 	float RotateSpeed = 300.0f;
+
+private:
+	float NextAttackCoolTime = 0.0f;
 };

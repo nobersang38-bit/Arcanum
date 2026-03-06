@@ -24,6 +24,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	EMatchState CurrentMatchState = EMatchState::Playing;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	int32 EndTimeSecond = -1;
+
 	// 해당 라운드를 플레이어가 승리하였는가
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool bIsVictory = false;

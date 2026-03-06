@@ -9,6 +9,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Core/SubSystem/BattlefieldManagerSubsystem.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
+#include "BehaviorTree/Blackboard/BlackboardKeyType_Float.h"
 #include "Interface/TeamInterface.h"
 #include "GameplayTags/ArcanumTags.h"
 #include "BehaviorTree/BehaviorTree.h"
@@ -141,6 +142,13 @@ void UUnitCombatComponent::AIInitialize()
 				if (!UnitData.Info.AISetting.BBTargetActorName.IsNone())
 				{
 					TargetActorKey = BBComp->GetKeyID(UnitData.Info.AISetting.BBTargetActorName);
+				}
+
+				if (!UnitData.Info.AISetting.BBAttackRangeName.IsNone())
+				{
+					AttackRangeKey = BBComp->GetKeyID(UnitData.Info.AISetting.BBAttackRangeName);
+					BBComp->SetValue<UBlackboardKeyType_Float>(AttackRangeKey, UnitData.Info.AISetting.AttackRange);
+					BBComp->SetValue<UBlackboardKeyType_Float>(BBComp->GetKeyID(FName("MoveRange")), UnitData.Info.AISetting.AttackRange - 10.0f);
 				}
 			}
 		}
@@ -388,7 +396,7 @@ bool UUnitCombatComponent::IsCanAttackRange()
 	{
 		FVector OutPoint;
 		float Distance = TargetActor->ActorGetDistanceToCollision(GetOwner()->GetActorLocation(), ECollisionChannel::ECC_Pawn, OutPoint);
-		Distance *= Distance;
+		//Distance *= Distance;
 		//float Distance = (TargetActor->GetActorLocation() - GetOwner()->GetActorLocation()).SquaredLength();
 		if (Distance <= UnitData.Info.AISetting.AttackRange)
 		{
@@ -415,15 +423,10 @@ void UUnitCombatComponent::Death(const FRegenStat& InData)
 		bIsDead = true;
 		StateChange(EUnitState::Death);
 		OwnerAIC->BrainComponent->StopLogic(TEXT("정지"));
+		OwnerCapsuleComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		//OwnerCharacter->StopAnimMontage();
 		UAnimMontage* DeathMontage = nullptr;
 		int32 IDX = 0;
-		if (OwnerCharacter.IsValid() && UnitData.Info.AnimSetting.Deads.Num() > 0)
-		{
-			IDX = FMath::RandRange(0, (UnitData.Info.AnimSetting.Deads.Num() - 1));
-			DeathMontage = UnitData.Info.AnimSetting.Deads[IDX].DeadMontage;
-			OwnerCharacter->PlayAnimMontage(DeathMontage);
-		}
 		FTimerDelegate DeathTimerDelegate;
 		DeathTimerDelegate.BindWeakLambda(this, [this]()
 			{
@@ -436,8 +439,16 @@ void UUnitCombatComponent::Death(const FRegenStat& InData)
 					}
 				}
 			});
-		GetWorld()->GetTimerManager().ClearTimer(DeathTimerHandle);
-		GetWorld()->GetTimerManager().SetTimer(DeathTimerHandle, DeathTimerDelegate, UnitData.Info.AnimSetting.Deads[IDX].DeactiveTime, false, UnitData.Info.AnimSetting.Deads[IDX].DeactiveTime);
+
+		if (OwnerCharacter.IsValid() && UnitData.Info.AnimSetting.Deads.Num() > 0)
+		{
+			IDX = FMath::RandRange(0, (UnitData.Info.AnimSetting.Deads.Num() - 1));
+			DeathMontage = UnitData.Info.AnimSetting.Deads[IDX].DeadMontage;
+			OwnerCharacter->PlayAnimMontage(DeathMontage);
+
+			GetWorld()->GetTimerManager().ClearTimer(DeathTimerHandle);
+			GetWorld()->GetTimerManager().SetTimer(DeathTimerHandle, DeathTimerDelegate, UnitData.Info.AnimSetting.Deads[IDX].DeactiveTime, false, UnitData.Info.AnimSetting.Deads[IDX].DeactiveTime);
+		}
 	}
 	else return;
 }
