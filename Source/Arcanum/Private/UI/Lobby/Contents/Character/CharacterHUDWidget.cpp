@@ -54,13 +54,11 @@ void UCharacterHUDWidget::NativeConstruct()
     }
 
     if (!CharacterGridPanel || !RoundedSlotWidgetClass)
-
-        return;
+    return;
 
     /// Test : 유닛창 테스트용
       for (int32 Index = 0; Index < 12; ++Index)
     {
-
         URoundedSlotWidget* NewSlot = CreateWidget<URoundedSlotWidget>(GetWorld(), RoundedSlotWidgetClass);
         if (!NewSlot)
             continue;
@@ -72,54 +70,6 @@ void UCharacterHUDWidget::NativeConstruct()
             WrapSlot->SetVerticalAlignment(VAlign_Fill);
         }
     }
-
-     // // 정렬에 필요한 정보 (장비 + DT로우 + 슬롯 우선순위)
-     // struct FGuidSortItem
-     // {
-     //     const FEquipmentInfo* Equip = nullptr;
-     //     const FDTItemCatalogRow* CatalogRow = nullptr;
-     //     int32 SortOrder = 0;
-     // };
-     // // 캐시된 인벤토리에서 정렬 가능한 장비만 추출
-     // TArray<FGuidSortItem> items;
-     // items.Reserve(ParentLobby->CachedPlayerData.Inventory.Num());
-
-     // for (int32 i = 0; i < ParentLobby->CachedPlayerData.Inventory.Num(); i++)
-     // {
-     //     const FEquipmentInfo& equip = ParentLobby->CachedPlayerData.Inventory[i];
-     //     if (!equip.ItemGuid.IsValid()) continue;
-
-     //     FGuidSortItem item;
-     //     item.Equip = &equip;
-
-     //     item.CatalogRow = DataSubsystem->FindItemCatalogRowByTag(equip.ItemTag);
-     //     item.SortOrder = item.CatalogRow ? item.CatalogRow->SortOrder : 0;
-
-     //     items.Add(item);
-     // }
-     // // 정렬된 결과를 UI 슬롯 구조체로 변환해서 OutSlots에 채움
-	    //for (int32 i = 0; i < items.Num(); i++)
-	    //{
-		   // //if (OutSlots.Num() >= InSlotLimit) break;
-
-		   // const FEquipmentInfo* equip = items[i].Equip;
-		   // if (!equip) continue;
-
-		   // FInventoryViewSlot slot;
-		   // slot.Type = EInventoryViewSlotType::Equipment;
-
-		   // slot.ItemGuid = equip->ItemGuid;
-		   // slot.ItemTag = equip->ItemTag;
-		   // slot.StackCount = 0;
-		   // slot.UpgradeLevel = equip->CurrUpgradeLevel;
-
-		   // if (items[i].CatalogRow)
-		   // {
-			  //  slot.Icon = items[i].CatalogRow->Icon;
-		   // }
-
-		   // //OutSlots.Add(MoveTemp(slot));
-	    //}
 }
 
 // ========================================================
