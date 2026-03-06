@@ -10,13 +10,22 @@ void UEnhancementHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	RefreshEquipmentOnlyInventory();
 }
 
-void UEnhancementHUDWidget::RefreshEquipmentOnlyInventory()
+void UEnhancementHUDWidget::SetParentLobby(ULobbyHUD* InLobby)
 {
-	if (!InventoryHUDWidget) return;
+	ParentLobby = InLobby;
+
+	EnhancementInventoryWidget->SetParentLobby(InLobby);
+	EnhancementInventoryWidget->SetCurrentFilter(EInventoryCategoryFilter::Equipment); // 여기 추가
+
+	RefreshEquipmentInventory();
+}
+
+void UEnhancementHUDWidget::RefreshEquipmentInventory()
+{
 	if (!ParentLobby) return;
+	if (!EnhancementInventoryWidget) return;
 
 	UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance());
 	if (!gameInstance) return;
@@ -24,37 +33,21 @@ void UEnhancementHUDWidget::RefreshEquipmentOnlyInventory()
 	UGameDataSubsystem* dataSubsystem = gameInstance->GetSubsystem<UGameDataSubsystem>();
 	if (!dataSubsystem) return;
 
-	// 로비 캐시에서 장비만 인벤토리로 가져옴
 	const FPlayerData& playerData = ParentLobby->GetCachedPlayerData();
-	const int32 slotLimit = FMath::Max(1, playerData.InventoryCapacity);
+
+	const int32 slotCount = FMath::Max(1, playerData.InventoryCapacity);
+
+	EnhancementInventoryWidget->InitInventorySlots(slotCount);
 
 	TArray<FInventoryViewSlot> viewSlots;
-	viewSlots.SetNum(slotLimit);
+	viewSlots.Reserve(slotCount);
 
-	for (int32 i = 0; i < slotLimit; i++)
-	{
-		// Empty로 초기화
-		FInventoryViewSlot slot;
-		slot.Type = EInventoryViewSlotType::Empty;
-		viewSlots[i] = slot;
-	}
-
-	int32 insertIndex = 0;
 	for (int32 i = 0; i < playerData.Inventory.Num(); i++)
 	{
-		if (insertIndex >= slotLimit) break;
+		if (viewSlots.Num() >= slotCount) break;
 
 		const FEquipmentInfo& equip = playerData.Inventory[i];
 		if (!equip.ItemGuid.IsValid()) continue;
-
-		const FDTItemCatalogRow* catalogRow = dataSubsystem->FindItemCatalogRowByTag(equip.ItemTag);
-		if (!catalogRow) continue;
-
-		if (!catalogRow->ItemTypeTag.IsValid() ||
-			!catalogRow->ItemTypeTag.MatchesTagExact(Arcanum::Items::Type::Equipment))
-		{
-			continue;
-		}
 
 		FInventoryViewSlot slot;
 		slot.Type = EInventoryViewSlotType::Equipment;
@@ -62,11 +55,14 @@ void UEnhancementHUDWidget::RefreshEquipmentOnlyInventory()
 		slot.ItemTag = equip.ItemTag;
 		slot.StackCount = 0;
 		slot.UpgradeLevel = equip.CurrUpgradeLevel;
-		slot.Icon = catalogRow->Icon;
 
-		viewSlots[insertIndex] = MoveTemp(slot);
-		insertIndex++;
+		if (const FDTItemCatalogRow* catalogRow = dataSubsystem->FindItemCatalogRowByTag(equip.ItemTag))
+		{
+			slot.Icon = catalogRow->Icon;
+		}
+
+		viewSlots.Add(MoveTemp(slot));
 	}
 
-	InventoryHUDWidget->ApplyInventorySlots(viewSlots);
+	EnhancementInventoryWidget->ApplyInventorySlots(viewSlots);
 }

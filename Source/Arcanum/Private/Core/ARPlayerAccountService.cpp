@@ -1025,6 +1025,32 @@ bool FPlayerAccountService::AddGuidFromEquipment(const UObject* WorldContextObje
 	newEquip.CurrUpgradeLevel = 0;
 	newEquip.Equipment = equipRow->BaseInfoSteps[0];
 
+	// 랜덤 능력치
+	for (const FStatRangeDefinition& range : newEquip.Equipment.RandomStatRanges)
+	{
+		FDerivedStatModifier finalStat;
+		finalStat.StatTag = range.StatTag;
+
+		const float minF = range.MinValue.Flat;
+		const float maxF = range.MaxValue.Flat;
+		finalStat.Value.Flat = FMath::RandRange(FMath::Min(minF, maxF), FMath::Max(minF, maxF));
+
+		const float minM = range.MinValue.Mul;
+		const float maxM = range.MaxValue.Mul;
+		finalStat.Value.Mul = FMath::RandRange(FMath::Min(minM, maxM), FMath::Max(minM, maxM));
+
+		newEquip.Equipment.OnHitTargetStats.Add(finalStat);
+	}
+	if (newEquip.Equipment.OnHitTargetStats.Num() > 0)
+	{
+		const FDerivedStatModifier& lastStat = newEquip.Equipment.OnHitTargetStats.Last();
+		UE_LOG(LogTemp, Log, TEXT("[Shop_Buy] Item=%s Stat=%s Flat=%.2f Mul=%.2f"),
+			*newEquip.ItemTag.ToString(),
+			*lastStat.StatTag.ToString(),
+			lastStat.Value.Flat,
+			lastStat.Value.Mul);
+	}
+
 	playerData.Inventory.Add(MoveTemp(newEquip));
 
 	return true;

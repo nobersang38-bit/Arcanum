@@ -101,21 +101,6 @@ void UShopHUDWidget::InitPanels(int32 InEquipmentSlotCount, int32 InPotionSlotCo
 	SelectedSlotIndex = INDEX_NONE;
 }
 
-void UShopHUDWidget::HandleBuyClicked()
-{
-	if (!ParentLobby) return;
-	if (SelectedSlotIndex == INDEX_NONE) return;
-
-	const bool bSuccess = FPlayerAccountService::PurchaseShopSlot(this, SelectedSlotIndex); 
-	UE_LOG(LogTemp, Log, TEXT("ShopHUD Buy(%d) : %s"), SelectedSlotIndex, bSuccess ? TEXT("true") : TEXT("false"));
-
-	if (bSuccess)
-	{
-		ParentLobby->RefreshAllLobbyUI();
-		ParentLobby->RefreshShopUI();
-	}
-}
-
 void UShopHUDWidget::HandleEquipmentSlotClicked(int32 InSlotIndex)
 {
 	SelectedSlotIndex = InSlotIndex;
@@ -133,6 +118,21 @@ void UShopHUDWidget::HandlePotionSlotClicked(int32 InSlotIndex)
 	if (EquipmentPanel)
 	{
 		EquipmentPanel->ClearSelection();
+	}
+}
+
+void UShopHUDWidget::HandleBuyClicked()
+{
+	if (!ParentLobby) return;
+	if (SelectedSlotIndex == INDEX_NONE) return;
+
+	const bool bSuccess = FPlayerAccountService::PurchaseShopSlot(this, SelectedSlotIndex);
+	UE_LOG(LogTemp, Log, TEXT("ShopHUD Buy(%d) : %s"), SelectedSlotIndex, bSuccess ? TEXT("true") : TEXT("false"));
+
+	if (bSuccess)
+	{
+		ParentLobby->RefreshAllLobbyUI();
+		ParentLobby->RefreshShopUI();
 	}
 }
 

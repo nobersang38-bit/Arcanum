@@ -24,9 +24,9 @@ class UCurrencyWidget;
 class UShopHUDWidget;
 class UARGameInstance;
 class UInventoryHUDWidget;
+class UEnhancementHUDWidget;
 struct FDTEquipmentInfoRow;
 struct FDTPotionInfoRow;
-struct FDTInventoryRuleItem;
 struct FDTItemCatalogRow;
 
 
@@ -147,67 +147,25 @@ protected:
 #pragma endregion
 
 #pragma region 강화
+protected:
+	/* 강화 위젯 */
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UEnhancementHUDWidget> EnhancementHUDWidget;
 
 #pragma endregion
 
 #pragma region 인벤토리
 public:
-	/* ShopHUD에서 InventoryHUD 접근 Getter */
+	/* Getter: ShopHUD에서 InventoryHUD 접근 */
 	UInventoryHUDWidget* GetInventoryHUDWidget() const { return InventoryHUDWidget; }
 
-protected:
-	/* 인벤 UI 갱신(표시용) */
-	void RefreshInventoryUI();
-
-	/* 장비 DT 캐시 구축(로비 진입 시 1회) */
-	void BuildEquipmentRowCache();
-
-	/* Getter : 인벤 총 생성 슬롯 */
+	/* Getter: 인벤 총 생성 슬롯 */
 	int32 GetInventoryCapacity() const { return FMath::Max(0, CachedPlayerData.InventoryCapacity); }
-
-private:
-	/* 물약 앞쪽부터 그 뒤 장비 정렬 */
-	void BuildInventoryViewSlots(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const;
-
-	/* 정렬 버튼 클릭 토글 */
-	UFUNCTION()
-	void ClickInventorySortBtn();
-
-	/* 스택형 아이템을 추가 */
-	void AppendStackItemSlots(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const;
-
-	/* Guid 아이템을 슬롯에 추가 */
-	void AppendGuidSlots(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const;
-
-	/* Guid 아이템을 강화+태그명 기준 정렬 */
-	void AppendGuidSlotsSorted(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const;
 
 protected:
 	/* 인벤토리 위젯 */
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UInventoryHUDWidget> InventoryHUDWidget;
-
-	/* 인벤 정렬 버튼 */
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UCommonBtnWidget> InventorySortBtn;
-
-	/* InventoryRule DT의 단일 Row 캐시 */
-	const FDTInventoryRuleItem* InventoryRuleRow = nullptr;
-
-	/* SlotTag -> Order 캐시 */
-	TMap<FGameplayTag, int32> SlotOrderByTag;
-
-private:
-	/* 인벤 룰 DT 포인터 캐시 */
-	UPROPERTY()
-	TObjectPtr<UDataTable> InventoryRuleTable;
-
-	/* ItemTag -> 장비 DT RowPtr 캐시 */
-	TMap<FGameplayTag, const FDTEquipmentInfoRow*> EquipmentRowByTag;
-
-	/* 정렬 토글 상태 (true 정렬)*/
-	UPROPERTY()
-	bool bInventorySortedView = false;
 #pragma endregion
 
 #pragma region 상점

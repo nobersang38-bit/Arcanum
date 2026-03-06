@@ -20,7 +20,7 @@ class ARCANUM_API UEnhancementHUDWidget : public UUserWidget
 #pragma region 부모 로비 참조
 public:
 	/* 로비가 생성/바인딩 후 주입 */
-	void SetParentLobby(ULobbyHUD* InLobby) { ParentLobby = InLobby; }
+	void SetParentLobby(ULobbyHUD* InLobby);
 
 private:
 	UPROPERTY()
@@ -32,10 +32,10 @@ protected:
 
 private:
 	/* 장비만으로 구성해서 인벤토리 */
-	void RefreshEquipmentOnlyInventory();
+	void RefreshEquipmentInventory();
 
 protected:
 	/* 기존 인벤 위젯 재사용 (강화창에 배치) */
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidet))
-	TObjectPtr<UInventoryHUDWidget> InventoryHUDWidget;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UInventoryHUDWidget> EnhancementInventoryWidget;
 };

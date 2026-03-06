@@ -50,6 +50,7 @@ private:
 	/* 현재 상태 갱신 */
 	void RefreshSlotUI();
 
+
 public:
 	UPROPERTY(BlueprintAssignable, Category = "Inventory")
 	FOnInventorySlotClicked OnInventorySlotClicked;
