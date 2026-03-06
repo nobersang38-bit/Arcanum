@@ -100,7 +100,7 @@ protected:
 	void SetPlayerCharacter(FText CharacterName);
 
 	UFUNCTION()
-	void UpdateCharacterInfo(FName CharacterName, bool SlotCharacterOwned, FText ButtonText, int64 soulAmount);
+	void UpdateCharacterInfo(FName CharacterName, bool SlotCharacterOwned, FText InFinalText, FText ButtonText, int64 soulAmount);
 
 	UFUNCTION()
 	void SetupEquipment();
@@ -111,6 +111,12 @@ protected:
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnEnhanceOKClicked OnEnhanceOKClicked;
+
+	UPROPERTY()
+	UARGameInstance* GI;
+
+	UPROPERTY()
+	UGameDataSubsystem* DataSubsystem;
 
 	void InitCharacterHUD();
 private:
