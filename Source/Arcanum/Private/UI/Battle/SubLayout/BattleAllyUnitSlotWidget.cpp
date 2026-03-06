@@ -130,7 +130,7 @@ void UBattleAllyUnitSlotWidget::SetCoolTimeProgress(float CurrentProgress, float
 	CurrentProgress = FMath::Clamp(CurrentProgress, 0.0f, MaxProgress);
 	if (CoolTimeProgress)
 	{
-		UE_LOG(LogTemp, Error, TEXT("current : %f, Max : %f"), CurrentProgress, MaxProgress);
+		//UE_LOG(LogTemp, Error, TEXT("current : %f, Max : %f"), CurrentProgress, MaxProgress);
 		CoolTimeProgress->SetPercent(CurrentProgress / MaxProgress + 0.0001f);
 	}
 	if (CoolTimeText)

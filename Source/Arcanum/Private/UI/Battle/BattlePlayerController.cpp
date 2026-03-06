@@ -396,7 +396,7 @@ void ABattlePlayerController::Internal_SpawnUnit()
 				{
 					EnemyUnitCharacter->SetUnit(*UnitData);
 					GetWorld()->GetTimerManager().ClearTimer(SpawnUnitTimer);
-					UE_LOG(LogTemp, Error, TEXT("ASDLocation : %.0f, %.0f, %.0f"), HitResult.ImpactPoint.X, HitResult.ImpactPoint.Y, HitResult.ImpactPoint.Z);
+					//UE_LOG(LogTemp, Error, TEXT("ASDLocation : %.0f, %.0f, %.0f"), HitResult.ImpactPoint.X, HitResult.ImpactPoint.Y, HitResult.ImpactPoint.Z);
 					return;
 				}
 			}
