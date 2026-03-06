@@ -101,6 +101,23 @@ void UInventoryHUDWidget::HandleSlotClicked(int32 InSlotIndex)
 	{
 		SelectedSlotIndex = InSlotIndex;
 
+		// 선택값 초기화
+		SelectedInventoryItemGuid.Invalidate();
+		SelectedStackItemTag = FGameplayTag();
+		SelectedStackItemCount = 0;
+
+		// 선택 타입에 따라 저장
+		const FInventoryViewSlot& selectedSlot = CachedViewSlots[InSlotIndex];
+		if (selectedSlot.Type == EInventoryViewSlotType::Equipment)
+		{
+			SelectedInventoryItemGuid = selectedSlot.ItemGuid;
+		}
+		else if (selectedSlot.Type == EInventoryViewSlotType::StackItem)
+		{
+			SelectedStackItemTag = selectedSlot.ItemTag;
+			SelectedStackItemCount = selectedSlot.StackCount;
+		}
+
 		OnInventorySlotSelected.Broadcast(CachedViewSlots[InSlotIndex]);
 
 		RefreshSelection();

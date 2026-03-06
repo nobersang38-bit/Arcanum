@@ -13,7 +13,6 @@ void UEnhancementHUDWidget::NativeConstruct()
 	RefreshEquipmentOnlyInventory();
 }
 
-
 void UEnhancementHUDWidget::RefreshEquipmentOnlyInventory()
 {
 	if (!InventoryHUDWidget) return;

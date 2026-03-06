@@ -38,6 +38,15 @@ public:
 	/* 슬롯 생성 초기화  */
 	void InitInventorySlots(int32 InSlotCount);
 
+	/* 현재 선택 장비 Guid */
+	FGuid GetSelectedInventoryItemGuid() const { return SelectedInventoryItemGuid; }
+
+	/* 현재 선택 스택 태그 */
+	FGameplayTag GetSelectedStackItemTag() const { return SelectedStackItemTag; }
+
+	/* 현재 선택 스택 수량 */
+	int32 GetSelectedStackItemCount() const { return SelectedStackItemCount; }
+
 protected:
 	/* SlotCount만큼 슬롯 위젯 생성 (컨테이너) */
 	void CreateInventorySlots(int32 InSlotCount);
@@ -76,4 +85,16 @@ protected:
 	/* 현재 선택 슬롯 인덱스 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	int32 SelectedSlotIndex = INDEX_NONE;
+
+	/* 현재 선택된 장비 Guid */
+	UPROPERTY()
+	FGuid SelectedInventoryItemGuid;
+
+	/* 현재 선택된 스택 태그 */
+	UPROPERTY()
+	FGameplayTag SelectedStackItemTag;
+
+	/* 현재 선택된 스택 수량 */
+	UPROPERTY()
+	int32 SelectedStackItemCount = 0;
 };

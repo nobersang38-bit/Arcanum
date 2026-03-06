@@ -1,6 +1,9 @@
 #include "UI/Lobby/Contents/Shop/ShopHUDWidget.h"
+#include "UI/Lobby/LobbyHUD.h"
 #include "UI/Lobby/Contents/Shop/SubLayout/ShopPanelWidget.h"
+#include "UI/Lobby/Contents/Inventory/InventoryHUDWidget.h"
 #include "UI/Common/CommonBtnWidget.h"
+#include "Core/ARPlayerAccountService.h"
 #include "Components/TextBlock.h"
 
 void UShopHUDWidget::NativeConstruct()
@@ -100,9 +103,16 @@ void UShopHUDWidget::InitPanels(int32 InEquipmentSlotCount, int32 InPotionSlotCo
 
 void UShopHUDWidget::HandleBuyClicked()
 {
-	if (SelectedSlotIndex != INDEX_NONE)
+	if (!ParentLobby) return;
+	if (SelectedSlotIndex == INDEX_NONE) return;
+
+	const bool bSuccess = FPlayerAccountService::PurchaseShopSlot(this, SelectedSlotIndex); 
+	UE_LOG(LogTemp, Log, TEXT("ShopHUD Buy(%d) : %s"), SelectedSlotIndex, bSuccess ? TEXT("true") : TEXT("false"));
+
+	if (bSuccess)
 	{
-		OnBuyRequested.Broadcast(SelectedSlotIndex);
+		ParentLobby->RefreshAllLobbyUI();
+		ParentLobby->RefreshShopUI();
 	}
 }
 
@@ -128,5 +138,41 @@ void UShopHUDWidget::HandlePotionSlotClicked(int32 InSlotIndex)
 
 void UShopHUDWidget::HandleSellClicked()
 {
-	OnSellRequested.Broadcast();
+	if (!ParentLobby) return;
+	if (!ParentLobby->GetInventoryHUDWidget()) return;
+
+	UInventoryHUDWidget* inventoryHUD = ParentLobby->GetInventoryHUDWidget();
+
+	const FGuid itemGuid = inventoryHUD->GetSelectedInventoryItemGuid();
+	if (itemGuid.IsValid())
+	{
+		if (FPlayerAccountService::SellItemByGuid(this, itemGuid))
+		{
+			UE_LOG(LogTemp, Log, TEXT("[Sell] : true"));
+			ParentLobby->RefreshAllLobbyUI();
+			ParentLobby->RefreshShopUI();
+		}
+		else
+		{
+			UE_LOG(LogTemp, Log, TEXT("[Sell] : false"));
+		}
+		return;
+	}
+
+	const FGameplayTag itemTag = inventoryHUD->GetSelectedStackItemTag();
+	const int32 stackCount = inventoryHUD->GetSelectedStackItemCount();
+
+	if (itemTag.IsValid() && stackCount > 0)
+	{
+		if (FPlayerAccountService::SellStackItemByTag(this, itemTag, stackCount))
+		{
+			UE_LOG(LogTemp, Log, TEXT("[Sell] : true"));
+			ParentLobby->RefreshAllLobbyUI();
+			ParentLobby->RefreshShopUI();
+		}
+		else
+		{
+			UE_LOG(LogTemp, Log, TEXT("[Sell] : false"));
+		}
+	}
 }

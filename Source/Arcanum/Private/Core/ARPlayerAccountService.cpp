@@ -321,9 +321,7 @@ bool FPlayerAccountService::PurchaseEquipment(const UObject* WorldContextObject,
 	if ((usedEquipSlots + usedStackSlots) >= maxSlots) return false;
 
 	PlayerData.Inventory.Add(MoveTemp(NewEquip));
-	CurrencyData->CurrAmount -= Price;
-
-	GI->SavePlayerData();
+	UpdateCurrency(WorldContextObject, GI->GetPlayerDataCopy(), Arcanum::PlayerData::Currencies::NonRegen::Gold::Value, -Price);
 
 	return true;
 
@@ -396,17 +394,10 @@ bool FPlayerAccountService::SellItemByGuid(const UObject* WorldContextObject, co
 	FCurrencyData* gold = playerData.PlayerCurrency.CurrencyDatas.Find(Arcanum::PlayerData::Currencies::NonRegen::Gold::Value);
 	if (!gold) return false;
 
-	gold->CurrAmount += sellPrice;
-	if (gold->MaxAmount > 0)
-	{
-		gold->CurrAmount = FMath::Clamp(gold->CurrAmount, int64(0), gold->MaxAmount);
-	}
+	UpdateCurrency(WorldContextObject, GI->GetPlayerDataCopy(), Arcanum::PlayerData::Currencies::NonRegen::Gold::Value,	sellPrice);
 
 	// 인벤엔서 제거
 	playerData.Inventory.RemoveAtSwap(foundIndex, 1, EAllowShrinking::No);
-
-	// 저장
-	GI->SavePlayerData();
 
 	return true;
 }
@@ -439,11 +430,7 @@ bool FPlayerAccountService::SellStackItemByTag(const UObject* WorldContextObject
 	if (!gold) return false;
 
 	const int64 totalSellGold = sellPricePerOne * static_cast<int64>(InSellCount);
-	gold->CurrAmount += totalSellGold;
-	if (gold->MaxAmount > 0)
-	{
-		gold->CurrAmount = FMath::Clamp(gold->CurrAmount, int64(0), gold->MaxAmount);
-	}
+	UpdateCurrency(WorldContextObject, GI->GetPlayerDataCopy(), Arcanum::PlayerData::Currencies::NonRegen::Gold::Value, totalSellGold);
 
 	// 스택 차감 (0이면 제거)
 	*currentCountPtr -= InSellCount;
@@ -451,9 +438,6 @@ bool FPlayerAccountService::SellStackItemByTag(const UObject* WorldContextObject
 	{
 		playerData.StackCounts.Remove(InItemTag);
 	}
-
-	// 저장
-	GI->SavePlayerData();
 
 	return true;
 }
@@ -623,9 +607,7 @@ bool FPlayerAccountService::PurchaseShopSlot(const UObject* InWorldContextObject
 
 		playerData.StackCounts.FindOrAdd(catalogRow->ItemTag) = newCount;
 
-		gold->CurrAmount -= price;
-
-		GI->SavePlayerData();
+		UpdateCurrency(InWorldContextObject, GI->GetPlayerDataCopy(), Arcanum::PlayerData::Currencies::NonRegen::Gold::Value, -price	);
 
 		return true;
 	}
@@ -635,9 +617,7 @@ bool FPlayerAccountService::PurchaseShopSlot(const UObject* InWorldContextObject
 	{
 		if (!AddGuidByCatalog(InWorldContextObject, catalogRow)) return false;
 
-		gold->CurrAmount -= price;
-
-		GI->SavePlayerData();
+		UpdateCurrency(InWorldContextObject, GI->GetPlayerDataCopy(), Arcanum::PlayerData::Currencies::NonRegen::Gold::Value, -price);
 
 		return SetShopSlotSoldOut(InWorldContextObject, InSlotIndex);
 	}
@@ -695,7 +675,7 @@ int32 FPlayerAccountService::GetStackItemCountByTag(const UObject* WorldContextO
 	return 0;
 }
 
-// 포션 구매(스택형) - 구매 성공 시 수량 증가(최대 20스택)
+// 포션 구매(스택형) - 구매 성공 시 수량 증가
 bool FPlayerAccountService::PurchaseStackItemByRowName(const UObject* InWorldContextObject, FName InCatalogRowName, int32 InBuyCount)
 {
 	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(InWorldContextObject));
@@ -762,9 +742,7 @@ bool FPlayerAccountService::PurchaseStackItemByRowName(const UObject* InWorldCon
 
 	playerData.StackCounts.FindOrAdd(catalogRow->ItemTag) = newCount;
 
-	gold->CurrAmount -= totalPrice;
-
-	GI->SavePlayerData();
+	UpdateCurrency(InWorldContextObject, GI->GetPlayerDataCopy(), Arcanum::PlayerData::Currencies::NonRegen::Gold::Value, -totalPrice);
 
 	return true;
 }

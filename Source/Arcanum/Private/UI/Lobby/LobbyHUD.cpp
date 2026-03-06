@@ -74,18 +74,11 @@ void ULobbyHUD::NativeConstruct()
 	if (ShopHUDWidget)
 	{
 		ShopHUDWidget->InitPanels(EquipmentShopSlotCount, PotionShopSlotCount);
-		ShopHUDWidget->OnBuyRequested.RemoveDynamic(this, &ULobbyHUD::TryPurchaseSelectedItem);
-		ShopHUDWidget->OnBuyRequested.AddDynamic(this, &ULobbyHUD::TryPurchaseSelectedItem);
-
-		ShopHUDWidget->OnSellRequested.RemoveDynamic(this, &ULobbyHUD::TrySellSelectedItem);
-		ShopHUDWidget->OnSellRequested.AddDynamic(this, &ULobbyHUD::TrySellSelectedItem);
+		ShopHUDWidget->SetParentLobby(this); // [추가] 가챠처럼 Parent 연결
 	}
 
 	if (InventoryHUDWidget)
 	{
-		InventoryHUDWidget->OnInventorySlotSelected.RemoveDynamic(this, &ULobbyHUD::HandleInventorySlotSelected);
-		InventoryHUDWidget->OnInventorySlotSelected.AddDynamic(this, &ULobbyHUD::HandleInventorySlotSelected);
-
 		InventoryHUDWidget->InitInventorySlots(GetInventoryCapacity());
 	}
 
@@ -95,7 +88,6 @@ void ULobbyHUD::NativeConstruct()
 		InventorySortBtn->OnClicked.AddDynamic(this, &ULobbyHUD::ClickInventorySortBtn);
 	}
 
-	BindGameInstanceEvents();
 	BuildEquipmentRowCache();
 	RefreshAllLobbyUI();
 
@@ -135,21 +127,6 @@ void ULobbyHUD::RefreshAllLobbyUI()
 	RefreshLobbyCurrencyUI();
 	RefreshInventoryUI();
 }
-
-void ULobbyHUD::BindGameInstanceEvents()
-{
-	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
-	{
-		gameInstance->OnCurrencyChanged.RemoveDynamic(this, &ULobbyHUD::HandleCurrencyChanged);
-		gameInstance->OnCurrencyChanged.AddDynamic(this, &ULobbyHUD::HandleCurrencyChanged);
-	}
-}
-
-void ULobbyHUD::HandleCurrencyChanged()
-{
-	RefreshAllLobbyUI();
-}
-
 
 void ULobbyHUD::ClickBattleMenuBtn()
 {
@@ -196,8 +173,9 @@ void ULobbyHUD::ClickEnhancementMenuBtn()
 
 void ULobbyHUD::ClickShopMenuBtn()
 {
-	if (WidgetSwitcher)
+	if (WidgetSwitcher && ShopHUDWidget)
 	{
+		ShopHUDWidget->SetParentLobby(this);
 		WidgetSwitcher->SetActiveWidgetIndex(3);
 	}
 }
@@ -268,26 +246,6 @@ void ULobbyHUD::RefreshLobbyCurrencyUI()
 // ========================================================
 // 인벤토리
 // ========================================================
-void ULobbyHUD::HandleInventorySlotSelected(const FInventoryViewSlot& InSlot)
-{
-	SelectedInventoryItemGuid.Invalidate();
-	SelectedStackItemTag = FGameplayTag();
-	SelectedStackItemCount = 0;
-
-	if (InSlot.Type == EInventoryViewSlotType::Equipment)
-	{
-		SelectedInventoryItemGuid = InSlot.ItemGuid;
-		return;
-	}
-
-	if (InSlot.Type == EInventoryViewSlotType::StackItem)
-	{
-		SelectedStackItemTag = InSlot.ItemTag;
-		SelectedStackItemCount = InSlot.StackCount;
-		return;
-	}
-}
-
 void ULobbyHUD::RefreshInventoryUI()
 {
 	if (InventoryHUDWidget)
@@ -607,42 +565,6 @@ void ULobbyHUD::HandleShopSecondChanged(int32 InRemainingSeconds)
 	if (ShopHUDWidget)
 	{
 		ShopHUDWidget->SetShopRemainingSeconds(InRemainingSeconds);
-	}
-}
-
-void ULobbyHUD::TryPurchaseSelectedItem(int32 InSlotIndex)
-{
-	if (FPlayerAccountService::PurchaseShopSlot(this, InSlotIndex))
-	{
-		if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
-		{
-			RefreshShopUI();
-			RefreshAllLobbyUI();
-		}
-	}
-}
-
-void ULobbyHUD::TrySellSelectedItem()
-{
-	if (SelectedInventoryItemGuid.IsValid())
-	{
-		if (FPlayerAccountService::SellItemByGuid(this, SelectedInventoryItemGuid))
-		{
-			SelectedInventoryItemGuid.Invalidate();
-			RefreshAllLobbyUI();
-		}
-
-		return;
-	}
-
-	if (SelectedStackItemTag.IsValid() && SelectedStackItemCount > 0)
-	{
-		if (FPlayerAccountService::SellStackItemByTag(this, SelectedStackItemTag, SelectedStackItemCount))
-		{
-			SelectedStackItemTag = FGameplayTag();
-			SelectedStackItemCount = 0;
-			RefreshAllLobbyUI();
-		}
 	}
 }
 

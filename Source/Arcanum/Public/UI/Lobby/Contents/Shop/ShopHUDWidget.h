@@ -7,12 +7,7 @@
 class UTextBlock;
 class UCommonBtnWidget;
 class UShopPanelWidget;
-
-/* 구입 요청 */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnShopBuyRequested, int32, InSlotIndex);
-
-/* 판매 요청 */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnShopSellRequested);
+class ULobbyHUD;
 
 /**
  * 추영호
@@ -24,14 +19,11 @@ class ARCANUM_API UShopHUDWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
-/*
 public:
 	void SetParentLobby(ULobbyHUD* InLobby) { ParentLobby = InLobby; }
 private:
 	UPROPERTY() 
 	TObjectPtr<ULobbyHUD> ParentLobby;
-	// ParentLobby->CachedPlayerData
-*/
 
 protected:
 	virtual void NativeConstruct() override;
@@ -91,14 +83,6 @@ protected:
 	void HandleEquipmentSlotClicked(int32 InSlotIndex);
 	UFUNCTION()
 	void HandlePotionSlotClicked(int32 InSlotIndex);
-
-public:
-	/* 로비HUD가 바인딩해서 실제 구매/판매 실행 */
-	UPROPERTY(BlueprintAssignable, Category = "Shop")
-	FOnShopBuyRequested OnBuyRequested;
-
-	UPROPERTY(BlueprintAssignable, Category = "Shop")
-	FOnShopSellRequested OnSellRequested;
 
 protected:
 	/* 구입 버튼 */

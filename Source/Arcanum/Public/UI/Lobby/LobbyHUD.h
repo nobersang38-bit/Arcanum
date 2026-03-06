@@ -47,13 +47,6 @@ public:
 	/* 로비 공통 UI 갱신 (재화/인벤/상점 등) */
 	void RefreshAllLobbyUI();
 
-	/* GameInstance 델리게이트 바인딩 */
-	void BindGameInstanceEvents();
-
-	/* 재화 변경 알림 수신 */
-	UFUNCTION()
-	void HandleCurrencyChanged();
-
 	/* 플레이어 데이터 캐시 Getter */
 	const FPlayerData& GetCachedPlayerData() const { return CachedPlayerData; }
 
@@ -158,11 +151,11 @@ protected:
 #pragma endregion
 
 #pragma region 인벤토리
-protected:
-	/* 인벤토리 선택 알림 수신 */
-	UFUNCTION()
-	void HandleInventorySlotSelected(const FInventoryViewSlot& InSlot);
+public:
+	/* ShopHUD에서 InventoryHUD 접근 Getter */
+	UInventoryHUDWidget* GetInventoryHUDWidget() const { return InventoryHUDWidget; }
 
+protected:
 	/* 인벤 UI 갱신(표시용) */
 	void RefreshInventoryUI();
 
@@ -189,23 +182,10 @@ private:
 	/* Guid 아이템을 강화+태그명 기준 정렬 */
 	void AppendGuidSlotsSorted(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const;
 
-
 protected:
 	/* 인벤토리 위젯 */
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UInventoryHUDWidget> InventoryHUDWidget;
-
-	/* 현재 선택된 인벤 아이템 */
-	UPROPERTY()
-	FGuid SelectedInventoryItemGuid;
-
-	/* 마지막으로 선택된 스택 아이템 태그 */
-	UPROPERTY()
-	FGameplayTag SelectedStackItemTag;
-	// 마지막으로 선택된 스택 슬롯에 보이는 개수(슬롯 단위)
-	UPROPERTY()
-	int32 SelectedStackItemCount = 0;
-
 
 	/* 인벤 정렬 버튼 */
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
@@ -231,27 +211,20 @@ private:
 #pragma endregion
 
 #pragma region 상점
-protected:
-	/* 상점 초기화 */
-	void InitShop();
-
+public:
 	/* 상점 UI 갱신 */
 	void RefreshShopUI();
 
+protected:
+	/* 상점 초기화 */
+	void InitShop();
+	
 	/* 상점 타이머 델리게이트 바인딩 */
 	void BindShopTimer();
 
 	/* 상점 타이머 수신 */
 	UFUNCTION()
 	void HandleShopSecondChanged(int32 InRemainingSeconds);
-
-	/* 아이템 구매 */
-	UFUNCTION()
-	void TryPurchaseSelectedItem(int32 InSlotIndex);
-
-	/* 아이템 판매 */
-	UFUNCTION()
-	void TrySellSelectedItem();
 
 private:
 	/* DT 조회로 상점 표시 캐시 */
