@@ -17,12 +17,15 @@ struct FInBattleData
 {
 	GENERATED_BODY()
 public:
-	FPlayerBattleData PlayerBattleData;
-	FBattleCharacterData BattleCharacterData;
+	FPlayerData PlayerData;
+
 	FBattleStageInfo BattleStageInfo;
+
+	FPlayerBattleData PlayerBattleStat;
 	
 	UPROPERTY()
 	TArray<FUnitInfoSetting> AllyUnits;
+
 };
 
 
@@ -146,6 +149,9 @@ protected:
 	void DebugBasementSet();
 	UFUNCTION()
 	void DebugEndedMessage(const FMatchData& MatchData);
+
+	UFUNCTION()
+	void DebugPlayerCharacterSet();
 #pragma endregion
 
 };

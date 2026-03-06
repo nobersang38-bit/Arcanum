@@ -9,6 +9,7 @@
 #include "Core/ARGameInstance.h"
 #include "Data/Rows/UnitsDataRow.h"
 #include "Core/SubSystem/GameTimeSubsystem.h"
+#include "DataInfo/BattleCharacter/BattleStats/DataTable/DTBattleStats.h"
 
 #include "Core/ARPlayerAccountService.h"
 
@@ -23,6 +24,8 @@ void UBattlefieldManagerSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 	SetupUnits();
 	DebugBasementSet();
 	DebugSetUsingAllyUnits();
+	DebugPlayerCharacterSet();
+
 	//UARGameInstance* GameInstance = nullptr;
 	//GameInstance = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	//if (GameInstance)
@@ -206,18 +209,85 @@ void UBattlefieldManagerSubsystem::DebugEndedMessage(const FMatchData& MatchData
 
 }
 
-void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerData, FInBattleData& OutInBattleData)
+void UBattlefieldManagerSubsystem::DebugPlayerCharacterSet()
 {
-	for (int i = 0; i < InPlayerData.OwnedCharacters.Num(); i++)
+	//struct FBattleCharacterData
+	//{
+	//	GENERATED_BODY()
+
+	//	// --- 기본 고유 정보 ---
+	//	/** 플레이어 가능한 캐릭터 중 선택이 되었는가? => 스테이지에서 조정 */
+	//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//	bool bSelection = false;
+	//	/** 캐릭터 식별용 */
+	//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//	FGameplayTag Character;
+
+	//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//	FBattleCharacterInfo CharacterInfo;
+
+	//	// --- 장비 데이터(캐릭터가 현재 장착하고 있는) ---
+	//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//	TMap<FGameplayTag, FGuid> Weapons;
+	//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//	TMap<FGameplayTag, FGuid> ArmorSlots;
+	//};
+	FBattleCharacterData One;
+	One.bSelection = false;
+	One.Character = Arcanum::Player::ID::Aiden;
+
+	FBattleCharacterData Two;
+	Two.bSelection = true;
+	Two.Character = Arcanum::Player::ID::Arna;
+
+	FBattleCharacterData Three;
+	Three.bSelection = false;
+	Three.Character = Arcanum::Player::ID::Celestia;
+
+
+	TArray<FBattleCharacterData> OwnedCharacters = { One , Two, Three };
+	InBattleData.PlayerData.OwnedCharacters = OwnedCharacters;
+
+	for (int i = 0; i < InBattleData.PlayerData.OwnedCharacters.Num(); i++)
 	{
-		if (InPlayerData.OwnedCharacters[i].bSelection)
+		const FBattleCharacterData& OwnedCharacter = InBattleData.PlayerData.OwnedCharacters[i];
+		if (OwnedCharacter.bSelection)
 		{
-			OutInBattleData.BattleCharacterData = InPlayerData.OwnedCharacters[i];
+			//Arcanum.DataTable.BattleStats
+			UGameDataSubsystem* GameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
+			if (GameDataSubsystem)
+			{
+				UE_LOG(LogTemp, Error, TEXT("%s"), *OwnedCharacter.Character.GetTagName().ToString());
+
+				//GameDataSubsystem->GetRow<Arcanum::DataTable::BattleStats, FName()>
+			}
 			break;
 		}
 	}
+}
 
-	OutInBattleData.PlayerBattleData = InPlayerData.PlayerBattleData;
+void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerData, FInBattleData& OutInBattleData)
+{
+	OutInBattleData.PlayerData = InPlayerData;
+
+	//for (int i = 0; i < OutInBattleData.PlayerData.OwnedCharacters.Num(); i++)
+	//{
+	//	const FBattleCharacterData& OwnedCharacter = OutInBattleData.PlayerData.OwnedCharacters[i];
+	//	if (OwnedCharacter.bSelection)
+	//	{
+	//		//Arcanum.DataTable.BattleStats
+	//		UGameDataSubsystem* GameDataSubsystem = GetWorld()->GetSubsystem<UGameDataSubsystem>();
+	//		if (GameDataSubsystem)
+	//		{
+	//			UE_LOG(LogTemp, Error, TEXT("%s"), *OwnedCharacter.Character.GetTagName().ToString());
+	//			
+	//			//GameDataSubsystem->GetRow<Arcanum::DataTable::BattleStats, FName()>
+	//		}
+	//		break;
+	//	}
+	//}
+
+	//OutInBattleData.PlayerBattleStat = 
 }
 
 void UBattlefieldManagerSubsystem::MatchEnded(const FMatchData& MatchData)

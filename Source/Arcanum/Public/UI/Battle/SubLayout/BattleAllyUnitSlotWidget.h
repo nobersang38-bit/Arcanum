@@ -25,6 +25,7 @@ class ARCANUM_API UBattleAllyUnitSlotWidget : public UUserWidget
 #pragma region 언리얼 기본 생성
 protected:
 	virtual void NativeConstruct() override;
+	virtual FReply NativeOnMouseButtonUp(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
