@@ -99,14 +99,11 @@ void UInventoryHUDWidget::HandleSlotClicked(int32 InSlotIndex)
 {
 	if (CachedViewSlots.IsValidIndex(InSlotIndex))
 	{
-		if (SelectedSlotIndex != InSlotIndex)
-		{
-			SelectedSlotIndex = InSlotIndex;
+		SelectedSlotIndex = InSlotIndex;
 
-			OnInventorySlotSelected.Broadcast(CachedViewSlots[InSlotIndex]);
+		OnInventorySlotSelected.Broadcast(CachedViewSlots[InSlotIndex]);
 
-			RefreshSelection();
-		}
+		RefreshSelection();
 	}
 }
 
