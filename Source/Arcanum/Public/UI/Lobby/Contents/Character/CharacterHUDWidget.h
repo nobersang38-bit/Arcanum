@@ -5,20 +5,25 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "UI/DataType/EDialogResult.h"
+#include "GameplayTags/ArcanumTags.h"
+#include "Core/ARGameInstance.h"
+#include "Core/SubSystem/GameDataSubsystem.h"
 #include "CharacterHUDWidget.generated.h"
 
 class URoundedSlotWidget;
 class USquareSlotWidget;
-class UUniformGridPanel;
 class UCommonDialog;
 class UCharacterInfo;
 class UWidgetSwitcher;
 class UInventorySlot;
+class UWrapBox;
+class ULobbyHUD;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEnhanceOKClicked);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnhanceOKClicked,int32, RequiredSoul);
 
 /**
- * 
+ *  김유진
+ *  역할 : 캐릭터 탭 (캐릭터 선택, 캐릭터 강화, 장비 장착)
  */
 UCLASS()
 class ARCANUM_API UCharacterHUDWidget : public UUserWidget
@@ -33,12 +38,19 @@ protected:
 
 #pragma region 바인딩
 	// 캐릭터창, 유닛창, 장비창, 캐릭터 설명창, 캐릭터 강화창, 장비 인벤토리
+public:
+	void SetParentLobby(ULobbyHUD* InLobby) { ParentLobby = InLobby; }
+
+private:
+	UPROPERTY()
+	TObjectPtr<ULobbyHUD> ParentLobby;
+	//ParentLobby->CachedPlayer
 protected:
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UUniformGridPanel> CharacterGridPanel;
+	TObjectPtr<UWrapBox> CharacterGridPanel;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UUniformGridPanel> UnitGridPanel;
+	TObjectPtr<UWrapBox> UnitGridPanel;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCharacterInfo> CharacterInfo;
@@ -50,7 +62,7 @@ protected:
 	TObjectPtr<UInventorySlot> EquipmentList;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UCommonDialog> EnhancementConfirm;
+	TObjectPtr<UCommonDialog> SetPlayerConfirm;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<USquareSlotWidget> Weapon1Slot;
@@ -79,26 +91,47 @@ protected:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Slot")
 	TSubclassOf<URoundedSlotWidget> RoundedSlotWidgetClass;
 
-
+	UPROPERTY()
+	TArray<URoundedSlotWidget*> CreatedCharacterSlots;
 
 	UFUNCTION()
-	void ShowEnhancementConfirm();
+	void CharacterEnhancement(FText CharacterName,int32 InRequiredSoul);
+	UFUNCTION()
+	void SetPlayerCharacter(FText CharacterName);
+
+	UFUNCTION()
+	void UpdateCharacterInfo(FName CharacterName, bool SlotCharacterOwned, FText InFinalText, FText ButtonText, int64 soulAmount);
 
 	UFUNCTION()
 	void SetupEquipment();
+	int GetCurrentGrade;
+
+	int32 RequiredSoul;
 
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnEnhanceOKClicked OnEnhanceOKClicked;
 
+	UPROPERTY()
+	UARGameInstance* GI;
 
+	UPROPERTY()
+	UGameDataSubsystem* DataSubsystem;
+
+	void InitCharacterHUD();
 private:
 	UFUNCTION()
-	void OnEnhancementCommonDialog(EDialogResult res);
-	
+	void OnSquareSlotClicked(USquareSlotWidget* ClickedSlot, int32 SlotIndex);
 	UFUNCTION()
-	void OnSlotClicked(USquareSlotWidget* ClickedSlot, int32 SlotIndex);
+	void OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlot, FName CharacterName, bool SlotCharacterOwned);
 
+	int32 CharacterStar = 0;
+	int32 CharacterGrade = 0;
+	int32 TargetGradeIndex = 0;
+	FText FinalText;
+	FString CombinedInfoString;
+	FText ButtonText;
+	
 #pragma endregion
 
 };
