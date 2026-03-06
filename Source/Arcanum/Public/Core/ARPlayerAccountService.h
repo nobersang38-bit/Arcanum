@@ -4,6 +4,9 @@
 #include "Core/SubSystem/GameDataSubsystem.h"
 #include "DataInfo/PlayerData/FPlayerData.h"
 #include "Core/Interfaces/IPlayerAccountService.h"
+
+#include "DataInfo/StageData/StageInfo/DataTable/FDTStageDataRow.h"
+
 #include "DataInfo/BattleCharacter/Equipment/DataTable/DTEquipment.h"
 #include "DataInfo/BattleCharacter/CharacterInfo/DataTable/DTCharacterBaseInfo.h"
 #include "DataInfo/GachaData/DataTable/DTGachaBannerData.h"
@@ -94,10 +97,13 @@ public:
 #pragma endregion
 
 #pragma region 레벨 변경 시 호출 함수
+public:
 	/** 레벨 변경 후 되돌아올때, 현재 HUD 위치 저장하는 함수*/
 	static void SetHUDIndex(const UObject* WorldContextObject, const int HudIndex);
 	static void SetHUDIndex(const UObject* WorldContextObject, const EHUDIndex HudIndex);
 	static int32 GetHUDIndex(const UObject* WorldContextObject);
+	static void SetCurrentStageTag(const UObject* WorldContextObject, FGameplayTag CurrentStageTag);
+	static void ChangedLevel(const UObject* WorldContextObject, TSoftObjectPtr<UWorld> StageLevel);
 #pragma endregion
 
 
@@ -128,7 +134,7 @@ private:
 
 #pragma region Battle Widget 관련
 public:
-
+	static bool GetStageData(const UObject* WorldContextObject, TArray<FDTStageDataRow*>& OutRows);
 #pragma endregion
 
 #pragma region Character Widget 관련
