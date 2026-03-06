@@ -28,7 +28,7 @@ public:
 	ABaseUnitCharacter();
 
 public:
-	void SetUnit(FUnitData InUnitData);
+	void SetUnit(FUnitInfoSetting InUnitData);
 
 	virtual FGameplayTag GetTeamTag() override;
 
@@ -62,10 +62,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MainData")
 	FDataTableRowHandle DTUnitDataRowHandle;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MainData")
-	TObjectPtr<UDataTable> DTUnitDataTable = nullptr;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MainData")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MainData", meta = (DisplayPriority = "0"))
 	FUnitData UnitData;
 
 private:

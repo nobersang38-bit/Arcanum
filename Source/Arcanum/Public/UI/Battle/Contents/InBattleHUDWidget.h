@@ -19,6 +19,7 @@ class UBattleToggleWidget;
 class UBattleCostBarWidget;
 class UBattleHealthBarWidget;
 class UBattleStageProgressWidget;
+class UBattleBattleEndWidget;
 
 UCLASS()
 class ARCANUM_API UInBattleHUDWidget : public UUserWidget
@@ -28,8 +29,8 @@ class ARCANUM_API UInBattleHUDWidget : public UUserWidget
 #pragma region 언리얼 기본 생성 및 초기화
 protected:
 	virtual void NativeConstruct() override;
-	// 드롭 이벤트 처리
-	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+	//// 드롭 이벤트 처리
+	//virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 #pragma endregion
 
 
@@ -51,6 +52,11 @@ public:
 	UFUNCTION()
 	void SetTime(int32 TimeMS);
 #pragma endregion
+
+#pragma region 스테이지 종료
+	UBattleBattleEndWidget* GetBattleEndWidget() const { return BattleEndCanvas; }
+#pragma endregion
+
 
 
 #pragma region 전투 관련 버튼들
@@ -137,6 +143,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UBattleAllyUnitPanelWidget> PlayerInfoPanel = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UBattleBattleEndWidget> BattleEndCanvas = nullptr;
 #pragma endregion
 
 private:

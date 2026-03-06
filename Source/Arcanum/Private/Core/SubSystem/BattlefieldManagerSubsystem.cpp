@@ -7,8 +7,7 @@
 #include "GameplayTags/ArcanumTags.h"
 #include "Kismet/GameplayStatics.h"
 #include "Core/ARGameInstance.h"
-#include "Data/Rows/AllyUnitsDataRow.h"
-#include "Data/Rows/EnemyUnitsDataRow.h"
+#include "Data/Rows/UnitsDataRow.h"
 #include "Core/SubSystem/GameTimeSubsystem.h"
 
 #include "Core/ARPlayerAccountService.h"
@@ -16,6 +15,7 @@
 void UBattlefieldManagerSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
+	OnMatchEnded.AddUObject(this, &UBattlefieldManagerSubsystem::MatchEnded);
 
 	/// 02/26 수정 : 서비스레이어 거치도록
 	SetInBattleData(FPlayerAccountService::GetPlayerDataCopy(this), InBattleData);
@@ -23,7 +23,6 @@ void UBattlefieldManagerSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 	SetupUnits();
 	DebugBasementSet();
 	DebugSetUsingAllyUnits();
-	OnMatchEnded.AddUObject(this, &UBattlefieldManagerSubsystem::DebugEndedMessage);
 	//UARGameInstance* GameInstance = nullptr;
 	//GameInstance = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	//if (GameInstance)
@@ -66,12 +65,12 @@ void UBattlefieldManagerSubsystem::SetABattlefieldManagerActor(ABattlefieldManag
 	BattlefieldManagerActor = InBattlefieldManagerActor;
 }
 
-const TArray<FUnitData>& UBattlefieldManagerSubsystem::GetUsingAllyUnitData()
+const TArray<FUnitInfoSetting>& UBattlefieldManagerSubsystem::GetUsingAllyUnitData()
 {
 	return InBattleData.AllyUnits;
 }
 
-FUnitData UBattlefieldManagerSubsystem::GetAllyUnitData(FGameplayTag InUnitTag, bool& OutResult) const
+FUnitInfoSetting UBattlefieldManagerSubsystem::GetAllyUnitData(FGameplayTag InUnitTag, bool& OutResult) const
 {
 	if (AllyUnitDatas.Contains(InUnitTag))
 	{
@@ -81,11 +80,11 @@ FUnitData UBattlefieldManagerSubsystem::GetAllyUnitData(FGameplayTag InUnitTag, 
 	else
 	{
 		OutResult = false;
-		return FUnitData();
+		return FUnitInfoSetting();
 	}
 }
 
-FUnitData UBattlefieldManagerSubsystem::GetEnemyUnitData(FGameplayTag InUnitTag, bool& OutResult) const
+FUnitInfoSetting UBattlefieldManagerSubsystem::GetEnemyUnitData(FGameplayTag InUnitTag, bool& OutResult) const
 {
 	if (EnemyUnitDatas.Contains(InUnitTag))
 	{
@@ -95,7 +94,7 @@ FUnitData UBattlefieldManagerSubsystem::GetEnemyUnitData(FGameplayTag InUnitTag,
 	else
 	{
 		OutResult = false;
-		return FUnitData();
+		return FUnitInfoSetting();
 	}
 }
 
@@ -109,6 +108,7 @@ void UBattlefieldManagerSubsystem::StartTime()
 
 		TimeSubsystem->OnStageSecondChanged.RemoveDynamic(this, &UBattlefieldManagerSubsystem::CheckMatchEnded);
 		TimeSubsystem->OnStageSecondChanged.AddDynamic(this, &UBattlefieldManagerSubsystem::CheckMatchEnded);
+		TimeSubsystem->OnStageSecondChanged.AddDynamic(this, &UBattlefieldManagerSubsystem::OnTimeChange);
 	}
 }
 
@@ -119,11 +119,18 @@ void UBattlefieldManagerSubsystem::StopTime()
 	TimeSubsystem->StopStage();
 }
 
+void UBattlefieldManagerSubsystem::OnTimeChange(int32 Time)
+{
+	CurrentMatchData.EndTimeSecond = Time;
+}
+
 void UBattlefieldManagerSubsystem::DebugSetUsingAllyUnits()
 {
 	InBattleData.AllyUnits.Empty();
 	bool Result = false;
+	InBattleData.AllyUnits.Add(GetAllyUnitData(Arcanum::Unit::Faction::Ally::Bard::Root, Result));
 	InBattleData.AllyUnits.Add(GetAllyUnitData(Arcanum::Unit::Faction::Ally::Army::Root, Result));
+	InBattleData.AllyUnits.Add(GetAllyUnitData(Arcanum::Unit::Faction::Ally::Maid::Root, Result));
 }
 
 void UBattlefieldManagerSubsystem::CheckMatchEnded(int32 Time)
@@ -131,6 +138,9 @@ void UBattlefieldManagerSubsystem::CheckMatchEnded(int32 Time)
 	if (Time <= 0)
 	{
 		FMatchData MatchData;
+
+		MatchData.EndTimeSecond = CurrentMatchData.EndTimeSecond;
+
 		MatchData.bIsVictory = false;
 		MatchData.CurrentMatchState = EMatchState::Ended;
 		OnMatchEnded.Broadcast(MatchData);
@@ -144,28 +154,28 @@ void UBattlefieldManagerSubsystem::SetupUnits()
 	{
 		UGameDataSubsystem* GameDataSubsystem = GameInstance->GetSubsystem<UGameDataSubsystem>();
 		const TMap<FGameplayTag, UDataTable*> DataTables = GameDataSubsystem->MasterDataTables;
-		UE_LOG(LogTemp, Warning, TEXT("데이터 테이블 길이 %d"), DataTables.Num());
+		//UE_LOG(LogTemp, Warning, TEXT("데이터 테이블 길이 %d"), DataTables.Num());
 		if (const UDataTable* AllyUnitDataTable = DataTables.FindRef(Arcanum::DataTable::AllyUnitInfo))
 		{
-			TArray<FAllyUnitsDataRow*> AllyUnitsDatArray;
-			AllyUnitDataTable->GetAllRows<FAllyUnitsDataRow>(TEXT(""), AllyUnitsDatArray);
+			TArray<FUnitsDataRow*> AllyUnitsDatArray;
+			AllyUnitDataTable->GetAllRows<FUnitsDataRow>(TEXT(""), AllyUnitsDatArray);
 			for (auto Row : AllyUnitsDatArray)
 			{
-				AllyUnitDatas.Add(Row->UnitData.Info.InfoSetting.Tag, Row->UnitData);
-				FString Result = FString::Printf(TEXT("AllyUnitDatas : %s"), *Row->UnitData.Info.InfoSetting.Tag.ToString());
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, *Result);
-				UE_LOG(LogTemp, Warning, TEXT("AllyUnitDatas : %s"), *Row->UnitData.Info.InfoSetting.Tag.ToString());
+				AllyUnitDatas.Add(Row->UnitData.Tag, Row->UnitData);
+				FString Result = FString::Printf(TEXT("AllyUnitDatas : %s"), *Row->UnitData.Tag.ToString());
+				//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, *Result);
+				//UE_LOG(LogTemp, Warning, TEXT("AllyUnitDatas : %s"), *Row->UnitData.Tag.ToString());
 			}
 		}
 
 		if (const UDataTable* EnemyUnitDataTable = DataTables.FindRef(Arcanum::DataTable::EnemyUnitInfo))
 		{
-			TArray<FEnemyUnitsDataRow*> EnemyUnitsDatArray;
-			EnemyUnitDataTable->GetAllRows<FEnemyUnitsDataRow>(TEXT(""), EnemyUnitsDatArray);
+			TArray<FUnitsDataRow*> EnemyUnitsDatArray;
+			EnemyUnitDataTable->GetAllRows<FUnitsDataRow>(TEXT(""), EnemyUnitsDatArray);
 			for (auto Row : EnemyUnitsDatArray)
 			{
-				EnemyUnitDatas.Add(Row->UnitData.Info.InfoSetting.Tag, Row->UnitData);
-				UE_LOG(LogTemp, Warning, TEXT("EnemyUnitDatas : %s"), *Row->UnitData.Info.InfoSetting.Tag.ToString());
+				EnemyUnitDatas.Add(Row->UnitData.Tag, Row->UnitData);
+				//UE_LOG(LogTemp, Warning, TEXT("EnemyUnitDatas : %s"), *Row->UnitData.Tag.ToString());
 			}
 		}
 	}
@@ -208,4 +218,18 @@ void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerDa
 	}
 
 	OutInBattleData.PlayerBattleData = InPlayerData.PlayerBattleData;
+}
+
+void UBattlefieldManagerSubsystem::MatchEnded(const FMatchData& MatchData)
+{
+	UGameInstance* GI = GetWorld()->GetGameInstance();
+	if (GI)
+	{
+		UGameTimeSubsystem* GameTimeSubsystem = GI->GetSubsystem<UGameTimeSubsystem>();
+		if (GameTimeSubsystem)
+		{
+			GameTimeSubsystem->StopStage();
+			OnMatchEnded.Clear();
+		}
+	}
 }

@@ -22,12 +22,10 @@ void UBasementCombatComponent::BeginPlay()
 	GetOwner()->OnTakeAnyDamage.RemoveDynamic(this, &UBasementCombatComponent::RecievedDamage);
 	GetOwner()->OnTakeAnyDamage.AddDynamic(this, &UBasementCombatComponent::RecievedDamage);
 
-#pragma region 디버그
 	if (UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
 	{
 		SetBasementStat(BattleSubsystem->GetBasementStat(Arcanum::Unit::Faction::Enemy::Root));
 	}
-#pragma endregion
 }
 
 
@@ -74,7 +72,7 @@ void UBasementCombatComponent::RecievedDamage(AActor* DamagedActor, float Damage
 					{
 						MatchData.bIsVictory = true;
 					}
-
+					MatchData.EndTimeSecond = BattleSubsystem->GetCurrentMatchData().EndTimeSecond;
 					BattleSubsystem->OnMatchEnded.Broadcast(MatchData);
 				}
 			}

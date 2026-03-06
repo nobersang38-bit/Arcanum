@@ -4,8 +4,7 @@
 #include "Object/Actor/BattlefieldManagerActor.h"
 //#include "Components/HierarchicalInstancedStaticMeshComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
-#include "Data/Rows/AllyUnitsDataRow.h"
-#include "Data/Rows/EnemyUnitsDataRow.h"
+#include "Data/Rows/UnitsDataRow.h"
 #include "Core/SubSystem/BattlefieldManagerSubsystem.h"
 #include "GameplayTags/ArcanumTags.h"
 
@@ -201,15 +200,15 @@ void ABattlefieldManagerActor::DataSet()
 
 	if (AllyUnitData)
 	{
-		TArray<FAllyUnitsDataRow*> OutAllyUnits;
-		AllyUnitData->GetAllRows<FAllyUnitsDataRow>(TEXT(""), OutAllyUnits);
+		TArray<FUnitsDataRow*> OutAllyUnits;
+		AllyUnitData->GetAllRows<FUnitsDataRow>(TEXT(""), OutAllyUnits);
 
 		for (int i = 0; i < OutAllyUnits.Num(); i++)
 		{
 			if (OutAllyUnits[i])
 			{
-				FGameplayTag UnitTag = OutAllyUnits[i]->UnitData.Info.InfoSetting.Tag;
-				FName CompName = FName(FString::Printf(TEXT("%s"), *OutAllyUnits[i]->UnitData.Info.InfoSetting.Name.ToString()));
+				FGameplayTag UnitTag = OutAllyUnits[i]->UnitData.Tag;
+				FName CompName = FName(FString::Printf(TEXT("%s"), *OutAllyUnits[i]->UnitData.Name.ToString()));
 				UInstancedStaticMeshComponent* ISM = nullptr;
 				ISM = NewObject<UInstancedStaticMeshComponent>(this, UInstancedStaticMeshComponent::StaticClass());
 
@@ -222,7 +221,7 @@ void ABattlefieldManagerActor::DataSet()
 				//실제 세팅 부분
 				if (ISM)
 				{
-					FISMStaticlData ISMMaterialData;
+					/*FISMStaticlData ISMMaterialData;
 					ISMMaterialData.StartFrameParameterIDX = OutAllyUnits[i]->UnitData.Info.AnimSetting.StartFramePropertyIDX;
 					ISMMaterialData.StartFrameParameterDefaultValue = OutAllyUnits[i]->UnitData.Info.AnimSetting.DefaultAnimFrameRange.X;
 					ISMMaterialData.EndFrameParameterIDX = OutAllyUnits[i]->UnitData.Info.AnimSetting.EndFramePropertyIDX;
@@ -233,7 +232,7 @@ void ABattlefieldManagerActor::DataSet()
 					StaticDatas.Add(UnitTag, ISMMaterialData);
 					ISM->SetStaticMesh(OutAllyUnits[i]->UnitData.Info.AnimSetting.StaticMesh);
 					ISM->SetNumCustomDataFloats(OutAllyUnits[i]->UnitData.Info.AnimSetting.MaterialNum);
-					ISMs.Add(UnitTag, ISM);
+					ISMs.Add(UnitTag, ISM);*/
 				}
 			}
 		}
@@ -241,8 +240,8 @@ void ABattlefieldManagerActor::DataSet()
 
 	if (EnemyUnitData)
 	{
-		TArray<FEnemyUnitsDataRow*> OutEnemyUnits;
-		EnemyUnitData->GetAllRows<FEnemyUnitsDataRow>(TEXT(""), OutEnemyUnits);
+		/*TArray<FUnitsDataRow*> OutEnemyUnits;
+		EnemyUnitData->GetAllRows<FUnitsDataRow>(TEXT(""), OutEnemyUnits);
 
 		for (int i = 0; i < OutEnemyUnits.Num(); i++)
 		{
@@ -273,6 +272,6 @@ void ABattlefieldManagerActor::DataSet()
 					ISMs.Add(UnitTag, ISM);
 				}
 			}
-		}
+		}*/
 	}
 }

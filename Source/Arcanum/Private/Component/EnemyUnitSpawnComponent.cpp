@@ -7,7 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Core/ARGameInstance.h"
 #include "Data/Rows/DTBattleStageInfo.h"
-#include "Data/Rows/EnemyUnitsDataRow.h"
+#include "Data/Rows/UnitsDataRow.h"
 #include "Character/BaseUnitCharacter.h"
 #include "Core/SubSystem/PoolingSubsystem.h"
 
@@ -98,18 +98,18 @@ void UEnemyUnitSpawnComponent::BeginPlay()
 	{
 		if (UnitInfoDataTable)
 		{
-			TArray<FEnemyUnitsDataRow*> EnemyUnitsDataRows;
-			UnitInfoDataTable->GetAllRows<FEnemyUnitsDataRow>(TEXT(""), EnemyUnitsDataRows);
+			TArray<FUnitsDataRow*> EnemyUnitsDataRows;
+			UnitInfoDataTable->GetAllRows<FUnitsDataRow>(TEXT(""), EnemyUnitsDataRows);
 
 			for (int i = 0; i < EnemyUnitsDataRows.Num(); i++)
 			{
 				for (int j = 0; j < EnemyWaveData.EnemyUnitsSet.Num(); j++)
 				{
 					FGameplayTag EnemyWaveTag = EnemyWaveData.EnemyUnitsSet[j].EnemyUnitTag;
-					FGameplayTag DataTableRowEnemyTag = EnemyUnitsDataRows[i]->UnitData.Info.InfoSetting.Tag;
+					FGameplayTag DataTableRowEnemyTag = EnemyUnitsDataRows[i]->UnitData.Tag;
 					if (EnemyWaveTag.MatchesTag(DataTableRowEnemyTag) && EnemyWaveTag.IsValid() && DataTableRowEnemyTag.IsValid())
 					{
-						UsingUnits.Add(EnemyUnitsDataRows[i]->UnitData.Info.InfoSetting.Tag, EnemyUnitsDataRows[i]->UnitData);
+						UsingUnits.Add(EnemyUnitsDataRows[i]->UnitData.Tag, EnemyUnitsDataRows[i]->UnitData);
 						break;
 					}
 				}
@@ -138,8 +138,6 @@ void UEnemyUnitSpawnComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 void UEnemyUnitSpawnComponent::WaveStart()
 {
-	if (!EnemyUnitClass) return;
-
 	for (int i = 0; i < EnemyWaveData.EnemyUnitsSet.Num(); i++)
 	{
 		FEnemyUnitStartSpawnTimeData EnemyUnitStartSpawnTimeData = EnemyWaveData.EnemyUnitsSet[i].EnemyUnitStartSpawnTimeData;
@@ -165,7 +163,7 @@ void UEnemyUnitSpawnComponent::WaveStart()
 				{
 					bool bIsDataSuccess = false;
 					//UE_LOG(LogTemp, Warning, TEXT("WaveTag : %s"), *WaveTag.ToString());
-					FUnitData UnitData = BattlefieldManagerSubsystem->GetEnemyUnitData(WaveTag, bIsDataSuccess);
+					FUnitInfoSetting UnitData = BattlefieldManagerSubsystem->GetEnemyUnitData(WaveTag, bIsDataSuccess);
 					if (!bIsDataSuccess) continue;
 
 					FTransform Transform;
@@ -179,16 +177,14 @@ void UEnemyUnitSpawnComponent::WaveStart()
 					UPoolingSubsystem* PoolingSubsystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
 					if (PoolingSubsystem)
 					{
-						if (EnemyUnitClass)
+						// Todo KDH : 미리 로드해놓게 변경해야함
+						AActor* EnemyUnitInstance = PoolingSubsystem->SpawnFromPool(UnitData.UnitClass.LoadSynchronous(), Transform);
+						ABaseUnitCharacter* EnemyUnitCharacter = Cast<ABaseUnitCharacter>(EnemyUnitInstance);
+						if (EnemyUnitCharacter)
 						{
-							AActor* EnemyUnitInstance = PoolingSubsystem->SpawnFromPool(EnemyUnitClass, Transform);
-							ABaseUnitCharacter* EnemyUnitCharacter = Cast<ABaseUnitCharacter>(EnemyUnitInstance);
-							if (EnemyUnitCharacter)
-							{
-								EnemyUnitCharacter->SetUnit(UnitData);
-								*Time = 0.0f;
-								break;
-							}
+							EnemyUnitCharacter->SetUnit(UnitData);
+							*Time = 0.0f;
+							break;
 						}
 						/*AActor* EnemyUnitInstance = UGameplayStatics::BeginDeferredActorSpawnFromClass(GetWorld(), EnemyUnitClass, Transform, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 						ABaseUnitCharacter* EnemyUnitCharacter = Cast<ABaseUnitCharacter>(EnemyUnitInstance);
