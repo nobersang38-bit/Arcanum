@@ -7,17 +7,21 @@
 
 void URoundedSlotWidget::NativePreConstruct()
 {
-    if (BackgroundColor) BackgroundColor->SetBrushColor(RoundColor);
-    if (IconImage && IconImg) IconImage->SetBrushFromTexture(IconImg);
-
-    // 테스트용으로 보유 캐릭터 구분
-    // 나중에 json 값으로 구분하기
-    float TargetAlpha = bShowEmptySlotOverlay ? 0.8f : 0.0f;
-    FLinearColor CurrentColor = SlotDimOverlay->ColorAndOpacity;
-    CurrentColor.A = TargetAlpha;
-    SlotDimOverlay->SetColorAndOpacity(CurrentColor);
+    Super::NativePreConstruct();
+    //if (BackgroundColor) BackgroundColor->SetBrushColor(RoundColor);
+    //if (IconImage && IconImg) IconImage->SetBrushFromTexture(IconImg);
 }
 
+FReply URoundedSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+    Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+    OnCharacterSlotClicked.Broadcast(this, SlotCharacterName, SlotCharacterOwned);
+    return FReply::Handled();
+}
+
+// ========================================================
+// 캐릭터 슬롯 배경색 설정
+// ========================================================
 void URoundedSlotWidget::SetRoundBackgroundColor(FLinearColor NewColor)
 {
     if (BackgroundColor)
@@ -26,7 +30,10 @@ void URoundedSlotWidget::SetRoundBackgroundColor(FLinearColor NewColor)
     }
 }
 
-void URoundedSlotWidget::SetIconImage(UTexture2D* CharacterIcon)
+// ========================================================
+// 캐릭터 아이콘 설정
+// ========================================================
+void URoundedSlotWidget::SetIconImage(UTexture2D* CharacterIcon, bool OwnedCharacter, FName CharacterName)
 {
     if (!IconImage) return;
 
@@ -34,6 +41,16 @@ void URoundedSlotWidget::SetIconImage(UTexture2D* CharacterIcon)
     if (CharacterIcon)
     {
         Brush.SetResourceObject(CharacterIcon);
+
+        // 보유 캐릭터 구분
+        // 나중에 json 값으로 구분하기
+        float TargetAlpha = OwnedCharacter ? 0.0f : 0.8f;
+        FLinearColor CurrentColor = SlotDimOverlay->GetColorAndOpacity();
+        CurrentColor.A = TargetAlpha;
+        SlotDimOverlay->SetColorAndOpacity(CurrentColor);
+
+        SlotCharacterName = CharacterName;
+        SlotCharacterOwned = OwnedCharacter;
     }
     else
     {

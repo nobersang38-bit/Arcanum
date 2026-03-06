@@ -9,7 +9,8 @@
 class UCommonBtnWidget;
 class UTextBlock;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEnhanceBtnClicked);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnEnhanceBtnClicked, FText, CharacterNameTxt, int32, RequiredSoul);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSetPlayerBtnClicked,FText, CharactNameTxt);
 
 /*
  * 역할 : 김유진
@@ -23,7 +24,7 @@ class ARCANUM_API UCharacterInfo : public UUserWidget
 	
 #pragma region 언리얼 기본 생성
 protected:
-	virtual void NativePreConstruct() override;
+	//virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
 #pragma endregion
 public:
@@ -32,9 +33,35 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FText CharacInfoTxt;
 
+	UFUNCTION(BlueprintCallable)
+	void SetCharacterName(FName CharacterName);
+
+	UFUNCTION(BlueprintCallable)
+	void SetStarCharcterInfo(int32 StarGrade);
+
+	UFUNCTION(BlueprintCallable)
+	void SetGradeCharcterInfo(int32 Grade);
+	
+	UFUNCTION(BlueprintCallable)
+	void SetCharcterInfo(const FText& InText);
+
+	UFUNCTION(BlueprintCallable)
+	void SetEnhanceButtonEnabled(bool bIsCharacterOwned, int32 RequiredSoul, int64 CurrentSoul, int EnhancementLevel);
+	UFUNCTION(BlueprintCallable)
+	void SetPlayerButtonEnabled(bool bIsCharacterOwned);
+
+	UFUNCTION(BlueprintCallable)
+	void SetEnhanceBtnText(const FText& InText);
+
 protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> CharacterNameText;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> GradeStarsText;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> GradeText;
 	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> CharacterInfoText;
@@ -42,11 +69,21 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCommonBtnWidget> CharacterEnhanceBtn;
 
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UCommonBtnWidget> SetPlayerBtn;
+
+
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnEnhanceBtnClicked OnEnhanceBtnClicked;
 
+	UPROPERTY(BlueprintAssignable)
+	FOnSetPlayerBtnClicked OnSetPlayerBtnClicked;
+	int32 RequiredSoul;
 private:
 	UFUNCTION()
 	void ClickCharacterEnhanceBtn();
+	UFUNCTION()
+	void ClickSetPlayerBtn();
+
 };

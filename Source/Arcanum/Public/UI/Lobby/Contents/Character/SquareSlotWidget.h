@@ -10,7 +10,6 @@ class UImage;
 class UBorder;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnWeaponSlotClicked,USquareSlotWidget*, ClickedSlot,int32, SlotIndex);
-
 /**
  * 
  */
@@ -20,9 +19,9 @@ class ARCANUM_API USquareSlotWidget : public UUserWidget
 	GENERATED_BODY()
 protected:
 	virtual void NativePreConstruct() override;
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry,const FPointerEvent& InMouseEvent) override;
 
 public:
-	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry,const FPointerEvent& InMouseEvent) override;
 
 	UPROPERTY(BlueprintAssignable, Category = "Slot")
 	FOnWeaponSlotClicked OnSlotClicked;

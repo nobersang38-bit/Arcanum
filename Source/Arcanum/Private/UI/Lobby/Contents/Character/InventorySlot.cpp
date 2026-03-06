@@ -31,6 +31,9 @@ void UInventorySlot::NativeConstruct()
     }
 }
 
+// ========================================================
+// 장착 버튼 클릭
+// ========================================================
 void UInventorySlot::ClickEquipSetupBtn()
 {
     OnSetupBtnClicked.Broadcast();
