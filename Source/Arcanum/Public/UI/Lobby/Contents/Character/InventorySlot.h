@@ -35,7 +35,7 @@ public:
 	FOnSetupBtnClicked OnSetupBtnClicked;
 
 	UFUNCTION()
-	void CreateWeaponItems(TArray<FEquipmentInfo> WeaponList);
+	void CreateWeaponItems(TArray<FEquipmentInfo> WeaponList, const FString& TargetPath);
 private:
 	UFUNCTION()
 	void ClickEquipSetupBtn();
@@ -56,4 +56,13 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slot")
 	TSubclassOf<USquareSlotWidget> USquareSlotWidgetClass;
 
+	UPROPERTY()
+	UTexture2D* WeaponInventoryItemIcon = nullptr;
+
+	UFUNCTION()
+	bool IsSpecificSlotType(const FGameplayTag& InTag, const FString& TargetPath);
+
+protected:
+	UPROPERTY()
+	class UGameDataSubsystem* DataSubsystem;
 };

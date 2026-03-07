@@ -8,6 +8,11 @@
 #include "Components/WrapBox.h"
 #include "Components/WrapBoxSlot.h"
 
+#include "Core/ARGameInstance.h"
+#include "Core/SubSystem/GameDataSubsystem.h"
+#include "DataInfo/ItemData/DataTable/DTItemCatalogRow.h"
+#include "DataInfo/BattleCharacter/Equipment/Data/FEquipmentData.h"
+
 void UInventorySlot::NativePreConstruct()
 {
 	Super::NativePreConstruct();
@@ -34,18 +39,72 @@ void UInventorySlot::NativeConstruct()
     }
 }
 
-void UInventorySlot::CreateWeaponItems(TArray<FEquipmentInfo> WeaponList)
+// ========================================================
+// 인벤토리에 보유중인 무기, 장비 출력하기 
+// ========================================================
+void UInventorySlot::CreateWeaponItems(TArray<FEquipmentInfo> WeaponList, const FString& TargetPath)
 {
+    FGameplayTag ListItemTag;
+
+    if (!USquareSlotWidgetClass)
+        return;
+
     for (int32 i = 0; i < WeaponList.Num(); i++)
     {
-        USquareSlotWidget* NewSlot = CreateWidget<USquareSlotWidget>(GetWorld(), USquareSlotWidgetClass);
-        UWrapBoxSlot* WrapSlot = EquipGridPanel->AddChildToWrapBox(NewSlot);
+        USquareSlotWidget* NewSlot = CreateWidget<USquareSlotWidget>(this, USquareSlotWidgetClass);
+        WeaponInventoryItemIcon = nullptr;
 
-        if (WrapSlot)
+        ListItemTag = WeaponList[i].ItemTag;
+
+        if (!DataSubsystem)
         {
-            WrapSlot->SetHorizontalAlignment(HAlign_Fill);
-            WrapSlot->SetVerticalAlignment(VAlign_Fill);
+            if (UARGameInstance* GI = Cast<UARGameInstance>(GetGameInstance()))
+            {
+                DataSubsystem = GI->GetSubsystem<UGameDataSubsystem>();
+            }
         }
+
+        if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+        {
+            if (UGameDataSubsystem* dataSubsystem = gameInstance->GetSubsystem<UGameDataSubsystem>())
+            {
+                UDataTable* const* tablePtr = dataSubsystem->MasterDataTables.Find(Arcanum::DataTable::Equipment);
+                if (!tablePtr || !(*tablePtr)) { return; }
+
+                UDataTable* table = *tablePtr;
+
+                TArray<FDTEquipmentInfoRow*> rows;
+                table->GetAllRows(TEXT("BuildEquipmentRowCache"), rows);
+
+                for (FDTEquipmentInfoRow* row : rows)
+                {
+                    if (row && row->ItemTag.IsValid())
+                    {
+                        if (row->ItemTag == ListItemTag)
+                        {
+                            WeaponInventoryItemIcon = row->Icon.LoadSynchronous();
+                            // 무기만 출력되는 if문 SlotTag가 Weapon인거
+                            if (IsSpecificSlotType(row->SlotTag, TargetPath))
+                            {
+                                if (NewSlot)
+                                {
+                                    NewSlot->SetItemIconImage(WeaponInventoryItemIcon);
+                                    UWrapBoxSlot* WrapSlot = EquipGridPanel->AddChildToWrapBox(NewSlot);
+
+                                    if (WrapSlot)
+                                    {
+                                        WrapSlot->SetHorizontalAlignment(HAlign_Fill);
+                                        WrapSlot->SetVerticalAlignment(VAlign_Fill);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+       
     }
 }
 
@@ -55,6 +114,22 @@ void UInventorySlot::CreateWeaponItems(TArray<FEquipmentInfo> WeaponList)
 void UInventorySlot::ClickEquipSetupBtn()
 {
     OnSetupBtnClicked.Broadcast();
+}
+
+// ========================================================
+// 인벤토리 아이템 타입 구분 (무기인지 장비인지)
+// ========================================================
+bool UInventorySlot::IsSpecificSlotType(const FGameplayTag& InTag, const FString& TargetPath)
+{
+    if (!InTag.IsValid()) return false;
+
+    FString Left, Right;
+    if (InTag.GetTagName().ToString().Split(TEXT("."), &Left, &Right, ESearchCase::IgnoreCase, ESearchDir::FromEnd))
+    {
+
+        return Left.Equals(TargetPath, ESearchCase::IgnoreCase);
+    }
+    return false;
 }
 
 

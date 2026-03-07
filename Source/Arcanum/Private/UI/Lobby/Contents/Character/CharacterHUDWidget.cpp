@@ -423,7 +423,11 @@ void UCharacterHUDWidget::InitWeaponInventory()
    
     if (WeaponList)
     {
-        WeaponList->CreateWeaponItems(WeaponInventory);
+        WeaponList->CreateWeaponItems(WeaponInventory, TEXT("Arcanum.Items.ItemSlot.Weapon"));
+    }
+    if (EquipmentList)
+    {
+        EquipmentList->CreateWeaponItems(WeaponInventory, TEXT("Arcanum.Items.ItemSlot.Armor"));
     }
 }
 

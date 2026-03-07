@@ -36,7 +36,7 @@ public:
 	void SetSquareBackgroundColor(FLinearColor NewColor);
 
 	UFUNCTION(BlueprintCallable)
-	void SetItemIconImage(UTexture2D* ItemIcon, bool bIsEquipped);
+	void SetItemIconImage(UTexture2D* ItemIcon);
 
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
