@@ -5,6 +5,7 @@
 #include "UI/Lobby/Contents/Currency/CurrencyWidget.h"
 #include "UI/Lobby/Contents/Inventory/InventoryItemSlotWidget.h"
 #include "UI/Lobby/Contents/Inventory/InventoryHUDWidget.h"
+#include "UI/Lobby/Contents/Shop/ShopHUDWidget.h"
 #include "UI/Lobby/Contents/Enhancement/EnhancementHUDWidget.h"
 #include "DataInfo/BattleCharacter/Equipment/DataTable/DTEquipment.h"
 #include "DataInfo/ItemData/DataTable/DTPotionInfoRow.h"
@@ -24,8 +25,6 @@ void ULobbyHUD::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	
-	UE_LOG(LogTemp, Log, TEXT("EnhancementHUDWidget = %s"), EnhancementHUDWidget ? TEXT("Valid") : TEXT("Null"));
 	/// 02/26 수정 : 서비스레이어 거치도록
 	CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
 
@@ -77,7 +76,11 @@ void ULobbyHUD::NativeConstruct()
 	if (ShopHUDWidget)
 	{
 		ShopHUDWidget->SetParentLobby(this);
-		ShopHUDWidget->InitPanels(EquipmentShopSlotCount, PotionShopSlotCount);
+		ShopHUDWidget->InitPanels();
+		ShopHUDWidget->InitShop();
+		ShopHUDWidget->RestartShopTimer();
+		ShopHUDWidget->BindShopTimer();
+		ShopHUDWidget->RefreshShopUI();
 	}
 
 	if (InventoryHUDWidget)
@@ -93,19 +96,7 @@ void ULobbyHUD::NativeConstruct()
 
 	RefreshAllLobbyUI();
 
-	InitShop();
-	RestartShopTimer();
-	BindShopTimer();
-	RefreshShopUI();
-
-	if (!CharacterDataTable)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("CharacterDataTable is nullptr!"));
-		return;
-	}
-
 	ClickCharacterMenuBtn();
-	RefreshLobbyCurrencyUI();
 
 	FPlayerAccountService::OnSaveCompleted.RemoveDynamic(this, &ULobbyHUD::HandleSaveCompleted);
 	FPlayerAccountService::OnSaveCompleted.AddDynamic(this, &ULobbyHUD::HandleSaveCompleted);
@@ -198,8 +189,6 @@ void ULobbyHUD::ClickSettingBtn()
 }
 
 
-
-
 // ========================================================
 // 종료
 // ========================================================
@@ -256,163 +245,15 @@ void ULobbyHUD::RefreshLobbyCurrencyUI()
 // ========================================================
 // 상점
 // ========================================================
-void ULobbyHUD::InitShop()
-{
-	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
-	{
-		FPlayerAccountService::InitializeShop(gameInstance, EquipmentShopSlotCount, PotionShopSlotCount);
-	}
-}
 
-void ULobbyHUD::RefreshShopUI()
-{
-	BuildShopRuntimeCache();
 
-	if (ShopHUDWidget)
-	{
-		ShopHUDWidget->ApplyShopData(
-			CachedShopRowNames,
-			CachedShopSoldOutStates,
-			CachedShopIcons,
-			CachedShopNames,
-			CachedShopDescs,
-			CachedShopPrices
-		);
 
-		if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
-		{
-			const int32 remaining = FPlayerAccountService::GetShopRemainingSeconds(gameInstance);
 
-			HandleShopSecondChanged(remaining);
-		}
-	}
-}
 
-void ULobbyHUD::BindShopTimer()
-{
-	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
-	{
-		if (UGameTimeSubsystem* gameTimeSubsystem = gameInstance->GetSubsystem<UGameTimeSubsystem>())
-		{
-			gameTimeSubsystem->OnShopSecondChanged.RemoveDynamic(this, &ULobbyHUD::HandleShopSecondChanged);
-			gameTimeSubsystem->OnShopSecondChanged.AddDynamic(this, &ULobbyHUD::HandleShopSecondChanged);
-		}
 
-		const int32 remaining = FPlayerAccountService::GetShopRemainingSeconds(gameInstance);
-		HandleShopSecondChanged(remaining);
-	}
-}
 
-void ULobbyHUD::HandleShopSecondChanged(int32 InRemainingSeconds)
-{
-	if (InRemainingSeconds == 0)
-	{
-		if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
-		{
-			FPlayerAccountService::RefreshShop(gameInstance, EquipmentShopSlotCount, PotionShopSlotCount);
-			BuildShopRuntimeCache();
-			InRemainingSeconds = FPlayerAccountService::GetShopRemainingSeconds(gameInstance);
-		}
 
-		if (ShopHUDWidget)
-		{
-			ShopHUDWidget->ApplyShopData(
-				CachedShopRowNames,
-				CachedShopSoldOutStates,
-				CachedShopIcons,
-				CachedShopNames,
-				CachedShopDescs,
-				CachedShopPrices
-			);
-		}
-	}
 
-	if (ShopHUDWidget)
-	{
-		ShopHUDWidget->SetShopRemainingSeconds(InRemainingSeconds);
-	}
-}
-
-void ULobbyHUD::BuildShopRuntimeCache()
-{
-	const int32 slotCount = FMath::Max(0, EquipmentShopSlotCount) + FMath::Max(0, PotionShopSlotCount);
-
-	CachedShopRowNames.SetNum(slotCount);
-	CachedShopSoldOutStates.SetNum(slotCount);
-
-	CachedShopIcons.SetNum(slotCount);
-	CachedShopNames.SetNum(slotCount);
-	CachedShopDescs.SetNum(slotCount);
-	CachedShopPrices.SetNum(slotCount);
-
-	for (int32 i = 0; i < slotCount; i++)
-	{
-		CachedShopRowNames[i] = NAME_None;
-		CachedShopSoldOutStates[i] = false;
-
-		CachedShopIcons[i] = nullptr;
-		CachedShopNames[i] = FText::GetEmpty();
-		CachedShopDescs[i] = FText::GetEmpty();
-		CachedShopPrices[i] = 0;
-	}
-
-	UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance());
-	if (!gameInstance) return;
-
-	UGameDataSubsystem* dataSubsystem = gameInstance->GetSubsystem<UGameDataSubsystem>();
-	if (!dataSubsystem) return;
-
-	for (int32 slotIndex = 0; slotIndex < slotCount; slotIndex++)
-	{
-		if (!gameInstance->CurrentShopKeys.IsValidIndex(slotIndex)) continue;
-
-		const FShopProductKey& key = gameInstance->CurrentShopKeys[slotIndex];
-
-		if (gameInstance->CurrentShopSoldOutStates.IsValidIndex(slotIndex))
-		{
-			CachedShopSoldOutStates[slotIndex] = gameInstance->CurrentShopSoldOutStates[slotIndex];
-		}
-
-		if (!key.TableTag.IsValid() || key.RowName.IsNone()) continue;
-
-		// ItemCatalog 직접 키(=RowName이 ItemTagName)
-		if (key.TableTag.MatchesTagExact(Arcanum::DataTable::ItemCatalog))
-		{
-			const FDTItemCatalogRow* catalogRow = dataSubsystem->GetRow<FDTItemCatalogRow>(Arcanum::DataTable::ItemCatalog, key.RowName);
-			if (!catalogRow) continue;
-
-			CachedShopRowNames[slotIndex] = key.RowName;
-			CachedShopIcons[slotIndex] = catalogRow->Icon;
-			CachedShopNames[slotIndex] = catalogRow->DisplayName;
-			CachedShopDescs[slotIndex] = catalogRow->Desc;
-			CachedShopPrices[slotIndex] = catalogRow->BuyPrice;
-
-			continue;
-		}
-
-		CachedShopRowNames[slotIndex] = key.RowName;
-	}
-}
-
-void ULobbyHUD::RestartShopTimer()
-{
-	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
-	{
-		if (gameInstance->bShopPaused && gameInstance->PausedShopRemainingSeconds > 0)
-		{
-			const FDateTime nowKst = FPlayerAccountService::GetCurrentTimeKST();
-			gameInstance->NextShopRefreshTime = nowKst + FTimespan(0, 0, gameInstance->PausedShopRemainingSeconds);
-
-			gameInstance->bShopPaused = false;
-			gameInstance->PausedShopRemainingSeconds = 0;
-
-			if (UGameTimeSubsystem* gameTimeSubsystem = gameInstance->GetSubsystem<UGameTimeSubsystem>())
-			{
-				gameTimeSubsystem->StartShop(gameInstance->NextShopRefreshTime);
-			}
-		}
-	}
-}
 
 void ULobbyHUD::OnExitCommonDialog(EDialogResult res)
 {

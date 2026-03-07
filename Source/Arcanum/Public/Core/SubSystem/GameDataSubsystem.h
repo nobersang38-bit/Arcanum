@@ -37,51 +37,30 @@ public:
 			if (UDataTable* LoadedTable = TablePtr.LoadSynchronous())
 				MasterDataTables.Add(TableTag, LoadedTable);
 		}
-
-		BuildItemCatalogRowCache();
 	}
 
-#pragma region 아이템 카탈로그 DT 캐시
-public:
-	/* ItemTag로 캐시에서 ItemCatalog RowPtr 조회 */
+#pragma region 아이템 카탈로그 DT 조회
+	/* ItemCatalog DT를 순회해 ItemTag와 일치하는 Row행을 조회 */
 	const FDTItemCatalogRow* FindItemCatalogRowByTag(const FGameplayTag& InItemTag) const
 	{
 		if (!InItemTag.IsValid()) return nullptr;
-		if (const FDTItemCatalogRow* const* found = ItemCatalogRowByTag.Find(InItemTag))
-		{
-			return *found;
-		}
-		return nullptr;
-	}
 
-private:
-	/* ItemCatalog DT를 한 번 훑어서 ItemTag -> RowPtr 캐시 구축 */
-	void BuildItemCatalogRowCache()
-	{
-		ItemCatalogRowByTag.Reset();
-
-		UDataTable** tablePtr = MasterDataTables.Find(Arcanum::DataTable::ItemCatalog);
-		if (!tablePtr || !(*tablePtr)) return;
+		UDataTable* const* tablePtr = MasterDataTables.Find(Arcanum::DataTable::ItemCatalog);
+		if (!tablePtr || !(*tablePtr)) return nullptr;
 
 		UDataTable* table = *tablePtr;
+
 		for (const TPair<FName, uint8*>& pair : table->GetRowMap())
 		{
-			if (const FDTItemCatalogRow* row = reinterpret_cast<const FDTItemCatalogRow*>(pair.Value))
+			const FDTItemCatalogRow* row = reinterpret_cast<const FDTItemCatalogRow*>(pair.Value);
+
+			if (row && row->ItemTag.MatchesTagExact(InItemTag))
 			{
-				if (row->ItemTag.IsValid())
-				{
-					if (!ItemCatalogRowByTag.Contains(row->ItemTag))
-					{
-						ItemCatalogRowByTag.Add(row->ItemTag, row);
-					}
-				}
+				return row;
 			}
 		}
+
+		return nullptr;
 	}
-
-private:
-	/* ItemTag -> ItemCatalog RowPtr 캐시 */
-	TMap<FGameplayTag, const FDTItemCatalogRow*> ItemCatalogRowByTag;
 #pragma endregion
-
 };

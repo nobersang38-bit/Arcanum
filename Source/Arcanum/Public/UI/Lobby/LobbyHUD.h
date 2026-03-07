@@ -169,63 +169,11 @@ protected:
 #pragma endregion
 
 #pragma region 상점
-public:
-	/* 상점 UI 갱신 */
-	void RefreshShopUI();
-
-protected:
-	/* 상점 초기화 */
-	void InitShop();
-	
-	/* 상점 타이머 델리게이트 바인딩 */
-	void BindShopTimer();
-
-	/* 상점 타이머 수신 */
-	UFUNCTION()
-	void HandleShopSecondChanged(int32 InRemainingSeconds);
-
-private:
-	/* DT 조회로 상점 표시 캐시 */
-	void BuildShopRuntimeCache();
-
-	/* 로비 복귀 시 타이머 재개 */
-	void RestartShopTimer();
-
 protected:
 	/* 상점 위젯 */
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UShopHUDWidget> ShopHUDWidget;
 
-	/* 장비 상점 슬롯 개수 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shop")
-	int32 EquipmentShopSlotCount = 5;
-
-	/* 물약 상점 슬롯 개수 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shop")
-	int32 PotionShopSlotCount = 6;
-
-private:
-	/* 상점 슬롯 상품 키(TableTag+RowName) 표시 캐시 */
-	UPROPERTY()
-	TArray<FGameplayTag> CachedShopTableTags;
-
-	/* 상점 UI 표시용 RowName 카피 */
-	UPROPERTY()
-	TArray<FName> CachedShopRowNames;
-
-	/* 상점 UI 표시용 품절 카피 */
-	UPROPERTY()
-	TArray<bool> CachedShopSoldOutStates;
-
-	/* 상점 슬롯 표시용 공통 캐시 */
-	UPROPERTY()
-	TArray<TSoftObjectPtr<UTexture2D>> CachedShopIcons;
-	UPROPERTY()
-	TArray<FText> CachedShopNames;
-	UPROPERTY()
-	TArray<FText> CachedShopDescs;
-	UPROPERTY()
-	TArray<int64> CachedShopPrices;
 #pragma endregion
 
 #pragma endregion

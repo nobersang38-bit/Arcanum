@@ -4,7 +4,11 @@
 #include "UI/Lobby/Contents/Inventory/InventoryHUDWidget.h"
 #include "UI/Common/CommonBtnWidget.h"
 #include "Core/ARPlayerAccountService.h"
+#include "Core/ARGameInstance.h"
+#include "Core/SubSystem/GameDataSubsystem.h"
+#include "Core/SubSystem/GameTimeSubsystem.h"
 #include "Components/TextBlock.h"
+#include "DataInfo/ItemData/DataTable/DTItemCatalogRow.h"
 
 void UShopHUDWidget::NativeConstruct()
 {
@@ -38,6 +42,90 @@ void UShopHUDWidget::NativeConstruct()
 	}
 }
 
+void UShopHUDWidget::RefreshShopUI()
+{
+	BuildShopRuntimeCache();
+
+	ApplyShopData(
+		CachedShopRowNames,
+		CachedShopSoldOutStates,
+		CachedShopIcons,
+		CachedShopNames,
+		CachedShopDescs,
+		CachedShopPrices
+	);
+
+	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+	{
+		const int32 remaining = FPlayerAccountService::GetShopRemainingSeconds(gameInstance);
+
+		HandleShopSecondChanged(remaining);
+	}
+}
+
+void UShopHUDWidget::BuildShopRuntimeCache()
+{
+	if (!ParentLobby) return;
+
+	const int32 slotCount = FMath::Max(0, EquipmentShopSlotCount) + FMath::Max(0, PotionShopSlotCount);
+
+	CachedShopRowNames.SetNum(slotCount);
+	CachedShopSoldOutStates.SetNum(slotCount);
+
+	CachedShopIcons.SetNum(slotCount);
+	CachedShopNames.SetNum(slotCount);
+	CachedShopDescs.SetNum(slotCount);
+	CachedShopPrices.SetNum(slotCount);
+
+	for (int32 i = 0; i < slotCount; i++)
+	{
+		CachedShopRowNames[i] = NAME_None;
+		CachedShopSoldOutStates[i] = false;
+
+		CachedShopIcons[i] = nullptr;
+		CachedShopNames[i] = FText::GetEmpty();
+		CachedShopDescs[i] = FText::GetEmpty();
+		CachedShopPrices[i] = 0;
+	}
+
+	UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance());
+	if (!gameInstance) return;
+
+	UGameDataSubsystem* dataSubsystem = gameInstance->GetSubsystem<UGameDataSubsystem>();
+	if (!dataSubsystem) return;
+
+	for (int32 slotIndex = 0; slotIndex < slotCount; slotIndex++)
+	{
+		if (!gameInstance->CurrentShopKeys.IsValidIndex(slotIndex)) continue;
+
+		const FShopProductKey& key = gameInstance->CurrentShopKeys[slotIndex];
+
+		if (gameInstance->CurrentShopSoldOutStates.IsValidIndex(slotIndex))
+		{
+			CachedShopSoldOutStates[slotIndex] = gameInstance->CurrentShopSoldOutStates[slotIndex];
+		}
+
+		if (!key.TableTag.IsValid() || key.RowName.IsNone()) continue;
+
+		// ItemCatalog 직접 키(=RowName이 ItemTagName)
+		if (key.TableTag.MatchesTagExact(Arcanum::DataTable::ItemCatalog))
+		{
+			const FDTItemCatalogRow* catalogRow = dataSubsystem->GetRow<FDTItemCatalogRow>(Arcanum::DataTable::ItemCatalog, key.RowName);
+			if (!catalogRow) continue;
+
+			CachedShopRowNames[slotIndex] = key.RowName;
+			CachedShopIcons[slotIndex] = catalogRow->Icon;
+			CachedShopNames[slotIndex] = catalogRow->DisplayName;
+			CachedShopDescs[slotIndex] = catalogRow->Desc;
+			CachedShopPrices[slotIndex] = catalogRow->BuyPrice;
+
+			continue;
+		}
+
+		CachedShopRowNames[slotIndex] = key.RowName;
+	}
+}
+
 void UShopHUDWidget::ApplyShopData(
 	const TArray<FName>& InRowNames,
 	const TArray<bool>& InSoldOutStates,
@@ -61,12 +149,12 @@ void UShopHUDWidget::ClearShopSelection()
 {
 	SelectedSlotIndex = INDEX_NONE;
 
-	if (EquipmentPanel) 
-	{ 
-		EquipmentPanel->ClearSelection(); 
+	if (EquipmentPanel)
+	{
+		EquipmentPanel->ClearSelection();
 	}
-	if (PotionPanel) 
-	{ 
+	if (PotionPanel)
+	{
 		PotionPanel->ClearSelection();
 	}
 }
@@ -83,18 +171,18 @@ void UShopHUDWidget::SetShopRemainingSeconds(int32 InRemainingSeconds)
 	}
 }
 
-void UShopHUDWidget::InitPanels(int32 InEquipmentSlotCount, int32 InPotionSlotCount)
+void UShopHUDWidget::InitPanels()
 {
 	if (EquipmentPanel)
 	{
-		EquipmentPanel->InitSlots(FMath::Max(0, InEquipmentSlotCount), 0);
+		EquipmentPanel->InitSlots(FMath::Max(0, EquipmentShopSlotCount), 0);
 		EquipmentPanel->ClearSelection();
 	}
 
 	if (PotionPanel)
 	{
-		const int32 equipCount = FMath::Max(0, InEquipmentSlotCount);
-		PotionPanel->InitSlots(FMath::Max(0, InPotionSlotCount), equipCount);
+		const int32 equipCount = FMath::Max(0, EquipmentShopSlotCount);
+		PotionPanel->InitSlots(FMath::Max(0, PotionShopSlotCount), equipCount);
 		PotionPanel->ClearSelection();
 	}
 
@@ -132,7 +220,7 @@ void UShopHUDWidget::HandleBuyClicked()
 	if (bSuccess)
 	{
 		ParentLobby->RefreshAllLobbyUI();
-		ParentLobby->RefreshShopUI();
+		RefreshShopUI();
 	}
 }
 
@@ -150,7 +238,7 @@ void UShopHUDWidget::HandleSellClicked()
 		{
 			UE_LOG(LogTemp, Log, TEXT("[Sell] : true"));
 			ParentLobby->RefreshAllLobbyUI();
-			ParentLobby->RefreshShopUI();
+			RefreshShopUI();
 		}
 		else
 		{
@@ -168,11 +256,78 @@ void UShopHUDWidget::HandleSellClicked()
 		{
 			UE_LOG(LogTemp, Log, TEXT("[Sell] : true"));
 			ParentLobby->RefreshAllLobbyUI();
-			ParentLobby->RefreshShopUI();
+			RefreshShopUI();
 		}
 		else
 		{
 			UE_LOG(LogTemp, Log, TEXT("[Sell] : false"));
+		}
+	}
+}
+
+void UShopHUDWidget::InitShop()
+{
+	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+	{
+		FPlayerAccountService::InitializeShop(gameInstance, EquipmentShopSlotCount, PotionShopSlotCount);
+	}
+}
+
+void UShopHUDWidget::BindShopTimer()
+{
+	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+	{
+		if (UGameTimeSubsystem* gameTimeSubsystem = gameInstance->GetSubsystem<UGameTimeSubsystem>())
+		{
+			gameTimeSubsystem->OnShopSecondChanged.RemoveDynamic(this, &UShopHUDWidget::HandleShopSecondChanged);
+			gameTimeSubsystem->OnShopSecondChanged.AddDynamic(this, &UShopHUDWidget::HandleShopSecondChanged);
+		}
+
+		const int32 remaining = FPlayerAccountService::GetShopRemainingSeconds(gameInstance);
+		HandleShopSecondChanged(remaining);
+	}
+}
+
+void UShopHUDWidget::HandleShopSecondChanged(int32 InRemainingSeconds)
+{
+	if (InRemainingSeconds == 0)
+	{
+		if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+		{
+			FPlayerAccountService::RefreshShop(gameInstance, EquipmentShopSlotCount, PotionShopSlotCount);
+			BuildShopRuntimeCache();
+			InRemainingSeconds = FPlayerAccountService::GetShopRemainingSeconds(gameInstance);
+		}
+
+		ApplyShopData(
+			CachedShopRowNames,
+			CachedShopSoldOutStates,
+			CachedShopIcons,
+			CachedShopNames,
+			CachedShopDescs,
+			CachedShopPrices
+		);
+	}
+
+	SetShopRemainingSeconds(InRemainingSeconds);
+}
+
+void UShopHUDWidget::RestartShopTimer()
+{
+	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+	{
+		if (gameInstance->bShopPaused && gameInstance->PausedShopRemainingSeconds > 0)
+		{
+			const FDateTime nowKst = FPlayerAccountService::GetCurrentTimeKST();
+			gameInstance->NextShopRefreshTime = nowKst + FTimespan(0, 0, gameInstance->PausedShopRemainingSeconds);
+
+			gameInstance->bShopPaused = false;
+			gameInstance->PausedShopRemainingSeconds = 0;
+
+			if (UGameTimeSubsystem* gameTimeSubsystem = gameInstance->GetSubsystem<UGameTimeSubsystem>())
+			{
+				gameTimeSubsystem->StartShop(gameInstance->NextShopRefreshTime);
+			}
 		}
 	}
 }

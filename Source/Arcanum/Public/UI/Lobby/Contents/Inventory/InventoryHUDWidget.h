@@ -6,7 +6,6 @@
 #include "InventoryHUDWidget.generated.h"
 
 class ULobbyHUD;
-class UScrollBox;
 class UWrapBox;
 class UCommonBtnWidget;
 class UInventoryItemSlotWidget;
@@ -136,6 +135,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Inventory")
 	FOnInventoryCategoryChanged OnCategoryChanged;
+
 protected:
 	/* 슬롯 배치 컨테이너 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget, AllowPrivateAccess = "true"))

@@ -187,7 +187,7 @@ public:
 #pragma endregion
 
 #pragma region 테스트 코드
-    UFUNCTION(BlueprintCallable)
+    /*UFUNCTION(BlueprintCallable)
     bool TestPurchaseEquipment(FName ItemRowName)
     {
         bool bSuccess = FPlayerAccountService::PurchaseEquipment(this, ItemRowName);
@@ -203,7 +203,7 @@ public:
         }
 
         return bSuccess;
-    }
+    }*/
 
     UFUNCTION(BlueprintCallable)
     bool AddTestGold();
