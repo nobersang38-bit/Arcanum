@@ -121,6 +121,11 @@ void ULobbyHUD::RefreshAllLobbyUI()
 	{
 		InventoryHUDWidget->RefreshInventoryUI();
 	}
+
+	if (EnhancementHUDWidget)
+	{
+		EnhancementHUDWidget->RefreshEquipmentInventory();
+	}
 }
 
 void ULobbyHUD::ClickBattleMenuBtn()

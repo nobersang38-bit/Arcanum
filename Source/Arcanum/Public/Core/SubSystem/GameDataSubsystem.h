@@ -5,6 +5,7 @@
 #include "NativeGameplayTags.h"
 #include "Arcanum/Public/GameplayTags/ArcanumTags.h"
 #include "DataInfo/ItemData/DataTable/DTItemCatalogRow.h"
+#include "DataInfo/ItemData/DataTable/DTStatDisplayRow.h"
 #include "Core/Settings/DataTableSettings.h"
 #include "GameDataSubsystem.generated.h"
 
@@ -40,6 +41,7 @@ public:
 	}
 
 #pragma region 아이템 카탈로그 DT 조회
+public:
 	/* ItemCatalog DT를 순회해 ItemTag와 일치하는 Row행을 조회 */
 	const FDTItemCatalogRow* FindItemCatalogRowByTag(const FGameplayTag& InItemTag) const
 	{
@@ -53,8 +55,37 @@ public:
 		for (const TPair<FName, uint8*>& pair : table->GetRowMap())
 		{
 			const FDTItemCatalogRow* row = reinterpret_cast<const FDTItemCatalogRow*>(pair.Value);
-
 			if (row && row->ItemTag.MatchesTagExact(InItemTag))
+			{
+				return row;
+			}
+		}
+
+		return nullptr;
+	}
+#pragma endregion
+
+#pragma region 스탯 디스플레이 DT 조회
+public:
+	const FDTStatDisplayRow* FindStatDisplayRowByTag(const FGameplayTag& InStatTag) const
+	{
+		if (!InStatTag.IsValid())
+		{
+			return nullptr;
+		}
+
+		UDataTable* const* tablePtr = MasterDataTables.Find(Arcanum::DataTable::StatDisplay);
+		if (!tablePtr || !(*tablePtr))
+		{
+			return nullptr;
+		}
+
+		UDataTable* table = *tablePtr;
+
+		for (const TPair<FName, uint8*>& pair : table->GetRowMap())
+		{
+			const FDTStatDisplayRow* row = reinterpret_cast<const FDTStatDisplayRow*>(pair.Value);
+			if (row && row->StatTag.MatchesTagExact(InStatTag))
 			{
 				return row;
 			}

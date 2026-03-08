@@ -264,6 +264,96 @@ void UInventoryHUDWidget::AppendGuidSlotsSorted(TArray<FInventoryViewSlot>& OutS
 	}
 }
 
+void UInventoryHUDWidget::RefreshEquipmentInventory()
+{
+	if (!ParentLobby) return;
+
+	const FPlayerData& playerData = ParentLobby->GetCachedPlayerData();
+	const int32 slotCount = FMath::Max(1, playerData.InventoryCapacity);
+
+	InitInventorySlots(slotCount);
+
+	TArray<FInventoryViewSlot> viewSlots;
+	viewSlots.Reserve(slotCount);
+
+	AppendGuidSlots(viewSlots, slotCount);
+
+	ApplyInventorySlots(viewSlots);
+
+	if (SelectedInventoryItemGuid.IsValid())
+	{
+		int32 foundIndex = INDEX_NONE;
+
+		for (int32 i = 0; i < CachedViewSlots.Num(); i++)
+		{
+			const FInventoryViewSlot& slot = CachedViewSlots[i];
+
+			if (slot.Type == EInventoryViewSlotType::Equipment &&
+				slot.ItemGuid == SelectedInventoryItemGuid)
+			{
+				foundIndex = i;
+				break;
+			}
+		}
+
+		if (foundIndex == INDEX_NONE)
+		{
+			SelectedInventoryItemGuid.Invalidate();
+			SelectedStackItemTag = FGameplayTag();
+			SelectedStackItemCount = 0;
+			SelectedSlotIndex = INDEX_NONE;
+
+			RefreshSelection();
+			OnInventorySlotSelected.Broadcast(FInventoryViewSlot());
+		}
+	}
+}
+
+void UInventoryHUDWidget::RefreshStackInventory()
+{
+	if (!ParentLobby) return;
+
+	const FPlayerData& playerData = ParentLobby->GetCachedPlayerData();
+	const int32 slotCount = FMath::Max(1, playerData.InventoryCapacity);
+
+	InitInventorySlots(slotCount);
+
+	TArray<FInventoryViewSlot> viewSlots;
+	viewSlots.Reserve(slotCount);
+
+	AppendStackItemSlots(viewSlots, slotCount);
+
+	ApplyInventorySlots(viewSlots);
+
+	if (SelectedStackItemTag.IsValid())
+	{
+		int32 foundIndex = INDEX_NONE;
+
+		for (int32 i = 0; i < CachedViewSlots.Num(); i++)
+		{
+			const FInventoryViewSlot& slot = CachedViewSlots[i];
+
+			if (slot.Type == EInventoryViewSlotType::StackItem &&
+				slot.ItemTag.MatchesTagExact(SelectedStackItemTag))
+			{
+				foundIndex = i;
+				break;
+			}
+		}
+
+		if (foundIndex == INDEX_NONE)
+		{
+			SelectedInventoryItemGuid.Invalidate();
+			SelectedStackItemTag = FGameplayTag();
+			SelectedStackItemCount = 0;
+			SelectedSlotIndex = INDEX_NONE;
+
+			RefreshSelection();
+			OnInventorySlotSelected.Broadcast(FInventoryViewSlot());
+		}
+	}
+}
+
 void UInventoryHUDWidget::ApplyInventorySlots(const TArray<FInventoryViewSlot>& InSlots)
 {
 	const int32 slotCount = Slots.Num();

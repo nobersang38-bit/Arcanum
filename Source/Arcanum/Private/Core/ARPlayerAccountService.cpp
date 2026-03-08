@@ -5,6 +5,7 @@
 
 #include "DataInfo/ItemData/DataTable/DTPotionInfoRow.h"
 #include "DataInfo/ItemData/DataTable/DTItemCatalogRow.h"
+#include "DataInfo/EnhancementData/DataTable/DTEnhanceRuleRow.h"
 
 #include "Kismet/GameplayStatics.h"
 
@@ -219,6 +220,90 @@ void FPlayerAccountService::StopShopOnBattleStart(const UObject* WorldContextObj
 // ========================================================
 // Enhancement Widget 관련
 // ========================================================
+
+bool FPlayerAccountService::EnhanceEquipment(const UObject* WorldContextObject, const FGuid& InItemGuid)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return false;
+	if (!InItemGuid.IsValid()) return false;
+
+	UGameDataSubsystem* dataSubsystem = GI->GetSubsystem<UGameDataSubsystem>();
+	if (!dataSubsystem) return false;
+
+	FPlayerData& playerData = GI->GetPlayerData();
+
+	FEquipmentInfo* foundEquip = nullptr;
+	for (FEquipmentInfo& equip : playerData.Inventory)
+	{
+		if (equip.ItemGuid == InItemGuid)
+		{
+			foundEquip = &equip;
+			break;
+		}
+	}
+	if (!foundEquip) return false;
+
+	const FDTItemCatalogRow* catalogRow = dataSubsystem->FindItemCatalogRowByTag(foundEquip->ItemTag);
+	if (!catalogRow) return false;
+	if (catalogRow->DetailRowName.IsNone()) return false;
+
+	const FDTEquipmentInfoRow* equipRow =
+		dataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, catalogRow->DetailRowName);
+	if (!equipRow) return false;
+
+	const int32 currentLevel = FMath::Max(0, foundEquip->CurrUpgradeLevel);
+	const int32 maxLevel = FMath::Max(0, foundEquip->Equipment.MaxUpgradeLevel);
+	if (currentLevel >= maxLevel) return false;
+
+	const FName ruleRowName = FName(*FString::Printf(TEXT("Level_%d"), currentLevel));
+	const FDTEnhanceRuleRow* ruleRow = dataSubsystem->GetRow<FDTEnhanceRuleRow>(Arcanum::DataTable::EnhanceRule, ruleRowName);
+	if (!ruleRow) return false;
+
+	const FGameplayTag goldTag = Arcanum::PlayerData::Currencies::NonRegen::Gold::Value;
+	const int64 currentGold = GI->GetCurrencyAmount(goldTag);
+	if (currentGold == INDEX_NONE_LONG) return false;
+	if (currentGold < ruleRow->EnhanceGoldCost) return false;
+
+	UpdateCurrency(WorldContextObject, GI->GetPlayerDataCopy(), goldTag, -ruleRow->EnhanceGoldCost);
+
+	const int32 roll = FMath::RandRange(1, 100);
+	if (roll > ruleRow->EnhanceSuccessRate)
+	{
+		return true;
+	}
+
+	const int32 nextLevel = currentLevel + 1;
+	if (!equipRow->BaseInfoSteps.IsValidIndex(nextLevel)) return false;
+
+	foundEquip->CurrUpgradeLevel = nextLevel;
+	foundEquip->Equipment.MaxUpgradeLevel = equipRow->BaseInfoSteps[nextLevel].MaxUpgradeLevel;
+	foundEquip->Equipment.RandomStatRanges = equipRow->BaseInfoSteps[nextLevel].RandomStatRanges;
+
+	RollEquipmentStats(equipRow->BaseInfoSteps[nextLevel], foundEquip->Equipment.OwnerStats);
+
+	return SavePlayerData(GI);
+}
+
+void FPlayerAccountService::RollEquipmentStats(const FItemDefinition& InItemDefinition, TArray<FDerivedStatModifier>& OutOwnerStats)
+{
+	OutOwnerStats.Empty();
+
+	for (const FStatRangeDefinition& range : InItemDefinition.RandomStatRanges)
+	{
+		FDerivedStatModifier finalStat;
+		finalStat.StatTag = range.StatTag;
+
+		const float minF = FMath::Min(range.MinValue.Flat, range.MaxValue.Flat);
+		const float maxF = FMath::Max(range.MinValue.Flat, range.MaxValue.Flat);
+		finalStat.Value.Flat = FMath::RandRange(minF, maxF);
+
+		const float minM = FMath::Min(range.MinValue.Mul, range.MaxValue.Mul);
+		const float maxM = FMath::Max(range.MinValue.Mul, range.MaxValue.Mul);
+		finalStat.Value.Mul = FMath::RandRange(minM, maxM);
+
+		OutOwnerStats.Add(finalStat);
+	}
+}
 
 // ========================================================
 // Shop Widget 관련
@@ -762,29 +847,15 @@ bool FPlayerAccountService::AddGuidFromEquipment(const UObject* WorldContextObje
 	newEquip.Equipment = equipRow->BaseInfoSteps[0];
 
 	// 랜덤 능력치
-	for (const FStatRangeDefinition& range : newEquip.Equipment.RandomStatRanges)
+	RollEquipmentStats(newEquip.Equipment, newEquip.Equipment.OwnerStats);
+
+	for (const FDerivedStatModifier& stat : newEquip.Equipment.OwnerStats)
 	{
-		FDerivedStatModifier finalStat;
-		finalStat.StatTag = range.StatTag;
-
-		const float minF = range.MinValue.Flat;
-		const float maxF = range.MaxValue.Flat;
-		finalStat.Value.Flat = FMath::RandRange(FMath::Min(minF, maxF), FMath::Max(minF, maxF));
-
-		const float minM = range.MinValue.Mul;
-		const float maxM = range.MaxValue.Mul;
-		finalStat.Value.Mul = FMath::RandRange(FMath::Min(minM, maxM), FMath::Max(minM, maxM));
-
-		newEquip.Equipment.OnHitTargetStats.Add(finalStat);
-	}
-	if (newEquip.Equipment.OnHitTargetStats.Num() > 0)
-	{
-		const FDerivedStatModifier& lastStat = newEquip.Equipment.OnHitTargetStats.Last();
-		UE_LOG(LogTemp, Log, TEXT("[Shop_Buy] Item=%s Stat=%s Flat=%.2f Mul=%.2f"),
+		UE_LOG(LogTemp, Log, TEXT("[Buy] Item=%s Stat=%s Flat=%.2f Mul=%.2f"),
 			*newEquip.ItemTag.ToString(),
-			*lastStat.StatTag.ToString(),
-			lastStat.Value.Flat,
-			lastStat.Value.Mul);
+			*stat.StatTag.ToString(),
+			stat.Value.Flat,
+			stat.Value.Mul);
 	}
 
 	playerData.Inventory.Add(MoveTemp(newEquip));

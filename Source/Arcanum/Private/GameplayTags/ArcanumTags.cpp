@@ -14,7 +14,9 @@ namespace Arcanum {
 		UE_DEFINE_GAMEPLAY_TAG(EnemyUnitInfo, "Arcanum.DataTable.EnemyUnitInfo");
 		UE_DEFINE_GAMEPLAY_TAG(Potion, "Arcanum.DataTable.Potion");
 		UE_DEFINE_GAMEPLAY_TAG(ItemCatalog, "Arcanum.DataTable.ItemCatalog");
-		
+		UE_DEFINE_GAMEPLAY_TAG(StatDisplay, "Arcanum.DataTable.StatDisplay");
+		UE_DEFINE_GAMEPLAY_TAG(EnhanceRule, "Arcanum.DataTable.EnhanceRule");
+
 
 
 		//UE_DEFINE_GAMEPLAY_TAG(BattleRegenStats,	"Arcanum.DataTable.BattleRegenStats");

@@ -131,7 +131,13 @@ public:
 #pragma endregion
 
 #pragma region Enhancement Widget 관련
+public:
+	/* 장비 강화 */
+	static bool EnhanceEquipment(const UObject* WorldContextObject, const FGuid& InItemGuid);
 
+private:
+	/* 장비 랜덤 능력치 OwnerStats 생성 */
+	static void RollEquipmentStats(const FItemDefinition& InItemDefinition, TArray<FDerivedStatModifier>& OutOwnerStats);
 #pragma endregion
 
 #pragma region Shop Widget 관련

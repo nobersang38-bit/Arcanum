@@ -51,6 +51,11 @@ public:
 	/* 인벤 UI 갱신 */
 	void RefreshInventoryUI();
 
+	/* 장비 전용 표시 슬롯 생성 */
+	void RefreshEquipmentInventory();
+	/* 스택 전용 표시 슬롯 생성 */
+	void RefreshStackInventory();
+
 	/* 현재 카테고리 강제 설정 */
 	void SetCurrentFilter(EInventoryCategoryFilter InFilter) { CurrentFilter = InFilter; }
 
