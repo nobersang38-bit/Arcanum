@@ -83,12 +83,17 @@ void UInventorySlot::CreateWeaponItems(TArray<FEquipmentInfo> WeaponList, const 
                         if (row->ItemTag == ListItemTag)
                         {
                             WeaponInventoryItemIcon = row->Icon.LoadSynchronous();
+                            EquipNameTxt = row->Desc;
                             // 무기만 출력되는 if문 SlotTag가 Weapon인거
                             if (IsSpecificSlotType(row->SlotTag, TargetPath))
                             {
                                 if (NewSlot)
                                 {
                                     NewSlot->SetItemIconImage(WeaponInventoryItemIcon);
+                                    NewSlot->SetItemName(EquipNameTxt);
+                                    NewSlot->SetWeaponTag(row->ItemTag);
+                                    NewSlot->OnSlotClicked.AddDynamic(this, &UInventorySlot::OnSlotClicked);
+                                    InventoryEquipmentSlots.Add(NewSlot);
                                     UWrapBoxSlot* WrapSlot = EquipGridPanel->AddChildToWrapBox(NewSlot);
 
                                     if (WrapSlot)
@@ -103,8 +108,6 @@ void UInventorySlot::CreateWeaponItems(TArray<FEquipmentInfo> WeaponList, const 
                 }
             }
         }
-
-       
     }
 }
 
@@ -113,7 +116,10 @@ void UInventorySlot::CreateWeaponItems(TArray<FEquipmentInfo> WeaponList, const 
 // ========================================================
 void UInventorySlot::ClickEquipSetupBtn()
 {
-    OnSetupBtnClicked.Broadcast();
+    // 장착된 캐릭터랑 클릭된 무기,장비 가져오기 
+    //FGameplayTag ClickedItemTag= ClickedSlot->GetWeaponTag();
+
+    OnSetupBtnClicked.Broadcast(CurrentSelectedSlot);
 }
 
 // ========================================================
@@ -130,6 +136,27 @@ bool UInventorySlot::IsSpecificSlotType(const FGameplayTag& InTag, const FString
         return Left.Equals(TargetPath, ESearchCase::IgnoreCase);
     }
     return false;
+}
+
+// ========================================================
+// 무기, 장비 클릭
+// ========================================================
+void UInventorySlot::OnSlotClicked(USquareSlotWidget* ClickedSlot, int32 SlotIndex)
+{
+    if (!ClickedSlot) return;
+    CurrentSelectedSlot = ClickedSlot;
+
+    for (USquareSlotWidget* EquipSlot : InventoryEquipmentSlots)
+    {
+        if (EquipSlot)
+        {
+            // 선택된 슬롯은 핑크, 나머지는 화이트
+            FLinearColor TargetColor = (EquipSlot == ClickedSlot) ? FLinearColor(1.0f, 0.4f, 0.7f, 1.0f) : FLinearColor::White;
+            EquipSlot->SetSquareBackgroundColor(TargetColor);
+        }
+        FText ClickedItemName = ClickedSlot->GetItemName();
+        EquipNameText->SetText(ClickedItemName);
+    }
 }
 
 

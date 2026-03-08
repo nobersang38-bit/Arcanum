@@ -38,6 +38,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetItemIconImage(UTexture2D* ItemIcon);
 
+	UFUNCTION(BlueprintCallable)
+	void SetItemName(FText InText);
+	void SetWeaponTag(FGameplayTag InTag);
+	FText GetItemName() const { return EquipNameTxt; }
+	FGameplayTag GetWeaponTag() const { return WeaponTag; }
+
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UBorder> BackgroundColor;
@@ -51,5 +57,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slot")
 	FGameplayTag WeaponTag;
 
+	UPROPERTY()
+	FText EquipNameTxt;
 
 };

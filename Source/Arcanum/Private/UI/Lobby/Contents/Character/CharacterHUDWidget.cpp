@@ -385,22 +385,27 @@ void UCharacterHUDWidget::OnSquareSlotClicked(USquareSlotWidget* ClickedSlot, in
 
         switch (SlotIndex)
         {
-        case 0:  // 무기 슬롯
-            UE_LOG(LogTemp, Warning, TEXT("무기 슬롯 Clicked"));
+        case 0:  // 무기1 슬롯
+        case 1:  // 무기2 슬롯
+        case 2:  // 전설무기 슬롯
+            UE_LOG(LogTemp, Warning, TEXT("무기1 슬롯 Clicked"));
             ActiveWidget = CharacterSwitcher->GetWidgetAtIndex(1);
             break;
-        case 1:  // 투구 슬롯
+        case 3:  // 투구 슬롯
             UE_LOG(LogTemp, Warning, TEXT("투구 슬롯 Clicked"));
             ActiveWidget = CharacterSwitcher->GetWidgetAtIndex(2);
             break;
-        case 2:  // 갑옷 슬롯
+        case 4:  // 갑옷 슬롯
             UE_LOG(LogTemp, Warning, TEXT("갑옷 슬롯 Clicked"));
+            ActiveWidget = CharacterSwitcher->GetWidgetAtIndex(2);
             break;
-        case 3:  // 장갑 슬롯
+        case 5:  // 장갑 슬롯
             UE_LOG(LogTemp, Warning, TEXT("장갑 슬롯 Clicked"));
+            ActiveWidget = CharacterSwitcher->GetWidgetAtIndex(2);
             break;
-        case 4:  // 신발 슬롯
+        case 6:  // 신발 슬롯
             UE_LOG(LogTemp, Warning, TEXT("신발 슬롯 Clicked"));
+            ActiveWidget = CharacterSwitcher->GetWidgetAtIndex(2);
             break;
         default:
             ActiveWidget = CharacterSwitcher->GetWidgetAtIndex(0);
@@ -435,10 +440,23 @@ void UCharacterHUDWidget::InitWeaponInventory()
 // 무기, 장비 장착 버튼클릭
 // ========================================================
 
-void UCharacterHUDWidget::SetupEquipment()
+void UCharacterHUDWidget::SetupEquipment(USquareSlotWidget* ClickedSlot)
 {
-    if (CharacterSwitcher)
+    if (!ClickedSlot) return;
+
+    FGameplayTag SelectedTag = ClickedSlot->GetWeaponTag();
+    /// Test 테스트용
+    FGuid DummyGuid = FGuid::NewGuid();
+
+    if (!SelectedTag.IsValid())
+        return;
+
+    for (FBattleCharacterData& TargetData : ParentLobby->CachedPlayerData.OwnedCharacters)
     {
-        CharacterSwitcher->SetActiveWidgetIndex(0);
+        if (TargetData.bSelection)
+        {
+             TargetData.Weapons.Add(SelectedTag, DummyGuid);
+
+        }
     }
 }

@@ -102,7 +102,7 @@ protected:
 	void UpdateCharacterInfo(FName CharacterName, bool SlotCharacterOwned, FText InFinalText, FText ButtonText, int64 soulAmount);
 
 	UFUNCTION()
-	void SetupEquipment();
+	void SetupEquipment(USquareSlotWidget* ClickedSlot);
 	int GetCurrentGrade;
 
 	// 무기, 장비 슬롯

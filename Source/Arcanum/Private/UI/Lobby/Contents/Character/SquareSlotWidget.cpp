@@ -33,3 +33,13 @@ void USquareSlotWidget::SetItemIconImage(UTexture2D* ItemIcon)
 {
     IconImage->SetBrushFromTexture(ItemIcon);
 }
+
+void USquareSlotWidget::SetItemName(FText InText)
+{
+    EquipNameTxt= InText;
+}
+
+void USquareSlotWidget::SetWeaponTag(FGameplayTag InTag)
+{
+    WeaponTag = InTag;
+}

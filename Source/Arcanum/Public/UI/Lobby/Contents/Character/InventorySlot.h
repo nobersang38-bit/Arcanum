@@ -12,7 +12,7 @@ class UTextBlock;
 class USquareSlotWidget;
 class UWrapBox;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSetupBtnClicked);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSetupBtnClicked, USquareSlotWidget*, ClickedSlot);
 
 /**
  * 
@@ -62,7 +62,15 @@ protected:
 	UFUNCTION()
 	bool IsSpecificSlotType(const FGameplayTag& InTag, const FString& TargetPath);
 
-protected:
 	UPROPERTY()
 	class UGameDataSubsystem* DataSubsystem;
+
+	UPROPERTY()
+	TArray<USquareSlotWidget*> InventoryEquipmentSlots;
+	UPROPERTY()
+	class USquareSlotWidget* CurrentSelectedSlot;
+
+private:
+	UFUNCTION()
+	void OnSlotClicked(USquareSlotWidget* ClickedSlot, int32 SlotIndex);
 };
