@@ -167,6 +167,13 @@ namespace Arcanum {
 				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Boot);
 			}
 		}
+		namespace Grade
+		{
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Common);
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(SetItem);
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Legendary);
+		}
 		namespace Rarity {
 			namespace Common {
 				namespace Weapon {

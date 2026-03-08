@@ -137,6 +137,7 @@ private:
     FGameplayTag GetHighestGrade(const FDTGachaBannerDataRow* BannerData);
     FGachaItemResult ResolvePickup(const FDTGachaBannerDataRow* BannerData, const FGachaGradePool& Pool, FGachaBannerState& BannerState, FGameplayTag GachaIndex);
     FGameplayTag GetRandomFromGrade(const FGachaGradePool& Pool, FGameplayTag GachaIndex);
+    void AddCharacterToBattleCharacter(FDTCharacterBaseInfoRow* CharRow);
     void AddRandomEquipmentToInventory(FDTEquipmentInfoRow* InRow);
 #pragma endregion
 

@@ -29,7 +29,7 @@ private:
     /** 배너 목록 초기화 (데이터 테이블 기반으로 생성) */
     void InitBannerList();
     UPROPERTY() TArray<FDTGachaBannerDataRow> ActiveBannerDataList;
-    #pragma endregion
+#pragma endregion
 
 #pragma region 배너 버튼 관련
 protected:
@@ -70,5 +70,11 @@ protected:
     private:
     /** 확률 버튼 클릭 핸들러 */
     UFUNCTION() void HandleProbabilityButtonClicked();
-    #pragma endregion
+#pragma endregion
+
+#pragma region 가챠 맵
+protected:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite) TSoftObjectPtr<UWorld> GachaMap;
+#pragma endregion
+
 };

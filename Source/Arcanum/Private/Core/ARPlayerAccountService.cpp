@@ -1173,20 +1173,50 @@ void FPlayerAccountService::GetActiveGachaBannerRows(const UObject* WorldContext
 }
 bool FPlayerAccountService::ExecuteGacha(const UObject* WorldContextObject, const FPlayerData& PlayerData, FGameplayTag BannerTag, FCurrencyCost Cost, int32 PullCount)
 {
+	bool res = false;
 	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
-	if (!World) return false;
+	if (!World) return res;
 
 	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
-	if (!GI) return false;
+	if (!GI) return res;
 
 	int64 SpendAmount = (PullCount == 1) ? (int64)Cost.SinglePullCost : (int64)Cost.MultiPullCost;
 	FPlayerCurrency PlayerCurrency = GetPlayerCurrency(WorldContextObject);
 	FCurrencyData* TargetData = PlayerCurrency.CurrencyDatas.Find(Cost.ConsumptionCurrencyTag);
 
-	if (!TargetData || TargetData->CurrAmount < SpendAmount) return false;
+	if (!TargetData || TargetData->CurrAmount < SpendAmount) return res;
 	const FDTGachaBannerDataRow* BannerData = GetGachaBannerData(WorldContextObject, BannerTag);
-	if (!BannerData) return false;
+	if (!BannerData) return res;
 
-	UpdateCurrency(WorldContextObject, PlayerData, Cost.ConsumptionCurrencyTag, -SpendAmount);
-	return GI->GenerateResults(BannerData, PullCount);
+	if (GI->GenerateResults(BannerData, PullCount)) {
+		UpdateCurrency(WorldContextObject, PlayerData, Cost.ConsumptionCurrencyTag, -SpendAmount);
+		res = true;
+	}
+	
+	return res;
+}
+// ========================================================
+// Transient 관련
+// ========================================================
+void FPlayerAccountService::SetGachaItemEmpty(const UObject* WorldContextObject)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+
+	if (!GI) {
+		UE_LOG(LogTemp, Error, TEXT("Invalid WorldContext or GameInstance!"));
+		return;
+	}
+
+	GI->GachaItemResult.Empty();
+}
+TArray<FGachaItemResult> FPlayerAccountService::GetGachaItemResult(const UObject* WorldContextObject)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+
+	if (!GI) {
+		UE_LOG(LogTemp, Error, TEXT("Invalid WorldContext or GameInstance!"));
+		return {};
+	}
+
+	return GI->GachaItemResult;
 }
