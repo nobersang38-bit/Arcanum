@@ -135,6 +135,12 @@ public:
 	/* 장비 강화 */
 	static bool EnhanceEquipment(const UObject* WorldContextObject, const FGuid& InItemGuid);
 
+	/* 장비 옵션 리롤 */
+	static bool RerollEquipment(const UObject* WorldContextObject, const FGuid& InItemGuid);
+
+	/* 장비 분해 */
+	static bool DisassembleEquipment(const UObject* WorldContextObject, const FGuid& InItemGuid);
+
 private:
 	/* 장비 랜덤 능력치 OwnerStats 생성 */
 	static void RollEquipmentStats(const FItemDefinition& InItemDefinition, TArray<FDerivedStatModifier>& OutOwnerStats);

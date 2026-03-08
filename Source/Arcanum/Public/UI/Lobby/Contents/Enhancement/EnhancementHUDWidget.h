@@ -107,7 +107,6 @@ protected:
 	TObjectPtr<UTextBlock> EnhanceChanceText;
 #pragma endregion
 
-
 #pragma region 장비 강화
 private:
 	/* 선택된 장비 강화 버튼 클릭 */
@@ -122,5 +121,52 @@ protected:
 	/* 현재 선택된 장비 Guid */
 	UPROPERTY()
 	FGuid SelectedItemGuid;
+#pragma endregion
+
+#pragma region 장비 리롤
+private:
+	/* 선택된 장비 리롤 버튼 클릭 */
+	UFUNCTION()
+	void HandleRerollButtonClicked();
+
+protected:
+	/* 리롤 버튼 */
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UButton> RerollButton;
+#pragma endregion
+
+#pragma region 장비 분해
+private:
+	/* 선택된 장비 분해 버튼 클릭 */
+	UFUNCTION()
+	void HandleDisassembleButtonClicked();
+
+protected:
+	/* 분해 버튼 */
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UButton> DisassembleButton;
+#pragma endregion
+
+#pragma region 상세 확률표
+private:
+	/* 상세 확률표 버튼 클릭 */
+	UFUNCTION()
+	void HandleDetailChanceButtonClicked();
+
+	/* 상세 확률표 텍스트 갱신 */
+	void RefreshDetailChanceText();
+
+protected:
+	/* 상세 확률표 열기 버튼 */
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UButton> DetailChanceButton;
+
+	/* 상세 확률표 패널 */
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UWidget> DetailChancePanel;
+
+	/* 상세 확률표 텍스트 */
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UTextBlock> DetailChanceText;
 #pragma endregion
 };

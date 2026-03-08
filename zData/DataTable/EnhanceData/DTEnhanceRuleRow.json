@@ -38,5 +38,13 @@
     "RerollSoulCost": 250,
     "DisassembleSoulReward": 50,
     "EnhanceSuccessRate": 6
+  },
+  {
+    "Name": "Level_5",
+    "Level": 5,
+    "EnhanceGoldCost": 0,
+    "RerollSoulCost": 300,
+    "DisassembleSoulReward": 60,
+    "EnhanceSuccessRate": 0
   }
 ]

@@ -284,6 +284,106 @@ bool FPlayerAccountService::EnhanceEquipment(const UObject* WorldContextObject, 
 	return SavePlayerData(GI);
 }
 
+bool FPlayerAccountService::RerollEquipment(const UObject* WorldContextObject, const FGuid& InItemGuid)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return false;
+	if (!InItemGuid.IsValid()) return false;
+
+	UGameDataSubsystem* dataSubsystem = GI->GetSubsystem<UGameDataSubsystem>();
+	if (!dataSubsystem) return false;
+
+	FPlayerData& playerData = GI->GetPlayerData();
+
+	FEquipmentInfo* foundEquip = nullptr;
+	for (FEquipmentInfo& equip : playerData.Inventory)
+	{
+		if (equip.ItemGuid == InItemGuid)
+		{
+			foundEquip = &equip;
+			break;
+		}
+	}
+	if (!foundEquip) return false;
+
+	const FDTItemCatalogRow* catalogRow = dataSubsystem->FindItemCatalogRowByTag(foundEquip->ItemTag);
+	if (!catalogRow) return false;
+	if (catalogRow->DetailRowName.IsNone()) return false;
+
+	const FDTEquipmentInfoRow* equipRow =
+		dataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, catalogRow->DetailRowName);
+	if (!equipRow) return false;
+
+	const int32 currentLevel = FMath::Max(0, foundEquip->CurrUpgradeLevel);
+	if (!equipRow->BaseInfoSteps.IsValidIndex(currentLevel)) return false;
+
+	const FName ruleRowName = FName(*FString::Printf(TEXT("Level_%d"), currentLevel));
+	const FDTEnhanceRuleRow* ruleRow = dataSubsystem->GetRow<FDTEnhanceRuleRow>(Arcanum::DataTable::EnhanceRule, ruleRowName);
+	if (!ruleRow) return false;
+
+	const FGameplayTag soulTag = Arcanum::PlayerData::Currencies::NonRegen::Soul::Value;
+	const int64 currentSoul = GI->GetCurrencyAmount(soulTag);
+	if (currentSoul == INDEX_NONE_LONG) return false;
+	if (currentSoul < ruleRow->RerollSoulCost) return false;
+
+	UpdateCurrency(WorldContextObject, GI->GetPlayerDataCopy(), soulTag, -ruleRow->RerollSoulCost);
+
+	foundEquip->Equipment.RandomStatRanges = equipRow->BaseInfoSteps[currentLevel].RandomStatRanges;
+	RollEquipmentStats(equipRow->BaseInfoSteps[currentLevel], foundEquip->Equipment.OwnerStats);
+
+	return SavePlayerData(GI);
+}
+
+bool FPlayerAccountService::DisassembleEquipment(const UObject* WorldContextObject, const FGuid& InItemGuid)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return false;
+	if (!InItemGuid.IsValid()) return false;
+
+	UGameDataSubsystem* dataSubsystem = GI->GetSubsystem<UGameDataSubsystem>();
+	if (!dataSubsystem) return false;
+
+	FPlayerData& playerData = GI->GetPlayerData();
+
+	int32 foundIndex = INDEX_NONE;
+	for (int32 i = 0; i < playerData.Inventory.Num(); i++)
+	{
+		if (playerData.Inventory[i].ItemGuid == InItemGuid)
+		{
+			foundIndex = i;
+			break;
+		}
+	}
+	if (foundIndex == INDEX_NONE) return false;
+
+	const FEquipmentInfo& foundEquip = playerData.Inventory[foundIndex];
+
+	const FDTItemCatalogRow* catalogRow = dataSubsystem->FindItemCatalogRowByTag(foundEquip.ItemTag);
+	if (!catalogRow) return false;
+	if (catalogRow->DetailRowName.IsNone()) return false;
+
+	const FDTEquipmentInfoRow* equipRow = dataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, catalogRow->DetailRowName);
+	if (!equipRow) return false;
+
+	const int32 currentLevel = FMath::Max(0, foundEquip.CurrUpgradeLevel);
+
+	const FName ruleRowName = FName(*FString::Printf(TEXT("Level_%d"), currentLevel));
+	const FDTEnhanceRuleRow* ruleRow = dataSubsystem->GetRow<FDTEnhanceRuleRow>(Arcanum::DataTable::EnhanceRule, ruleRowName);
+	if (!ruleRow) return false;
+
+	const FGameplayTag soulTag = Arcanum::PlayerData::Currencies::NonRegen::Soul::Value;
+
+	UpdateCurrency(
+		WorldContextObject,
+		GI->GetPlayerDataCopy(),
+		soulTag,
+		ruleRow->DisassembleSoulReward);
+
+	playerData.Inventory.RemoveAtSwap(foundIndex, 1, EAllowShrinking::No);
+
+	return SavePlayerData(GI);
+}
+
 void FPlayerAccountService::RollEquipmentStats(const FItemDefinition& InItemDefinition, TArray<FDerivedStatModifier>& OutOwnerStats)
 {
 	OutOwnerStats.Empty();
