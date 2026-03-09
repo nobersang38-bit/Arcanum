@@ -57,9 +57,6 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInventorySlot> WeaponList;
 
-	//UPROPERTY(meta = (BindWidget))
-	//TObjectPtr<UInventorySlot> EquipmentList;
-
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCommonDialog> SetPlayerConfirm;
 
@@ -103,13 +100,12 @@ protected:
 
 	UFUNCTION()
 	void SetupEquipment(USquareSlotWidget* ClickedSlot, int32 SlotIndex);
-	int GetCurrentGrade;
+	
 
 	// 무기, 장비 슬롯
 	UPROPERTY()
 	TArray<USquareSlotWidget*> EquipmentSlots;
-	
-	int32 RequiredSoul;
+
 
 public:
 	UPROPERTY(BlueprintAssignable)
@@ -123,6 +119,8 @@ public:
 
 	void InitCharacterHUD();
 	void InitWeaponInventory(int32 SlotIndex);
+
+
 private:
 	UFUNCTION()
 	void OnSquareSlotClicked(USquareSlotWidget* ClickedSlot, int32 SlotIndex);
@@ -141,6 +139,11 @@ private:
 	FString CombinedInfoString;
 	UPROPERTY() 
 	FText ButtonText;
+	UPROPERTY() 
+	int32 RequiredSoul;
+	int32 SelectedIndex = INDEX_NONE;
+	int GetCurrentGrade;
+
 	
 #pragma endregion
 

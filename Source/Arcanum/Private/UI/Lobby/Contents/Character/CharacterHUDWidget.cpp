@@ -47,10 +47,6 @@ void UCharacterHUDWidget::NativeConstruct()
     {
         WeaponList->OnSetupBtnClicked.AddDynamic(this, &UCharacterHUDWidget::SetupEquipment);
     }
-    //if (EquipmentList)
-    //{
-    //    EquipmentList->OnSetupBtnClicked.AddDynamic(this, &UCharacterHUDWidget::SetupEquipment);
-    //}
 
     if (!CharacterGridPanel || !RoundedSlotWidgetClass)
     return;
@@ -72,14 +68,12 @@ void UCharacterHUDWidget::NativeConstruct()
 }
 
 // ========================================================
-// 캐릭터창 초기화
+// 캐릭터 목록창 초기화
 // ========================================================
 
 void UCharacterHUDWidget::InitCharacterHUD()
 {
-    // 캐릭터 목록창 생성하기
-    int32 SelectedIndex = INDEX_NONE;
-
+   
     CharacterGridPanel->ClearChildren();
     CreatedCharacterSlots.Empty();
 
@@ -87,11 +81,12 @@ void UCharacterHUDWidget::InitCharacterHUD()
     {
         URoundedSlotWidget* NewSlot = CreateWidget<URoundedSlotWidget>(GetWorld(), RoundedSlotWidgetClass);
         
-        TSoftObjectPtr<UTexture2D> CharacterIconSoftPtr = ParentLobby->CachedPlayerData.OwnedCharacters[i].CharacterInfo.BattleCharacterInitData.CharacterIcon;
+        auto& TargetCharacter = ParentLobby->CachedPlayerData.OwnedCharacters[i];
+        TSoftObjectPtr<UTexture2D> CharacterIconSoftPtr = TargetCharacter.CharacterInfo.BattleCharacterInitData.CharacterIcon;
+
         UTexture2D* CharacterIcon = CharacterIconSoftPtr.LoadSynchronous();
 
-        GetCurrentGrade = ParentLobby->CachedPlayerData.OwnedCharacters[i].CharacterInfo.CurrStarLevel; // 0 이면 보유X , 0 초과는 보유 및 강화
-        
+        GetCurrentGrade = TargetCharacter.CharacterInfo.CurrStarLevel; // 0 이면 보유X , 0 초과는 보유 및 강화 상태
         bool hasOwned = false;
         FGameplayTag CharacterTag = ParentLobby->CachedPlayerData.OwnedCharacters[i].CharacterInfo.BattleCharacterInitData.CharacterTag;
         FName CharacterName = GetLeafNameFromTag(CharacterTag);
@@ -123,12 +118,12 @@ void UCharacterHUDWidget::InitCharacterHUD()
 
     if (SelectedIndex != INDEX_NONE && CreatedCharacterSlots.IsValidIndex(SelectedIndex))
     {
-        auto& Data = ParentLobby->CachedPlayerData.OwnedCharacters[SelectedIndex];
+        auto Data = ParentLobby->CachedPlayerData.OwnedCharacters[SelectedIndex];
 
-        FGameplayTag CharacterTag = Data.CharacterInfo.BattleCharacterInitData.CharacterTag;
+        FGameplayTag CharacterTag = ParentLobby->CachedPlayerData.OwnedCharacters[SelectedIndex].CharacterInfo.BattleCharacterInitData.CharacterTag;
         FName CharacterName = GetLeafNameFromTag(CharacterTag);
 
-        bool hasOwned = Data.CharacterInfo.CurrStarLevel > 0;
+        bool hasOwned = ParentLobby->CachedPlayerData.OwnedCharacters[SelectedIndex].CharacterInfo.CurrStarLevel > 0;
   
         OnCharacterSlotSelected(CreatedCharacterSlots[SelectedIndex], CharacterName, hasOwned);
     }
@@ -385,25 +380,6 @@ void UCharacterHUDWidget::OnSquareSlotClicked(USquareSlotWidget* ClickedSlot, in
         UInventorySlot* InventorySlotWidget = Cast<UInventorySlot>(ActiveWidget);
         int32 TargetIndex = 0;
 
-        //switch (SlotIndex)
-        //{
-        //case 0:  // 무기1 슬롯
-        //case 1:  // 무기2 슬롯
-        //case 2:  // 전설무기 슬롯
-        //    UE_LOG(LogTemp, Warning, TEXT("무기 슬롯 Clicked"));
-        //    TargetIndex = 1;
-        //    break;
-        //case 3:  // 투구 슬롯
-        //case 4:  // 갑옷 슬롯
-        //case 5:  // 장갑 슬롯
-        //case 6:  // 신발 슬롯
-        //    UE_LOG(LogTemp, Warning, TEXT("방어구 슬롯 Clicked"));
-        //    TargetIndex = 2;
-        //    break;
-        //default:
-        //    TargetIndex = 0;
-        //    break;
-        //}
         if (InventorySlotWidget)
         {
             InventorySlotWidget->SetEquipButtonEnabled(false);
