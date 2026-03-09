@@ -47,11 +47,10 @@ void UCharacterHUDWidget::NativeConstruct()
     {
         WeaponList->OnSetupBtnClicked.AddDynamic(this, &UCharacterHUDWidget::SetupEquipment);
     }
-
-    if (EquipmentList)
-    {
-        EquipmentList->OnSetupBtnClicked.AddDynamic(this, &UCharacterHUDWidget::SetupEquipment);
-    }
+    //if (EquipmentList)
+    //{
+    //    EquipmentList->OnSetupBtnClicked.AddDynamic(this, &UCharacterHUDWidget::SetupEquipment);
+    //}
 
     if (!CharacterGridPanel || !RoundedSlotWidgetClass)
     return;
@@ -386,60 +385,56 @@ void UCharacterHUDWidget::OnSquareSlotClicked(USquareSlotWidget* ClickedSlot, in
         UInventorySlot* InventorySlotWidget = Cast<UInventorySlot>(ActiveWidget);
         int32 TargetIndex = 0;
 
-        switch (SlotIndex)
-        {
-        case 0:  // 무기1 슬롯
-        case 1:  // 무기2 슬롯
-        case 2:  // 전설무기 슬롯
-            UE_LOG(LogTemp, Warning, TEXT("무기 슬롯 Clicked"));
-            TargetIndex = 1;
-            break;
-        case 3:  // 투구 슬롯
-        case 4:  // 갑옷 슬롯
-        case 5:  // 장갑 슬롯
-        case 6:  // 신발 슬롯
-            UE_LOG(LogTemp, Warning, TEXT("방어구 슬롯 Clicked"));
-            TargetIndex = 2;
-            break;
-        default:
-            TargetIndex = 0;
-            break;
-        }
+        //switch (SlotIndex)
+        //{
+        //case 0:  // 무기1 슬롯
+        //case 1:  // 무기2 슬롯
+        //case 2:  // 전설무기 슬롯
+        //    UE_LOG(LogTemp, Warning, TEXT("무기 슬롯 Clicked"));
+        //    TargetIndex = 1;
+        //    break;
+        //case 3:  // 투구 슬롯
+        //case 4:  // 갑옷 슬롯
+        //case 5:  // 장갑 슬롯
+        //case 6:  // 신발 슬롯
+        //    UE_LOG(LogTemp, Warning, TEXT("방어구 슬롯 Clicked"));
+        //    TargetIndex = 2;
+        //    break;
+        //default:
+        //    TargetIndex = 0;
+        //    break;
+        //}
         if (InventorySlotWidget)
         {
             InventorySlotWidget->SetEquipButtonEnabled(false);
         }
-        ActiveWidget = CharacterSwitcher->GetWidgetAtIndex(TargetIndex);
+        ActiveWidget = CharacterSwitcher->GetWidgetAtIndex(1);
 
         if (ActiveWidget)
         {
             CharacterSwitcher->SetActiveWidget(ActiveWidget);
         }
     }
+    InitWeaponInventory(SlotIndex);
 }
 
 // ========================================================
 // 무기, 장비 인벤토리 출력
 // ========================================================
-void UCharacterHUDWidget::InitWeaponInventory()
+void UCharacterHUDWidget::InitWeaponInventory(int32 SlotIndex)
 {
+    if (!ParentLobby || !WeaponList) return;
     TArray<FEquipmentInfo> WeaponInventory = ParentLobby->CachedPlayerData.Inventory;
    
-    if (WeaponList)
-    {
-        WeaponList->CreateWeaponItems(WeaponInventory, TEXT("Arcanum.Items.ItemSlot.Weapon"));
-    }
-    if (EquipmentList)
-    {
-        EquipmentList->CreateWeaponItems(WeaponInventory, TEXT("Arcanum.Items.ItemSlot.Armor"));
-    }
+   WeaponList->CreateWeaponItems(WeaponInventory, SlotIndex);
+    
 }
 
 // ========================================================
 // 무기, 장비 장착 버튼클릭
 // ========================================================
 
-void UCharacterHUDWidget::SetupEquipment(USquareSlotWidget* ClickedSlot)
+void UCharacterHUDWidget::SetupEquipment(USquareSlotWidget* ClickedSlot, int32 SlotIndex)
 {
     if (!ClickedSlot) return;
 
@@ -459,5 +454,33 @@ void UCharacterHUDWidget::SetupEquipment(USquareSlotWidget* ClickedSlot)
         }
     }
 
+    // 슬롯 아이콘 변경하기
+    switch (SlotIndex)
+    {
+    case 0:
+        Weapon1Slot->SetItemIconImage(ClickedSlot->IconImg);
+        break;
+    case 1:
+        Weapon2Slot->SetItemIconImage(ClickedSlot->IconImg);
+        break;
+    case 2:
+        LegendaryWeaponSlot->SetItemIconImage(ClickedSlot->IconImg);
+        break;
+    case 3:
+        HelmetSlot->SetItemIconImage(ClickedSlot->IconImg);
+        break;
+    case 4:
+        ChestSlot->SetItemIconImage(ClickedSlot->IconImg);
+        break;
+    case 5:
+        GloveSlot->SetItemIconImage(ClickedSlot->IconImg);
+        break;
+    case 6:
+        BootsSlot->SetItemIconImage(ClickedSlot->IconImg);
+        break;
+
+    default:
+        break;
+    }
 
 }

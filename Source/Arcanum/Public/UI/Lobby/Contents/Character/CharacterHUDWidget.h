@@ -57,8 +57,8 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInventorySlot> WeaponList;
 
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UInventorySlot> EquipmentList;
+	//UPROPERTY(meta = (BindWidget))
+	//TObjectPtr<UInventorySlot> EquipmentList;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCommonDialog> SetPlayerConfirm;
@@ -102,7 +102,7 @@ protected:
 	void UpdateCharacterInfo(FName CharacterName, bool bSetCharacter, bool SlotCharacterOwned, FText InFinalText, FText ButtonText, int64 soulAmount);
 
 	UFUNCTION()
-	void SetupEquipment(USquareSlotWidget* ClickedSlot);
+	void SetupEquipment(USquareSlotWidget* ClickedSlot, int32 SlotIndex);
 	int GetCurrentGrade;
 
 	// 무기, 장비 슬롯
@@ -122,7 +122,7 @@ public:
 	UGameDataSubsystem* DataSubsystem;
 
 	void InitCharacterHUD();
-	void InitWeaponInventory();
+	void InitWeaponInventory(int32 SlotIndex);
 private:
 	UFUNCTION()
 	void OnSquareSlotClicked(USquareSlotWidget* ClickedSlot, int32 SlotIndex);

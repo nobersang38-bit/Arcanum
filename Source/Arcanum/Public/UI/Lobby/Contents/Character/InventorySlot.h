@@ -12,7 +12,7 @@ class UTextBlock;
 class USquareSlotWidget;
 class UWrapBox;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSetupBtnClicked, USquareSlotWidget*, ClickedSlot);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSetupBtnClicked, USquareSlotWidget*, ClickedSlot,int32, SlotIndex);
 
 /**
  * 
@@ -35,7 +35,7 @@ public:
 	FOnSetupBtnClicked OnSetupBtnClicked;
 
 	UFUNCTION()
-	void CreateWeaponItems(TArray<FEquipmentInfo> WeaponList, const FString& TargetPath);
+	void CreateWeaponItems(TArray<FEquipmentInfo> WeaponList,int32 SlotIndex);
 	
 	UFUNCTION(BlueprintCallable)
 	void SetEquipButtonEnabled(bool bWeaponClicked);
@@ -75,7 +75,10 @@ protected:
 	UPROPERTY()
 	class USquareSlotWidget* CurrentSelectedSlot;
 
+	UPROPERTY()
+	int32 SlotIndex = 0;
+
 private:
 	UFUNCTION()
-	void OnSlotClicked(USquareSlotWidget* ClickedSlot, int32 SlotIndex);
+	void OnSlotClicked(USquareSlotWidget* ClickedSlot, int32 InSlotIndex);
 };

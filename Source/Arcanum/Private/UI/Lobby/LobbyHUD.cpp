@@ -165,7 +165,7 @@ void ULobbyHUD::ClickCharacterMenuBtn()
 	if (UCharacterHUDWidget* CharacterWidget = Cast<UCharacterHUDWidget>(WidgetSwitcher->GetWidgetAtIndex(1))) {
 		CharacterWidget->SetParentLobby(this);
 		CharacterWidget->InitCharacterHUD();
-		CharacterWidget->InitWeaponInventory();
+		//CharacterWidget->InitWeaponInventory();
 		WidgetSwitcher->SetActiveWidget(CharacterWidget);
 	}
 }

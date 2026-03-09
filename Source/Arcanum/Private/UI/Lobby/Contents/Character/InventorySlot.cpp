@@ -42,9 +42,24 @@ void UInventorySlot::NativeConstruct()
 // ========================================================
 // 인벤토리에 보유중인 무기, 장비 출력하기 
 // ========================================================
-void UInventorySlot::CreateWeaponItems(TArray<FEquipmentInfo> WeaponList, const FString& TargetPath)
+void UInventorySlot::CreateWeaponItems(TArray<FEquipmentInfo> WeaponList, int32 InSlotIndex)
 {
     FGameplayTag ListItemTag;
+    EquipGridPanel->ClearChildren();
+    InventoryEquipmentSlots.Empty();
+
+    static const TArray<FString> ItemTags = {
+    TEXT("Arcanum.Items.ItemSlot.Weapon.LeftHand"),         
+    TEXT("Arcanum.Items.ItemSlot.Weapon.RightHand,"),          
+    TEXT("Arcanum.Items.ItemSlot.Weapon.TwoHand"),  
+    TEXT("Arcanum.Items.ItemSlot.Armor.Helmet"),    
+    TEXT("Arcanum.Items.ItemSlot.Armor.Chest"),     
+    TEXT("Arcanum.Items.ItemSlot.Armor.Glove"),     
+    TEXT("Arcanum.Items.ItemSlot.Armor.Boot")       
+    };
+
+    const FString& TargetPath = ItemTags[InSlotIndex];
+    SlotIndex = InSlotIndex;
 
     if (!USquareSlotWidgetClass)
         return;
@@ -85,8 +100,9 @@ void UInventorySlot::CreateWeaponItems(TArray<FEquipmentInfo> WeaponList, const 
                             WeaponInventoryItemIcon = row->Icon.LoadSynchronous();
                             EquipNameTxt = row->Desc;
                             // 무기만 출력되는 if문 SlotTag가 Weapon인거
-                            if (IsSpecificSlotType(row->SlotTag, TargetPath))
-                            {
+                            //if (IsSpecificSlotType(row->SlotTag, TargetPath))
+                            if(row->SlotTag.ToString() == TargetPath)
+                            { 
                                 if (NewSlot)
                                 {
                                     NewSlot->SetItemIconImage(WeaponInventoryItemIcon);
@@ -128,7 +144,7 @@ void UInventorySlot::ClickEquipSetupBtn()
     // 장착된 캐릭터랑 클릭된 무기,장비 가져오기 
     //FGameplayTag ClickedItemTag= ClickedSlot->GetWeaponTag();
 
-    OnSetupBtnClicked.Broadcast(CurrentSelectedSlot);
+    OnSetupBtnClicked.Broadcast(CurrentSelectedSlot, SlotIndex);
 }
 
 // ========================================================
@@ -150,7 +166,7 @@ bool UInventorySlot::IsSpecificSlotType(const FGameplayTag& InTag, const FString
 // ========================================================
 // 무기, 장비 클릭
 // ========================================================
-void UInventorySlot::OnSlotClicked(USquareSlotWidget* ClickedSlot, int32 SlotIndex)
+void UInventorySlot::OnSlotClicked(USquareSlotWidget* ClickedSlot, int32 InSlotIndex)
 {
     if (!ClickedSlot) return;
     CurrentSelectedSlot = ClickedSlot;

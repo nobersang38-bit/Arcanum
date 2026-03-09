@@ -32,6 +32,7 @@ void USquareSlotWidget::SetSquareBackgroundColor(FLinearColor NewColor)
 void USquareSlotWidget::SetItemIconImage(UTexture2D* ItemIcon)
 {
     IconImage->SetBrushFromTexture(ItemIcon);
+    IconImg = ItemIcon;
 }
 
 void USquareSlotWidget::SetItemName(FText InText)
