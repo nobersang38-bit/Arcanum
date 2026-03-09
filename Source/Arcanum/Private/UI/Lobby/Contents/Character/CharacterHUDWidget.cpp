@@ -383,34 +383,33 @@ void UCharacterHUDWidget::OnSquareSlotClicked(USquareSlotWidget* ClickedSlot, in
             );
         }
 
+        UInventorySlot* InventorySlotWidget = Cast<UInventorySlot>(ActiveWidget);
+        int32 TargetIndex = 0;
+
         switch (SlotIndex)
         {
         case 0:  // 무기1 슬롯
         case 1:  // 무기2 슬롯
         case 2:  // 전설무기 슬롯
-            UE_LOG(LogTemp, Warning, TEXT("무기1 슬롯 Clicked"));
-            ActiveWidget = CharacterSwitcher->GetWidgetAtIndex(1);
+            UE_LOG(LogTemp, Warning, TEXT("무기 슬롯 Clicked"));
+            TargetIndex = 1;
             break;
         case 3:  // 투구 슬롯
-            UE_LOG(LogTemp, Warning, TEXT("투구 슬롯 Clicked"));
-            ActiveWidget = CharacterSwitcher->GetWidgetAtIndex(2);
-            break;
         case 4:  // 갑옷 슬롯
-            UE_LOG(LogTemp, Warning, TEXT("갑옷 슬롯 Clicked"));
-            ActiveWidget = CharacterSwitcher->GetWidgetAtIndex(2);
-            break;
         case 5:  // 장갑 슬롯
-            UE_LOG(LogTemp, Warning, TEXT("장갑 슬롯 Clicked"));
-            ActiveWidget = CharacterSwitcher->GetWidgetAtIndex(2);
-            break;
         case 6:  // 신발 슬롯
-            UE_LOG(LogTemp, Warning, TEXT("신발 슬롯 Clicked"));
-            ActiveWidget = CharacterSwitcher->GetWidgetAtIndex(2);
+            UE_LOG(LogTemp, Warning, TEXT("방어구 슬롯 Clicked"));
+            TargetIndex = 2;
             break;
         default:
-            ActiveWidget = CharacterSwitcher->GetWidgetAtIndex(0);
+            TargetIndex = 0;
             break;
         }
+        if (InventorySlotWidget)
+        {
+            InventorySlotWidget->SetEquipButtonEnabled(false);
+        }
+        ActiveWidget = CharacterSwitcher->GetWidgetAtIndex(TargetIndex);
 
         if (ActiveWidget)
         {
@@ -450,6 +449,7 @@ void UCharacterHUDWidget::SetupEquipment(USquareSlotWidget* ClickedSlot)
     if (!SelectedTag.IsValid())
         return;
 
+    // 캐릭터에 장착 무기 데이터 추가
     for (FBattleCharacterData& TargetData : ParentLobby->CachedPlayerData.OwnedCharacters)
     {
         if (TargetData.bSelection)
@@ -458,4 +458,6 @@ void UCharacterHUDWidget::SetupEquipment(USquareSlotWidget* ClickedSlot)
 
         }
     }
+
+
 }

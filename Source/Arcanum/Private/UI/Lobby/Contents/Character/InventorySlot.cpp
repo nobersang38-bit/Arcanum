@@ -112,6 +112,14 @@ void UInventorySlot::CreateWeaponItems(TArray<FEquipmentInfo> WeaponList, const 
     }
 }
 
+void UInventorySlot::SetEquipButtonEnabled(bool bWeaponClicked)
+{
+    if (SetupBtn)
+    {
+        SetupBtn->SetIsEnabled(bWeaponClicked);
+    }
+}
+
 // ========================================================
 // 장착 버튼 클릭
 // ========================================================
@@ -158,6 +166,8 @@ void UInventorySlot::OnSlotClicked(USquareSlotWidget* ClickedSlot, int32 SlotInd
         FText ClickedItemName = ClickedSlot->GetItemName();
         EquipNameText->SetText(ClickedItemName);
     }
+
+    SetEquipButtonEnabled(true);
 }
 
 

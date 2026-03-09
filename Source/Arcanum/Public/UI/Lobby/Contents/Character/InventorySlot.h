@@ -36,9 +36,14 @@ public:
 
 	UFUNCTION()
 	void CreateWeaponItems(TArray<FEquipmentInfo> WeaponList, const FString& TargetPath);
+	
+	UFUNCTION(BlueprintCallable)
+	void SetEquipButtonEnabled(bool bWeaponClicked);
+
 private:
 	UFUNCTION()
 	void ClickEquipSetupBtn();
+
 
 protected:
 	UPROPERTY(meta = (BindWidget))
