@@ -34,6 +34,9 @@ struct FBattleCharacterDef
     FGameplayTag MaxGrade;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Growth")
     TArray<int32> RequiredShardCount = { 10, 20, 30 };
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Class")
+    TSoftClassPtr<AActor> CharacterClass = nullptr;
 };
 
 USTRUCT(BlueprintType)

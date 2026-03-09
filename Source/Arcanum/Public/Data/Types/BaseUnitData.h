@@ -51,17 +51,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info", meta = (Categories = "Arcanum.Unit"))
 	FGameplayTag Tag;
 
-	// 해당 유닛의 고기 기본 사용량
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")
-	float MeatCost = 10.0f;
-
-	// 아군 생성 쿨 타임
-	UPROPERTY()
-	float CurrentCoolTime;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")
-	float CoolTime;
-
 	// 해당 객체의 이름
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")
 	FText Name = FText::FromString(TEXT("이름"));
@@ -77,6 +66,17 @@ public:
 	// 대량 1:2비율의 인물화같은 느낌의 텍스처, 캐릭터 선택창의 캐릭터 선택 패널등에 사용
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")
 	TObjectPtr<UTexture2D> Portrait = nullptr;
+
+	// 해당 유닛의 고기 기본 사용량
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")
+	float MeatCost = 10.0f;
+
+	// 아군 생성 쿨 타임
+	UPROPERTY()
+	float CurrentCoolTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")
+	float CoolTime;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")
 	TSoftClassPtr<class ABaseUnitCharacter> UnitClass = nullptr;
@@ -242,6 +242,18 @@ public:
 	FAITickParams AITickParams;
 };
 
+USTRUCT(BlueprintType)
+struct FUnitStat
+{
+	GENERATED_BODY()
+public:    
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TArray<FRegenStat> RegenStats;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TArray<FNonRegenStat> NonRegenStats;
+};
+
 // 김도현
 // 아군 유닛, 적군 유닛이 가져야할 공용 정보
 USTRUCT(BlueprintType)
@@ -257,4 +269,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
 	FUnitAISetting AISetting;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stat")
+	FUnitStat UnitStat;
 };
