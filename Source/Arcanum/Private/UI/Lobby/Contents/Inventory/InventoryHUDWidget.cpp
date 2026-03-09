@@ -1,10 +1,11 @@
 #include "UI/Lobby/Contents/Inventory/InventoryHUDWidget.h"
 #include "UI/Lobby/Contents/Inventory/SubLayout/InventoryItemSlotWidget.h"
 #include "UI/Lobby/LobbyHUD.h"
+#include "UI/Common/CommonBtnWidget.h"
 #include "Core/SubSystem/GameDataSubsystem.h"
 #include "Core/ARGameInstance.h"
-#include "UI/Common/CommonBtnWidget.h"
 #include "Components/WrapBox.h"
+#include "Components/Border.h"
 
 void UInventoryHUDWidget::NativeConstruct()
 {
@@ -36,6 +37,8 @@ void UInventoryHUDWidget::NativeConstruct()
 			InventorySortBtn->OnClicked.AddDynamic(this, &UInventoryHUDWidget::ClickInventorySortBtn);
 		}
 	}
+
+	RefreshCategoryButtonState();
 }
 
 void UInventoryHUDWidget::RefreshInventoryUI()
@@ -354,6 +357,13 @@ void UInventoryHUDWidget::RefreshStackInventory()
 	}
 }
 
+void UInventoryHUDWidget::SetCurrentFilter(EInventoryCategoryFilter InFilter)
+{
+	CurrentFilter = InFilter;
+
+	RefreshCategoryButtonState();
+}
+
 void UInventoryHUDWidget::ApplyInventorySlots(const TArray<FInventoryViewSlot>& InSlots)
 {
 	const int32 slotCount = Slots.Num();
@@ -492,6 +502,7 @@ void UInventoryHUDWidget::ClickInventorySortBtn()
 void UInventoryHUDWidget::HandleAllCategoryClicked()
 {
 	CurrentFilter = EInventoryCategoryFilter::All;
+	RefreshCategoryButtonState();
 	OnCategoryChanged.Broadcast(CurrentFilter);
 	RefreshInventoryUI();
 }
@@ -499,6 +510,7 @@ void UInventoryHUDWidget::HandleAllCategoryClicked()
 void UInventoryHUDWidget::HandleEquipmentCategoryClicked()
 {
 	CurrentFilter = EInventoryCategoryFilter::Equipment;
+	RefreshCategoryButtonState();
 	OnCategoryChanged.Broadcast(CurrentFilter);
 	RefreshInventoryUI();
 }
@@ -506,7 +518,35 @@ void UInventoryHUDWidget::HandleEquipmentCategoryClicked()
 void UInventoryHUDWidget::HandleConsumableCategoryClicked()
 {
 	CurrentFilter = EInventoryCategoryFilter::Consumable;
+	RefreshCategoryButtonState();
 	OnCategoryChanged.Broadcast(CurrentFilter);
 	RefreshInventoryUI();
+}
+
+void UInventoryHUDWidget::RefreshCategoryButtonState()
+{
+	if (AllCategoryBorder)
+	{
+		AllCategoryBorder->SetBrushColor(
+			CurrentFilter == EInventoryCategoryFilter::All
+			? FLinearColor(1.f, 1.f, 1.f, 1.f)
+			: FLinearColor(0.3f, 0.3f, 0.3f, 1.f));
+	}
+
+	if (EquipmentCategoryBorder)
+	{
+		EquipmentCategoryBorder->SetBrushColor(
+			CurrentFilter == EInventoryCategoryFilter::Equipment
+			? FLinearColor(1.f, 1.f, 1.f, 1.f)
+			: FLinearColor(0.3f, 0.3f, 0.3f, 1.f));
+	}
+
+	if (ConsumableCategoryBorder)
+	{
+		ConsumableCategoryBorder->SetBrushColor(
+			CurrentFilter == EInventoryCategoryFilter::Consumable
+			? FLinearColor(1.f, 1.f, 1.f, 1.f)
+			: FLinearColor(0.3f, 0.3f, 0.3f, 1.f));
+	}
 }
 

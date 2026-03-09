@@ -9,6 +9,7 @@ class ULobbyHUD;
 class UWrapBox;
 class UCommonBtnWidget;
 class UInventoryItemSlotWidget;
+class UBorder;
 
 UENUM(BlueprintType)
 enum class EInventoryCategoryFilter : uint8
@@ -57,7 +58,7 @@ public:
 	void RefreshStackInventory();
 
 	/* 현재 카테고리 강제 설정 */
-	void SetCurrentFilter(EInventoryCategoryFilter InFilter) { CurrentFilter = InFilter; }
+	void SetCurrentFilter(EInventoryCategoryFilter InFilter);
 
 private:
 	/* 표시용 슬롯 생성 */
@@ -126,7 +127,7 @@ protected:
 	/* 선택 강조 갱신 */
 	void RefreshSelection();
 
-	// 카테고리 버튼 클릭 함수
+	/* 카테고리 버튼 클릭 함수 */
 	UFUNCTION()
 	void HandleAllCategoryClicked();
 	UFUNCTION()
@@ -174,7 +175,13 @@ protected:
 	UPROPERTY()
 	int32 SelectedStackItemCount = 0;
 
-	// 카테고리 버튼 3개
+#pragma region 카테고리 버튼
+private:
+	/* 선택 카테고리 버튼 상태 갱신 */
+	void RefreshCategoryButtonState();
+
+protected:
+	/* 카테고리 버튼 */
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidgetOptional))
 	TObjectPtr<UCommonBtnWidget> AllCategoryBtn;
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidgetOptional))
@@ -182,8 +189,16 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidgetOptional))
 	TObjectPtr<UCommonBtnWidget> ConsumableCategoryBtn;
 
-private:
-	// 현재 카테고리 필터
+	/* 카테고리 버튼 Border */
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidgetOptional))
+	TObjectPtr<UBorder> AllCategoryBorder;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidgetOptional))
+	TObjectPtr<UBorder> EquipmentCategoryBorder;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidgetOptional))
+	TObjectPtr<UBorder> ConsumableCategoryBorder;
+
+	/* 카테고리 필터 */
 	UPROPERTY()
 	EInventoryCategoryFilter CurrentFilter = EInventoryCategoryFilter::All;
+#pragma endregion
 };
