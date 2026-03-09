@@ -255,6 +255,14 @@ public:
 	static bool ExecuteGacha(const UObject* WorldContextObject, const FPlayerData& PlayerData, FGameplayTag BannerTag, FCurrencyCost Cost, int32 PullCount);
 #pragma endregion
 
+#pragma region Transient 관련
+public:
+	static void SetGachaItemEmpty(const UObject* WorldContextObject);
+	static TArray<FGachaItemResult> GetGachaItemResult(const UObject* WorldContextObject);
+
+#pragma endregion
+
+
 };
 
 //static bool PromoteCharacter(FPlayerData& Data, FGameplayTag CharacterID);
