@@ -22,8 +22,7 @@ void UUnitState_Attack::OnEnter(UUnitCombatComponent* UnitCombatComponent)
 	{
 		GetWorld()->GetTimerManager().ClearTimer(FocusTargetActorTimerHandle);
 	}
-
-	GetWorld()->GetTimerManager().SetTimer(AttackTimerHandle, this, &UUnitState_Attack::Attack, Internal_UnitCombatComponent->UnitData.Info.AISetting.AttackRate, true, 0.0f);
+	Attack();
 }
 
 void UUnitState_Attack::OnTick(float DeltaTime)
@@ -57,13 +56,15 @@ void UUnitState_Attack::Attack()
 		Internal_UnitCombatComponent->MoveToTarget(nullptr);
 
 		int32 IDX = FMath::RandRange(0, (Internal_UnitCombatComponent->UnitData.Info.AnimSetting.Attacks.Num() - 1));
-		UAnimMontage* AttackMontage = Internal_UnitCombatComponent->UnitData.Info.AnimSetting.Attacks[IDX];
+		UAnimMontage* AttackMontage = Internal_UnitCombatComponent->UnitData.Info.AnimSetting.Attacks[IDX].Montage;
+		NextAttackCoolTime = Internal_UnitCombatComponent->UnitData.Info.AnimSetting.Attacks[IDX].AttackRate;
 		Internal_UnitCombatComponent->OwnerCharacter->PlayAnimMontage(AttackMontage);
 
 		FOnMontageEnded EndDelegate;
 		EndDelegate.BindUObject(this, &UUnitState_Attack::OnAttackMontageEnded);
 		Internal_UnitCombatComponent->OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_SetEndDelegate(EndDelegate, AttackMontage);
 
+		GetWorld()->GetTimerManager().SetTimer(AttackTimerHandle, this, &UUnitState_Attack::Attack, NextAttackCoolTime, false, NextAttackCoolTime);
 		/*if (!FocusTargetActorTimerHandle.IsValid())
 		{
 			Internal_UnitCombatComponent->GetWorld()->GetTimerManager().ClearTimer(FocusTargetActorTimerHandle);

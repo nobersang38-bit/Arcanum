@@ -2,7 +2,6 @@
   {
     "Name": "Elara",
     "BattleCharacterTag": "Arcanum.Player.ID.Elara",
-    "bPlayableCharacter": true,
     "GradeDataSteps": [
       {
         "RegenStats": [ 
@@ -65,7 +64,6 @@
   {
     "Name": "Iris",
     "BattleCharacterTag": "Arcanum.Player.ID.Iris",
-    "bPlayableCharacter": true,
     "GradeDataSteps": [
       {
         "RegenStats": [
@@ -132,7 +130,6 @@
   {
     "Name": "Celestia",
     "BattleCharacterTag": "Arcanum.Player.ID.Celestia",
-    "bPlayableCharacter": true,
     "GradeDataSteps": [
       {
         "RegenStats": [
@@ -199,7 +196,6 @@
   {
     "Name": "Lynette",
     "BattleCharacterTag": "Arcanum.Player.ID.Lynette",
-    "bPlayableCharacter": true,
     "GradeDataSteps": [
       {
         "RegenStats": [
@@ -266,7 +262,6 @@
   {
     "Name": "Arna",
     "BattleCharacterTag": "Arcanum.Player.ID.Arna",
-    "bPlayableCharacter": true,
     "GradeDataSteps": [
       {
         "RegenStats": [
@@ -333,7 +328,6 @@
   {
     "Name": "Aiden",
     "BattleCharacterTag": "Arcanum.Player.ID.Aiden",
-    "bPlayableCharacter": true,
     "GradeDataSteps": [
       {
         "RegenStats": [

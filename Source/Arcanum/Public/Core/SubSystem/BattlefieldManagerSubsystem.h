@@ -8,6 +8,8 @@
 #include "Data/Types/MatchData.h"
 #include "DataInfo/PlayerData/FPlayerData.h"
 #include "Data/DataAssets/EnemyWaveData.h"
+#include "GameplayTags/ArcanumTags.h"
+#include "NativeGameplayTags.h"
 #include "Data/Types/UnitData.h"
 #include "Data/Types/BattleStageInfo.h"
 #include "BattlefieldManagerSubsystem.generated.h"
@@ -17,12 +19,15 @@ struct FInBattleData
 {
 	GENERATED_BODY()
 public:
-	FPlayerBattleData PlayerBattleData;
-	FBattleCharacterData BattleCharacterData;
+	FPlayerData PlayerData;
+
 	FBattleStageInfo BattleStageInfo;
+
+	FGradeStatData PlayerBattleStat;
 	
 	UPROPERTY()
-	TArray<FUnitData> AllyUnits;
+	TArray<FUnitInfoSetting> AllyUnits;
+
 };
 
 
@@ -64,18 +69,22 @@ public:
 	void SetABattlefieldManagerActor(ABattlefieldManagerActor* InBattlefieldManagerActor);
 
 	UFUNCTION()
-	const TArray<FUnitData>& GetUsingAllyUnitData();
+	const TArray<FUnitInfoSetting>& GetUsingAllyUnitData();
 
 	UFUNCTION()
-	FUnitData GetAllyUnitData(FGameplayTag InUnitTag, bool& OutResult) const;
+	FUnitInfoSetting GetAllyUnitData(FGameplayTag InUnitTag, bool& OutResult) const;
 	UFUNCTION()
-	FUnitData GetEnemyUnitData(FGameplayTag InUnitTag, bool& OutResult) const;
+	FUnitInfoSetting GetEnemyUnitData(FGameplayTag InUnitTag, bool& OutResult) const;
 
 	UFUNCTION()
 	void StartTime();
 
 	UFUNCTION()
 	void StopTime();
+
+	UFUNCTION()
+	void OnTimeChange(int32 Time);
+
 
 #pragma endregion
 
@@ -91,6 +100,9 @@ public:
 
 	FORCEINLINE const FInBattleData& GetInBattleData() const { return InBattleData; }
 	void SetInBattleData(const FPlayerData& InPlayerData, FInBattleData& OutInBattleData);
+
+	UFUNCTION()
+	void MatchEnded(const FMatchData& MatchData);
 	/*
 	필요한 정보
 	유닛들
@@ -129,16 +141,22 @@ protected:
 	TMap<FGameplayTag, FBasementStat> BasementStats;
 
 	UPROPERTY()
-	TMap<FGameplayTag, FUnitData> AllyUnitDatas;
+	TMap<FGameplayTag, FUnitInfoSetting> AllyUnitDatas;
 
 	UPROPERTY()
-	TMap<FGameplayTag, FUnitData> EnemyUnitDatas;
+	TMap<FGameplayTag, FUnitInfoSetting> EnemyUnitDatas;
 
 protected:
 #pragma region 디버그(나중에 삭제)
 	void DebugBasementSet();
 	UFUNCTION()
 	void DebugEndedMessage(const FMatchData& MatchData);
+
+	UFUNCTION()
+	void DebugPlayerCharacterSet();
 #pragma endregion
 
+	public:
+		const FGameplayTag AllyTeamTag = Arcanum::Unit::Faction::Ally::Root;
+		const FGameplayTag EnemyTeamTag = Arcanum::Unit::Faction::Enemy::Root;
 };

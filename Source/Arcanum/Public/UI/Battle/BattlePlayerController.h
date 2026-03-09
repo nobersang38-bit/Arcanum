@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "DataInfo/CommonData/Stats/FBattleStats.h"
 #include "Data/Types/UnitData.h"
+#include "Data/Types/MatchData.h"
 #include "BattlePlayerController.generated.h"
 
 class UInputMappingContext;
@@ -125,6 +126,9 @@ protected:
 	UFUNCTION()
 	void SpawnUnit(FGameplayTag InTag);
 
+	UFUNCTION()
+	void Internal_SpawnUnit();
+
 	// 사용할 고기
 	UFUNCTION()
 	bool UseMeatValue(float Value);
@@ -132,6 +136,33 @@ protected:
 	// 사용할 마나
 	UFUNCTION()
 	bool UseManaValue(float Value);
+
+	// 쿨타임
+	UFUNCTION()
+	bool UseCoolTime(FGameplayTag InTag);
+#pragma endregion
+
+#pragma region 전투 종료
+	UFUNCTION()
+	void BattleEnd(const FMatchData& MatchData);
+
+	UFUNCTION()
+	void OpenLobbyLevel();
+#pragma endregion
+
+
+
+#pragma region 내부 함수
+	UFUNCTION()
+	bool IsUnitUsingEnable(FGameplayTag InTag);
+
+	UFUNCTION()
+	bool UsingUnitCost(FGameplayTag InTag);
+
+	// 쿨타임을 계속 줄임
+	UFUNCTION()
+	void Internal_UnitsCoolTimeTick(float DeltaTime);
+
 #pragma endregion
 
 
@@ -186,12 +217,12 @@ protected:
 	UPROPERTY()
 	TWeakObjectPtr<AActor> EnemyBasement = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSubclassOf<class ABaseUnitCharacter> AllyUnitClass = nullptr;
-
 protected:
 	UPROPERTY()
-	TMap<FGameplayTag, FUnitData> UsinAllyUnits;
+	TMap<FGameplayTag, FUnitInfoSetting> UsingAllyUnits;
+
+	UPROPERTY()
+	TMap<FGameplayTag, class UBattleAllyUnitSlotWidget*> UsingAllyUnitSlots;
 
 	// Todo KDH : 데이터 가져오게 변경해야함
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -202,10 +233,16 @@ protected:
 
 	FTimerHandle MeatTimer;
 	FTimerHandle ManaTimer;
+	FTimerHandle CoolTimeTimer;
+	FTimerHandle SpawnUnitTimer;
 
 	FGameplayTag SpawnTag;
+
+	FVector SpawnLocationBackup = FVector::ZeroVector;
+	int32 TrySpawnUnit = 0;
 
 private:
 	FTimerHandle PlayerLocationProgressTimeHandle;
 	bool bIsAutoManual = false;
+	float StageTimeSecond = 0.0f;
 };

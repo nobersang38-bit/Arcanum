@@ -7,12 +7,14 @@
 
 void USquareSlotWidget::NativePreConstruct()
 {
+    Super::NativePreConstruct();
     if (BackgroundColor) BackgroundColor->SetBrushColor(RoundColor);
     if (IconImage && IconImg) IconImage->SetBrushFromTexture(IconImg);
 }
 
 FReply USquareSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
+    Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
     OnSlotClicked.Broadcast(this, SlotIndex);
 
     return FReply::Handled();

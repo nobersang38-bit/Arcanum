@@ -20,7 +20,7 @@ void UBattleActionButtonWidget::NativeConstruct()
 	if (ActionText)
 	{
 		ActionText->SetText(IconText);
-		UE_LOG(LogTemp, Warning, TEXT("작동!!!!!!!!! %s"), *IconText.ToString());
+		//UE_LOG(LogTemp, Warning, TEXT("작동!!!!!!!!! %s"), *IconText.ToString());
 	}
 	SetProgressesVisible(false);
 }

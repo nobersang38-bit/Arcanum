@@ -369,6 +369,9 @@ namespace Arcanum {
 				namespace Tinker {
 					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
 				}
+				namespace PunchMan {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+				}
 			}
 			// 적군
 			namespace Enemy {

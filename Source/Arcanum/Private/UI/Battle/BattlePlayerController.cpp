@@ -15,6 +15,9 @@
 #include "Character/BaseUnitCharacter.h"
 #include "Core/SubSystem/PoolingSubsystem.h"
 #include "Character/PlayerCharacter.h"
+#include "UI/Battle/SubLayout/BattleAllyUnitSlotWidget.h"
+#include "UI/Battle/SubLayout/BattleBattleEndWidget.h"
+#include "Kismet/GameplayStatics.h"
 
 // ========================================================
 // 언리얼 기본 생성
@@ -26,7 +29,7 @@ void ABattlePlayerController::BeginPlay()
 	/*FString AllyUnitClassPath = TEXT("/Game/Test/Battle/Unit/BP_AllyUnit.BP_AllyUnit_C");
 	UClass* LoadAllyUnit = StaticLoadClass(UObject::StaticClass(), nullptr, *AllyUnitClassPath);
 
-	AllyUnitClass = LoadAllyUnit;*/
+	UnitClass = LoadAllyUnit;*/
 
 	if (HUDWidgetClass)
 	{
@@ -34,13 +37,18 @@ void ABattlePlayerController::BeginPlay()
 		if (HUDWidgetInstance)
 		{
 			HUDWidgetInstance->AddToViewport();
+
+			if (HUDWidgetInstance->GetBattleEndWidget())
+			{
+				HUDWidgetInstance->GetBattleEndWidget()->OnInBattleLobbyButtonClick.AddDynamic(this, &ABattlePlayerController::OpenLobbyLevel);
+			}
 		}
 	}
 	SetupMainHUDWidget();
 	SetupInputMode();
 
-	MeatValue.BaseMax = 100.0f;
-	MeatValue.Current = 100.0f;
+	MeatValue.BaseMax = 1000000.0f;
+	MeatValue.Current = 1000000.0f;
 	MeatValue.BaseTick = 2.0f;
 
 	ManaValue.BaseMax = 100.0f;
@@ -64,18 +72,20 @@ void ABattlePlayerController::BeginPlay()
 
 	if (BattleSubsystem)
 	{
-		UsinAllyUnits.Empty();
+		UsingAllyUnits.Empty();
 		for (int i = 0; i < BattleSubsystem->GetUsingAllyUnitData().Num(); i++)
 		{
-			const FUnitData& UnitDataE = BattleSubsystem->GetUsingAllyUnitData()[i];
-			UsinAllyUnits.Add(UnitDataE.Info.InfoSetting.Tag, UnitDataE);
+			const FUnitInfoSetting& UnitDataE = BattleSubsystem->GetUsingAllyUnitData()[i];
+			UsingAllyUnits.Add(UnitDataE.Tag, UnitDataE);
 		}
-		//UsinAllyUnits = BattleSubsystem->GetUsingAllyUnitData();
-		/*for (int i = 0; i < UsinAllyUnits.Num(); i++)
+		//UsingAllyUnits = BattleSubsystem->GetUsingAllyUnitData();
+		/*for (int i = 0; i < UsingAllyUnits.Num(); i++)
 		{
-			UE_LOG(LogTemp, Error, TEXT("UsinAllyUnits : %s"), *UsinAllyUnits[i].Info.InfoSetting.Tag.ToString());
+			UE_LOG(LogTemp, Error, TEXT("UsingAllyUnits : %s"), *UsingAllyUnits[i].Info.InfoSetting.Tag.ToString());
 		}*/
 		SetAllyUsingWidget();
+
+		BattleSubsystem->OnMatchEnded.AddUObject(this, &ABattlePlayerController::BattleEnd);
 	}
 
 	if (TimeSubsystem)
@@ -88,6 +98,12 @@ void ABattlePlayerController::BeginPlay()
 			TimeSubsystem->OnStageSecondChanged.AddDynamic(this, &ABattlePlayerController::UpdateStageTime);
 		}
 	}
+
+	float CoolTImeTickInterval = 0.05f;
+	FTimerDelegate CoolTimeDelegate;
+	CoolTimeDelegate.BindUObject(this, &ABattlePlayerController::Internal_UnitsCoolTimeTick, CoolTImeTickInterval);
+	GetWorld()->GetTimerManager().ClearTimer(CoolTimeTimer);
+	GetWorld()->GetTimerManager().SetTimer(CoolTimeTimer, CoolTimeDelegate, CoolTImeTickInterval, true);
 
 	SetBossHealthProgress(0.0f, 0.0f);
 
@@ -124,12 +140,6 @@ void ABattlePlayerController::SetupInputComponent()
 void ABattlePlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	float x;
-	float y;
-	GetMousePosition(x, y);
-	FHitResult HitResult;
-	GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, HitResult);
-	//UE_LOG(LogTemp, Error, TEXT("마우스 위치 : %.0f, %.0f"), x, y);
 }
 
 // ========================================================
@@ -181,12 +191,12 @@ void ABattlePlayerController::UpdatePlayerLocationProgress()
 	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 	if (!AllyBasement.IsValid() && BattleSubsystem)
 	{
-		AllyBasement = BattleSubsystem->GetBasement(Arcanum::Unit::Faction::Ally::Root);
+		AllyBasement = BattleSubsystem->GetBasement(BattleSubsystem->AllyTeamTag);
 	}
 
 	if (!EnemyBasement.IsValid() && BattleSubsystem)
 	{
-		EnemyBasement = BattleSubsystem->GetBasement(Arcanum::Unit::Faction::Enemy::Root);
+		EnemyBasement = BattleSubsystem->GetBasement(BattleSubsystem->EnemyTeamTag);
 	}
 
 	if (!AllyBasement.IsValid() && !EnemyBasement.IsValid()) return;
@@ -196,22 +206,24 @@ void ABattlePlayerController::UpdatePlayerLocationProgress()
 
 void ABattlePlayerController::UpdateStageTime(int32 TimeSecond)
 {
-	HUDWidgetInstance->SetTime(TimeSecond);
+	StageTimeSecond = TimeSecond;
+	HUDWidgetInstance->SetTime(StageTimeSecond);
 }
 
 void ABattlePlayerController::SetAllyUsingWidget()
 {
 	UBattleAllyUnitPanelWidget* PlayerInfoPanel = HUDWidgetInstance->GetPlayerInfoPanel();
-	for (auto UsingAllyUnit : UsinAllyUnits)
+	for (auto UsingAllyUnit : UsingAllyUnits)
 	{
 		UBattleAllyUnitSlotWidget* UnitSlot = PlayerInfoPanel->AddUnitSlot(UsingAllyUnit.Value);
 		if (UnitSlot)
 		{
-			UnitSlot->SetUnitInfo(UsingAllyUnit.Value.Info.InfoSetting.MeatCost, UsingAllyUnit.Value.Info.InfoSetting.Icon, UsingAllyUnit.Value.Info.InfoSetting.Tag);
+			UnitSlot->SetUnitInfo(UsingAllyUnit.Value.MeatCost, UsingAllyUnit.Value.Icon, UsingAllyUnit.Value.Tag);
 			UnitSlot->SetActivateCost(false);
 			UnitSlot->SetCoolTimeProgress(0.0f, 0.0f);
 			UnitSlot->OnPressUnitSlot.AddDynamic(this, &ABattlePlayerController::ReadySpawnUnit);
 			UnitSlot->OnReleasedUnitSlot.AddDynamic(this, &ABattlePlayerController::SpawnUnit);
+			UsingAllyUnitSlots.Add(UsingAllyUnit.Key, UnitSlot);
 		}
 	}
 }
@@ -224,6 +236,21 @@ void ABattlePlayerController::UpdateMeatValue(float DeltaTime)
 		InData.Current += DeltaTime * InData.BaseTick;
 		InData.Current = FMath::Clamp(InData.Current, 0.0f, InData.BaseMax);
 		PlayerInfoPanel->SetMeatCostProgress(InData.Current, InData.BaseMax);
+
+		for (auto Iter : UsingAllyUnits)
+		{
+			if (UBattleAllyUnitSlotWidget** Slot = UsingAllyUnitSlots.Find(Iter.Key))
+			{
+				if (Iter.Value.MeatCost <= MeatValue.Current)
+				{
+					(*Slot)->SetActivateCost(false);
+				}
+				else
+				{
+					(*Slot)->SetActivateCost(true);
+				}
+			}
+		}
 	}
 }
 
@@ -308,41 +335,73 @@ void ABattlePlayerController::AutoManualModePC()
 
 void ABattlePlayerController::ReadySpawnUnit(FGameplayTag InTag)
 {
-	UE_LOG(LogTemp, Error, TEXT("눌렀다"));
+	if (!IsUnitUsingEnable(InTag)) return;
+
+	//UE_LOG(LogTemp, Error, TEXT("눌렀다"));
 	SpawnTag = InTag;
-	SetupInputMode();
+
+	float X;
+	float Y;
+	GetMousePosition(X, Y);
+	SpawnLocationBackup = FVector(X, Y, 0);
 }
 
 void ABattlePlayerController::SpawnUnit(FGameplayTag InTag)
 {
-	UE_LOG(LogTemp, Error, TEXT("땟다"));
-	if (FUnitData* UnitData = UsinAllyUnits.Find(SpawnTag))
+	TrySpawnUnit = 0;
+	GetWorld()->GetTimerManager().ClearTimer(SpawnUnitTimer);
+	GetWorld()->GetTimerManager().SetTimer(SpawnUnitTimer, this, &ABattlePlayerController::Internal_SpawnUnit, 0.01f, true, 0.0f);
+	SetupInputMode();
+}
+
+void ABattlePlayerController::Internal_SpawnUnit()
+{
+	//UE_LOG(LogTemp, Error, TEXT("땟다"));
+	TrySpawnUnit++;
+	if (TrySpawnUnit > 100)
 	{
-		//UE_LOG(LogTemp, Error, TEXT("SpawnUnit : %s"), *SpawnTag.ToString());
+		GetWorld()->GetTimerManager().ClearTimer(SpawnUnitTimer);
+		return;
+	}
+
+	if (FUnitInfoSetting* UnitData = UsingAllyUnits.Find(SpawnTag))
+	{
 		UPoolingSubsystem* PoolingSubsystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
 		if (PoolingSubsystem)
 		{
+
 			FHitResult HitResult;
 			GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, HitResult);
-			UE_LOG(LogTemp, Error, TEXT("ASDLocation : %.0f, %.0f, %.0f"), HitResult.ImpactPoint.X, HitResult.ImpactPoint.Y, HitResult.ImpactPoint.Z);
 
-			
-
-			FVector ReleasedLocation = HUDWidgetInstance->GetSelectUnitDropLocation();
-			FTransform Transform;
-			Transform.SetLocation(ReleasedLocation);
-			AActor* EnemyUnitInstance = PoolingSubsystem->SpawnFromPool(AllyUnitClass, Transform);
-			ABaseUnitCharacter* EnemyUnitCharacter = Cast<ABaseUnitCharacter>(EnemyUnitInstance);
-			if (EnemyUnitCharacter)
+			float X;
+			float Y;
+			GetMousePosition(X, Y);
+			FVector MouseBackUp = FVector(X, Y, 0);
+			if ((SpawnLocationBackup - MouseBackUp).SquaredLength() < 100.0f)
 			{
-				EnemyUnitCharacter->SetUnit(*UnitData);
-				FString Result = FString::Printf(TEXT("ASDLocation : %.0f, %.0f, %.0f\tUnitData : %s"), HitResult.ImpactPoint.X, HitResult.ImpactPoint.Y, HitResult.ImpactPoint.Z, *UnitData->Info.InfoSetting.Tag.ToString());
-				//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, *Result);
+				GetWorld()->GetTimerManager().ClearTimer(SpawnUnitTimer);
+				return;
 			}
-			//UE_LOG(LogTemp, Error, TEXT("HitResult : %s"), *HitResult.ImpactPoint.ToString());
+			
+			if (IsUnitUsingEnable(SpawnTag))
+			{
+				UsingUnitCost(SpawnTag);
+				FTransform Transform;
+				Transform.SetLocation(HitResult.ImpactPoint);
+				// Todo KDH : 미리 로드해 놓아야함
+				AActor* EnemyUnitInstance = PoolingSubsystem->SpawnFromPool(UnitData->UnitClass.LoadSynchronous(), Transform);
+				ABaseUnitCharacter* EnemyUnitCharacter = Cast<ABaseUnitCharacter>(EnemyUnitInstance);
+
+				if (EnemyUnitCharacter)
+				{
+					EnemyUnitCharacter->SetUnit(*UnitData);
+					GetWorld()->GetTimerManager().ClearTimer(SpawnUnitTimer);
+					//UE_LOG(LogTemp, Error, TEXT("ASDLocation : %.0f, %.0f, %.0f"), HitResult.ImpactPoint.X, HitResult.ImpactPoint.Y, HitResult.ImpactPoint.Z);
+					return;
+				}
+			}
 		}
 	}
-	SetupInputMode();
 }
 
 bool ABattlePlayerController::UseMeatValue(float Value)
@@ -369,6 +428,126 @@ bool ABattlePlayerController::UseManaValue(float Value)
 	return false;
 }
 
+bool ABattlePlayerController::UseCoolTime(FGameplayTag InTag)
+{
+	FUnitInfoSetting* UnitData = UsingAllyUnits.Find(InTag);
+	if(!UnitData) return false;
+
+	UnitData->CurrentCoolTime = UnitData->CoolTime;
+
+	/*FTimerDelegate CoolTimeDelegate;
+	float TickInterval = 0.01f;
+	CoolTimeDelegate.BindUObject(this, &ABattlePlayerController::Internal_UnitCoolTimeTick, UnitData->Tag, TickInterval);
+
+	FTimerHandle* CoolTimeHandle = nullptr;
+	if (FTimerHandle* InternalCoolTimeHandle = CoolTimeHandles.Find(InTag))
+	{
+		CoolTimeHandle = InternalCoolTimeHandle;
+	}
+	else
+	{
+		CoolTimeHandle = &CoolTimeHandles.Add(InTag, FTimerHandle());
+	}
+
+	if (CoolTimeHandle)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(*CoolTimeHandle);
+		GetWorld()->GetTimerManager().SetTimer(*CoolTimeHandle, CoolTimeDelegate, TickInterval, true);
+		return true;
+	}
+	else
+	{
+		return false;
+	}*/
+	return true;
+}
+
+void ABattlePlayerController::BattleEnd(const FMatchData& MatchData)
+{
+	if (HUDWidgetInstance)
+	{
+		UBattleBattleEndWidget* BattleEndWidget = HUDWidgetInstance->GetBattleEndWidget();
+		if (BattleEndWidget)
+		{
+			BattleEndWidget->SetVictoryText(MatchData.bIsVictory);
+			UE_LOG(LogTemp, Error, TEXT("MatchData.bIsVictory = %d"), MatchData.bIsVictory);
+			BattleEndWidget->SetClearTimeText(MatchData.EndTimeSecond);
+
+			UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+			if (BattleSubsystem)
+			{
+				float Result = static_cast<float>(MatchData.EndTimeSecond) / static_cast<float>(BattleSubsystem->GetInBattleData().BattleStageInfo.StageLimitTime);
+
+				Result *= 3.0f;
+				UE_LOG(LogTemp, Error, TEXT("Result : %f"), Result);
+				BattleEndWidget->SetStar(FMath::Clamp<int32>(FMath::RoundToInt(Result), 0, 3));
+			}
+			else
+			{
+				BattleEndWidget->SetStar(3);
+			}
+
+			BattleEndWidget->SetVisibility(ESlateVisibility::Visible);
+		}
+	}
+}
+
+void ABattlePlayerController::OpenLobbyLevel()
+{
+	// Todo KDH 로비 열기
+	UGameplayStatics::OpenLevel(this, FName("LobbyMap"));
+}
+
+bool ABattlePlayerController::IsUnitUsingEnable(FGameplayTag InTag)
+{
+	if (!InTag.IsValid()) return false;
+	if (!UsingAllyUnits.Contains(InTag)) return false;
+
+	FUnitInfoSetting UnitData = *UsingAllyUnits.Find(InTag);
+
+	//쿨타임 체크하고 고기 코스트 체크
+	if (UnitData.CurrentCoolTime <= 0.0f && 
+		UnitData.MeatCost <= MeatValue.Current)
+	{
+		return true;
+	}
+	
+	return false;
+}
+
+bool ABattlePlayerController::UsingUnitCost(FGameplayTag InTag)
+{
+	if (!IsUnitUsingEnable(InTag)) return false;
+	FUnitInfoSetting* UnitData = UsingAllyUnits.Find(InTag);
+
+	// 고기 사용
+	UseMeatValue(UnitData->MeatCost);
+
+	// 쿨타임 돌기
+	UseCoolTime(InTag);
+
+	return true;
+}
+
+void ABattlePlayerController::Internal_UnitsCoolTimeTick(float DeltaTime)
+{
+	for (auto& UsingAllyUnit : UsingAllyUnits)
+	{
+		if (UsingAllyUnit.Value.CurrentCoolTime > 0.0f)
+		{
+			float& CurrentCoolTime = UsingAllyUnit.Value.CurrentCoolTime;
+			const float& MaxCoolTime = UsingAllyUnit.Value.CoolTime;
+
+			CurrentCoolTime -= DeltaTime;
+
+			if (UBattleAllyUnitSlotWidget** SlotWidget = UsingAllyUnitSlots.Find(UsingAllyUnit.Key))
+			{
+				(*SlotWidget)->SetCoolTimeProgress(CurrentCoolTime, MaxCoolTime);
+			}
+		}
+	}
+}
+
 // ========================================================
 // 인풋모드 설정
 // ========================================================
@@ -390,7 +569,7 @@ void ABattlePlayerController::SetupInputMode()
 	//FInputModeUIOnly InputMode;
 	FInputModeGameAndUI InputMode;
 	InputMode.SetHideCursorDuringCapture(false);
-	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
+	//InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
 	SetInputMode(InputMode);
 }
 

@@ -17,12 +17,23 @@ void UBattleAllyUnitSlotWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	Button->OnClicked.RemoveDynamic(this, &UBattleAllyUnitSlotWidget::ClickUnitSlot);
 	Button->OnClicked.AddDynamic(this, &UBattleAllyUnitSlotWidget::ClickUnitSlot);
+
+	Button->OnPressed.RemoveDynamic(this, &UBattleAllyUnitSlotWidget::PressUnitSlot);
 	Button->OnPressed.AddDynamic(this, &UBattleAllyUnitSlotWidget::PressUnitSlot);
+
+	Button->OnReleased.RemoveDynamic(this, &UBattleAllyUnitSlotWidget::ReleasedUnitSlot);
 	Button->OnReleased.AddDynamic(this, &UBattleAllyUnitSlotWidget::ReleasedUnitSlot);
 
 	/*Button->OnPressed.AddDynamic()
 	Button->OnPressed.AddDynamic()*/
+}
+
+FReply UBattleAllyUnitSlotWidget::NativeOnMouseButtonUp(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	UE_LOG(LogTemp, Error, TEXT("마우스 올라감!!"));
+	return Super::NativeOnMouseButtonUp(InGeometry, InMouseEvent);
 }
 
 #if WITH_EDITOR
@@ -49,40 +60,7 @@ void UBattleAllyUnitSlotWidget::PostEditChangeProperty(FPropertyChangedEvent& Pr
 		}
 	}
 }
-
 #endif
-FReply UBattleAllyUnitSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
-{
-	// 좌클릭일 경우 드래그 감지 시작
-	if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
-	{
-		// 블루프린트의 'Detect Drag if Pressed' 와 동일한 역할
-		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("클릭 유닛 슬롯"));
-		FEventReply Reply = UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
-		return Reply.NativeReply;
-	}
-
-	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
-}
-void UBattleAllyUnitSlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
-{
-	Super::NativeOnDragDetected(InGeometry, InMouseEvent, OutOperation);
-
-	// 1. Operation 객체 생성
-	UUnitDragDropOperation* DragOp = NewObject<UUnitDragDropOperation>();
-	DragOp->UnitTag = UnitTag;
-	DragOp->Slot = this;
-	// 2. 마우스를 따라다닐 Drag Visual 생성 (설정되어 있다면)
-	/*if (DragVisualClass)
-	{
-		UUserWidget* DragVisual = CreateWidget<UUserWidget>(GetWorld(), DragVisualClass);
-		DragOp->DefaultDragVisual = DragVisual;
-	}*/
-
-	// 3. OutOperation에 할당하여 엔진에 전달
-	OnPressUnitSlot.Broadcast(UnitTag);
-	OutOperation = DragOp;
-}
 
 void UBattleAllyUnitSlotWidget::SetUnitInfo(int32 InCost, UTexture2D* InImage, FGameplayTag InUnitTag)
 {
@@ -142,11 +120,11 @@ void UBattleAllyUnitSlotWidget::ReleasedUnitSlot()
 
 void UBattleAllyUnitSlotWidget::SetActivateCost(bool InIsDisable)
 {
-	if (InIsDisable)
+	if (InIsDisable && DisabledImage->GetVisibility() == ESlateVisibility::Hidden)
 	{
 		DisabledImage->SetVisibility(ESlateVisibility::HitTestInvisible);
 	}
-	else
+	else if(!InIsDisable && DisabledImage->GetVisibility() == ESlateVisibility::HitTestInvisible)
 	{
 		DisabledImage->SetVisibility(ESlateVisibility::Hidden);
 	}
@@ -155,13 +133,15 @@ void UBattleAllyUnitSlotWidget::SetActivateCost(bool InIsDisable)
 void UBattleAllyUnitSlotWidget::SetCoolTimeProgress(float CurrentProgress, float MaxProgress)
 {
 	SetProgressesVisible(true);
+	CurrentProgress = FMath::Clamp(CurrentProgress, 0.0f, MaxProgress);
 	if (CoolTimeProgress)
 	{
-		CoolTimeProgress->SetPercent(CurrentProgress / MaxProgress + 0.00001f);
+		//UE_LOG(LogTemp, Error, TEXT("current : %f, Max : %f"), CurrentProgress, MaxProgress);
+		CoolTimeProgress->SetPercent(CurrentProgress / MaxProgress + 0.0001f);
 	}
 	if (CoolTimeText)
 	{
-		FString Result = FString::Printf(TEXT("%d"), FMath::RoundToInt(CurrentProgress));
+		FString Result = FString::Printf(TEXT("%d"), FMath::CeilToInt32(CurrentProgress));
 		CoolTimeText->SetText(FText::FromString(Result));
 	}
 

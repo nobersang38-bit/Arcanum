@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "GameplayTags/ArcanumTags.h"
 #include "Interface/TeamInterface.h"
+#include "DataInfo/BattleCharacter/BattleStats/Data/FGradeStatData.h"
 #include "PlayerCharacter.generated.h"
 
 /*
@@ -46,6 +47,35 @@ public:
 	void PlayerBasicAttack();
 #pragma endregion
 
+#pragma region 스탯
+	void SetupStat();
+
+	/*UPROPERTY(EditAnywhere, BlueprintReadOnly, SaveGame)
+	float Current = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, SaveGame)
+	float BaseMax = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, SaveGame)
+	float BaseTick = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, SaveGame)
+	float BonusMax = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, SaveGame)
+	float ModifierMax = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, SaveGame)
+	float ModifierTick = 0.0f;*/
+
+	FRegenStat* FindRegenStat(FGameplayTag InTag);
+	FNonRegenStat* FindNonRegenStat(FGameplayTag InTag);
+
+	void AddCurrentStat(FGameplayTag InTag, float InValue);
+
+#pragma endregion
+
+
 protected:
 
 	// 스프링암
@@ -60,11 +90,20 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tags")
 	FGameplayTagContainer GameplayTags;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tags")
+	FGameplayTag TeamTag;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tags")
-	FGameplayTag TeamTag = Arcanum::Unit::Faction::Ally::Root;
+	FGameplayTag HealthTag = Arcanum::BattleStat::Character::Regen::Health::Root;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tags")
+	FGameplayTag ManaTag = Arcanum::BattleStat::Character::Regen::Mana::Root;
 
 protected:
-	// Todo 데이터 구조체로 변경해야함
-	float CurrentHealth = 300.0f;
-	float MaxHealth = 300.0f;
+	UPROPERTY()
+	TMap<FGameplayTag, FRegenStat> RegenStats;
+
+	UPROPERTY()
+	TMap<FGameplayTag, FNonRegenStat> NonRegenStats;
+
 };

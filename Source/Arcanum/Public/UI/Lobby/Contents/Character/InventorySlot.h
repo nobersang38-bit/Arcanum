@@ -9,7 +9,7 @@
 class UCommonBtnWidget;
 class UTextBlock;
 class USquareSlotWidget;
-class UUniformGridPanel;
+class UWrapBox;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSetupBtnClicked);
 
@@ -48,6 +48,6 @@ protected:
 	TObjectPtr<UTextBlock> EquipInfoText;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UUniformGridPanel> EquipGridPanel;
+	TObjectPtr<UWrapBox> EquipGridPanel;
 
 };
