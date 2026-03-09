@@ -127,20 +127,9 @@ protected:
 	/* 선택 강조 갱신 */
 	void RefreshSelection();
 
-	/* 카테고리 버튼 클릭 함수 */
-	UFUNCTION()
-	void HandleAllCategoryClicked();
-	UFUNCTION()
-	void HandleEquipmentCategoryClicked();
-	UFUNCTION()
-	void HandleConsumableCategoryClicked();
-
 public:
 	UPROPERTY(BlueprintAssignable, Category = "Inventory")
 	FOnInventorySlotSelected OnInventorySlotSelected;
-
-	UPROPERTY(BlueprintAssignable, Category = "Inventory")
-	FOnInventoryCategoryChanged OnCategoryChanged;
 
 protected:
 	/* 슬롯 배치 컨테이너 */
@@ -176,12 +165,24 @@ protected:
 	int32 SelectedStackItemCount = 0;
 
 #pragma region 카테고리 버튼
+protected:
+	/* 카테고리 버튼 클릭 함수 */
+	UFUNCTION()
+	void HandleAllCategoryClicked();
+	UFUNCTION()
+	void HandleEquipmentCategoryClicked();
+	UFUNCTION()
+	void HandleConsumableCategoryClicked();
+
 private:
 	/* 선택 카테고리 버튼 상태 갱신 */
 	void RefreshCategoryButtonState();
 
+public:
+	UPROPERTY(BlueprintAssignable, Category = "Inventory")
+	FOnInventoryCategoryChanged OnCategoryChanged;
+
 protected:
-	/* 카테고리 버튼 */
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidgetOptional))
 	TObjectPtr<UCommonBtnWidget> AllCategoryBtn;
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidgetOptional))
@@ -189,7 +190,6 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidgetOptional))
 	TObjectPtr<UCommonBtnWidget> ConsumableCategoryBtn;
 
-	/* 카테고리 버튼 Border */
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidgetOptional))
 	TObjectPtr<UBorder> AllCategoryBorder;
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidgetOptional))
