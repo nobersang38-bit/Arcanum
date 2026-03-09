@@ -5,6 +5,8 @@
 #include "DataInfo/PlayerData/PlayerBattleData/Data/FPlayerBattleData.h"
 
 #include "DataInfo/BattleCharacter/FBattleCharacterData.h"
+#include "Data/Types/UnitData.h"
+
 #include "DataInfo/BattleCharacter/Equipment/Data/FEquipmentData.h"
 #include "DataInfo/BattleCharacter/BattleStats/DataTable/DTBattleStats.h"
 
@@ -36,6 +38,9 @@ struct FPlayerData
      * ============================== */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
     TArray<FBattleCharacterData> OwnedCharacters;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
+    TArray<FUnitInfoSetting> AllyburdenCharacters;
 
     /* ==============================
      *         인벤토리

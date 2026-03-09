@@ -247,7 +247,6 @@ private:
 	static FName PickCatalogRowNameFromTags(TArray<FGameplayTag>& InOutItemTags);
 #pragma endregion
 
-
 #pragma region Gacha Widget 관련
 public:
 	static const FDTGachaBannerDataRow* GetGachaBannerData(const UObject* WorldContextObject, FGameplayTag InBannerTag);
@@ -259,36 +258,5 @@ public:
 public:
 	static void SetGachaItemEmpty(const UObject* WorldContextObject);
 	static TArray<FGachaItemResult> GetGachaItemResult(const UObject* WorldContextObject);
-
 #pragma endregion
-
-
 };
-
-//static bool PromoteCharacter(FPlayerData& Data, FGameplayTag CharacterID);
-//static bool SpendCurrency(FPlayerData& Data, int32 GoldCost);
-//static bool RollEquipmentGacha(FPlayerData& Data);
-
-///** 특정 슬롯의 스택을 마일리지(Soul)로 환전하고 스택을 0으로 리셋 */
-//static void SettleGachaStackToMileage(FPlayerData& Data, FGameplayTag SlotTag)
-//{
-//    if (int32* StackPtr = Data.GachaData.PityCounters.Find(SlotTag))
-//    {
-//        int32 StackCount = *StackPtr;
-//        if (StackCount > 0) {
-//            AddCurrency(Data, Arcanum::Currency::Soul, StackCount);
-//            Data.GachaData.PityCounters.Add(SlotTag, 0);
-//        }
-//    }
-//}
-
-///** 가챠 실행 후 결과를 데이터에 기록. 
-//  * bIsPickupHit가 true이면(주인공 뽑음) 스택 리셋, 아니면 +1
-//  */
-//static void ApplyGachaResult(FPlayerData& Data, FGameplayTag SlotTag, bool bIsPickupHit)
-//{
-//    int32& CurrentStack = Data.GachaData.PityCounters.FindOrAdd(SlotTag);
-
-//    if (bIsPickupHit || CurrentStack >= 99) CurrentStack = 0;
-//    else CurrentStack++;
-//}
