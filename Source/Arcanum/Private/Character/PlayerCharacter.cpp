@@ -48,7 +48,25 @@ void APlayerCharacter::BeginPlay()
 	
 	// 기본 캐릭터 ID 태그
 	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
-	TeamTag = BattleSubsystem->AllyTeamTag;
+	if (BattleSubsystem)
+	{
+		TeamTag = BattleSubsystem->AllyTeamTag;
+
+		RegenStats.Empty();
+		NonRegenStats.Empty();
+
+		const TArray<FRegenStat>& RegenStatsBack = BattleSubsystem->GetInBattleData().PlayerBattleStat.RegenStats;
+		for (int i = 0; i < RegenStatsBack.Num(); i++)
+		{
+			RegenStats.Add(RegenStatsBack[i].ParentTag, RegenStatsBack[i]);
+		}
+
+		const TArray<FNonRegenStat>& NonRegenStatsBack = BattleSubsystem->GetInBattleData().PlayerBattleStat.NonRegenStats;
+		for (int i = 0; i < NonRegenStatsBack.Num(); i++)
+		{
+			NonRegenStats.Add(NonRegenStatsBack[i].TagName, NonRegenStatsBack[i]);
+		}
+	}
 	FGameplayTag PlayerID = FGameplayTag::RequestGameplayTag(TEXT("Arcanum.Player.ID.Elara"));
 	GameplayTags.AddTag(PlayerID);
 
@@ -60,7 +78,11 @@ void APlayerCharacter::BeginPlay()
 	ABattlePlayerController* OwnerPC = Cast<ABattlePlayerController>(GetController());
 	if (OwnerPC)
 	{
-		OwnerPC->SetPlayerHealthProgress(CurrentHealth, MaxHealth);
+		FRegenStat* HealthStat = RegenStats.Find(HealthTag);
+		if (HealthStat)
+		{
+			OwnerPC->SetPlayerHealthProgress(HealthStat->Current, HealthStat->GetTotalMax());
+		}
 	}
 }
 
@@ -86,26 +108,33 @@ FGameplayTag APlayerCharacter::GetTeamTag()
 void APlayerCharacter::RecievedDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
 {
 	ABattlePlayerController* OwnerPC = Cast<ABattlePlayerController>(GetController());
-	if (OwnerPC)
+	FRegenStat* HealthStat = RegenStats.Find(HealthTag);
+	if (HealthStat)
 	{
-		CurrentHealth -= Damage;
-		CurrentHealth = FMath::Clamp(CurrentHealth, 0.0f, MaxHealth);
-		OwnerPC->SetPlayerHealthProgress(CurrentHealth, MaxHealth);
-	}
-	if (CurrentHealth <= 0.0f)
-	{
-		UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
-		if (BattleSubsystem)
+		if (OwnerPC)
 		{
-			FMatchData MatchData;
+			{
+				HealthStat->Current -= Damage;
+				HealthStat->Current = FMath::Clamp(HealthStat->Current, 0.0f, HealthStat->GetTotalMax());
+				OwnerPC->SetPlayerHealthProgress(HealthStat->Current, HealthStat->GetTotalMax());
+			}
+		}
+		if (HealthStat->Current <= 0.0f)
+		{
+			UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+			if (BattleSubsystem)
+			{
+				FMatchData MatchData;
 
-			MatchData.EndTimeSecond = BattleSubsystem->GetCurrentMatchData().EndTimeSecond;
+				MatchData.EndTimeSecond = BattleSubsystem->GetCurrentMatchData().EndTimeSecond;
 
-			MatchData.bIsVictory = false;
-			MatchData.CurrentMatchState = EMatchState::Ended;
-			BattleSubsystem->OnMatchEnded.Broadcast(MatchData);
+				MatchData.bIsVictory = false;
+				MatchData.CurrentMatchState = EMatchState::Ended;
+				BattleSubsystem->OnMatchEnded.Broadcast(MatchData);
+			}
 		}
 	}
+	
 }
 
 void APlayerCharacter::SetIDTag(FGameplayTag NewIDTag)

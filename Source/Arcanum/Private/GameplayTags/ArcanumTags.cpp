@@ -350,6 +350,9 @@ namespace Arcanum
 				namespace Tinker {
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Unit.Ally.Tinker", "팅커");
 				}
+				namespace PunchMan {
+					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Unit.Ally.PunchMan", "펀치맨");
+				}
 			}
 			// 적군
 			namespace Enemy {
