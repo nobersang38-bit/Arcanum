@@ -24,8 +24,14 @@ class ARCANUM_API UEnhancementHUDWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
+#pragma region 초기화
 protected:
 	virtual void NativeConstruct() override;
+
+private:
+	/* 선택된 장비 슬롯 UI/강화 정보 갱신 */
+	void RefreshSelectedItemSlot();
+#pragma endregion
 
 #pragma region 부모 로비 참조
 public:

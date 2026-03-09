@@ -48,6 +48,63 @@ void UEnhancementHUDWidget::NativeConstruct()
 	ClearEnhancementInfo();
 }
 
+void UEnhancementHUDWidget::RefreshSelectedItemSlot()
+{
+	if (!SelectedItemGuid.IsValid())
+	{
+		if (SelectedItemSlotWidget)
+		{
+			SelectedItemSlotWidget->ClearSlot(0);
+			SelectedItemSlotWidget->SetSelected(false);
+		}
+
+		ClearEnhancementInfo();
+		return;
+	}
+
+	FInventoryViewSlot selectedSlot;
+	selectedSlot.Type = EInventoryViewSlotType::Equipment;
+	selectedSlot.ItemGuid = SelectedItemGuid;
+
+	const FEquipmentInfo* foundEquip = FindSelectedEquipment(SelectedItemGuid);
+	if (!foundEquip)
+	{
+		if (SelectedItemSlotWidget)
+		{
+			SelectedItemSlotWidget->ClearSlot(0);
+			SelectedItemSlotWidget->SetSelected(false);
+		}
+
+		ClearEnhancementInfo();
+		return;
+	}
+
+	selectedSlot.ItemTag = foundEquip->ItemTag;
+	selectedSlot.UpgradeLevel = foundEquip->CurrUpgradeLevel;
+
+	UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance());
+	if (gameInstance)
+	{
+		UGameDataSubsystem* dataSubsystem = gameInstance->GetSubsystem<UGameDataSubsystem>();
+		if (dataSubsystem)
+		{
+			const FDTItemCatalogRow* catalogRow = dataSubsystem->FindItemCatalogRowByTag(foundEquip->ItemTag);
+			if (catalogRow)
+			{
+				selectedSlot.Icon = catalogRow->Icon;
+			}
+		}
+	}
+
+	if (SelectedItemSlotWidget)
+	{
+		SelectedItemSlotWidget->SetSlotData(selectedSlot, 0);
+		SelectedItemSlotWidget->SetSelected(true);
+	}
+
+	RefreshEnhancementInfo(selectedSlot);
+}
+
 void UEnhancementHUDWidget::SetParentLobby(ULobbyHUD* InLobby)
 {
 	ParentLobby = InLobby;
@@ -401,17 +458,7 @@ void UEnhancementHUDWidget::HandleEnhanceButtonClicked()
 
 	RefreshEquipmentInventory();
 
-	FInventoryViewSlot selectedSlot;
-	selectedSlot.Type = EInventoryViewSlotType::Equipment;
-	selectedSlot.ItemGuid = SelectedItemGuid;
-
-	if (const FEquipmentInfo* foundEquip = FindSelectedEquipment(SelectedItemGuid))
-	{
-		selectedSlot.ItemTag = foundEquip->ItemTag;
-		selectedSlot.UpgradeLevel = foundEquip->CurrUpgradeLevel;
-	}
-
-	RefreshEnhancementInfo(selectedSlot);
+	RefreshSelectedItemSlot();
 }
 
 void UEnhancementHUDWidget::HandleRerollButtonClicked()
@@ -427,17 +474,7 @@ void UEnhancementHUDWidget::HandleRerollButtonClicked()
 
 	RefreshEquipmentInventory();
 
-	FInventoryViewSlot selectedSlot;
-	selectedSlot.Type = EInventoryViewSlotType::Equipment;
-	selectedSlot.ItemGuid = SelectedItemGuid;
-
-	if (const FEquipmentInfo* foundEquip = FindSelectedEquipment(SelectedItemGuid))
-	{
-		selectedSlot.ItemTag = foundEquip->ItemTag;
-		selectedSlot.UpgradeLevel = foundEquip->CurrUpgradeLevel;
-	}
-
-	RefreshEnhancementInfo(selectedSlot);
+	RefreshSelectedItemSlot();
 }
 
 void UEnhancementHUDWidget::HandleDisassembleButtonClicked()

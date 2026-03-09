@@ -25,8 +25,6 @@ class UShopHUDWidget;
 class UARGameInstance;
 class UInventoryHUDWidget;
 class UEnhancementHUDWidget;
-struct FDTEquipmentInfoRow;
-struct FDTPotionInfoRow;
 struct FDTItemCatalogRow;
 
 
