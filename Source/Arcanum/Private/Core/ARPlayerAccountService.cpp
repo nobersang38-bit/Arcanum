@@ -247,8 +247,7 @@ bool FPlayerAccountService::EnhanceEquipment(const UObject* WorldContextObject, 
 	if (!catalogRow) return false;
 	if (catalogRow->DetailRowName.IsNone()) return false;
 
-	const FDTEquipmentInfoRow* equipRow =
-		dataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, catalogRow->DetailRowName);
+	const FDTEquipmentInfoRow* equipRow = dataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, catalogRow->DetailRowName);
 	if (!equipRow) return false;
 
 	const int32 currentLevel = FMath::Max(0, foundEquip->CurrUpgradeLevel);
@@ -267,16 +266,12 @@ bool FPlayerAccountService::EnhanceEquipment(const UObject* WorldContextObject, 
 	UpdateCurrency(WorldContextObject, GI->GetPlayerDataCopy(), goldTag, -ruleRow->EnhanceGoldCost);
 
 	const int32 roll = FMath::RandRange(1, 100);
-	if (roll > ruleRow->EnhanceSuccessRate)
-	{
-		return true;
-	}
+	if (roll > ruleRow->EnhanceSuccessRate) return true;
 
 	const int32 nextLevel = currentLevel + 1;
 	if (!equipRow->BaseInfoSteps.IsValidIndex(nextLevel)) return false;
 
 	foundEquip->CurrUpgradeLevel = nextLevel;
-	foundEquip->Equipment.MaxUpgradeLevel = equipRow->BaseInfoSteps[nextLevel].MaxUpgradeLevel;
 	foundEquip->Equipment.RandomStatRanges = equipRow->BaseInfoSteps[nextLevel].RandomStatRanges;
 
 	RollEquipmentStats(equipRow->BaseInfoSteps[nextLevel], foundEquip->Equipment.OwnerStats);
@@ -373,12 +368,7 @@ bool FPlayerAccountService::DisassembleEquipment(const UObject* WorldContextObje
 
 	const FGameplayTag soulTag = Arcanum::PlayerData::Currencies::NonRegen::Soul::Value;
 
-	UpdateCurrency(
-		WorldContextObject,
-		GI->GetPlayerDataCopy(),
-		soulTag,
-		ruleRow->DisassembleSoulReward);
-
+	UpdateCurrency(WorldContextObject, GI->GetPlayerDataCopy(), soulTag, ruleRow->DisassembleSoulReward); 
 	playerData.Inventory.RemoveAtSwap(foundIndex, 1, EAllowShrinking::No);
 
 	return SavePlayerData(GI);

@@ -50,7 +50,7 @@ protected:
 
 #pragma region 선택 장비 표시
 public:
-	/* 선택 장비 표시 슬롯 */
+	/* 선택 장비 슬롯 */
 	UFUNCTION()
 	void HandleEnhancementItemSelected(const FInventoryViewSlot& InSlot);
 

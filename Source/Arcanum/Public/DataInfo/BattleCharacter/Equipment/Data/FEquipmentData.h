@@ -56,6 +56,7 @@ struct FEquipmentInfo {
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FGameplayTag ItemTag;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FGuid ItemGuid;
     
