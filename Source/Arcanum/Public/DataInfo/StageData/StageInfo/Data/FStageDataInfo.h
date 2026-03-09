@@ -35,7 +35,6 @@ struct FStageDataInfo
     */
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TSoftObjectPtr<UWorld> StageLevel;
-
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FText StageName;
     UPROPERTY(EditAnywhere, BlueprintReadWrite)

@@ -34,6 +34,7 @@ struct FBattleCharacterDef
     FGameplayTag MaxGrade;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Growth")
     TArray<int32> RequiredShardCount = { 10, 20, 30 };
+    int32 DuplicateShardReward = 10;
 };
 
 USTRUCT(BlueprintType)
@@ -51,7 +52,7 @@ struct FBattleCharacterInfo {
     /** RequiredShardCount 관련 변수, 0이면 미획득, 획득시 0<CurrentGrade
         조회시는 -1로 DT에서 찾아야 함.(ex. RequiredShardCount[CurrentGrade-1] => 10)*/
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Growth")
-    int32 CurrentGrade = 0;
+    int32 CurrStarLevel = 0;
 
     /** 얘는 추후 레벨 개념 생기면 넣으려고 미리 생성해놓음*/
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Growth")

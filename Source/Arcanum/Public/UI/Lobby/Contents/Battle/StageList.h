@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -18,14 +16,13 @@ UCLASS()
 class ARCANUM_API UStageList : public UUserWidget
 {
 	GENERATED_BODY()
-	
-	
+
 public:
 	UPROPERTY(BlueprintAssignable) FOnStageClicked OnStageClicked;
-private:
+	private:
 	UFUNCTION() void HandleClick();
-	
-protected:
+
+	protected:
 	virtual void NativePreConstruct() override;
 
 public:
@@ -51,7 +48,7 @@ protected:
 	UPROPERTY(meta = (BindWidget)) TObjectPtr<UImage> StageImage;
 	UPROPERTY(meta = (BindWidget)) TObjectPtr<UTextBlock> StageNameText;
 	UPROPERTY(meta = (BindWidget)) TObjectPtr<UTextBlock> StageInfoText;
-private:
+	private:
 	bool bSelected = false;
 	FString DefaultStrName = TEXT("스테이지 0");
 	FString DefaultStrInfo = TEXT("스테이지 설명");

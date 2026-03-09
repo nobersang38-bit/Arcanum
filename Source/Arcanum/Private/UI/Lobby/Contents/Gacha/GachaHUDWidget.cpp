@@ -119,6 +119,12 @@ void UGachaHUDWidget::UpdateDetailedImage(TSoftObjectPtr<UTexture2D> NewTexture)
 // ========================================================
 void UGachaHUDWidget::RequestGacha(int32 InPullCount)
 {
+    if (ParentLobby->CachedPlayerData.Mailbox.Num() >= ParentLobby->CachedPlayerData.MailboxCapacity) {
+        UE_LOG(LogTemp, Warning, TEXT("Mailbox Full! Cannot execute gacha."));
+        return;
+    }
+
+
     FPlayerAccountService::UpdateCurrency(this, ParentLobby->CachedPlayerData, Arcanum::PlayerData::Currencies::NonRegen::Soul::Value, 10000);
     ParentLobby->CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
     FPlayerAccountService::UpdateCurrency(this, ParentLobby->CachedPlayerData, Arcanum::PlayerData::Currencies::NonRegen::Gold::Value, 10000);
@@ -134,8 +140,8 @@ void UGachaHUDWidget::RequestGacha(int32 InPullCount)
 
     if (bSuccess) {
         UE_LOG(LogTemp, Log, TEXT("Gacha Request Success: %d Times"), InPullCount);
- /*       FPlayerAccountService::SetHUDIndex(this, EHUDIndex::GachaMenu);
-        UGameplayStatics::OpenLevel(GetWorld(), FName("GachaMap"));*/
+        FPlayerAccountService::SetHUDIndex(this, EHUDIndex::GachaMenu);
+        if (GachaMap.IsNull() == false) UGameplayStatics::OpenLevelBySoftObjectPtr(this, GachaMap);
     }
     else UE_LOG(LogTemp, Error, TEXT("Gacha Request Failed (Insufficient Currency?)"));
 

@@ -6,7 +6,7 @@
 
 void UStageList::NativePreConstruct()
 {
-	if (StageImage && StageImg) StageImage->SetBrushFromTexture(StageImg);
+    if (StageImage && StageImg) StageImage->SetBrushFromTexture(StageImg);
 
     FText DefaultName = FText::FromString(DefaultStrName);
     FText DefaultInfo = FText::FromString(DefaultStrInfo);

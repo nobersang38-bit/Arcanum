@@ -9,7 +9,6 @@
 #include "Core/ARGameInstance.h"
 #include "Core/ARPlayerAccountService.h"
 
-
 void UBattleHUDWidget::NativeConstruct()
 {
     Super::NativeConstruct();
@@ -40,7 +39,7 @@ void UBattleHUDWidget::NativeConstruct()
         UnitListSlot->OnSetItemBtnClicked.RemoveDynamic(this, &UBattleHUDWidget::SetItemUnit);
         UnitListSlot->OnSetItemBtnClicked.AddDynamic(this, &UBattleHUDWidget::SetItemUnit);
     }
-  
+
     if (FPlayerAccountService::GetStageData(this, StageDatas)) {
         if (!StageScrollBox || !StageListClass) return;
         StageWidgets.Empty();

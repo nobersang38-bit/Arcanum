@@ -91,7 +91,7 @@ void UCharacterHUDWidget::InitCharacterHUD()
         TSoftObjectPtr<UTexture2D> CharacterIconSoftPtr = ParentLobby->CachedPlayerData.OwnedCharacters[i].CharacterInfo.BattleCharacterInitData.CharacterIcon;
         UTexture2D* CharacterIcon = CharacterIconSoftPtr.LoadSynchronous();
 
-        GetCurrentGrade = ParentLobby->CachedPlayerData.OwnedCharacters[i].CharacterInfo.CurrentGrade; // 0 이면 보유X , 0 초과는 보유 및 강화
+        GetCurrentGrade = ParentLobby->CachedPlayerData.OwnedCharacters[i].CharacterInfo.CurrStarLevel; // 0 이면 보유X , 0 초과는 보유 및 강화
         
         bool hasOwned = false;
         FGameplayTag CharacterTag = ParentLobby->CachedPlayerData.OwnedCharacters[i].CharacterInfo.BattleCharacterInitData.CharacterTag;
@@ -129,7 +129,7 @@ void UCharacterHUDWidget::InitCharacterHUD()
         FGameplayTag CharacterTag = Data.CharacterInfo.BattleCharacterInitData.CharacterTag;
         FName CharacterName = GetLeafNameFromTag(CharacterTag);
 
-        bool hasOwned = Data.CharacterInfo.CurrentGrade > 0;
+        bool hasOwned = Data.CharacterInfo.CurrStarLevel > 0;
 
         OnCharacterSlotSelected(CreatedCharacterSlots[SelectedIndex], CharacterName, hasOwned);
     }
@@ -156,7 +156,7 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
         
         if (bIsSelected)
         {
-            TargetGradeIndex =  (TargetData.CharacterInfo.CurrentGrade > 0)? TargetData.CharacterInfo.CurrentGrade - 1 : 0;
+            TargetGradeIndex =  (TargetData.CharacterInfo.CurrStarLevel > 0)? TargetData.CharacterInfo.CurrStarLevel - 1 : 0;
             CharacterStar = TargetGradeIndex;
             CharacterGrade = GetGradePriority(TargetData.CharacterInfo.CurrGrade);
 
@@ -261,10 +261,10 @@ void UCharacterHUDWidget::CharacterEnhancement(FText InCharacterName, int32 InRe
 
         if (bIsSelected)
         {
-            //CurrentGrade + 1 저장
-            TargetData.CharacterInfo.CurrentGrade +=1;
+            //CurrStarLevel + 1 저장
+            TargetData.CharacterInfo.CurrStarLevel +=1;
             SelectedCharacterName = PlayerName;
-            TargetGradeIndex = (TargetData.CharacterInfo.CurrentGrade > 0) ? TargetData.CharacterInfo.CurrentGrade - 1 : 0;
+            TargetGradeIndex = (TargetData.CharacterInfo.CurrStarLevel > 0) ? TargetData.CharacterInfo.CurrStarLevel - 1 : 0;
             CharacterStar = TargetGradeIndex;
             CharacterGrade = GetGradePriority(TargetData.CharacterInfo.CurrGrade);
 
