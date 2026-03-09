@@ -14,8 +14,6 @@ namespace Arcanum {
 		UE_DEFINE_GAMEPLAY_TAG(EnemyUnitInfo, "Arcanum.DataTable.EnemyUnitInfo");
 		UE_DEFINE_GAMEPLAY_TAG(Potion, "Arcanum.DataTable.Potion");
 		UE_DEFINE_GAMEPLAY_TAG(ItemCatalog, "Arcanum.DataTable.ItemCatalog");
-		
-
 
 		//UE_DEFINE_GAMEPLAY_TAG(BattleRegenStats,	"Arcanum.DataTable.BattleRegenStats");
 		//UE_DEFINE_GAMEPLAY_TAG(BattleNonRegenStats, "Arcanum.DataTable.BattleNonRegenStats");
@@ -52,10 +50,10 @@ namespace Arcanum
 
 		namespace Grade
 		{
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Player.Grade", "등급 루트");
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Common, "Arcanum.Player.Grade.Common.0", "일반");
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Rare, "Arcanum.Player.Grade.Rare.1", "레어");
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Epic, "Arcanum.Player.Grade.Epic.2", "영웅");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root,	"Arcanum.Player.Grade", "등급 루트");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Common,	"Arcanum.Player.Grade.Common.0", "일반");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Rare,	"Arcanum.Player.Grade.Rare.1", "레어");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Epic,	"Arcanum.Player.Grade.Epic.2", "영웅");
 		}
 	}
 }
@@ -143,6 +141,12 @@ namespace Arcanum {
 			}
 		}
 		namespace Rarity {
+			namespace Grade {
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root,	 "Arcanum.Items.Rarity.Grade",			 "등급 루트");
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Common,	 "Arcanum.Items.Rarity.Grade.Common.0",	 "일반");
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(SetItem,	 "Arcanum.Items.Rarity.Grade.SetItem.1",  "레어");
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Legendary,"Arcanum.Items.Rarity.Grade.Legendary.2","영웅");
+			}
 			namespace Common {
 				namespace Weapon {
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(GreatSword, "Arcanum.Items.Rarity.Common.Weapon.GreatSword", "대검");

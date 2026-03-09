@@ -45,8 +45,16 @@ struct FPlayerData
     UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
     TMap<FGameplayTag, int32> StackCounts;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
-    int32 InventoryCapacity = 10;
+    int32 InventoryCapacity = 30;
 
+    /* ==============================
+     *         메일박스(캐릭터는 처음부터 다 주어지므로 별도 메일박스가 필요 없음)
+     * ============================== */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
+    TArray<FMailItem> Mailbox;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
+    int32 MailboxCapacity = 100;
 
     /* ==============================
      *     스테이지 클리어 정보?

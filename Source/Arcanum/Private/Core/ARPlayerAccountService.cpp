@@ -109,6 +109,31 @@ int32 FPlayerAccountService::GetHUDIndex(const UObject* WorldContextObject)
 
 	return static_cast<int32>(GI->HUDIndex);
 }
+void FPlayerAccountService::SetCurrentStageTag(const UObject* WorldContextObject, FGameplayTag CurrentStageTag)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+
+	if (!GI) {
+		UE_LOG(LogTemp, Error, TEXT("Invalid WorldContext or GameInstance!"));
+		return;
+	}
+
+	GI->CurrentStageTag = CurrentStageTag;
+}
+void FPlayerAccountService::ChangedLevel(const UObject* WorldContextObject, TSoftObjectPtr<UWorld> StageLevel)
+{
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	if (World) {
+		UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+		if (!GI) {
+			UE_LOG(LogTemp, Error, TEXT("Invalid WorldContext or GameInstance!"));
+			return;
+		}
+		GI->PendingStageLevel = StageLevel;
+	}
+	const FName MainStageName = TEXT("/Game/Level/CombatStage/MainStage");
+	UGameplayStatics::OpenLevel(WorldContextObject, MainStageName);
+}
 // ========================================================
 // PlayerData Updater
 // ========================================================
@@ -199,6 +224,23 @@ bool FPlayerAccountService::SavePlayerData(UARGameInstance* GI)
 // ========================================================
 // Battle Widget 관련
 // ========================================================
+bool FPlayerAccountService::GetStageData(const UObject* WorldContextObject, TArray<FDTStageDataRow*>& OutRows)
+{
+	OutRows.Empty();
+
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	if (!World) return false;
+
+	UGameDataSubsystem* DataSubsystem = World->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
+	if (!DataSubsystem) return false;
+
+	UDataTable** TablePtr = DataSubsystem->MasterDataTables.Find(Arcanum::DataTable::StageInfo);
+	if (!TablePtr || !(*TablePtr)) return false;
+
+	(*TablePtr)->GetAllRows<FDTStageDataRow>(TEXT("StageContext"), OutRows);
+
+	return OutRows.Num() > 0;
+}
 void FPlayerAccountService::StopShopOnBattleStart(const UObject* WorldContextObject)
 {
 	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
@@ -1131,20 +1173,50 @@ void FPlayerAccountService::GetActiveGachaBannerRows(const UObject* WorldContext
 }
 bool FPlayerAccountService::ExecuteGacha(const UObject* WorldContextObject, const FPlayerData& PlayerData, FGameplayTag BannerTag, FCurrencyCost Cost, int32 PullCount)
 {
+	bool res = false;
 	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
-	if (!World) return false;
+	if (!World) return res;
 
 	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
-	if (!GI) return false;
+	if (!GI) return res;
 
 	int64 SpendAmount = (PullCount == 1) ? (int64)Cost.SinglePullCost : (int64)Cost.MultiPullCost;
 	FPlayerCurrency PlayerCurrency = GetPlayerCurrency(WorldContextObject);
 	FCurrencyData* TargetData = PlayerCurrency.CurrencyDatas.Find(Cost.ConsumptionCurrencyTag);
 
-	if (!TargetData || TargetData->CurrAmount < SpendAmount) return false;
+	if (!TargetData || TargetData->CurrAmount < SpendAmount) return res;
 	const FDTGachaBannerDataRow* BannerData = GetGachaBannerData(WorldContextObject, BannerTag);
-	if (!BannerData) return false;
+	if (!BannerData) return res;
 
-	UpdateCurrency(WorldContextObject, PlayerData, Cost.ConsumptionCurrencyTag, -SpendAmount);
-	return GI->GenerateResults(BannerData, PullCount);
+	if (GI->GenerateResults(BannerData, PullCount)) {
+		UpdateCurrency(WorldContextObject, PlayerData, Cost.ConsumptionCurrencyTag, -SpendAmount);
+		res = true;
+	}
+	
+	return res;
+}
+// ========================================================
+// Transient 관련
+// ========================================================
+void FPlayerAccountService::SetGachaItemEmpty(const UObject* WorldContextObject)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+
+	if (!GI) {
+		UE_LOG(LogTemp, Error, TEXT("Invalid WorldContext or GameInstance!"));
+		return;
+	}
+
+	GI->GachaItemResult.Empty();
+}
+TArray<FGachaItemResult> FPlayerAccountService::GetGachaItemResult(const UObject* WorldContextObject)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+
+	if (!GI) {
+		UE_LOG(LogTemp, Error, TEXT("Invalid WorldContext or GameInstance!"));
+		return {};
+	}
+
+	return GI->GachaItemResult;
 }
