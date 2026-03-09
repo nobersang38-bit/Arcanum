@@ -1,4 +1,4 @@
-#include "UI/Lobby/Contents/Inventory/InventoryItemSlotWidget.h"
+#include "UI/Lobby/Contents/Inventory/SubLayout/InventoryItemSlotWidget.h"
 #include "Components/Button.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"

@@ -1,6 +1,6 @@
 #include "UI/Lobby/Contents/Enhancement/EnhancementHUDWidget.h"
 #include "UI/Lobby/Contents/Inventory/InventoryHUDWidget.h"
-#include "UI/Lobby/Contents/Inventory/InventoryItemSlotWidget.h"
+#include "UI/Lobby/Contents/Inventory/SubLayout/InventoryItemSlotWidget.h"
 #include "UI/Lobby/LobbyHUD.h"
 #include "Core/ARGameInstance.h"
 #include "Core/SubSystem/GameDataSubsystem.h"
