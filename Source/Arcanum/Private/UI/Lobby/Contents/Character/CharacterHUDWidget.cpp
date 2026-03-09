@@ -130,7 +130,7 @@ void UCharacterHUDWidget::InitCharacterHUD()
         FName CharacterName = GetLeafNameFromTag(CharacterTag);
 
         bool hasOwned = Data.CharacterInfo.CurrStarLevel > 0;
-
+  
         OnCharacterSlotSelected(CreatedCharacterSlots[SelectedIndex], CharacterName, hasOwned);
     }
 }
@@ -207,7 +207,7 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
             }
             FinalText = FText::FromString(CombinedInfoString);
             // 캐릭터 info창 바꾸기
-            UpdateCharacterInfo(CharacterName, SlotCharacterOwned, FinalText, ButtonText, soulAmount);
+            UpdateCharacterInfo(CharacterName, TargetData.bSelection, SlotCharacterOwned, FinalText, ButtonText, soulAmount);
         }
 
         if (CreatedCharacterSlots.IsValidIndex(i))
@@ -315,7 +315,7 @@ void UCharacterHUDWidget::CharacterEnhancement(FText InCharacterName, int32 InRe
             }
             FinalText = FText::FromString(CombinedInfoString);
             // Info창 다시 불러오기
-            UpdateCharacterInfo(SelectedCharacterName, true, FinalText, ButtonText, soulAmount);
+            UpdateCharacterInfo(SelectedCharacterName, TargetData.bSelection, true, FinalText, ButtonText, soulAmount);
         }
     }
   }
@@ -347,7 +347,7 @@ void UCharacterHUDWidget::SetPlayerCharacter(FText CharacterName)
 // ========================================================
 // 캐릭터 정보 출력창
 // ========================================================
-void UCharacterHUDWidget::UpdateCharacterInfo(FName CharacterName, bool SlotCharacterOwned,FText InFinalText, FText InButtonText, int64 soulAmount)
+void UCharacterHUDWidget::UpdateCharacterInfo(FName CharacterName, bool bSetCharacter, bool SlotCharacterOwned,FText InFinalText, FText InButtonText, int64 soulAmount)
 {
     if (CharacterSwitcher)
     {
@@ -359,7 +359,7 @@ void UCharacterHUDWidget::UpdateCharacterInfo(FName CharacterName, bool SlotChar
             InfoWidget->SetCharacterName(CharacterName);
             InfoWidget->SetStarCharcterInfo(CharacterStar);
             InfoWidget->SetEnhanceButtonEnabled(SlotCharacterOwned, RequiredSoul, soulAmount, TargetGradeIndex);
-            InfoWidget->SetPlayerButtonEnabled(SlotCharacterOwned);
+            InfoWidget->SetPlayerButtonEnabled(bSetCharacter, SlotCharacterOwned);
             InfoWidget->SetGradeCharcterInfo(CharacterGrade);
             InfoWidget->SetCharcterInfo(InFinalText);
             InfoWidget->SetEnhanceBtnText(InButtonText);
@@ -445,8 +445,7 @@ void UCharacterHUDWidget::SetupEquipment(USquareSlotWidget* ClickedSlot)
     if (!ClickedSlot) return;
 
     FGameplayTag SelectedTag = ClickedSlot->GetWeaponTag();
-    /// Test 테스트용
-    FGuid DummyGuid = FGuid::NewGuid();
+    FGuid WeaponGuid = ClickedSlot->GetWeaponGuid();
 
     if (!SelectedTag.IsValid())
         return;
@@ -455,7 +454,7 @@ void UCharacterHUDWidget::SetupEquipment(USquareSlotWidget* ClickedSlot)
     {
         if (TargetData.bSelection)
         {
-             TargetData.Weapons.Add(SelectedTag, DummyGuid);
+             TargetData.Weapons.Add(SelectedTag, WeaponGuid);
 
         }
     }

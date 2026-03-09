@@ -41,9 +41,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetItemName(FText InText);
 	void SetWeaponTag(FGameplayTag InTag);
+	void SetWeaponGuid(FGuid InGuid);
 	FText GetItemName() const { return EquipNameTxt; }
 	FGameplayTag GetWeaponTag() const { return WeaponTag; }
-
+	FGuid GetWeaponGuid() const { return WeaponGuid; }
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UBorder> BackgroundColor;
@@ -59,5 +60,7 @@ protected:
 
 	UPROPERTY()
 	FText EquipNameTxt;
+	UPROPERTY()
+	FGuid WeaponGuid;
 
 };

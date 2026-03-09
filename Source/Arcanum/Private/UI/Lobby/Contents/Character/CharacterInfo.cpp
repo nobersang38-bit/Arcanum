@@ -130,11 +130,12 @@ void UCharacterInfo::SetEnhanceButtonEnabled(bool bIsCharacterOwned,int32 InRequ
 // ========================================================
 // 캐릭터 보유에 따른 장착 버튼 활성화/비활성화
 // ========================================================
-void UCharacterInfo::SetPlayerButtonEnabled(bool bIsCharacterOwned)
+void UCharacterInfo::SetPlayerButtonEnabled(bool bSetCharacter,bool SlotCharacterOwned)
 {
     if (SetPlayerBtn)
     {
-        SetPlayerBtn->SetIsEnabled(bIsCharacterOwned);
+        // 보유중이고 장착되지 않은 경우에만 true, 나머지는 false
+        SetPlayerBtn->SetIsEnabled(!bSetCharacter && SlotCharacterOwned);
     }
 }
 

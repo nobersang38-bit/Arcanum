@@ -43,3 +43,8 @@ void USquareSlotWidget::SetWeaponTag(FGameplayTag InTag)
 {
     WeaponTag = InTag;
 }
+
+void USquareSlotWidget::SetWeaponGuid(FGuid InGuid)
+{
+    WeaponGuid = InGuid;
+}

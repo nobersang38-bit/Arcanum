@@ -92,6 +92,7 @@ void UInventorySlot::CreateWeaponItems(TArray<FEquipmentInfo> WeaponList, const 
                                     NewSlot->SetItemIconImage(WeaponInventoryItemIcon);
                                     NewSlot->SetItemName(EquipNameTxt);
                                     NewSlot->SetWeaponTag(row->ItemTag);
+                                    NewSlot->SetWeaponGuid(WeaponList[i].ItemGuid);
                                     NewSlot->OnSlotClicked.AddDynamic(this, &UInventorySlot::OnSlotClicked);
                                     InventoryEquipmentSlots.Add(NewSlot);
                                     UWrapBoxSlot* WrapSlot = EquipGridPanel->AddChildToWrapBox(NewSlot);
