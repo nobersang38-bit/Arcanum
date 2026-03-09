@@ -6,6 +6,7 @@
 #include "DataInfo/CommonData/Stats/FBattleStats.h"
 #include "DataInfo/CommonData/Stats/FStatModifier.h"
 #include "Data/Rows/DTBattleStatsRow.h"
+#include "DataInfo/BattleCharacter/BattleStats/Data/FGradeStatData.h"
 #include "CharacterBattleStatsComponent.generated.h"
 
 // 1. Regen 계열용 (HP, MP등 정보)
@@ -41,11 +42,9 @@ protected:
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
-	UPROPERTY(EditDefaultsOnly, Category = "0_Stats|Base")	FDataTableRowHandle DTCharacterBattleRegenStatsRowHandle;
-	UPROPERTY(VisibleAnywhere, Category = "1_Stats|RunTimeDebug") FDTCharacterBattleRegenStatsRow	DTCharacterBattleRegenStatsRow;
+	UPROPERTY(EditDefaultsOnly, Category = "0_Stats|Base")	FDataTableRowHandle DTBattleStatsRow;
 
-	UPROPERTY(EditDefaultsOnly, Category = "0_Stats|Base")	FDataTableRowHandle DTCharacterBattleNonRegenStatsRowHandle;
-	UPROPERTY(VisibleAnywhere, Category = "1_Stats|RunTimeDebug") FDTCharacterBattleNonRegenStatsRow	DTCharacterBattleNonRegenStatsRow;
+	UPROPERTY(VisibleAnywhere, Category = "1_Stats|RunTimeDebug") FGradeStatData GradeStatData;
 #pragma endregion
 
 #pragma region 초기화
@@ -56,6 +55,10 @@ public:
 	/** 논리젠용 보너스 주고 싶을 때*/
 	UFUNCTION(BlueprintCallable)
 	void AddNonRegenBonus(const TArray<FNonRegenStat>& InBonusStats);
+
+	// 20260310 김도현 : 스탯 전체 브로드캐스트 함수 추가
+	UFUNCTION()
+	void BroadcastAllStats();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "0_Stats|Base")
 	float TimerTick = 1.f;

@@ -33,6 +33,7 @@ public:
 	virtual FGameplayTag GetTeamTag() override;
 
 	class UCharacterBattleStatsComponent* GetCharacterBattleStatsComponent() { return CharacterBattleStatsComponent; }
+	class UUnitCombatComponent* GetUnitCombatComponent() { return UnitCombatComponent; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -50,7 +51,7 @@ protected:
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<class UUnitCombatComponent> UnitCombatComponent0 = nullptr;
+	TObjectPtr<class UUnitCombatComponent> UnitCombatComponent = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<class UCharacterBattleStatsComponent> CharacterBattleStatsComponent = nullptr;

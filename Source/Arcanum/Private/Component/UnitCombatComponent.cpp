@@ -28,6 +28,7 @@
 #include "Object/Object/FSM/Unit/UnitState_Death.h"
 #include "Interface/RuntimeUnitDataInterface.h"
 #include "Core/SubSystem/PoolingSubsystem.h"
+#include "Data/DataAssets/Actions/DAAction_MoveSpeed.h"
 
 // ========================================================
 // 언리얼 기본 생성
@@ -84,11 +85,17 @@ void UUnitCombatComponent::UnitDeactive()
 void UUnitCombatComponent::DeferredBeginPlay()
 {
 	bIsDead = false;
-	// Death바인딩
+
+	UCharacterBattleStatsComponent* StatComponent = nullptr;
+	// 스탯 바인딩
 	if (ABaseUnitCharacter* TempOwner = Cast<ABaseUnitCharacter>(GetOwner()))
 	{
-		TempOwner->GetCharacterBattleStatsComponent()->OnCharacterRegenStatChanged.RemoveAll(this);
-		TempOwner->GetCharacterBattleStatsComponent()->OnCharacterRegenStatChanged.AddUObject(this, &UUnitCombatComponent::Death);
+		StatComponent = TempOwner->GetCharacterBattleStatsComponent();
+		StatComponent->OnCharacterRegenStatChanged.RemoveAll(this);
+		StatComponent->OnCharacterNonRegenStatChanged.RemoveAll(this);
+		StatComponent->OnCharacterRegenStatChanged.AddUObject(this, &UUnitCombatComponent::Death);
+		StatComponent->OnCharacterRegenStatChanged.AddUObject(this, &UUnitCombatComponent::SetRegenStat);
+		StatComponent->OnCharacterNonRegenStatChanged.AddUObject(this, &UUnitCombatComponent::SetNonRegenStat);
 	}
 
 	if (ACharacter* TempOwnerCharacter = Cast<ACharacter>(GetOwner()))
@@ -113,6 +120,10 @@ void UUnitCombatComponent::DeferredBeginPlay()
 
 	SetupStates();
 	SetupTick();
+	if (StatComponent)
+	{
+		StatComponent->BroadcastAllStats();
+	}
 }
 
 void UUnitCombatComponent::TickUpdate()
@@ -406,9 +417,23 @@ bool UUnitCombatComponent::IsCanAttackRange()
 	return false;
 }
 
-void UUnitCombatComponent::SetStat(FGameplayTag InTag, float InValue)
+void UUnitCombatComponent::SetRegenStat(const FRegenStat& InValue)
 {
+	const FGameplayTag& Tag = InValue.ParentTag;
+	if (ActionSet.Contains(Tag))
+	{
+		ActionSet.Find(Tag)->GetDefaultObject()->StartAction(GetOwner(), InValue);
+	}
+}
 
+void UUnitCombatComponent::SetNonRegenStat(const FNonRegenStat& InValue)
+{
+	const FGameplayTag& Tag = InValue.TagName;
+
+	if (ActionSet.Contains(Tag))
+	{
+		ActionSet.Find(Tag)->GetDefaultObject()->StartAction(GetOwner(), InValue);
+	}
 }
 
 

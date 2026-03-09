@@ -30,7 +30,7 @@ ABaseUnitCharacter::ABaseUnitCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	UnitCombatComponent0 = CreateDefaultSubobject<UUnitCombatComponent>(TEXT("UnitCombatComponent"));
+	UnitCombatComponent = CreateDefaultSubobject<UUnitCombatComponent>(TEXT("UnitCombatComponent"));
 	CharacterBattleStatsComponent = CreateDefaultSubobject<UCharacterBattleStatsComponent>(TEXT("CharacterBattleStatsComponent"));
 	HealthBarComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBarComponent"));
 
@@ -146,7 +146,7 @@ void ABaseUnitCharacter::DataInitialize()
 {
 	CharacterBattleStatsComponent->OnCharacterRegenStatChanged.RemoveAll(this);
 	// Todo KDH : 임시
-	CharacterBattleStatsComponent->ChangeStatValue(Arcanum::BattleStat::Character::Regen::Health::Root, 100.0f, this);
+	//CharacterBattleStatsComponent->ChangeStatValue(Arcanum::BattleStat::Character::Regen::Health::Root, 100.0f, this);
 	if (!IsSetupUnit)
 	{
 		UpdateUnitData();
@@ -188,12 +188,12 @@ void ABaseUnitCharacter::DataInitialize()
 
 FUnitRuntimeData& ABaseUnitCharacter::GetUnitRuntimeData()
 {
-	return UnitCombatComponent0->GetUnitRuntimeData();
+	return UnitCombatComponent->GetUnitRuntimeData();
 }
 
 void ABaseUnitCharacter::OnAttackNotifyTriggered()
 {
-	UnitCombatComponent0->SendDamage(GetAttackPower());
+	UnitCombatComponent->SendDamage(GetAttackPower());
 }
 
 // 데미지 받기
@@ -224,9 +224,9 @@ const FUnitData& ABaseUnitCharacter::GetUnitData()
 
 bool ABaseUnitCharacter::GetIsDead()
 {
-	if (UnitCombatComponent0)
+	if (UnitCombatComponent)
 	{
-		return UnitCombatComponent0->GetIsDead();
+		return UnitCombatComponent->GetIsDead();
 	}
 	return true;
 }
@@ -234,18 +234,18 @@ bool ABaseUnitCharacter::GetIsDead()
 void ABaseUnitCharacter::UnitActivate()
 {
 	DataInitialize();
-	if (UnitCombatComponent0)
+	if (UnitCombatComponent)
 	{
-		UnitCombatComponent0->UnitActivate();
+		UnitCombatComponent->UnitActivate();
 	}
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void ABaseUnitCharacter::UnitDeactive()
 {
-	if (UnitCombatComponent0)
+	if (UnitCombatComponent)
 	{
-		UnitCombatComponent0->UnitDeactive();
+		UnitCombatComponent->UnitDeactive();
 	}
 }
 
