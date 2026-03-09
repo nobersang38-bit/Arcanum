@@ -309,13 +309,13 @@ void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerDa
 					FDTBattleStatsContainerRow* DTBattleStatsContainerRow = GameDataSubsystem->GetRow<FDTBattleStatsContainerRow>(Arcanum::DataTable::BattleStats, FName(CharacterName));
 					if (DTBattleStatsContainerRow)
 					{
-						if (OwnedCharacter.CharacterInfo.CurrentGrade <= 0)
+						if (OwnedCharacter.CharacterInfo.CurrStarLevel <= 0)
 						{
 							UE_LOG(LogTemp, Error, TEXT("선택된 캐릭터가 존재하지 않습니다"));
 							break;
 						}
 
-						FGradeStatData GradeStatData = DTBattleStatsContainerRow->GradeDataSteps[OwnedCharacter.CharacterInfo.CurrentGrade - 1];
+						FGradeStatData GradeStatData = DTBattleStatsContainerRow->GradeDataSteps[OwnedCharacter.CharacterInfo.CurrStarLevel - 1];
 						OutInBattleData.PlayerBattleStat = GradeStatData;
 
 						UE_LOG(LogTemp, Error, TEXT("%s"), *CharacterName);

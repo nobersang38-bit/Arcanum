@@ -117,6 +117,9 @@ protected:
 
 	// 공격이 가능한 거리라면 true
 	bool IsCanAttackRange();
+
+	// 스탯 변경
+	void SetStat(FGameplayTag InTag, float InValue);
 	
 #pragma endregion
 

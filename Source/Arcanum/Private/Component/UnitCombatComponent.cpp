@@ -406,6 +406,11 @@ bool UUnitCombatComponent::IsCanAttackRange()
 	return false;
 }
 
+void UUnitCombatComponent::SetStat(FGameplayTag InTag, float InValue)
+{
+
+}
+
 
 // ========================================================
 // 상태
