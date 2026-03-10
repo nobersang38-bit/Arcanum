@@ -134,8 +134,9 @@ protected:
 
 
 #pragma region 상태
+public:
+	void LightHitReaction(float InDamage);
 protected:
-	void LightHitReaction();
 	void Death(const FRegenStat& InData);
 
 #pragma endregion
@@ -150,6 +151,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TMap<FGameplayTag, TSubclassOf<class UDAAction>> ActionSet;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSubclassOf<AActor> FloatingTextActorClass = nullptr;
 #pragma endregion
 
 

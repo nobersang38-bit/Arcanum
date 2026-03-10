@@ -341,6 +341,29 @@ void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerDa
 		}
 	}
 
+	//스테이지 데이터 설정 부분
+	UGameDataSubsystem* GameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
+	if (GameDataSubsystem)
+	{
+		// Todo KDH : 나중에 현재 스테이지 태그가 들어와야함
+		FGameplayTag StageTag = Arcanum::BattleStage::Normal::Stage1;
+
+		if (UDataTable** DTStageData = GameDataSubsystem->MasterDataTables.Find(Arcanum::DataTable::StageInfo))
+		{
+			TArray<FDTStageDataRow*> StageData;
+			(*DTStageData)->GetAllRows<FDTStageDataRow>(FString(), StageData);
+			for (int i = 0; i < StageData.Num(); i++)
+			{
+				if (StageData[i] && StageData[i]->StageData.StageTag == StageTag)
+				{
+					OutInBattleData.StageData = StageData[i]->StageData;
+					break;
+				}
+			}
+
+		}
+	}
+
 	//for (int i = 0; i < OutInBattleData.PlayerData.OwnedCharacters.Num(); i++)
 	//{
 	//	const FBattleCharacterData& OwnedCharacter = OutInBattleData.PlayerData.OwnedCharacters[i];

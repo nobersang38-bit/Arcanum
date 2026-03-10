@@ -29,6 +29,7 @@
 #include "Interface/RuntimeUnitDataInterface.h"
 #include "Core/SubSystem/PoolingSubsystem.h"
 #include "Data/DataAssets/Actions/DAAction_MoveSpeed.h"
+#include "Object/Actor/FloatingDamageText.h"
 
 // ========================================================
 // 언리얼 기본 생성
@@ -440,9 +441,20 @@ void UUnitCombatComponent::SetNonRegenStat(const FNonRegenStat& InValue)
 // ========================================================
 // 상태
 // ========================================================
-void UUnitCombatComponent::LightHitReaction()
+void UUnitCombatComponent::LightHitReaction(float InDamage)
 {
-
+	//UE_LOG(LogTemp, Error, TEXT("InDamage : %f"), InDamage);
+	UPoolingSubsystem* PoolingSystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
+	if (PoolingSystem && FloatingTextActorClass)
+	{
+		FTransform Transform;
+		Transform.SetLocation((GetOwner()->GetActorLocation() + (GetOwner()->GetActorUpVector() * 100.0f)) + (FMath::VRand() * 10.0f));
+		AActor* FloatingActor = PoolingSystem->SpawnFromPool(FloatingTextActorClass, Transform);
+		if (AFloatingDamageText* FloatingText = Cast<AFloatingDamageText>(FloatingActor))
+		{
+			FloatingText->SetText(InDamage);
+		}
+	}
 }
 
 void UUnitCombatComponent::Death(const FRegenStat& InData)

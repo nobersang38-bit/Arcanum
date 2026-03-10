@@ -42,8 +42,10 @@ struct FPlayerData
      * ============================== */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
     TArray<FEquipmentInfo> Inventory;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
     TMap<FGameplayTag, int32> StackCounts;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
     int32 InventoryCapacity = 30;
 

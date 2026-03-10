@@ -12,6 +12,7 @@
 #include "NativeGameplayTags.h"
 #include "Data/Types/UnitData.h"
 #include "Data/Types/BattleStageInfo.h"
+#include "DataInfo/StageData/StageInfo/Data/FStageDataInfo.h"
 #include "BattlefieldManagerSubsystem.generated.h"
 
 USTRUCT(BlueprintType)
@@ -20,9 +21,8 @@ struct FInBattleData
 	GENERATED_BODY()
 public:
 	FPlayerData PlayerData;
-
+	FStageDataInfo StageData;
 	FBattleStageInfo BattleStageInfo;
-
 	FGradeStatData PlayerBattleStat;
 	
 	UPROPERTY()
@@ -52,9 +52,6 @@ public:
 public:
 #pragma region 스테이지 기본설정
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void SetStageData(const FCombatStageData& InData) { StageData = InData; }
-
-	UFUNCTION(BlueprintCallable)
 	AActor* GetBasement(FGameplayTag InTeamTag) const;
 
 	FBasementStat GetBasementStat(FGameplayTag InTeamTag) const;
@@ -75,6 +72,9 @@ public:
 	FUnitInfoSetting GetAllyUnitData(FGameplayTag InUnitTag, bool& OutResult) const;
 	UFUNCTION()
 	FUnitInfoSetting GetEnemyUnitData(FGameplayTag InUnitTag, bool& OutResult) const;
+
+	UFUNCTION()
+	const FStageDataInfo& GetStageData() const { return InBattleData.StageData; }
 
 	UFUNCTION()
 	void StartTime();
@@ -124,8 +124,6 @@ protected:
 
 protected:
 #pragma region 스테이지 기본설정
-	FCombatStageData StageData;
-
 	FMatchData CurrentMatchData;
 
 	UPROPERTY()

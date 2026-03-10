@@ -144,6 +144,7 @@ float ABaseUnitCharacter::GetAttackPower()
 
 void ABaseUnitCharacter::DataInitialize()
 {
+	CharacterBattleStatsComponent->InitComponent();
 	CharacterBattleStatsComponent->OnCharacterRegenStatChanged.RemoveAll(this);
 	// Todo KDH : 임시
 	//CharacterBattleStatsComponent->ChangeStatValue(Arcanum::BattleStat::Character::Regen::Health::Root, 100.0f, this);
@@ -200,6 +201,7 @@ void ABaseUnitCharacter::OnAttackNotifyTriggered()
 void ABaseUnitCharacter::RecievedDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
 	GetCharacterBattleStatsComponent()->ChangeStatValue(Arcanum::BattleStat::Character::Regen::Health::Root, -(FMath::Abs(Damage)), DamageCauser);
+	UnitCombatComponent->LightHitReaction(Damage);
 }
 
 void ABaseUnitCharacter::UpdateUnitData()

@@ -4,6 +4,20 @@
 #include "Interface/PoolingInterface.h"
 #include "Engine/World.h"
 #include "TimerManager.h"
+#include "Kismet/GameplayStatics.h"
+#include "Engine/PostProcessVolume.h"
+
+void UPoolingSubsystem::OnWorldBeginPlay(UWorld& InWorld)
+{
+	Super::OnWorldBeginPlay(InWorld);
+	TArray<AActor*> PostProcessVolumes;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APostProcessVolume::StaticClass(), PostProcessVolumes);
+
+	if(!PostProcessVolumes.IsEmpty())
+	{
+		CashedPostProcessVolume = Cast<APostProcessVolume>(PostProcessVolumes[0]);
+	}
+}
 
 void UPoolingSubsystem::SetPoolSet(const FPoolingSet& SetData)
 {

@@ -62,8 +62,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "0_Stats|Base")
 	float TimerTick = 1.f;
-private:
+public:
 	void InitComponent();
+private:
 	void RebuildTotalStats();
 	UPROPERTY(VisibleAnywhere, Transient)
 	bool bInitialized = false;
