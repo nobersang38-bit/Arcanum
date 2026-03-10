@@ -3,6 +3,7 @@
 
 #include "Component/BasementTeamComponent.h"
 #include "Core/SubSystem/BattlefieldManagerSubsystem.h"
+#include "Interface/TeamInterface.h"
 
 // Sets default values for this component's properties
 UBasementTeamComponent::UBasementTeamComponent()
@@ -22,7 +23,19 @@ void UBasementTeamComponent::BeginPlay()
 	UBattlefieldManagerSubsystem* BattlefieldManagerSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 	if (BattlefieldManagerSubsystem)
 	{
-		BattlefieldManagerSubsystem->AddBasement(GetOwner(), TeamTag);
+		if (GetOwner()->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()))
+		{
+			auto Interface = Cast<ITeamInterface>(GetOwner());
+			TeamTag = Interface->GetTeamTag();
+		}
+		if (BattlefieldManagerSubsystem->AllyTeamTag == TeamTag)
+		{
+			BattlefieldManagerSubsystem->AddAllyBasement(GetOwner());
+		}
+		else
+		{
+			BattlefieldManagerSubsystem->AddEnemyBasement(GetOwner());
+		}
 	}
 }
 

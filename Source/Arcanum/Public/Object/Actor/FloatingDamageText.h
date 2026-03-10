@@ -33,10 +33,14 @@ protected:
 
 	void DeactiveItem() override;
 
+	UFUNCTION()
+	void Internal_Deactive();
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<class UWidgetComponent> FloatingWidgetComponent = nullptr;
 
 	UPROPERTY()
 	TWeakObjectPtr<class UFloatingDamageTextWidget> CashedFloatingDamageTextWidget = nullptr;
+
 };

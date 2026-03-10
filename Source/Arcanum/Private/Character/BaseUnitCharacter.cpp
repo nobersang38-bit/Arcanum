@@ -66,7 +66,8 @@ FGameplayTag ABaseUnitCharacter::GetTeamTag()
 void ABaseUnitCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
+	OutlineDynamicMI = UMaterialInstanceDynamic::Create(GetMesh()->GetOverlayMaterial(), this);
+	GetMesh()->SetOverlayMaterial(OutlineDynamicMI);
 	DataInitialize();
 }
 
@@ -144,6 +145,7 @@ float ABaseUnitCharacter::GetAttackPower()
 
 void ABaseUnitCharacter::DataInitialize()
 {
+	GetCharacterMovement()->SetRVOAvoidanceWeight((FMath::Rand32() % 11) * 0.1f);
 	CharacterBattleStatsComponent->InitComponent();
 	CharacterBattleStatsComponent->OnCharacterRegenStatChanged.RemoveAll(this);
 	// Todo KDH : 임시
@@ -202,6 +204,7 @@ void ABaseUnitCharacter::RecievedDamage(AActor* DamagedActor, float Damage, cons
 {
 	GetCharacterBattleStatsComponent()->ChangeStatValue(Arcanum::BattleStat::Character::Regen::Health::Root, -(FMath::Abs(Damage)), DamageCauser);
 	UnitCombatComponent->LightHitReaction(Damage);
+	OuntLineStart(OutLineCurve, OutLineTime, 0.005f, OutlineTimeHandle, OutlineDynamicMI, RefOutlineTime);
 }
 
 void ABaseUnitCharacter::UpdateUnitData()
@@ -251,6 +254,31 @@ void ABaseUnitCharacter::UnitDeactive()
 	}
 }
 
+void ABaseUnitCharacter::OuntLineStart(const UCurveFloat* CurveFloat, float InTime, float DeltaTime, FTimerHandle& InTimerHandle, UMaterialInstanceDynamic* MaterialInstance, float& RefTime)
+{
+	RefTime = 0.0f;
+	FTimerDelegate OutlineDelegate;
+	OutlineDelegate.BindWeakLambda(this, [this, MaterialInstance, CurveFloat, InTime, DeltaTime, &InTimerHandle, &RefTime]()
+		{
+			if (MaterialInstance)
+			{
+				float Time = FMath::Clamp(RefTime / InTime, 0.0f, 1.0f);
+				float Value = CurveFloat->GetFloatValue(Time);
+				MaterialInstance->SetScalarParameterValue(FName("Weight0"), Value);
+				RefTime += DeltaTime;
+
+				if (Time >= 1.0f)
+				{
+					MaterialInstance->SetScalarParameterValue(FName("Weight0"), 0.0f);
+					GetWorld()->GetTimerManager().ClearTimer(InTimerHandle);
+				}
+			}
+		});
+
+	GetWorld()->GetTimerManager().ClearTimer(InTimerHandle);
+	GetWorld()->GetTimerManager().SetTimer(InTimerHandle, OutlineDelegate, DeltaTime, true);
+}
+
 void ABaseUnitCharacter::ActivateItem()
 {
 	UnitActivate();
@@ -265,6 +293,7 @@ void ABaseUnitCharacter::DeactiveItem()
 {
 	UnitDeactive();
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SetActorLocation(FVector(0.0f, 0.0f, -9999.0f));
 	if (HealthBarComponent)
 	{
 		HealthBarComponent->SetHiddenInGame(true);

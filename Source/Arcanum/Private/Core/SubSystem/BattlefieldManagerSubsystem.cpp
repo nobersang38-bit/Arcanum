@@ -21,55 +21,43 @@ void UBattlefieldManagerSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 	SetInBattleData(FPlayerAccountService::GetPlayerDataCopy(this), InBattleData);
 
 	SetupUnits();
-	DebugBasementSet();
-	DebugSetUsingAllyUnits();
+	//DebugBasementSet();
+	//DebugSetUsingAllyUnits();
 	//DebugPlayerCharacterSet();
-
-	//UARGameInstance* GameInstance = nullptr;
-	//GameInstance = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-	//if (GameInstance)
-	//{
-	//	SetPlayerData(GameInstance->GetPlayerData(), InBattleData);
-	//}
 }
 
-void UBattlefieldManagerSubsystem::AddBasement(AActor* InNexus, FGameplayTag InTeamTag)
+void UBattlefieldManagerSubsystem::AddAllyBasement(AActor* InNexus)
 {
-	if (!InNexus || !InTeamTag.IsValid()) return;
+	if (!InNexus) return;
 
-	if (Basements.Contains(InTeamTag))
-	{
-		UE_LOG(LogTemp, Error, TEXT("같은 팀인 기지가 하나 더 있습니다"));
-	}
-	else
-	{
-		Basements.Add(InTeamTag, InNexus);
-	}
-
-	if (InTeamTag.MatchesTag(AllyTeamTag))
-	{
-
-	}
-	else if (InTeamTag.MatchesTag(EnemyTeamTag))
-	{
-
-	}
-
+	AllyBasement = InNexus;
 }
 
-AActor* UBattlefieldManagerSubsystem::GetBasement(FGameplayTag InTeamTag) const
+void UBattlefieldManagerSubsystem::AddEnemyBasement(AActor* InNexus)
 {
-	return Basements.FindRef(InTeamTag);
+	if (!InNexus) return;
+
+	EnemyBasement = InNexus;
 }
 
-FBasementStat UBattlefieldManagerSubsystem::GetBasementStat(FGameplayTag InTeamTag) const
+AActor* UBattlefieldManagerSubsystem::GetAllyBasement() const
 {
-	if (const FBasementStat* TempBasementStat = BasementStats.Find(InTeamTag))
-	{
-		return *TempBasementStat;
-	}
+	return AllyBasement.Get();
+}
 
-	return FBasementStat();
+AActor* UBattlefieldManagerSubsystem::GetEnemyBasement() const
+{
+	return EnemyBasement.Get();
+}
+
+const FEnemyBasement& UBattlefieldManagerSubsystem::GetAllyBasementStat() const
+{
+	return AllyBasementStat;
+}
+
+const FEnemyBasement& UBattlefieldManagerSubsystem::GetEnemyBasementStat() const
+{
+	return EnemyBasementStat;
 }
 
 void UBattlefieldManagerSubsystem::SetABattlefieldManagerActor(ABattlefieldManagerActor* InBattlefieldManagerActor)
@@ -77,9 +65,9 @@ void UBattlefieldManagerSubsystem::SetABattlefieldManagerActor(ABattlefieldManag
 	BattlefieldManagerActor = InBattlefieldManagerActor;
 }
 
-const TArray<FUnitInfoSetting>& UBattlefieldManagerSubsystem::GetUsingAllyUnitData()
+const TMap<FGameplayTag, FUnitInfoSetting>& UBattlefieldManagerSubsystem::GetUsingAllyUnitData()
 {
-	return InBattleData.AllyUnits;
+	return AllyUnitDatas;
 }
 
 FUnitInfoSetting UBattlefieldManagerSubsystem::GetAllyUnitData(FGameplayTag InUnitTag, bool& OutResult) const
@@ -138,13 +126,12 @@ void UBattlefieldManagerSubsystem::OnTimeChange(int32 Time)
 
 void UBattlefieldManagerSubsystem::DebugSetUsingAllyUnits()
 {
-	InBattleData.AllyUnits.Empty();
 	bool Result = false;
-	InBattleData.AllyUnits.Add(GetAllyUnitData(Arcanum::Unit::Faction::Ally::Army::Root, Result));
-	InBattleData.AllyUnits.Add(GetAllyUnitData(Arcanum::Unit::Faction::Ally::Bard::Root, Result));
-	InBattleData.AllyUnits.Add(GetAllyUnitData(Arcanum::Unit::Faction::Ally::Maid::Root, Result));
-	InBattleData.AllyUnits.Add(GetAllyUnitData(Arcanum::Unit::Faction::Ally::Tinker::Root, Result));
-	InBattleData.AllyUnits.Add(GetAllyUnitData(Arcanum::Unit::Faction::Ally::PunchMan::Root, Result));
+	//AllyUnitDatas.Add(Arcanum::Unit::Faction::Ally::Army::Root, GetAllyUnitData(Arcanum::Unit::Faction::Ally::Army::Root, Result));
+	//AllyUnitDatas.Add(Arcanum::Unit::Faction::Ally::Bard::Root, GetAllyUnitData(Arcanum::Unit::Faction::Ally::Bard::Root, Result));
+	//AllyUnitDatas.Add(Arcanum::Unit::Faction::Ally::Maid::Root, GetAllyUnitData(Arcanum::Unit::Faction::Ally::Maid::Root, Result));
+	//AllyUnitDatas.Add(Arcanum::Unit::Faction::Ally::Tinker::Root, GetAllyUnitData(Arcanum::Unit::Faction::Ally::Tinker::Root, Result));
+	//AllyUnitDatas.Add(Arcanum::Unit::Faction::Ally::PunchMan::Root, GetAllyUnitData(Arcanum::Unit::Faction::Ally::PunchMan::Root, Result));
 }
 
 void UBattlefieldManagerSubsystem::CheckMatchEnded(int32 Time)
@@ -197,15 +184,8 @@ void UBattlefieldManagerSubsystem::SetupUnits()
 
 void UBattlefieldManagerSubsystem::DebugBasementSet()
 {
-	FBasementStat PlayerBasementStat;
-	FBasementStat EnemyBasementStat;
-
-
-	PlayerBasementStat.CommandCenterHP.BaseMax = 1000.0f;
-	EnemyBasementStat.CommandCenterHP.BaseMax = 1000.0f;
-
-	BasementStats.Add(AllyTeamTag, PlayerBasementStat);
-	BasementStats.Add(EnemyTeamTag, EnemyBasementStat);
+	AllyBasementStat.CommandCenterHP.BaseValue = 1000.0f;
+	EnemyBasementStat.CommandCenterHP.BaseValue = 1000.0f;
 }
 
 void UBattlefieldManagerSubsystem::DebugEndedMessage(const FMatchData& MatchData)
@@ -357,10 +337,10 @@ void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerDa
 				if (StageData[i] && StageData[i]->StageData.StageTag == StageTag)
 				{
 					OutInBattleData.StageData = StageData[i]->StageData;
+					EnemyBasementStat = OutInBattleData.StageData.EnemyBasement;
 					break;
 				}
 			}
-
 		}
 	}
 

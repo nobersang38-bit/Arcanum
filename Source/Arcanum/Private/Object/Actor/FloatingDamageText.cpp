@@ -4,6 +4,7 @@
 #include "Object/Actor/FloatingDamageText.h"
 #include "UI/Battle/Common/FloatingDamageTextWidget.h"
 #include "Components/WidgetComponent.h"
+#include "Core/SubSystem/PoolingSubsystem.h"
 #include "Animation/WidgetAnimation.h"
 
 // Sets default values
@@ -27,6 +28,9 @@ void AFloatingDamageText::BeginPlay()
 		if (CashedFloatingDamageTextWidget.IsValid())
 		{
 			CashedFloatingDamageTextWidget->SetVisibility(ESlateVisibility::Hidden);
+			FWidgetAnimationDynamicEvent AnimFinishEvent;
+			AnimFinishEvent.BindUFunction(this, FName("Internal_Deactive"));
+			CashedFloatingDamageTextWidget->BindToAnimationFinished(CashedFloatingDamageTextWidget->HideAnim, AnimFinishEvent);
 		}
 	}
 }
@@ -60,6 +64,15 @@ void AFloatingDamageText::DeactiveItem()
 	if (CashedFloatingDamageTextWidget.IsValid() && CashedFloatingDamageTextWidget->HideAnim)
 	{
 		CashedFloatingDamageTextWidget->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+
+void AFloatingDamageText::Internal_Deactive()
+{
+	UPoolingSubsystem* PoolingSubsystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
+	if (PoolingSubsystem)
+	{
+		PoolingSubsystem->DeactiveItem(this);
 	}
 }
 

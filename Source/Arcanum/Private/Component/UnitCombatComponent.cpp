@@ -160,7 +160,7 @@ void UUnitCombatComponent::AIInitialize()
 				{
 					AttackRangeKey = BBComp->GetKeyID(UnitData.Info.AISetting.BBAttackRangeName);
 					BBComp->SetValue<UBlackboardKeyType_Float>(AttackRangeKey, UnitData.Info.AISetting.AttackRange);
-					BBComp->SetValue<UBlackboardKeyType_Float>(BBComp->GetKeyID(FName("MoveRange")), UnitData.Info.AISetting.AttackRange - 10.0f);
+					BBComp->SetValue<UBlackboardKeyType_Float>(BBComp->GetKeyID(FName("MoveRange")), UnitData.Info.AISetting.AttackRange - 30.0f);
 				}
 			}
 		}
@@ -170,17 +170,17 @@ void UUnitCombatComponent::AIInitialize()
 	// 적 베이스, 아군 베이스 중 공격 대상 가지고 있기, 타겟으로 지정하기
 	if (UBattlefieldManagerSubsystem* BattlefieldManager = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
 	{
-		if (BattlefieldManager->GetBasement(AllyTeamTag) && BattlefieldManager->GetBasement(EnemyTeamTag) && GetOwner()->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()))
+		if (BattlefieldManager->GetAllyBasement() && BattlefieldManager->GetEnemyBasement() && GetOwner()->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()))
 		{
 			auto Interface = Cast<ITeamInterface>(GetOwner());
 			FGameplayTag MyTeamID = Interface->GetTeamTag();
 			if (MyTeamID.MatchesTag(AllyTeamTag))
 			{
-				TargetBasement = BattlefieldManager->GetBasement(EnemyTeamTag);
+				TargetBasement = BattlefieldManager->GetEnemyBasement();
 			}
 			else if (MyTeamID.MatchesTag(EnemyTeamTag))
 			{
-				TargetBasement = BattlefieldManager->GetBasement(AllyTeamTag);
+				TargetBasement = BattlefieldManager->GetAllyBasement();
 			}
 			TeamTag = MyTeamID;
 
@@ -448,7 +448,7 @@ void UUnitCombatComponent::LightHitReaction(float InDamage)
 	if (PoolingSystem && FloatingTextActorClass)
 	{
 		FTransform Transform;
-		Transform.SetLocation((GetOwner()->GetActorLocation() + (GetOwner()->GetActorUpVector() * 100.0f)) + (FMath::VRand() * 10.0f));
+		Transform.SetLocation((GetOwner()->GetActorLocation() + (GetOwner()->GetActorUpVector() * 60.0f)) + (FMath::VRand() * 20.0f));
 		AActor* FloatingActor = PoolingSystem->SpawnFromPool(FloatingTextActorClass, Transform);
 		if (AFloatingDamageText* FloatingText = Cast<AFloatingDamageText>(FloatingActor))
 		{
@@ -464,7 +464,10 @@ void UUnitCombatComponent::Death(const FRegenStat& InData)
 		GetWorld()->GetTimerManager().ClearTimer(TickTimerHandle);
 		bIsDead = true;
 		StateChange(EUnitState::Death);
-		OwnerAIC->BrainComponent->StopLogic(TEXT("정지"));
+		if (OwnerAIC.IsValid() && OwnerAIC->BrainComponent)
+		{
+			OwnerAIC->BrainComponent->StopLogic(TEXT("정지"));
+		}
 		OwnerCapsuleComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		//OwnerCharacter->StopAnimMontage();
 		UAnimMontage* DeathMontage = nullptr;

@@ -16,7 +16,7 @@ struct FBasementStat
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FRegenStat CommandCenterHP;
+	FNonRegenStat CommandCenterHP;
 };
 
 /**

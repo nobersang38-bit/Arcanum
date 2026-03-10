@@ -30,14 +30,17 @@ public:
 
 public:
 	FOnBasementChangeHealth OnBasementChangeHealth;
-	void SetBasementStat(const FBasementStat& InBasementStat);
-	const FBasementStat& GetBasementStat() const { return BasementStat; }
+	const FEnemyBasement& GetBasementStat() const { return BasementStat; }
 
 protected:
+	void SetBasementStat(const FEnemyBasement& InBasementStat);
+
 	UFUNCTION()
 	void RecievedDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	FBasementStat BasementStat;
+	FEnemyBasement BasementStat;
+
+	float MaxHealth = -1.0f;
 };
