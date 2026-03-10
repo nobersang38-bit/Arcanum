@@ -49,8 +49,8 @@ void UInventorySlot::CreateWeaponItems(TArray<FEquipmentInfo> WeaponList, int32 
     InventoryEquipmentSlots.Empty();
 
     static const TArray<FString> ItemTags = {
+    TEXT("Arcanum.Items.ItemSlot.Weapon.RightHand"),          
     TEXT("Arcanum.Items.ItemSlot.Weapon.LeftHand"),         
-    TEXT("Arcanum.Items.ItemSlot.Weapon.RightHand,"),          
     TEXT("Arcanum.Items.ItemSlot.Weapon.TwoHand"),  
     TEXT("Arcanum.Items.ItemSlot.Armor.Helmet"),    
     TEXT("Arcanum.Items.ItemSlot.Armor.Chest"),     

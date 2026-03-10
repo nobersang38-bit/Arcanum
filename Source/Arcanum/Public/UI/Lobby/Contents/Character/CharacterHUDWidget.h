@@ -149,6 +149,8 @@ private:
 
 	UPROPERTY()
 	UTexture2D* WeaponSlotItemIcon = nullptr;
+
+	void UpdateSlotVisuals(const TMap<FGameplayTag, FGuid>& InEquipmentMap);
 #pragma endregion
 
 };

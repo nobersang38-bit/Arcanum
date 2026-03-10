@@ -230,6 +230,48 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
     InitEquipment(CharacterName);
 }
 
+void UCharacterHUDWidget::UpdateSlotVisuals(const TMap<FGameplayTag, FGuid>& InEquipmentMap)
+{
+    UDataTable* const* TablePtr = DataSubsystem->MasterDataTables.Find(Arcanum::DataTable::Equipment);
+    if (!TablePtr || !(*TablePtr)) return;
+
+    UDataTable* Table = *TablePtr;
+
+    // 데이터 테이블의 모든 행을 미리 가져옴 (루프 밖에서 한 번만 실행)
+    TArray<FDTEquipmentInfoRow*> Rows;
+    Table->GetAllRows(TEXT(""), Rows);
+
+    for (const auto& Pair : InEquipmentMap)
+    {
+        FGameplayTag ItemTag = Pair.Key;
+
+        for (FDTEquipmentInfoRow* Row : Rows)
+        {
+            if (Row && Row->ItemTag == ItemTag)
+            {
+                // 1. 아이콘 로드
+                UTexture2D* Icon = Row->Icon.LoadSynchronous();
+
+                // 2. 태그로부터 슬롯 이름 생성 (Glove -> GloveSlot)
+                FString Left, Right;
+                FString TagString = ItemTag.ToString();
+                if (!TagString.Split(TEXT("."), &Left, &Right, ESearchCase::IgnoreCase, ESearchDir::FromEnd))
+                {
+                    Right = TagString;
+                }
+                Right.Append(TEXT("Slot"));
+
+                // 3. 이름으로 위젯을 찾아 이미지 설정
+                if (USquareSlotWidget* TargetSlot = Cast<USquareSlotWidget>(GetWidgetFromName(FName(*Right))))
+                {
+                    TargetSlot->SetItemIconImage(Icon);
+                }
+                break; // 행을 찾았으므로 다음 아이템으로 넘어감
+            }
+        }
+    }
+}
+
 // ========================================================
 // 캐릭터창 - 강화하기 버튼
 // ========================================================
@@ -462,70 +504,8 @@ void UCharacterHUDWidget::InitEquipment(FName CharacterName)
 
         if (bIsSelected)
         {
-            // 장착된  Weapons 가져오기
-            //for (const TPair<FGameplayTag, FGuid>& WeaponPair : TargetData.Weapons)
-            //{
-                //WeaponTag = WeaponPair.Key;
-
-                // 2. 태그로부터 Leaf Name(FName) 추출하기
-                //FName WeaponName = GetLeafNameFromTag(WeaponTag);
-
-                // 3. (참고) Value(Guid)가 필요할 경우
-                //FGuid WeaponGuid = WeaponPair.Value;
-
-                // 테스트 출력
-                //UE_LOG(LogTemp, Warning, TEXT("장착된 무기 태그: %s"), *WeaponTag.ToString());
-            //}
-
-            // 장착된 Armor 가져오기
-             for (const TPair<FGameplayTag, FGuid>& WeaponPair : TargetData.ArmorSlots)
-            {
-                WeaponTag = WeaponPair.Key;
-
-                // 일치하는 아이콘 가져오기
-                if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
-                {
-                    if (UGameDataSubsystem* dataSubsystem = gameInstance->GetSubsystem<UGameDataSubsystem>())
-                    {
-                        UDataTable* const* tablePtr = dataSubsystem->MasterDataTables.Find(Arcanum::DataTable::Equipment);
-                        if (!tablePtr || !(*tablePtr)) { return; }
-
-                        UDataTable* table = *tablePtr;
-
-                        TArray<FDTEquipmentInfoRow*> rows;
-                        table->GetAllRows(TEXT("BuildEquipmentRowCache"), rows);
-
-                        for (FDTEquipmentInfoRow* row : rows)
-                        {
-                            if (row && row->ItemTag.IsValid())
-                            {
-                                if (row->ItemTag == WeaponTag)
-                                {
-                                    WeaponSlotItemIcon = row->Icon.LoadSynchronous();
-         
-                                   /* Weapon1Slot->SetItemIconImage(WeaponSlotItemIcon);
-                                    Weapon2Slot->SetItemIconImage(WeaponSlotItemIcon);
-                                    LegendaryWeaponSlot->SetItemIconImage(WeaponSlotItemIcon);*/
-                                
-                                    FString Left, Right;
-                                    FString SlotName = WeaponTag.ToString();
-                                    if (!SlotName.Split(TEXT("."), &Left, &Right, ESearchCase::IgnoreCase, ESearchDir::FromEnd))
-                                    {
-                                        Right = SlotName;
-                                    }
-
-                                    Right.Append(TEXT("Slot"));
-                               
-                                    if (USquareSlotWidget* TargetSlot = Cast<USquareSlotWidget>(GetWidgetFromName(FName(*Right))))
-                                    {
-                                        TargetSlot->SetItemIconImage(WeaponSlotItemIcon);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            UpdateSlotVisuals(TargetData.Weapons);
+            UpdateSlotVisuals(TargetData.ArmorSlots);
         }
     }
 }
