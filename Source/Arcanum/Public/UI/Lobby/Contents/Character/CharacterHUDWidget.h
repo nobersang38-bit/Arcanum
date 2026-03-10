@@ -91,8 +91,8 @@ protected:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Slot")
 	TSubclassOf<URoundedSlotWidget> RoundedSlotWidgetClass;
 
-	UPROPERTY()
-	TArray<URoundedSlotWidget*> CreatedCharacterSlots;
+	UPROPERTY() TArray<URoundedSlotWidget*> CreatedCharacterSlots;
+	UPROPERTY() TArray<URoundedSlotWidget*> CreatedServantCharacterSlots;
 
 	UFUNCTION()
 	void CharacterEnhancement(FText CharacterName,int32 InRequiredSoul);
@@ -119,6 +119,7 @@ public:
 	UGameDataSubsystem* DataSubsystem;
 
 	void InitCharacterHUD();
+	void InitServantCharacter();
 private:
 	UFUNCTION()
 	void OnSquareSlotClicked(USquareSlotWidget* ClickedSlot, int32 SlotIndex);

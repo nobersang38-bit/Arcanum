@@ -30,8 +30,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetRoundBackgroundColor(FLinearColor NewColor);
 
+	/// 260311 변경 : 추가 (태그 사용 할 수 있게 변경)
 	UFUNCTION(BlueprintCallable)
-	void SetIconImage(UTexture2D* CharacterIcon, bool OwnedCharacter ,FName CharacterName);
+	void SetIconImage(UTexture2D* CharacterIcon, bool OwnedCharacter ,FName CharacterName, FGameplayTag InTag = FGameplayTag());
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FLinearColor RoundColor = FLinearColor::White;
@@ -39,6 +40,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UTexture2D> IconImg;
 
+	UPROPERTY() FGameplayTag Tag;
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UBorder> BackgroundColor;

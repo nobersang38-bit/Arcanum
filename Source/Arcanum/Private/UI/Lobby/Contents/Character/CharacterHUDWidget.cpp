@@ -51,26 +51,9 @@ void UCharacterHUDWidget::NativeConstruct()
         EquipmentList->OnSetupBtnClicked.AddDynamic(this, &UCharacterHUDWidget::SetupEquipment);
     }
 
-    if (!CharacterGridPanel || !RoundedSlotWidgetClass)
+    if (!CharacterGridPanel || !RoundedSlotWidgetClass) return;
 
-        return;
-
-    // 유닛창 테스트용
-      for (int32 Index = 0; Index < 12; ++Index)
-    {
-
-        URoundedSlotWidget* NewSlot = CreateWidget<URoundedSlotWidget>(GetWorld(), RoundedSlotWidgetClass);
-        if (!NewSlot)
-            continue;
-
-        UWrapBoxSlot* WrapSlot = UnitGridPanel->AddChildToWrapBox(NewSlot);
-        if (WrapSlot)
-        {
-            WrapSlot->SetHorizontalAlignment(HAlign_Fill);
-            WrapSlot->SetVerticalAlignment(VAlign_Fill);
-        }
-    }
-   
+   /// 260311 변경 : 삭제 (InitServantCharacter 함수에 추가함)
 }
 
 FReply UCharacterHUDWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -139,8 +122,40 @@ void UCharacterHUDWidget::InitCharacterHUD()
 
         OnCharacterSlotSelected(CreatedCharacterSlots[SelectedIndex], CharacterName, hasOwned);
     }
-}
 
+    /// 260311 변경 : 추가
+    InitServantCharacter();
+}
+/// 260311 변경 : 추가 (쫄병들 관련 데이터 추가함)
+void UCharacterHUDWidget::InitServantCharacter()
+{
+    UnitGridPanel->ClearChildren();
+    CreatedServantCharacterSlots.Empty();
+
+    for (int32 i = 0; i < ParentLobby->CachedPlayerData.AllyburdenCharacters.Num(); i++) {
+        URoundedSlotWidget* NewSlot = CreateWidget<URoundedSlotWidget>(GetWorld(), RoundedSlotWidgetClass);
+        if (!NewSlot) continue;
+
+        const FUnitInfoSetting& UnitData = ParentLobby->CachedPlayerData.AllyburdenCharacters[i];
+        TSoftObjectPtr<UTexture2D> CharacterIconSoftPtr = UnitData.Icon;
+        UTexture2D* CharacterIcon = CharacterIconSoftPtr.LoadSynchronous();
+
+        FGameplayTag CharacterTag = UnitData.Tag;
+        FName CharacterName = GetLeafNameFromTag(CharacterTag);
+
+        bool hasOwned = true;
+
+        NewSlot->SetIconImage(CharacterIcon, hasOwned, CharacterName, CharacterTag);
+        NewSlot->OnCharacterSlotClicked.AddDynamic(this, &UCharacterHUDWidget::OnCharacterSlotSelected);
+
+        UWrapBoxSlot* WrapSlot = UnitGridPanel->AddChildToWrapBox(NewSlot);
+        if (WrapSlot) {
+            WrapSlot->SetHorizontalAlignment(HAlign_Fill);
+            WrapSlot->SetVerticalAlignment(VAlign_Fill);
+        }
+        CreatedServantCharacterSlots.Add(NewSlot);
+    }
+}
 // ========================================================
 // 캐릭터 슬롯 클릭
 // ========================================================
@@ -251,7 +266,27 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
         
     }
 
-    
+    /// 260311 변경 : 추가 (클릭 시 데이터 변경되게 info 관련은 변경해주세요.)
+    FGameplayTag TargetTag = FGameplayTag::RequestGameplayTag(FName("Arcanum.Unit.Ally"));
+    if (ClickedSlot->Tag.MatchesTag(TargetTag)) {
+        
+        if (CharacterSwitcher)
+        {
+            CharacterSwitcher->SetActiveWidgetIndex(0);
+            UCharacterInfo* InfoWidget = Cast<UCharacterInfo>(CharacterSwitcher->GetWidgetAtIndex(0));
+
+            if (InfoWidget)
+            {
+                InfoWidget->SetCharacterName(CharacterName);
+                InfoWidget->SetStarCharcterInfo(CharacterStar);
+                InfoWidget->SetEnhanceButtonEnabled(SlotCharacterOwned, RequiredSoul, soulAmount, TargetGradeIndex);
+                InfoWidget->SetPlayerButtonEnabled(SlotCharacterOwned);
+                InfoWidget->SetGradeCharcterInfo(CharacterGrade);
+                //InfoWidget->SetCharcterInfo(InFinalText);
+            }
+        }
+
+    }
 }
 
 
