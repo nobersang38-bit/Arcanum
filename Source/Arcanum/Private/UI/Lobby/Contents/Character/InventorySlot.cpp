@@ -183,7 +183,7 @@ void UInventorySlot::OnSlotClicked(USquareSlotWidget* ClickedSlot, int32 InSlotI
         EquipNameText->SetText(ClickedItemName);
     }
 
-    SetEquipButtonEnabled(true);
+    //SetEquipButtonEnabled(true);
 }
 
 

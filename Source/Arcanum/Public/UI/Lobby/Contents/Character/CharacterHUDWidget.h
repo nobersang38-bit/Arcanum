@@ -61,13 +61,13 @@ protected:
 	TObjectPtr<UCommonDialog> SetPlayerConfirm;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<USquareSlotWidget> Weapon1Slot;
+	TObjectPtr<USquareSlotWidget> RightHandSlot;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<USquareSlotWidget> Weapon2Slot;
+	TObjectPtr<USquareSlotWidget> LeftHandSlot;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<USquareSlotWidget> LegendaryWeaponSlot;
+	TObjectPtr<USquareSlotWidget> TwoHandSlot;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<USquareSlotWidget> HelmetSlot;
@@ -79,7 +79,7 @@ protected:
 	TObjectPtr<USquareSlotWidget> GloveSlot;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<USquareSlotWidget> BootsSlot;
+	TObjectPtr<USquareSlotWidget> BootSlot;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UWidgetSwitcher>CharacterSwitcher;
@@ -119,6 +119,8 @@ public:
 
 	void InitCharacterHUD();
 	void InitWeaponInventory(int32 SlotIndex);
+	void InitEquipment(FName CharacterName);
+	// 선택된 캐릭터, 
 
 
 private:
@@ -143,8 +145,10 @@ private:
 	int32 RequiredSoul;
 	int32 SelectedIndex = INDEX_NONE;
 	int GetCurrentGrade;
+	FName CurrentSelectedCharacterName; // 선택된 캐릭터
 
-	
+	UPROPERTY()
+	UTexture2D* WeaponSlotItemIcon = nullptr;
 #pragma endregion
 
 };

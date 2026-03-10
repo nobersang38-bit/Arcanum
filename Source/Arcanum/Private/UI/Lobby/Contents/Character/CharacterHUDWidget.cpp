@@ -24,13 +24,13 @@ void UCharacterHUDWidget::NativeConstruct()
         DataSubsystem = GI->GetSubsystem<UGameDataSubsystem>();
     }
 
-    EquipmentSlots.Add(Weapon1Slot);
-    EquipmentSlots.Add(Weapon2Slot);
-    EquipmentSlots.Add(LegendaryWeaponSlot);
+    EquipmentSlots.Add(RightHandSlot);
+    EquipmentSlots.Add(LeftHandSlot);
+    EquipmentSlots.Add(TwoHandSlot);
     EquipmentSlots.Add(HelmetSlot);
     EquipmentSlots.Add(ChestSlot);
     EquipmentSlots.Add(GloveSlot);
-    EquipmentSlots.Add(BootsSlot);
+    EquipmentSlots.Add(BootSlot);
 
     for (auto& EquipSlot : EquipmentSlots)
     {
@@ -138,6 +138,7 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
     const int64 soulAmount = (soulData) ? soulData->CurrAmount : 0;
 
     CombinedInfoString = "";
+    CurrentSelectedCharacterName = CharacterName;
 
     for (int32 i = 0; i < ParentLobby->CachedPlayerData.OwnedCharacters.Num(); i++)
     {
@@ -226,6 +227,7 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
             CreatedCharacterSlots[i]->SetRoundBackgroundColor(SlotColor);
         }
     }
+    InitEquipment(CharacterName);
 }
 
 // ========================================================
@@ -376,21 +378,45 @@ void UCharacterHUDWidget::OnSquareSlotClicked(USquareSlotWidget* ClickedSlot, in
                 EquipSlot == ClickedSlot ? FLinearColor(1.0f, 0.4f, 0.7f, 1.0f) : FLinearColor::White
             );
         }
-
-        UInventorySlot* InventorySlotWidget = Cast<UInventorySlot>(ActiveWidget);
+        
         int32 TargetIndex = 0;
 
-        if (InventorySlotWidget)
-        {
-            InventorySlotWidget->SetEquipButtonEnabled(false);
-        }
         ActiveWidget = CharacterSwitcher->GetWidgetAtIndex(1);
 
         if (ActiveWidget)
         {
             CharacterSwitcher->SetActiveWidget(ActiveWidget);
         }
+        for (int32 i = 0; i < ParentLobby->CachedPlayerData.OwnedCharacters.Num(); i++)
+        {
+            FBattleCharacterData& TargetData = ParentLobby->CachedPlayerData.OwnedCharacters[i];
+
+            FGameplayTag CharacterTag = TargetData.CharacterInfo.BattleCharacterInitData.CharacterTag;
+            FName SetPlayerName = GetLeafNameFromTag(CharacterTag);
+            UInventorySlot* InventorySlotWidget = Cast<UInventorySlot>(ActiveWidget);
+
+            if (SetPlayerName == CurrentSelectedCharacterName)
+            {
+                if (TargetData.CharacterInfo.CurrStarLevel > 0)
+                {
+                    if (InventorySlotWidget)
+                    {
+                        InventorySlotWidget->SetEquipButtonEnabled(true);
+                    }
+                }
+                else {
+                    if (InventorySlotWidget)
+                    {
+
+                        InventorySlotWidget->SetEquipButtonEnabled(false);
+                    }
+                }
+
+            }
+
+        }
     }
+    
     InitWeaponInventory(SlotIndex);
 }
 
@@ -404,6 +430,104 @@ void UCharacterHUDWidget::InitWeaponInventory(int32 SlotIndex)
    
    WeaponList->CreateWeaponItems(WeaponInventory, SlotIndex);
     
+}
+
+// ========================================================
+// 무기, 장비 슬롯 초기화
+// ========================================================
+void UCharacterHUDWidget::InitEquipment(FName CharacterName)
+{
+    WeaponSlotItemIcon = nullptr;
+    
+    for (USquareSlotWidget* WeaponsSlot : EquipmentSlots)
+    {
+        if (WeaponsSlot) WeaponsSlot->SetItemIconImage(nullptr);
+    }
+
+    // CharacterName이 None이면 기본 캐릭터인 Elara 이름 넣기
+    if (CharacterName.IsNone())
+    {
+        CharacterName = FName(TEXT("Elara"));
+    }
+
+    FGameplayTag WeaponTag;
+    for (int32 i = 0; i < ParentLobby->CachedPlayerData.OwnedCharacters.Num(); i++)
+    {
+        FBattleCharacterData& TargetData = ParentLobby->CachedPlayerData.OwnedCharacters[i];
+
+        FGameplayTag CharacterTag = TargetData.CharacterInfo.BattleCharacterInitData.CharacterTag;
+        FName ListCharacterName = GetLeafNameFromTag(CharacterTag);
+
+        bool bIsSelected = (ListCharacterName == CharacterName);
+
+        if (bIsSelected)
+        {
+            // 장착된  Weapons 가져오기
+            //for (const TPair<FGameplayTag, FGuid>& WeaponPair : TargetData.Weapons)
+            //{
+                //WeaponTag = WeaponPair.Key;
+
+                // 2. 태그로부터 Leaf Name(FName) 추출하기
+                //FName WeaponName = GetLeafNameFromTag(WeaponTag);
+
+                // 3. (참고) Value(Guid)가 필요할 경우
+                //FGuid WeaponGuid = WeaponPair.Value;
+
+                // 테스트 출력
+                //UE_LOG(LogTemp, Warning, TEXT("장착된 무기 태그: %s"), *WeaponTag.ToString());
+            //}
+
+            // 장착된 Armor 가져오기
+             for (const TPair<FGameplayTag, FGuid>& WeaponPair : TargetData.ArmorSlots)
+            {
+                WeaponTag = WeaponPair.Key;
+
+                // 일치하는 아이콘 가져오기
+                if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
+                {
+                    if (UGameDataSubsystem* dataSubsystem = gameInstance->GetSubsystem<UGameDataSubsystem>())
+                    {
+                        UDataTable* const* tablePtr = dataSubsystem->MasterDataTables.Find(Arcanum::DataTable::Equipment);
+                        if (!tablePtr || !(*tablePtr)) { return; }
+
+                        UDataTable* table = *tablePtr;
+
+                        TArray<FDTEquipmentInfoRow*> rows;
+                        table->GetAllRows(TEXT("BuildEquipmentRowCache"), rows);
+
+                        for (FDTEquipmentInfoRow* row : rows)
+                        {
+                            if (row && row->ItemTag.IsValid())
+                            {
+                                if (row->ItemTag == WeaponTag)
+                                {
+                                    WeaponSlotItemIcon = row->Icon.LoadSynchronous();
+         
+                                   /* Weapon1Slot->SetItemIconImage(WeaponSlotItemIcon);
+                                    Weapon2Slot->SetItemIconImage(WeaponSlotItemIcon);
+                                    LegendaryWeaponSlot->SetItemIconImage(WeaponSlotItemIcon);*/
+                                
+                                    FString Left, Right;
+                                    FString SlotName = WeaponTag.ToString();
+                                    if (!SlotName.Split(TEXT("."), &Left, &Right, ESearchCase::IgnoreCase, ESearchDir::FromEnd))
+                                    {
+                                        Right = SlotName;
+                                    }
+
+                                    Right.Append(TEXT("Slot"));
+                               
+                                    if (USquareSlotWidget* TargetSlot = Cast<USquareSlotWidget>(GetWidgetFromName(FName(*Right))))
+                                    {
+                                        TargetSlot->SetItemIconImage(WeaponSlotItemIcon);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 // ========================================================
@@ -421,42 +545,58 @@ void UCharacterHUDWidget::SetupEquipment(USquareSlotWidget* ClickedSlot, int32 S
         return;
 
     // 캐릭터에 장착 무기 데이터 추가
-    for (FBattleCharacterData& TargetData : ParentLobby->CachedPlayerData.OwnedCharacters)
+    for (int32 i = 0; i < ParentLobby->CachedPlayerData.OwnedCharacters.Num(); i++)
     {
-        if (TargetData.bSelection)
+        FBattleCharacterData& TargetData = ParentLobby->CachedPlayerData.OwnedCharacters[i];
+
+        FGameplayTag CharacterTag = TargetData.CharacterInfo.BattleCharacterInitData.CharacterTag;
+        FName SetPlayerName = GetLeafNameFromTag(CharacterTag);
+
+        if (SetPlayerName != CurrentSelectedCharacterName) continue;
+        
+        USquareSlotWidget* TargetUI = nullptr;
+            
+        switch (SlotIndex)
         {
-             TargetData.Weapons.Add(SelectedTag, WeaponGuid);
-
+        case 0: 
+            TargetUI = RightHandSlot;
+            break;
+        case 1:
+            TargetUI = LeftHandSlot;
+            break;
+        case 2: 
+            TargetUI = TwoHandSlot;
+            break;
+        case 3:
+            TargetUI = HelmetSlot;
+            break;
+        case 4:
+            TargetUI = ChestSlot;
+            break;
+        case 5:
+            TargetUI = GloveSlot;
+            break;
+        case 6:
+            TargetUI = BootSlot;
+            break;
+        default:
+            break;
         }
-    }
 
-    // 슬롯 아이콘 변경하기
-    switch (SlotIndex)
-    {
-    case 0:
-        Weapon1Slot->SetItemIconImage(ClickedSlot->IconImg);
-        break;
-    case 1:
-        Weapon2Slot->SetItemIconImage(ClickedSlot->IconImg);
-        break;
-    case 2:
-        LegendaryWeaponSlot->SetItemIconImage(ClickedSlot->IconImg);
-        break;
-    case 3:
-        HelmetSlot->SetItemIconImage(ClickedSlot->IconImg);
-        break;
-    case 4:
-        ChestSlot->SetItemIconImage(ClickedSlot->IconImg);
-        break;
-    case 5:
-        GloveSlot->SetItemIconImage(ClickedSlot->IconImg);
-        break;
-    case 6:
-        BootsSlot->SetItemIconImage(ClickedSlot->IconImg);
-        break;
+        if (TargetUI)
+        {
+            if (SlotIndex <= 2)
+            {
+                TargetData.Weapons.Add(SelectedTag, WeaponGuid);
+            }
+            else
+            {
+                TargetData.ArmorSlots.Add(SelectedTag, WeaponGuid);
+            }
 
-    default:
-        break;
+            TargetUI->SetItemIconImage(ClickedSlot->IconImg);
+        }
+        
     }
 
 }
