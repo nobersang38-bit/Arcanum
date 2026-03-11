@@ -1,0 +1,22 @@
+[
+  {
+    "Name": "EquipmentShop",
+    "ShopRule": {
+      "CategoryTag": "Arcanum.Shop.Category.Equipment",
+      "SlotCount": 5,
+      "bRefreshOnTimer": true,
+      "StorePolicyTag": "Arcanum.Inventory.Store.Guid",
+      "ItemTypeTag": "Arcanum.Items.Type.Equipment"
+    }
+  },
+  {
+    "Name": "PotionShop",
+    "ShopRule": {
+      "CategoryTag": "Arcanum.Shop.Category.Potion",
+      "SlotCount": 6,
+      "bRefreshOnTimer": false,
+      "StorePolicyTag": "Arcanum.Inventory.Store.Stack",
+      "ItemTypeTag": "Arcanum.Items.Type.Potion"
+    }
+  }
+]
