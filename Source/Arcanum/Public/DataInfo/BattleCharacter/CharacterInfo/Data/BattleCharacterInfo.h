@@ -35,6 +35,9 @@ struct FBattleCharacterDef
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Growth")
     TArray<int32> RequiredShardCount = { 10, 20, 30 };
     int32 DuplicateShardReward = 10;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Class")
+    TSoftClassPtr<AActor> CharacterClass = nullptr;
 };
 
 USTRUCT(BlueprintType)

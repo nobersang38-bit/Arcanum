@@ -4,11 +4,11 @@
 #include "Core/SubSystem/BattlefieldManagerSubsystem.h"
 #include "GameFramework/Character.h"
 #include "Object/Actor/BattlefieldManagerActor.h"
-#include "GameplayTags/ArcanumTags.h"
 #include "Kismet/GameplayStatics.h"
 #include "Core/ARGameInstance.h"
 #include "Data/Rows/UnitsDataRow.h"
 #include "Core/SubSystem/GameTimeSubsystem.h"
+#include "DataInfo/BattleCharacter/BattleStats/DataTable/DTBattleStats.h"
 
 #include "Core/ARPlayerAccountService.h"
 
@@ -23,6 +23,8 @@ void UBattlefieldManagerSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 	SetupUnits();
 	DebugBasementSet();
 	DebugSetUsingAllyUnits();
+	//DebugPlayerCharacterSet();
+
 	//UARGameInstance* GameInstance = nullptr;
 	//GameInstance = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	//if (GameInstance)
@@ -37,12 +39,22 @@ void UBattlefieldManagerSubsystem::AddBasement(AActor* InNexus, FGameplayTag InT
 
 	if (Basements.Contains(InTeamTag))
 	{
-		UE_LOG(LogTemp, Error, TEXT("같은 팀의 기지가 하나 더 있습니다"));
+		UE_LOG(LogTemp, Error, TEXT("같은 팀인 기지가 하나 더 있습니다"));
 	}
 	else
 	{
 		Basements.Add(InTeamTag, InNexus);
 	}
+
+	if (InTeamTag.MatchesTag(AllyTeamTag))
+	{
+
+	}
+	else if (InTeamTag.MatchesTag(EnemyTeamTag))
+	{
+
+	}
+
 }
 
 AActor* UBattlefieldManagerSubsystem::GetBasement(FGameplayTag InTeamTag) const
@@ -128,9 +140,11 @@ void UBattlefieldManagerSubsystem::DebugSetUsingAllyUnits()
 {
 	InBattleData.AllyUnits.Empty();
 	bool Result = false;
-	InBattleData.AllyUnits.Add(GetAllyUnitData(Arcanum::Unit::Faction::Ally::Bard::Root, Result));
 	InBattleData.AllyUnits.Add(GetAllyUnitData(Arcanum::Unit::Faction::Ally::Army::Root, Result));
+	InBattleData.AllyUnits.Add(GetAllyUnitData(Arcanum::Unit::Faction::Ally::Bard::Root, Result));
 	InBattleData.AllyUnits.Add(GetAllyUnitData(Arcanum::Unit::Faction::Ally::Maid::Root, Result));
+	InBattleData.AllyUnits.Add(GetAllyUnitData(Arcanum::Unit::Faction::Ally::Tinker::Root, Result));
+	InBattleData.AllyUnits.Add(GetAllyUnitData(Arcanum::Unit::Faction::Ally::PunchMan::Root, Result));
 }
 
 void UBattlefieldManagerSubsystem::CheckMatchEnded(int32 Time)
@@ -186,11 +200,12 @@ void UBattlefieldManagerSubsystem::DebugBasementSet()
 	FBasementStat PlayerBasementStat;
 	FBasementStat EnemyBasementStat;
 
-	PlayerBasementStat.CommandCenterCurrentHP.BaseValue = 1000.0f;
-	EnemyBasementStat.CommandCenterCurrentHP.BaseValue = 1000.0f;
 
-	BasementStats.Add(Arcanum::Unit::Faction::Ally::Root, PlayerBasementStat);
-	BasementStats.Add(Arcanum::Unit::Faction::Enemy::Root, EnemyBasementStat);
+	PlayerBasementStat.CommandCenterHP.BaseMax = 1000.0f;
+	EnemyBasementStat.CommandCenterHP.BaseMax = 1000.0f;
+
+	BasementStats.Add(AllyTeamTag, PlayerBasementStat);
+	BasementStats.Add(EnemyTeamTag, EnemyBasementStat);
 }
 
 void UBattlefieldManagerSubsystem::DebugEndedMessage(const FMatchData& MatchData)
@@ -206,18 +221,144 @@ void UBattlefieldManagerSubsystem::DebugEndedMessage(const FMatchData& MatchData
 
 }
 
-void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerData, FInBattleData& OutInBattleData)
+void UBattlefieldManagerSubsystem::DebugPlayerCharacterSet()
 {
-	for (int i = 0; i < InPlayerData.OwnedCharacters.Num(); i++)
+	//struct FBattleCharacterData
+	//{
+	//	GENERATED_BODY()
+
+	//	// --- 기본 고유 정보 ---
+	//	/** 플레이어 가능한 캐릭터 중 선택이 되었는가? => 스테이지에서 조정 */
+	//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//	bool bSelection = false;
+	//	/** 캐릭터 식별용 */
+	//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//	FGameplayTag Character;
+
+	//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//	FBattleCharacterInfo CharacterInfo;
+
+	//	// --- 장비 데이터(캐릭터가 현재 장착하고 있는) ---
+	//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//	TMap<FGameplayTag, FGuid> Weapons;
+	//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//	TMap<FGameplayTag, FGuid> ArmorSlots;
+	//};
+	FBattleCharacterData One;
+	One.bSelection = false;
+	One.Character = Arcanum::Player::ID::Aiden;
+
+	FBattleCharacterData Two;
+	Two.bSelection = true;
+	Two.Character = Arcanum::Player::ID::Arna;
+
+	FBattleCharacterData Three;
+	Three.bSelection = false;
+	Three.Character = Arcanum::Player::ID::Celestia;
+
+
+	TArray<FBattleCharacterData> OwnedCharacters = { One , Two, Three };
+	InBattleData.PlayerData.OwnedCharacters = OwnedCharacters;
+
+	for (int i = 0; i < InBattleData.PlayerData.OwnedCharacters.Num(); i++)
 	{
-		if (InPlayerData.OwnedCharacters[i].bSelection)
+		const FBattleCharacterData& OwnedCharacter = InBattleData.PlayerData.OwnedCharacters[i];
+		if (OwnedCharacter.bSelection)
 		{
-			OutInBattleData.BattleCharacterData = InPlayerData.OwnedCharacters[i];
+			//Arcanum.DataTable.BattleStats
+			UGameDataSubsystem* GameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
+			if (GameDataSubsystem)
+			{
+				FString CharacterName = OwnedCharacter.Character.GetTagName().ToString();
+				int32 LastDot;
+				if (CharacterName.FindLastChar('.', LastDot))
+				{
+					// 찾은 인덱스 다음(+1)부터 끝까지 남기고 앞은 다 자릅니다.
+					CharacterName = CharacterName.RightChop(LastDot + 1);
+				}
+				UE_LOG(LogTemp, Error, TEXT("%s"), *CharacterName);
+
+				//GameDataSubsystem->GetRow<Arcanum::DataTable::BattleStats, FName()>
+			}
 			break;
 		}
 	}
+}
 
-	OutInBattleData.PlayerBattleData = InPlayerData.PlayerBattleData;
+void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerData, FInBattleData& OutInBattleData)
+{
+	OutInBattleData.PlayerData = InPlayerData;
+
+	// 플레이어블 캐릭터 가져오기
+	for (int i = 0; i < InBattleData.PlayerData.OwnedCharacters.Num(); i++)
+	{
+		const FBattleCharacterData& OwnedCharacter = InBattleData.PlayerData.OwnedCharacters[i];
+		if (OwnedCharacter.bSelection)
+		{
+			//Arcanum.DataTable.BattleStats
+			UGameDataSubsystem* GameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
+			if (GameDataSubsystem)
+			{
+				FString CharacterName = OwnedCharacter.Character.GetTagName().ToString();
+				int32 LastDot;
+				if (CharacterName.FindLastChar('.', LastDot))
+				{
+					// 찾은 인덱스 다음(+1)부터 끝까지 남기고 앞은 다 자릅니다.
+					CharacterName = CharacterName.RightChop(LastDot + 1);
+
+					FDTBattleStatsContainerRow* DTBattleStatsContainerRow = GameDataSubsystem->GetRow<FDTBattleStatsContainerRow>(Arcanum::DataTable::BattleStats, FName(CharacterName));
+					if (DTBattleStatsContainerRow)
+					{
+						if (OwnedCharacter.CharacterInfo.CurrStarLevel <= 0)
+						{
+							UE_LOG(LogTemp, Error, TEXT("선택된 캐릭터가 존재하지 않습니다"));
+							break;
+						}
+
+						FGradeStatData GradeStatData = DTBattleStatsContainerRow->GradeDataSteps[OwnedCharacter.CharacterInfo.CurrStarLevel - 1];
+						OutInBattleData.PlayerBattleStat = GradeStatData;
+
+						UE_LOG(LogTemp, Error, TEXT("%s"), *CharacterName);
+
+						//로그 부분 나중에 삭제
+						UE_LOG(LogTemp, Warning, TEXT("플레이어 스탯 리젠"));
+						for (int j = 0; j < OutInBattleData.PlayerBattleStat.RegenStats.Num(); j++)
+						{
+							const FRegenStat& RegenStat = OutInBattleData.PlayerBattleStat.RegenStats[j];
+							UE_LOG(LogTemp, Warning, TEXT("Tag : %s\tCurrent : %.02f\tMax : %.02f"), *RegenStat.ParentTag.ToString(), RegenStat.Current, RegenStat.GetBaseMax());
+						}
+
+						for (int j = 0; j < OutInBattleData.PlayerBattleStat.NonRegenStats.Num(); j++)
+						{
+							const FNonRegenStat& RegenStat = OutInBattleData.PlayerBattleStat.NonRegenStats[j];
+							UE_LOG(LogTemp, Warning, TEXT("Tag : %s\tCurrent : %.02f\tMax : %.02f"), *RegenStat.TagName.ToString(), RegenStat.GetBaseValue(), RegenStat.GetTotalValue());
+						}
+						break;
+					}
+				}
+
+			}
+		}
+	}
+
+	//for (int i = 0; i < OutInBattleData.PlayerData.OwnedCharacters.Num(); i++)
+	//{
+	//	const FBattleCharacterData& OwnedCharacter = OutInBattleData.PlayerData.OwnedCharacters[i];
+	//	if (OwnedCharacter.bSelection)
+	//	{
+	//		//Arcanum.DataTable.BattleStats
+	//		UGameDataSubsystem* GameDataSubsystem = GetWorld()->GetSubsystem<UGameDataSubsystem>();
+	//		if (GameDataSubsystem)
+	//		{
+	//			UE_LOG(LogTemp, Error, TEXT("%s"), *OwnedCharacter.Character.GetTagName().ToString());
+	//			
+	//			//GameDataSubsystem->GetRow<Arcanum::DataTable::BattleStats, FName()>
+	//		}
+	//		break;
+	//	}
+	//}
+
+	//OutInBattleData.PlayerBattleStat = 
 }
 
 void UBattlefieldManagerSubsystem::MatchEnded(const FMatchData& MatchData)

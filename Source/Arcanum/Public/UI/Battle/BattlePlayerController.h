@@ -217,9 +217,6 @@ protected:
 	UPROPERTY()
 	TWeakObjectPtr<AActor> EnemyBasement = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSubclassOf<class ABaseUnitCharacter> AllyUnitClass = nullptr;
-
 protected:
 	UPROPERTY()
 	TMap<FGameplayTag, FUnitInfoSetting> UsingAllyUnits;

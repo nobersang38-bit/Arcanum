@@ -191,12 +191,12 @@ void ABattlePlayerController::UpdatePlayerLocationProgress()
 	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 	if (!AllyBasement.IsValid() && BattleSubsystem)
 	{
-		AllyBasement = BattleSubsystem->GetBasement(Arcanum::Unit::Faction::Ally::Root);
+		AllyBasement = BattleSubsystem->GetBasement(BattleSubsystem->AllyTeamTag);
 	}
 
 	if (!EnemyBasement.IsValid() && BattleSubsystem)
 	{
-		EnemyBasement = BattleSubsystem->GetBasement(Arcanum::Unit::Faction::Enemy::Root);
+		EnemyBasement = BattleSubsystem->GetBasement(BattleSubsystem->EnemyTeamTag);
 	}
 
 	if (!AllyBasement.IsValid() && !EnemyBasement.IsValid()) return;

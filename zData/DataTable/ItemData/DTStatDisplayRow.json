@@ -1,0 +1,82 @@
+[
+  {
+    "Name": "AttackPowerBonus",
+    "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+    "DisplayName": "공격력",
+    "bUsePercent": false,
+    "SortOrder": 0,
+    "Desc": "공격력을 증가시킵니다."
+  },
+  {
+    "Name": "AttackSpeedBonus",
+    "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
+    "DisplayName": "공격속도",
+    "bUsePercent": true,
+    "SortOrder": 1,
+    "Desc": "공격 속도를 증가시킵니다."
+  },
+  {
+    "Name": "CritChanceBonus",
+    "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
+    "DisplayName": "치명타 확률",
+    "bUsePercent": true,
+    "SortOrder": 2,
+    "Desc": "치명타 확률을 증가시킵니다."
+  },
+  {
+    "Name": "MoveSpeedBonus",
+    "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
+    "DisplayName": "이동속도",
+    "bUsePercent": true,
+    "SortOrder": 3,
+    "Desc": "이동 속도를 증가시킵니다."
+  },
+  {
+    "Name": "EvasionBonus",
+    "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
+    "DisplayName": "회피율",
+    "bUsePercent": true,
+    "SortOrder": 4,
+    "Desc": "회피 확률을 증가시킵니다."
+  },
+  {
+    "Name": "DamageReductionBonus",
+    "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
+    "DisplayName": "피해 감소",
+    "bUsePercent": true,
+    "SortOrder": 5,
+    "Desc": "받는 피해를 감소시킵니다."
+  },
+  {
+    "Name": "HealthMaxValue",
+    "StatTag": "Arcanum.BattleStat.Character.Regen.Health.MaxValue",
+    "DisplayName": "체력 최대치",
+    "bUsePercent": false,
+    "SortOrder": 6,
+    "Desc": "최대 체력을 증가시킵니다."
+  },
+  {
+    "Name": "HealthRegen",
+    "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Regen",
+    "DisplayName": "체력 재생",
+    "bUsePercent": false,
+    "SortOrder": 7,
+    "Desc": "체력을 지속적으로 회복합니다."
+  },
+  {
+    "Name": "ManaMaxValue",
+    "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.MaxValue",
+    "DisplayName": "마나 최대치",
+    "bUsePercent": false,
+    "SortOrder": 8,
+    "Desc": "최대 마나를 증가시킵니다."
+  },
+  {
+    "Name": "ManaRegen",
+    "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
+    "DisplayName": "마나 재생",
+    "bUsePercent": false,
+    "SortOrder": 9,
+    "Desc": "마나를 지속적으로 회복합니다."
+  }
+]

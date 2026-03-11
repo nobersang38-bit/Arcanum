@@ -40,10 +40,4 @@ protected:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FBasementStat BasementStat;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FGameplayTag AllyTag = Arcanum::Unit::Faction::Ally::Root;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FGameplayTag EnemyTag = Arcanum::Unit::Faction::Enemy::Root;
 };

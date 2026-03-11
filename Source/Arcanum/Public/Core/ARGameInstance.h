@@ -5,6 +5,7 @@
 #include "GameplayTags/ArcanumTags.h"
 
 #include "DataInfo/BattleCharacter/FBattleCharacterData.h"
+#include "DataInfo/ShopData/Data/FShopRuntimeData.h"
 #include "DataInfo/PlayerData/FPlayerData.h"
 #include "Core/ArcanumSaveGame.h"
 #include "Core/ARPlayerAccountService.h"
@@ -57,21 +58,6 @@ struct FGachaItemResult
         : ItemTag(InTag), SourceTable(InTable), Quantity(InQty) {
     }
 };
-
-USTRUCT(BlueprintType)
-struct FShopProductKey
-{
-    GENERATED_BODY()
-
-    UPROPERTY()
-    FGameplayTag TableTag;
-
-    UPROPERTY()
-    FName RowName = NAME_None;
-};
-
-/* 재화 변경 알림 */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCurrencyChanged); //
 
 /*
  * Version : 1.0.0.0 2026/02/03
@@ -168,52 +154,52 @@ public:
 
     void InitializeCharacter(FGameplayTag CharacterTag);
 
-#pragma region 재화 변경 알림
-public:
-    UPROPERTY(BlueprintAssignable)
-    FOnCurrencyChanged OnCurrencyChanged;
-#pragma endregion
-
 #pragma region 런타임 상점 상태
 public:
     /* 상점 다음 갱신 시각 */
     UPROPERTY(Transient)
     FDateTime NextShopRefreshTime;
-
-    /* 현재 상점 슬롯 상품 키 (TableTag + RowName) */
-    UPROPERTY(Transient)
-    TArray<FShopProductKey> CurrentShopKeys;
-
-    /* 현재 상점 슬롯 품절 여부 목록 */
-    UPROPERTY(Transient)
-    TArray<bool> CurrentShopSoldOutStates;
-
+    
     /* 전투 진입 타이머 정지했는지 */
     UPROPERTY(Transient)
     bool bShopPaused = false;
 
+    /* 상점 카테고리별 런타임 상품 목록 */
+    UPROPERTY(Transient)
+    TMap<FGameplayTag, FShopProductList> ShopCategoryProducts;
+
     /* 정지 순간 남은 초 */
     UPROPERTY(Transient)
     int32 PausedShopRemainingSeconds = 0;
+private:
+    /* ItemTag 로 ItemCatalog Row 캐시 */
+    TMap<FGameplayTag, const FDTItemCatalogRow*> ItemCatalogRowByTag;
 #pragma endregion
 
 #pragma region 테스트 코드
-    //UFUNCTION(BlueprintCallable)
-    //bool TestPurchaseEquipment(FName ItemRowName)
-    //{
-    //    bool bSuccess = FPlayerAccountService::PurchaseEquipment(this, ItemRowName);
+    /*UFUNCTION(BlueprintCallable)
+    bool TestPurchaseEquipment(FName ItemRowName)
+    {
+        bool bSuccess = FPlayerAccountService::PurchaseEquipment(this, ItemRowName);
 
-    //    if (bSuccess)
-    //    {
-    //        SavePlayerData();
-    //        UE_LOG(LogTemp, Warning, TEXT("Purchase Success & Saved"));
-    //    }
-    //    else
-    //    {
-    //        UE_LOG(LogTemp, Warning, TEXT("Purchase Failed"));
-    //    }
+        if (bSuccess)
+        {
+            SavePlayerData();
+            UE_LOG(LogTemp, Warning, TEXT("Purchase Success & Saved"));
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Purchase Failed"));
+        }
 
-    //    return bSuccess;
-    //}
+        return bSuccess;
+    }*/
+
+    UFUNCTION(BlueprintCallable)
+    bool AddTestGold();
+    UFUNCTION(BlueprintCallable)
+    bool AddTestSoul();
+    UFUNCTION(BlueprintCallable)
+    bool AddTestShard();
 #pragma endregion
 };

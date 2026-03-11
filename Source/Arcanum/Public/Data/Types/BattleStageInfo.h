@@ -7,6 +7,7 @@
 #include "NativeGameplayTags.h"
 #include "Data/DataAssets/EnemyWaveData.h"
 #include "DataInfo/CommonData/Stats/FBattleStats.h"
+#include "DataInfo/StageData/EnemyData/Data/FEnemyData.h"
 #include "BattleStageInfo.generated.h"
 
 USTRUCT(BlueprintType)
@@ -15,10 +16,7 @@ struct FBasementStat
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FNonRegenStat CommandCenterCurrentHP;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FNonRegenStat CommandCenterMaxHP;
+	FRegenStat CommandCenterHP;
 };
 
 /**
@@ -29,19 +27,14 @@ struct FBattleStageInfo
 {
 	GENERATED_BODY()
 public:
-	// 사용할 월드 태그
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FGameplayTag WorldTag;
-
 	// 적 웨이브
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FEnemyWaveDataInfo EnemyWaveDataInfo;
 
+	//나중에 
+	//
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FBasementStat PlayerBasement;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FBasementStat EnemyBasement;
+	FEnemyBasement EnemyBasementStat;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float StageLimitTime = 100.0f;

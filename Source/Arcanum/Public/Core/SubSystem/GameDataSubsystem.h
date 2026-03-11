@@ -5,6 +5,7 @@
 #include "NativeGameplayTags.h"
 #include "Arcanum/Public/GameplayTags/ArcanumTags.h"
 #include "DataInfo/ItemData/DataTable/DTItemCatalogRow.h"
+#include "DataInfo/ItemData/DataTable/DTStatDisplayRow.h"
 #include "Core/Settings/DataTableSettings.h"
 #include "GameDataSubsystem.generated.h"
 
@@ -37,51 +38,35 @@ public:
 			if (UDataTable* LoadedTable = TablePtr.LoadSynchronous())
 				MasterDataTables.Add(TableTag, LoadedTable);
 		}
-
-		BuildItemCatalogRowCache();
 	}
 
-#pragma region 아이템 카탈로그 DT 캐시
+#pragma region 스탯 디스플레이 DT 조회
 public:
-	/* ItemTag로 캐시에서 ItemCatalog RowPtr 조회 */
-	const FDTItemCatalogRow* FindItemCatalogRowByTag(const FGameplayTag& InItemTag) const
+	const FDTStatDisplayRow* FindStatDisplayRowByTag(const FGameplayTag& InStatTag) const
 	{
-		if (!InItemTag.IsValid()) return nullptr;
-		if (const FDTItemCatalogRow* const* found = ItemCatalogRowByTag.Find(InItemTag))
+		if (!InStatTag.IsValid())
 		{
-			return *found;
+			return nullptr;
 		}
-		return nullptr;
-	}
 
-private:
-	/* ItemCatalog DT를 한 번 훑어서 ItemTag -> RowPtr 캐시 구축 */
-	void BuildItemCatalogRowCache()
-	{
-		ItemCatalogRowByTag.Reset();
-
-		UDataTable** tablePtr = MasterDataTables.Find(Arcanum::DataTable::ItemCatalog);
-		if (!tablePtr || !(*tablePtr)) return;
+		UDataTable* const* tablePtr = MasterDataTables.Find(Arcanum::DataTable::StatDisplay);
+		if (!tablePtr || !(*tablePtr))
+		{
+			return nullptr;
+		}
 
 		UDataTable* table = *tablePtr;
+
 		for (const TPair<FName, uint8*>& pair : table->GetRowMap())
 		{
-			if (const FDTItemCatalogRow* row = reinterpret_cast<const FDTItemCatalogRow*>(pair.Value))
+			const FDTStatDisplayRow* row = reinterpret_cast<const FDTStatDisplayRow*>(pair.Value);
+			if (row && row->StatTag.MatchesTagExact(InStatTag))
 			{
-				if (row->ItemTag.IsValid())
-				{
-					if (!ItemCatalogRowByTag.Contains(row->ItemTag))
-					{
-						ItemCatalogRowByTag.Add(row->ItemTag, row);
-					}
-				}
+				return row;
 			}
 		}
+
+		return nullptr;
 	}
-
-private:
-	/* ItemTag -> ItemCatalog RowPtr 캐시 */
-	TMap<FGameplayTag, const FDTItemCatalogRow*> ItemCatalogRowByTag;
 #pragma endregion
-
 };
