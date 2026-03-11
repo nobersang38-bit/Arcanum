@@ -23,6 +23,7 @@
 #include "Animation/BaseUnitAnimInstance.h"
 #include "UI/InGame/UnitHealthWidget.h"
 #include "Components/CapsuleComponent.h"
+#include "NiagaraComponent.h"
 
 // Sets default values
 ABaseUnitCharacter::ABaseUnitCharacter()

@@ -30,6 +30,7 @@
 #include "Core/SubSystem/PoolingSubsystem.h"
 #include "Data/DataAssets/Actions/DAAction_MoveSpeed.h"
 #include "Object/Actor/FloatingDamageText.h"
+#include "NiagaraFunctionLibrary.h"
 
 // ========================================================
 // 언리얼 기본 생성
@@ -455,6 +456,17 @@ void UUnitCombatComponent::LightHitReaction(float InDamage)
 			FloatingText->SetText(InDamage);
 		}
 	}
+
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+		this,
+		UnitData.Info.AISetting.HitEffect,
+		GetOwner()->GetTransform().TransformPosition(UnitData.Info.AISetting.HitEffectRelativeLocation),
+		GetOwner()->GetActorRotation(),
+		FVector::OneVector,
+		true,
+		true,
+		ENCPoolMethod::FreeInPool,
+		true);
 }
 
 void UUnitCombatComponent::Death(const FRegenStat& InData)

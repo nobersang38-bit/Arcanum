@@ -233,6 +233,12 @@ public:
 	FTargetPriorityWeightData TargetPriorityWeightData;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
+	TObjectPtr<class UNiagaraSystem> HitEffect = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
+	FVector HitEffectRelativeLocation = FVector(0.0f, 0.0f, 80.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
 	FName BBTargetActorName = FName(TEXT("TargetActor"));
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")

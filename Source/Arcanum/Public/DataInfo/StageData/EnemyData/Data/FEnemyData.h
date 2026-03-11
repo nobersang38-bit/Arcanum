@@ -26,9 +26,8 @@ struct FEnemySpawnInfo
     UPROPERTY(EditAnywhere)
     FGameplayTag EnemyTag;
 
-    /** Todo : 추후 적 캐릭터 BP로 변경해줘야함*/
     UPROPERTY(EditAnywhere)
-    TSoftClassPtr<AActor> EnemyClass;
+    TSoftClassPtr<class ABaseUnitCharacter> EnemyClass;
 
     /** 적 계수*/
     UPROPERTY(EditAnywhere)

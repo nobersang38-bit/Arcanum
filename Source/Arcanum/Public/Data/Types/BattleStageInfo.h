@@ -31,11 +31,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FEnemyWaveDataInfo EnemyWaveDataInfo;
 
-	//나중에 
-	//
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FEnemyBasement EnemyBasementStat;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float StageLimitTime = 100.0f;
 };

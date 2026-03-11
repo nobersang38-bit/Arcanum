@@ -48,7 +48,29 @@ protected:
 	UFUNCTION()
 	void WaveStart();
 
-	FGameplayTag CalculateEnemyUnitStartSpawnTime(const FEnemyUnitStartSpawnTimeData& InEnemyUnitStartSpawnTimeData, float InTime, float& OutPassedTime);
+protected:
+	UClass* AllCalculate(const FEnemyWaveDataInfo& EnemyWaveData);
+
+	// - 나오기 시작하는 시간 확인
+	bool IsEnemyUnitStartSpawnTimeOver(const FEnemyUnitStartSpawnTimeData& InStartSpawnTimeData);
+
+	// - 나오기 시작하고 나서 해당하는 적이 다시는 안나올때까지의 시간 확인
+	bool IsEnemyUnitEndSpawnTimeNotOver(const FEnemyUnitEndSpawnTimeData& InEndSpawnTimeData);
+
+	// - 나올 수 있는 시간인지 확인
+	bool IsEnableEnemyUnitSpawnTime(const FEnemyUnitStartSpawnTimeData& InStartSpawnTimeData, const FEnemyUnitEndSpawnTimeData& InEndSpawnTimeData);
+
+	// 사용한 유닛 주기 초기화
+	void UseUnitData(FEnemyUnitSpawnType& EnemyWaveData);
+
+	// 유닛 타임 업데이트
+	void UnitsTimeUpdate(FEnemyWaveDataInfo& EnemyWaveData, float DeltaTime);
+
+	// - 스폰 시간 범위내에 있는 유닛 태그 중 하나 골라서 리턴
+	FGameplayTag SpawnTimeCalculate(const FEnemyWaveDataInfo& EnemyWaveData);
+
+
+
 
 #pragma region 디버그
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -75,6 +97,9 @@ protected:
 	FVector SpawnLocation = FVector::ZeroVector;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting", meta = (MakeEditWidget = true))
+	float SpawnRadius = 200.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting", meta = (MakeEditWidget = true))
 	FRotator SpawnRotator = FRotator::ZeroRotator;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
@@ -90,6 +115,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TMap<FGameplayTag, FUnitInfoSetting> UsingUnits;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TMap<FGameplayTag, FEnemyUnitSpawnType> UnitSpawnTypes;
 
 	// 유닛 태그, 유닛 스폰 계산 타입, 지난시간
 	UPROPERTY()
