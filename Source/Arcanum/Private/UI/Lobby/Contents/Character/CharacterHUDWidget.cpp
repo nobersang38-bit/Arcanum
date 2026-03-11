@@ -9,6 +9,7 @@
 #include "UI/Common/CommonDialog.h"
 #include "UI/Lobby/LobbyHUD.h"
 #include "GameplayTags/ArcanumTags.h"
+#include "Data/Types/BaseUnitData.h"
 
 #include "Core/ARGameInstance.h"
 #include "Core/SubSystem/GameDataSubsystem.h"
@@ -140,7 +141,7 @@ void UCharacterHUDWidget::InitServantCharacter()
     UnitGridPanel->ClearChildren();
     CreatedServantCharacterSlots.Empty();
 
-    /*for (int32 i = 0; i < ParentLobby->CachedPlayerData.AllyburdenCharacters.Num(); i++) {
+    for (int32 i = 0; i < ParentLobby->CachedPlayerData.AllyburdenCharacters.Num(); i++) {
         URoundedSlotWidget* NewSlot = CreateWidget<URoundedSlotWidget>(GetWorld(), RoundedSlotWidgetClass);
         if (!NewSlot) continue;
 
@@ -162,7 +163,7 @@ void UCharacterHUDWidget::InitServantCharacter()
             WrapSlot->SetVerticalAlignment(VAlign_Fill);
         }
         CreatedServantCharacterSlots.Add(NewSlot);
-    }*/
+    }
 }
 
 // ========================================================
