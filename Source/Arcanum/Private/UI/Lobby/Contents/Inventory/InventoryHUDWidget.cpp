@@ -30,12 +30,12 @@ void UInventoryHUDWidget::NativeConstruct()
 	{
 		ConsumableCategoryBtn->OnClicked.RemoveDynamic(this, &UInventoryHUDWidget::HandleConsumableCategoryClicked);
 		ConsumableCategoryBtn->OnClicked.AddDynamic(this, &UInventoryHUDWidget::HandleConsumableCategoryClicked);
+	}
 
-		if (InventorySortBtn)
-		{
-			InventorySortBtn->OnClicked.RemoveDynamic(this, &UInventoryHUDWidget::ClickInventorySortBtn);
-			InventorySortBtn->OnClicked.AddDynamic(this, &UInventoryHUDWidget::ClickInventorySortBtn);
-		}
+	if (InventorySortBtn)
+	{
+		InventorySortBtn->OnClicked.RemoveDynamic(this, &UInventoryHUDWidget::ClickInventorySortBtn);
+		InventorySortBtn->OnClicked.AddDynamic(this, &UInventoryHUDWidget::ClickInventorySortBtn);
 	}
 
 	RefreshCategoryButtonState();
@@ -52,6 +52,46 @@ void UInventoryHUDWidget::RefreshInventoryUI()
 
 	BuildInventoryViewSlots(viewSlots, slotCount);
 	ApplyInventorySlots(viewSlots);
+
+	// 판매/갱신 후 선택했던 슬롯 초기화
+	int32 foundIndex = INDEX_NONE;
+	if (SelectedInventoryItemGuid.IsValid())
+	{
+		for (int32 i = 0; i < CachedViewSlots.Num(); i++)
+		{
+			const FInventoryViewSlot& slot = CachedViewSlots[i];
+			if (slot.Type == EInventoryViewSlotType::Equipment &&
+				slot.ItemGuid == SelectedInventoryItemGuid)
+			{
+				foundIndex = i;
+				break;
+			}
+		}
+	}
+	else if (SelectedStackItemTag.IsValid())
+	{
+		for (int32 i = 0; i < CachedViewSlots.Num(); i++)
+		{
+			const FInventoryViewSlot& slot = CachedViewSlots[i];
+			if (slot.Type == EInventoryViewSlotType::StackItem &&
+				slot.ItemTag.MatchesTagExact(SelectedStackItemTag))
+			{
+				foundIndex = i;
+				break;
+			}
+		}
+	}
+
+	if (foundIndex != INDEX_NONE)
+	{
+		SelectedSlotIndex = foundIndex;
+		RefreshSelection();
+	}
+	else
+	{
+		ClearSelection();
+		OnInventorySlotSelected.Broadcast(FInventoryViewSlot());
+	}
 }
 
 void UInventoryHUDWidget::BuildInventoryViewSlots(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const
@@ -81,9 +121,6 @@ void UInventoryHUDWidget::AppendStackItemSlots(TArray<FInventoryViewSlot>& OutSl
 
 	UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance());
 	if (!gameInstance) return;
-
-	UGameDataSubsystem* dataSubsystem = gameInstance->GetSubsystem<UGameDataSubsystem>();
-	if (!dataSubsystem) return;
 
 	const FPlayerData& playerData = ParentLobby->GetCachedPlayerData();
 
@@ -137,9 +174,6 @@ void UInventoryHUDWidget::AppendGuidSlots(TArray<FInventoryViewSlot>& OutSlots, 
 
 	UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance());
 	if (!gameInstance) return;
-
-	UGameDataSubsystem* dataSubsystem = gameInstance->GetSubsystem<UGameDataSubsystem>();
-	if (!dataSubsystem) return;
 
 	const FPlayerData& playerData = ParentLobby->GetCachedPlayerData();
 
@@ -212,9 +246,8 @@ void UInventoryHUDWidget::AppendGuidSlotsSorted(TArray<FInventoryViewSlot>& OutS
 		
 		FGuidSortItem item;
 		item.Equip = &equip;
-
-		item.CatalogRow = FPlayerAccountService::FindItemCatalogRowByTag(this, equip.ItemTag);
-		item.SortOrder = item.CatalogRow ? item.CatalogRow->SortOrder : 0;
+		item.CatalogRow = catalogRow;
+		item.SortOrder = catalogRow->SortOrder;
 
 		items.Add(item);
 	}
@@ -400,6 +433,9 @@ void UInventoryHUDWidget::ApplyInventorySlots(const TArray<FInventoryViewSlot>& 
 void UInventoryHUDWidget::ClearSelection()
 {
 	SelectedSlotIndex = INDEX_NONE;
+	SelectedInventoryItemGuid.IsValid();
+	SelectedStackItemTag = FGameplayTag();
+	SelectedStackItemCount = 0;
 
 	RefreshSelection();
 }

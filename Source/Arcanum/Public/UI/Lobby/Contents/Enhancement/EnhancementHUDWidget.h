@@ -8,7 +8,7 @@ class ULobbyHUD;
 class UInventoryHUDWidget;
 class UInventoryItemSlotWidget;
 class UTextBlock;
-class UButton;
+class UCommonBtnWidget;
 struct FInventoryViewSlot;
 struct FEquipmentInfo;
 struct FDTItemCatalogRow;
@@ -122,7 +122,7 @@ private:
 protected:
 	/* 강화 버튼 */
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UButton> EnhanceButton;
+	TObjectPtr<UCommonBtnWidget> EnhanceButton;
 
 	/* 현재 선택된 장비 Guid */
 	UPROPERTY()
@@ -138,7 +138,7 @@ private:
 protected:
 	/* 리롤 버튼 */
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UButton> RerollButton;
+	TObjectPtr<UCommonBtnWidget> RerollButton;
 #pragma endregion
 
 #pragma region 장비 분해
@@ -150,7 +150,7 @@ private:
 protected:
 	/* 분해 버튼 */
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UButton> DisassembleButton;
+	TObjectPtr<UCommonBtnWidget> DisassembleButton;
 #pragma endregion
 
 #pragma region 상세 확률표
@@ -165,7 +165,7 @@ private:
 protected:
 	/* 상세 확률표 열기 버튼 */
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UButton> DetailChanceButton;
+	TObjectPtr<UCommonBtnWidget> DetailChanceButton;
 
 	/* 상세 확률표 패널 */
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))

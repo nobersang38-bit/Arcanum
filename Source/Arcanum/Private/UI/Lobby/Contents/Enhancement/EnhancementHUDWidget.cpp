@@ -2,6 +2,7 @@
 #include "UI/Lobby/Contents/Inventory/InventoryHUDWidget.h"
 #include "UI/Lobby/Contents/Inventory/SubLayout/InventoryItemSlotWidget.h"
 #include "UI/Lobby/LobbyHUD.h"
+#include "UI/Common/CommonBtnWidget.h"
 #include "Core/ARGameInstance.h"
 #include "Core/SubSystem/GameDataSubsystem.h"
 #include "DataInfo/InventoryData/Data/FInventoryViewSlot.h"
