@@ -31,13 +31,14 @@ public:
 	void SetRoundBackgroundColor(FLinearColor NewColor);
 
 	UFUNCTION(BlueprintCallable)
-	void SetIconImage(UTexture2D* CharacterIcon, bool OwnedCharacter ,FName CharacterName);
+	void SetIconImage(UTexture2D* CharacterIcon, bool OwnedCharacter ,FName CharacterName, FGameplayTag InTag = FGameplayTag());
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FLinearColor RoundColor = FLinearColor::White;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UTexture2D> IconImg;
+	UPROPERTY() FGameplayTag Tag;
 
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))

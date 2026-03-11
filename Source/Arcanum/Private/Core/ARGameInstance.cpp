@@ -7,6 +7,8 @@
 #include "DataInfo/PlayerData/PlayerBattleData/DataTable/DTPlayerBattleStats.h"
 #include "DataInfo/BattleCharacter/CharacterInfo/DataTable/DTCharacterBaseInfo.h"
 
+#include "Data/Rows/UnitsDataRow.h"
+
 // ========================================================
 // 초기화 관련
 // ========================================================
@@ -74,7 +76,7 @@ void UARGameInstance::InitializeNewPlayerData()
         }
     }
 
-    // 배틀 캐릭터 리스트 생성
+    // 플레이어블 캐릭터 리스트 생성
     {
         UGameDataSubsystem* DataSubsystem = GetSubsystem<UGameDataSubsystem>();
         if (!DataSubsystem) return;
@@ -100,11 +102,11 @@ void UARGameInstance::InitializeNewPlayerData()
 
             PlayerData.OwnedCharacters.Add(NewCharacter);
         }
-    }
 
-    if (!PlayerData.OwnedCharacters.IsEmpty()) {
-        PlayerData.OwnedCharacters[0].bSelection = true;
-        PlayerData.OwnedCharacters[0].CharacterInfo.CurrStarLevel = 1;
+        if (!PlayerData.OwnedCharacters.IsEmpty()) {
+            PlayerData.OwnedCharacters[0].bSelection = true;
+            PlayerData.OwnedCharacters[0].CharacterInfo.CurrStarLevel = 1;
+        }
     }
 }
 // ========================================================
