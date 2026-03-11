@@ -106,6 +106,7 @@ void UEnemyUnitSpawnComponent::BeginPlay()
 			{
 				for (int j = 0; j < EnemyWaveData.EnemyUnitsSet.Num(); j++)
 				{
+					EnemyWaveData.EnemyUnitsSet[j].EnemyUnitSpawnIntervalData.Internal_SpawnInterval = 9999.0f;
 					FGameplayTag EnemyWaveTag = EnemyWaveData.EnemyUnitsSet[j].EnemyUnitTag;
 					FGameplayTag DataTableRowEnemyTag = EnemyUnitsDataRows[i]->UnitData.Tag;
 					if (EnemyWaveTag.MatchesTag(DataTableRowEnemyTag) && EnemyWaveTag.IsValid() && DataTableRowEnemyTag.IsValid())
@@ -118,12 +119,12 @@ void UEnemyUnitSpawnComponent::BeginPlay()
 		}
 	}
 
-	UnitSpawnTypes.Empty();
+	/*UnitSpawnTypes.Empty();
 	for (int i = 0; i < EnemyWaveData.EnemyUnitsSet.Num(); i++)
 	{
 		FEnemyUnitSpawnType& SpawnType = EnemyWaveData.EnemyUnitsSet[i];
 		UnitSpawnTypes.Add(SpawnType.EnemyUnitTag, SpawnType);
-	}
+	}*/
 
 	GetWorld()->GetTimerManager().SetTimer(WaveTimer, this, &UEnemyUnitSpawnComponent::WaveStart, TickInterval, true);
 }
@@ -146,74 +147,42 @@ void UEnemyUnitSpawnComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 void UEnemyUnitSpawnComponent::WaveStart()
 {
-	//for (int i = 0; i < EnemyWaveData.EnemyUnitsSet.Num(); i++)
-	//{
-	//	FEnemyUnitStartSpawnTimeData EnemyUnitStartSpawnTimeData = EnemyWaveData.EnemyUnitsSet[i].EnemyUnitStartSpawnTimeData;
-	//	if (!UnitTimes.Contains(EnemyWaveData.EnemyUnitsSet[i].EnemyUnitTag))
-	//	{
-	//		FUnitSpawnCalcData UnitSpawnCalcData;
-	//		UnitTimes.Add(EnemyWaveData.EnemyUnitsSet[i].EnemyUnitTag, UnitSpawnCalcData);
-	//	}
-	//	if (!UnitTimes.Find(EnemyWaveData.EnemyUnitsSet[i].EnemyUnitTag)->UnitSpawnCalcData.Contains(EUnitSpawnCalc::StartSpawnTime))
-	//	{
-	//		
-	//		UnitTimes.Find(EnemyWaveData.EnemyUnitsSet[i].EnemyUnitTag)->UnitSpawnCalcData.Add(EUnitSpawnCalc::StartSpawnTime, 0.0f);
-	//	}
-
-	//	float* Time = UnitTimes.Find(EnemyWaveData.EnemyUnitsSet[i].EnemyUnitTag)->UnitSpawnCalcData.Find(EUnitSpawnCalc::StartSpawnTime);
-	//	if (EnemyUnitStartSpawnTimeData.bUseStartSpawnTime && EnemyUnitStartSpawnTimeData.StartSpawnTime <= *Time)
-	//	{
-	//		FGameplayTag WaveTag = EnemyWaveData.EnemyUnitsSet[i].EnemyUnitTag;
-	//		UBattlefieldManagerSubsystem* BattlefieldManagerSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
-	//		if(BattlefieldManagerSubsystem)
-	//		{
-	//			if (WaveTag.IsValid())
-	//			{
-	//				bool bIsDataSuccess = false;
-	//				//UE_LOG(LogTemp, Warning, TEXT("WaveTag : %s"), *WaveTag.ToString());
-	//				FUnitInfoSetting UnitData = BattlefieldManagerSubsystem->GetEnemyUnitData(WaveTag, bIsDataSuccess);
-	//				if (!bIsDataSuccess) continue;
-
-	//				FTransform Transform;
-	//				FVector2D RandPoint = FMath::RandPointInCircle(SpawnRadius);
-	//				FVector ResultSpawnLocation = GetOwner()->GetActorTransform().TransformPosition(SpawnLocation);
-
-	//				UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
-	//				FNavLocation NavLocation;
-
-	//				NavSys->GetRandomReachablePointInRadius(ResultSpawnLocation, SpawnRadius, NavLocation);
-	//				Transform.SetLocation(NavLocation);
-	//				Transform.SetRotation(SpawnRotator.Quaternion());
-	//				FVector Scale = FVector(1.0f, 1.0f, 1.0f);
-	//				Transform.SetScale3D(Scale);
-
-	//				// 스폰
-	//				UPoolingSubsystem* PoolingSubsystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
-	//				if (PoolingSubsystem)
-	//				{
-	//					// Todo KDH : 미리 로드해놓게 변경해야함
-	//					AActor* EnemyUnitInstance = PoolingSubsystem->SpawnFromPool(UnitData.UnitClass.LoadSynchronous(), Transform);
-	//					ABaseUnitCharacter* EnemyUnitCharacter = Cast<ABaseUnitCharacter>(EnemyUnitInstance);
-	//					if (EnemyUnitCharacter)
-	//					{
-	//						EnemyUnitCharacter->SetUnit(UnitData);
-	//						*Time = 0.0f;
-	//						break;
-	//					}
-	//				}
-	//			}
-	//		}
-	//	}
-	//	*Time += TickInterval;
-	//}
-
 	InternalTime += TickInterval;
 
-	UnitsTimeUpdate(EnemyWaveData, InternalTime);
-	AllCalculate(EnemyWaveData);
+	UnitsTimeUpdate(EnemyWaveData, TickInterval);
+	FUnitInfoSetting UnitInfoSetting = AllCalculate(EnemyWaveData);
+
+	// 스폰
+	UPoolingSubsystem* PoolingSubsystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
+	if (PoolingSubsystem)
+	{
+		// Todo KDH : 미리 로드해놓게 변경해야함
+		if (UnitInfoSetting.Tag.IsValid())
+		{
+			FTransform Transform;
+			FVector2D RandPoint = FMath::RandPointInCircle(SpawnRadius);
+			FVector ResultSpawnLocation = GetOwner()->GetActorTransform().TransformPosition(SpawnLocation);
+
+			UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+			FNavLocation NavLocation;
+
+			NavSys->GetRandomReachablePointInRadius(ResultSpawnLocation, SpawnRadius, NavLocation);
+			Transform.SetLocation(NavLocation);
+			Transform.SetRotation(SpawnRotator.Quaternion());
+			FVector Scale = FVector(1.0f, 1.0f, 1.0f);
+			Transform.SetScale3D(Scale);
+
+			AActor* EnemyUnitInstance = PoolingSubsystem->SpawnFromPool(UnitInfoSetting.UnitClass.LoadSynchronous(), Transform);
+			ABaseUnitCharacter* EnemyUnitCharacter = Cast<ABaseUnitCharacter>(EnemyUnitInstance);
+			if (EnemyUnitCharacter)
+			{
+				EnemyUnitCharacter->SetUnit(UnitInfoSetting);
+			}
+		}
+	}
 }
 
-UClass* UEnemyUnitSpawnComponent::AllCalculate(const FEnemyWaveDataInfo& InEnemyWaveData)
+FUnitInfoSetting UEnemyUnitSpawnComponent::AllCalculate(FEnemyWaveDataInfo& InEnemyWaveData)
 {
 	FGameplayTag ResultTag;
 	ResultTag = SpawnTimeCalculate(InEnemyWaveData);
@@ -222,20 +191,27 @@ UClass* UEnemyUnitSpawnComponent::AllCalculate(const FEnemyWaveDataInfo& InEnemy
 	{
 		if (FUnitInfoSetting* UnitInfo = UsingUnits.Find(ResultTag))
 		{
-			if (FEnemyUnitSpawnType* SpawnType = UnitSpawnTypes.Find(UnitInfo->Tag))
+			for (int i = 0; i < EnemyWaveData.EnemyUnitsSet.Num(); i++)
 			{
-				UseUnitData(*SpawnType);
-				// Todo 미리 로드해야함
-				return UnitInfo->UnitClass.LoadSynchronous();
+				if (EnemyWaveData.EnemyUnitsSet[i].EnemyUnitTag == UnitInfo->Tag)
+				{
+					FEnemyUnitSpawnType& SpawnType = EnemyWaveData.EnemyUnitsSet[i];
+					if (SpawnType.EnemyUnitTag.IsValid())
+					{
+						UseUnitData(SpawnType);
+						return *UnitInfo;
+					}
+					break;
+				}
 			}
 		}
 	}
-	return nullptr;
+	return FUnitInfoSetting();
 }
 
 bool UEnemyUnitSpawnComponent::IsEnemyUnitStartSpawnTimeOver(const FEnemyUnitStartSpawnTimeData& InStartSpawnTimeData)
 {
-	if (!InStartSpawnTimeData.bUseStartSpawnTime) return false;
+	if (!InStartSpawnTimeData.bUseStartSpawnTime) return true;
 
 	if (InStartSpawnTimeData.StartSpawnTime <= InternalTime)
 	{
@@ -284,15 +260,31 @@ void UEnemyUnitSpawnComponent::UnitsTimeUpdate(FEnemyWaveDataInfo& InEnemyWaveDa
 	}
 }
 
-FGameplayTag UEnemyUnitSpawnComponent::SpawnTimeCalculate(const FEnemyWaveDataInfo& InEnemyWaveData)
+FGameplayTag UEnemyUnitSpawnComponent::SpawnTimeCalculate(FEnemyWaveDataInfo& InEnemyWaveData)
 {
 	TArray<FGameplayTag> Tags;
 	for (int i = 0; i < InEnemyWaveData.EnemyUnitsSet.Num(); i++)
 	{
-		const FEnemyUnitSpawnType& SpawnType = InEnemyWaveData.EnemyUnitsSet[i];
+		FEnemyUnitSpawnType& SpawnType = InEnemyWaveData.EnemyUnitsSet[i];
 		if (IsEnableEnemyUnitSpawnTime(SpawnType.EnemyUnitStartSpawnTimeData, SpawnType.EnemyUnitEndSpawnTimeData))
 		{
-			Tags.Add(SpawnType.EnemyUnitTag);
+			if (SpawnType.UseOnceSpawn)
+			{
+				if (!SpawnType.Internal_UsedOnce)
+				{
+					SpawnType.Internal_UsedOnce = true;
+					Tags.Add(SpawnType.EnemyUnitTag);
+				}
+				continue;
+			}
+			// 나오는 주기 체크
+			float SpawnTime = (SpawnType.EnemyUnitSpawnIntervalData.SpawnInterval - (SpawnType.EnemyUnitSpawnIntervalData.SpawnIntervalDeviation * 0.5f));
+
+			SpawnTime = FMath::FRandRange(0.0f, SpawnType.EnemyUnitSpawnIntervalData.SpawnIntervalDeviation) + SpawnTime;
+			if (SpawnTime < SpawnType.EnemyUnitSpawnIntervalData.Internal_SpawnInterval)
+			{
+				Tags.Add(SpawnType.EnemyUnitTag);
+			}
 		}
 	}
 	if (!Tags.IsEmpty())

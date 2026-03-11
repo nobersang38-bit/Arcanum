@@ -49,7 +49,7 @@ protected:
 	void WaveStart();
 
 protected:
-	UClass* AllCalculate(const FEnemyWaveDataInfo& InEnemyWaveData);
+	FUnitInfoSetting AllCalculate(FEnemyWaveDataInfo& InEnemyWaveData);
 
 	// - 나오기 시작하는 시간 확인
 	bool IsEnemyUnitStartSpawnTimeOver(const FEnemyUnitStartSpawnTimeData& InStartSpawnTimeData);
@@ -67,7 +67,7 @@ protected:
 	void UnitsTimeUpdate(FEnemyWaveDataInfo& InEnemyWaveData, float DeltaTime);
 
 	// - 스폰 시간 범위내에 있는 유닛 태그 중 하나 골라서 리턴
-	FGameplayTag SpawnTimeCalculate(const FEnemyWaveDataInfo& InEnemyWaveData);
+	FGameplayTag SpawnTimeCalculate(FEnemyWaveDataInfo& InEnemyWaveData);
 
 
 
@@ -115,9 +115,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TMap<FGameplayTag, FUnitInfoSetting> UsingUnits;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TMap<FGameplayTag, FEnemyUnitSpawnType> UnitSpawnTypes;
 
 	// 유닛 태그, 유닛 스폰 계산 타입, 지난시간
 	UPROPERTY()

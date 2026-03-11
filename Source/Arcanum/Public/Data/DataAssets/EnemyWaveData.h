@@ -90,7 +90,7 @@ public:
 	// - 나오는 주기는 어느정도 인가
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SpawnSet|SpawnInterval", meta = (DisplayName = "나오는 주기는 어느정도 인가"))
 	float SpawnInterval = 2.0f;
-	// - 나오는 주기의 랜덤 오차 범위는 어디까지 인가
+	// - 나오는 주기의 랜덤 오차 범위는 어디까지 인가(초단위)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SpawnSet|SpawnInterval", meta = (DisplayName = "나오는 주기의 랜덤 오차 범위는 어디까지 인가"))
 	float SpawnIntervalDeviation = 1.0f;
 
@@ -136,6 +136,11 @@ struct FEnemyUnitSpawnType
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SpawnSet|Unit")
 	FGameplayTag EnemyUnitTag;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SpawnSet")
+	bool UseOnceSpawn = false;
+
+	bool Internal_UsedOnce = false;
+
 	// - 나오기 시작하는 시간 사용안함으로하면 계산에 포함안됨, 주기랑 연관 되어 있음 0
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SpawnSet|StartSpawn", meta = (DisplayName = "나오기 시작하는 시간"))
 	FEnemyUnitStartSpawnTimeData EnemyUnitStartSpawnTimeData;
@@ -144,15 +149,15 @@ struct FEnemyUnitSpawnType
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SpawnSet|EndSpawn", meta = (DisplayName = "나오기 시작하고 나서 해당하는 적이 다시는 안나올때까지의 시간"))
 	FEnemyUnitEndSpawnTimeData EnemyUnitEndSpawnTimeData;
 
-	// - 적의 건물 체력이 특정 체력 이하이면 나오게 함, 주기랑 연관 되어 있음 1
+	// - 적의 건물 체력이 특정 체력 이하이면 나오게 함, 주기랑 연관 되어 있음 1(사용X)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SpawnSet|EnemyBaseHealth", meta = (DisplayName = "적의 건물 체력이 특정 체력 이하이면 나오게 함"))
 	FEnemyUnitEnemyBaseHealthTriggerData EnemyUnitEnemyBaseHealthTriggerData;
 
-	// - 플레이어의 건물 체력이 특정 체력 이하이면 나오게 함, 주기랑 연관 되어 있음 2
+	// - 플레이어의 건물 체력이 특정 체력 이하이면 나오게 함, 주기랑 연관 되어 있음 2(사용X)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SpawnSet|AllyBaseHealth", meta = (DisplayName = "플레이어의 건물 체력이 특정 체력 이하이면 나오게 함"))
 	FEnemyUnitAllyBaseHealthTriggerData EnemyUnitAllyBaseHealthTriggerData;
 
-	// - 플레이어 캐릭터의 체력이 특정 체력 이하이면 나오게 함, 주기랑 연관 되어 있음 3
+	// - 플레이어 캐릭터의 체력이 특정 체력 이하이면 나오게 함, 주기랑 연관 되어 있음 3(사용X)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SpawnSet|PlayerHealth", meta = (DisplayName = "플레이어 캐릭터의 체력이 특정 체력 이하이면 나오게 함"))
 	FEnemyUnitPlayerHealthTriggerData EnemyUnitPlayerHealthTriggerData;
 
@@ -161,7 +166,7 @@ struct FEnemyUnitSpawnType
 	FEnemyUnitSpawnIntervalData EnemyUnitSpawnIntervalData;
 
 
-	// - 나오는 주기의 주기
+	// - 나오는 주기의 주기(사용 X)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SpawnSet|DynamicInterval", meta = (DisplayName = "나오는 주기의 주기"))
 	FEnemyUnitDynamicIntervalData EnemyUnitDynamicIntervalData;
 };
