@@ -108,6 +108,21 @@ void UARGameInstance::InitializeNewPlayerData()
             PlayerData.OwnedCharacters[0].CharacterInfo.CurrStarLevel = 1;
         }
     }
+    {
+        UGameDataSubsystem* DataSubsystem = GetSubsystem<UGameDataSubsystem>();
+        if (!DataSubsystem) return;
+
+        UDataTable** TablePtr = DataSubsystem->MasterDataTables.Find(Arcanum::DataTable::AllyUnitInfo);
+        if (!TablePtr) return;
+        UDataTable* Table = *TablePtr;
+        PlayerData.AllyburdenCharacters.Empty();
+        for (const auto& Pair : Table->GetRowMap()) {
+            FUnitsDataRow* Row = (FUnitsDataRow*)Pair.Value;
+            if (!Row) continue;
+            const FUnitInfoSetting& UnitInfo = Row->UnitData;
+            PlayerData.AllyburdenCharacters.Add(UnitInfo);
+        }
+    }
 }
 // ========================================================
 // ID/PW용
