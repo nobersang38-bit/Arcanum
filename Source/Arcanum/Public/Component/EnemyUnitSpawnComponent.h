@@ -49,7 +49,7 @@ protected:
 	void WaveStart();
 
 protected:
-	UClass* AllCalculate(const FEnemyWaveDataInfo& EnemyWaveData);
+	UClass* AllCalculate(const FEnemyWaveDataInfo& InEnemyWaveData);
 
 	// - 나오기 시작하는 시간 확인
 	bool IsEnemyUnitStartSpawnTimeOver(const FEnemyUnitStartSpawnTimeData& InStartSpawnTimeData);
@@ -61,13 +61,13 @@ protected:
 	bool IsEnableEnemyUnitSpawnTime(const FEnemyUnitStartSpawnTimeData& InStartSpawnTimeData, const FEnemyUnitEndSpawnTimeData& InEndSpawnTimeData);
 
 	// 사용한 유닛 주기 초기화
-	void UseUnitData(FEnemyUnitSpawnType& EnemyWaveData);
+	void UseUnitData(FEnemyUnitSpawnType& InEnemyWaveData);
 
 	// 유닛 타임 업데이트
-	void UnitsTimeUpdate(FEnemyWaveDataInfo& EnemyWaveData, float DeltaTime);
+	void UnitsTimeUpdate(FEnemyWaveDataInfo& InEnemyWaveData, float DeltaTime);
 
 	// - 스폰 시간 범위내에 있는 유닛 태그 중 하나 골라서 리턴
-	FGameplayTag SpawnTimeCalculate(const FEnemyWaveDataInfo& EnemyWaveData);
+	FGameplayTag SpawnTimeCalculate(const FEnemyWaveDataInfo& InEnemyWaveData);
 
 
 

@@ -213,10 +213,10 @@ void UEnemyUnitSpawnComponent::WaveStart()
 	AllCalculate(EnemyWaveData);
 }
 
-UClass* UEnemyUnitSpawnComponent::AllCalculate(const FEnemyWaveDataInfo& EnemyWaveData)
+UClass* UEnemyUnitSpawnComponent::AllCalculate(const FEnemyWaveDataInfo& InEnemyWaveData)
 {
 	FGameplayTag ResultTag;
-	ResultTag = SpawnTimeCalculate(EnemyWaveData);
+	ResultTag = SpawnTimeCalculate(InEnemyWaveData);
 
 	if (ResultTag.IsValid())
 	{
@@ -260,20 +260,20 @@ bool UEnemyUnitSpawnComponent::IsEnableEnemyUnitSpawnTime(const FEnemyUnitStartS
 	return IsEnemyUnitStartSpawnTimeOver(InStartSpawnTimeData) && IsEnemyUnitEndSpawnTimeNotOver(InEndSpawnTimeData);
 }
 
-void UEnemyUnitSpawnComponent::UseUnitData(FEnemyUnitSpawnType& EnemyWaveData)
+void UEnemyUnitSpawnComponent::UseUnitData(FEnemyUnitSpawnType& InEnemyWaveData)
 {
-	EnemyWaveData.EnemyUnitSpawnIntervalData.Internal_SpawnInterval = 0.0f;
-	if (EnemyWaveData.EnemyUnitDynamicIntervalData.bUseDynamicInterval)
+	InEnemyWaveData.EnemyUnitSpawnIntervalData.Internal_SpawnInterval = 0.0f;
+	if (InEnemyWaveData.EnemyUnitDynamicIntervalData.bUseDynamicInterval)
 	{
-		EnemyWaveData.EnemyUnitDynamicIntervalData.Internal_DynamicIntervalTime = 0.0f;
+		InEnemyWaveData.EnemyUnitDynamicIntervalData.Internal_DynamicIntervalTime = 0.0f;
 	}
 }
 
-void UEnemyUnitSpawnComponent::UnitsTimeUpdate(FEnemyWaveDataInfo& EnemyWaveData, float DeltaTime)
+void UEnemyUnitSpawnComponent::UnitsTimeUpdate(FEnemyWaveDataInfo& InEnemyWaveData, float DeltaTime)
 {
-	for (int i = 0; i < EnemyWaveData.EnemyUnitsSet.Num(); i++)
+	for (int i = 0; i < InEnemyWaveData.EnemyUnitsSet.Num(); i++)
 	{
-		FEnemyUnitSpawnType& UnitSpawnType = EnemyWaveData.EnemyUnitsSet[i];
+		FEnemyUnitSpawnType& UnitSpawnType = InEnemyWaveData.EnemyUnitsSet[i];
 
 		UnitSpawnType.EnemyUnitSpawnIntervalData.Internal_SpawnInterval += DeltaTime;
 
@@ -284,12 +284,12 @@ void UEnemyUnitSpawnComponent::UnitsTimeUpdate(FEnemyWaveDataInfo& EnemyWaveData
 	}
 }
 
-FGameplayTag UEnemyUnitSpawnComponent::SpawnTimeCalculate(const FEnemyWaveDataInfo& EnemyWaveData)
+FGameplayTag UEnemyUnitSpawnComponent::SpawnTimeCalculate(const FEnemyWaveDataInfo& InEnemyWaveData)
 {
 	TArray<FGameplayTag> Tags;
-	for (int i = 0; i < EnemyWaveData.EnemyUnitsSet.Num(); i++)
+	for (int i = 0; i < InEnemyWaveData.EnemyUnitsSet.Num(); i++)
 	{
-		const FEnemyUnitSpawnType& SpawnType = EnemyWaveData.EnemyUnitsSet[i];
+		const FEnemyUnitSpawnType& SpawnType = InEnemyWaveData.EnemyUnitsSet[i];
 		if (IsEnableEnemyUnitSpawnTime(SpawnType.EnemyUnitStartSpawnTimeData, SpawnType.EnemyUnitEndSpawnTimeData))
 		{
 			Tags.Add(SpawnType.EnemyUnitTag);
