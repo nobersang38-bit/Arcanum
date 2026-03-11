@@ -102,7 +102,7 @@ void UInventoryHUDWidget::AppendStackItemSlots(TArray<FInventoryViewSlot>& OutSl
 		const int32 totalCount = playerData.StackCounts.FindRef(itemTag);
 		if (totalCount <= 0) continue;
 
-		const FDTItemCatalogRow* catalogRow = dataSubsystem->FindItemCatalogRowByTag(itemTag);
+		const FDTItemCatalogRow* catalogRow = FPlayerAccountService::FindItemCatalogRowByTag(this, itemTag);
 		if (!catalogRow) continue;
 
 		// 카테고리 필터
@@ -150,7 +150,7 @@ void UInventoryHUDWidget::AppendGuidSlots(TArray<FInventoryViewSlot>& OutSlots, 
 		const FEquipmentInfo& equip = playerData.Inventory[i];
 		if (!equip.ItemGuid.IsValid()) continue;
 
-		const FDTItemCatalogRow* catalogRow = dataSubsystem->FindItemCatalogRowByTag(equip.ItemTag);
+		const FDTItemCatalogRow* catalogRow = FPlayerAccountService::FindItemCatalogRowByTag(this, equip.ItemTag);
 		if (!catalogRow) continue;
 
 		// 카테고리 필터
@@ -202,7 +202,7 @@ void UInventoryHUDWidget::AppendGuidSlotsSorted(TArray<FInventoryViewSlot>& OutS
 		const FEquipmentInfo& equip = playerData.Inventory[i];
 		if (!equip.ItemGuid.IsValid()) continue;
 
-		const FDTItemCatalogRow* catalogRow = dataSubsystem->FindItemCatalogRowByTag(equip.ItemTag);
+		const FDTItemCatalogRow* catalogRow = FPlayerAccountService::FindItemCatalogRowByTag(this, equip.ItemTag);
 		if (!catalogRow) continue;
 
 		// 카테고리 필터
@@ -213,7 +213,7 @@ void UInventoryHUDWidget::AppendGuidSlotsSorted(TArray<FInventoryViewSlot>& OutS
 		FGuidSortItem item;
 		item.Equip = &equip;
 
-		item.CatalogRow = dataSubsystem->FindItemCatalogRowByTag(equip.ItemTag);
+		item.CatalogRow = FPlayerAccountService::FindItemCatalogRowByTag(this, equip.ItemTag);
 		item.SortOrder = item.CatalogRow ? item.CatalogRow->SortOrder : 0;
 
 		items.Add(item);

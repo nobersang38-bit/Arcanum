@@ -7,15 +7,18 @@
 #include "Core/ARGameInstance.h"
 #include "Core/SubSystem/GameDataSubsystem.h"
 #include "Core/SubSystem/GameTimeSubsystem.h"
-#include "Components/TextBlock.h"
 #include "DataInfo/ItemData/DataTable/DTItemCatalogRow.h"
+#include "DataInfo/ShopData/DataTable/DTShopCategoryRuleRow.h"
+#include "Components/TextBlock.h"
+#include "Components/PanelWidget.h"
+
 
 void UShopHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
 	SelectedSlotIndex = INDEX_NONE;
-
+	ShopPanels.Reset();
 
 	if (BuyButton)
 	{
@@ -29,133 +32,82 @@ void UShopHUDWidget::NativeConstruct()
 		SellButton->OnClicked.AddDynamic(this, &UShopHUDWidget::HandleSellClicked);
 	}
 
-	if (EquipmentPanel)
-	{
-		EquipmentPanel->OnSlotClicked.RemoveDynamic(this, &UShopHUDWidget::HandleEquipmentSlotClicked);
-		EquipmentPanel->OnSlotClicked.AddDynamic(this, &UShopHUDWidget::HandleEquipmentSlotClicked);
-	}
-
-	if (PotionPanel)
-	{
-		PotionPanel->OnSlotClicked.RemoveDynamic(this, &UShopHUDWidget::HandlePotionSlotClicked);
-		PotionPanel->OnSlotClicked.AddDynamic(this, &UShopHUDWidget::HandlePotionSlotClicked);
-	}
+	BindShopPanels();
 }
 
 void UShopHUDWidget::RefreshShopUI()
 {
 	BuildShopRuntimeCache();
 
-	ApplyShopData(
-		CachedShopRowNames,
-		CachedShopSoldOutStates,
-		CachedShopIcons,
-		CachedShopNames,
-		CachedShopDescs,
-		CachedShopPrices
-	);
+	for (UShopPanelWidget* shopPanel : ShopPanels)
+	{
+		if (shopPanel)
+		{
+			if (const FShopViewSlotList* foundViewSlotList = CachedShopSlotsByCategory.Find(shopPanel->CategoryTag))
+			{
+				shopPanel->ApplyData(foundViewSlotList->ShopViewSlots);
+			}
+			else
+			{
+				shopPanel->ClearSlots();
+			}
+		}
+	}
 
 	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
 	{
 		const int32 remaining = FPlayerAccountService::GetShopRemainingSeconds(gameInstance);
-
 		HandleShopSecondChanged(remaining);
 	}
 }
 
 void UShopHUDWidget::BuildShopRuntimeCache()
 {
-	if (!ParentLobby) return;
-
-	const int32 slotCount = FMath::Max(0, EquipmentShopSlotCount) + FMath::Max(0, PotionShopSlotCount);
-
-	CachedShopRowNames.SetNum(slotCount);
-	CachedShopSoldOutStates.SetNum(slotCount);
-
-	CachedShopIcons.SetNum(slotCount);
-	CachedShopNames.SetNum(slotCount);
-	CachedShopDescs.SetNum(slotCount);
-	CachedShopPrices.SetNum(slotCount);
-
-	for (int32 i = 0; i < slotCount; i++)
-	{
-		CachedShopRowNames[i] = NAME_None;
-		CachedShopSoldOutStates[i] = false;
-
-		CachedShopIcons[i] = nullptr;
-		CachedShopNames[i] = FText::GetEmpty();
-		CachedShopDescs[i] = FText::GetEmpty();
-		CachedShopPrices[i] = 0;
-	}
-
 	UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance());
 	if (!gameInstance) return;
 
-	UGameDataSubsystem* dataSubsystem = gameInstance->GetSubsystem<UGameDataSubsystem>();
-	if (!dataSubsystem) return;
+	CachedShopSlotsByCategory.Empty();
 
-	for (int32 slotIndex = 0; slotIndex < slotCount; slotIndex++)
+	for (const TPair<FGameplayTag, FShopProductList>& pair : gameInstance->ShopCategoryProducts)
 	{
-		if (!gameInstance->CurrentShopKeys.IsValidIndex(slotIndex)) continue;
+		const FGameplayTag& categoryTag = pair.Key;
+		const FShopProductList& productList = pair.Value;
 
-		const FShopProductKey& key = gameInstance->CurrentShopKeys[slotIndex];
+		FShopViewSlotList viewSlotList;
+		viewSlotList.ShopViewSlots.Reset();
 
-		if (gameInstance->CurrentShopSoldOutStates.IsValidIndex(slotIndex))
+		for (const FShopProductEntry& productEntry : productList.ShopProducts)
 		{
-			CachedShopSoldOutStates[slotIndex] = gameInstance->CurrentShopSoldOutStates[slotIndex];
+			FShopViewSlot viewSlot;
+			viewSlot.ItemTag = productEntry.ItemTag;
+			viewSlot.bSoldOut = productEntry.bSoldOut;
+
+			if (const FDTItemCatalogRow* catalogRow = FPlayerAccountService::FindItemCatalogRowByTag(gameInstance, productEntry.ItemTag))
+			{
+				viewSlot.Icon = catalogRow->Icon;
+				viewSlot.Name = catalogRow->DisplayName;
+				viewSlot.Desc = catalogRow->Desc;
+				viewSlot.Price = catalogRow->BuyPrice;
+			}
+
+			viewSlotList.ShopViewSlots.Add(viewSlot);
 		}
 
-		if (!key.TableTag.IsValid() || key.RowName.IsNone()) continue;
-
-		// ItemCatalog 직접 키(=RowName이 ItemTagName)
-		if (key.TableTag.MatchesTagExact(Arcanum::DataTable::ItemCatalog))
-		{
-			const FDTItemCatalogRow* catalogRow = dataSubsystem->GetRow<FDTItemCatalogRow>(Arcanum::DataTable::ItemCatalog, key.RowName);
-			if (!catalogRow) continue;
-
-			CachedShopRowNames[slotIndex] = key.RowName;
-			CachedShopIcons[slotIndex] = catalogRow->Icon;
-			CachedShopNames[slotIndex] = catalogRow->DisplayName;
-			CachedShopDescs[slotIndex] = catalogRow->Desc;
-			CachedShopPrices[slotIndex] = catalogRow->BuyPrice;
-
-			continue;
-		}
-
-		CachedShopRowNames[slotIndex] = key.RowName;
-	}
-}
-
-void UShopHUDWidget::ApplyShopData(
-	const TArray<FName>& InRowNames,
-	const TArray<bool>& InSoldOutStates,
-	const TArray<TSoftObjectPtr<UTexture2D>>& InIcons,
-	const TArray<FText>& InNames,
-	const TArray<FText>& InDescs,
-	const TArray<int64>& InPrices)
-{
-	if (EquipmentPanel)
-	{
-		EquipmentPanel->ApplyData(InRowNames, InSoldOutStates, InIcons, InNames, InDescs, InPrices);
-	}
-
-	if (PotionPanel)
-	{
-		PotionPanel->ApplyData(InRowNames, InSoldOutStates, InIcons, InNames, InDescs, InPrices);
+		CachedShopSlotsByCategory.Add(categoryTag, viewSlotList);
 	}
 }
 
 void UShopHUDWidget::ClearShopSelection()
 {
+	SelectedCategoryTag = FGameplayTag();
 	SelectedSlotIndex = INDEX_NONE;
 
-	if (EquipmentPanel)
+	for (UShopPanelWidget* shopPanel : ShopPanels)
 	{
-		EquipmentPanel->ClearSelection();
-	}
-	if (PotionPanel)
-	{
-		PotionPanel->ClearSelection();
+		if (shopPanel)
+		{
+			shopPanel->ClearSelection();
+		}
 	}
 }
 
@@ -173,48 +125,71 @@ void UShopHUDWidget::SetShopRemainingSeconds(int32 InRemainingSeconds)
 
 void UShopHUDWidget::InitPanels()
 {
-	if (EquipmentPanel)
-	{
-		EquipmentPanel->InitSlots(FMath::Max(0, EquipmentShopSlotCount), 0);
-		EquipmentPanel->ClearSelection();
-	}
+	UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance());
+	if (!gameInstance) return;
 
-	if (PotionPanel)
-	{
-		const int32 equipCount = FMath::Max(0, EquipmentShopSlotCount);
-		PotionPanel->InitSlots(FMath::Max(0, PotionShopSlotCount), equipCount);
-		PotionPanel->ClearSelection();
-	}
+	UGameDataSubsystem* dataSubsystem = gameInstance->GetSubsystem<UGameDataSubsystem>();
+	if (!dataSubsystem) return;
 
+	UDataTable** tablePtr = dataSubsystem->MasterDataTables.Find(Arcanum::DataTable::ShopCategoryRule);
+	UDataTable* table = tablePtr ? *tablePtr : nullptr;
+	if (!table) return;
+
+	for (UShopPanelWidget* ShopPanel : ShopPanels)
+	{
+		if (ShopPanel)
+		{
+			int32 SlotCount = 0;
+
+			for (const TPair<FName, uint8*>& Pair : table->GetRowMap())
+			{
+				const FDTShopCategoryRuleRow* Row = reinterpret_cast<const FDTShopCategoryRuleRow*>(Pair.Value);
+
+				if (Row && Row->ShopRule.CategoryTag.MatchesTagExact(ShopPanel->CategoryTag))
+				{
+					SlotCount = FMath::Max(0, Row->ShopRule.SlotCount);
+					break;
+				}
+			}
+			ShopPanel->InitSlots(SlotCount);
+			ShopPanel->ClearSelection();
+		}
+	}
+	SelectedCategoryTag = FGameplayTag();
 	SelectedSlotIndex = INDEX_NONE;
 }
 
-void UShopHUDWidget::HandleEquipmentSlotClicked(int32 InSlotIndex)
+void UShopHUDWidget::BindShopPanels()
 {
-	SelectedSlotIndex = InSlotIndex;
+	ShopPanels.Reset();
 
-	if (PotionPanel)
+	if (ShopPanelContainer)
 	{
-		PotionPanel->ClearSelection();
-	}
-}
+		const int32 childCount = ShopPanelContainer->GetChildrenCount();
 
-void UShopHUDWidget::HandlePotionSlotClicked(int32 InSlotIndex)
-{
-	SelectedSlotIndex = InSlotIndex;
+		for (int32 i = 0; i < childCount; i++)
+		{
+			UWidget* childWidget = ShopPanelContainer->GetChildAt(i);
+			UShopPanelWidget* shopPanel = Cast<UShopPanelWidget>(childWidget);
 
-	if (EquipmentPanel)
-	{
-		EquipmentPanel->ClearSelection();
+			if (shopPanel)
+			{
+				shopPanel->OnSlotClicked.RemoveDynamic(this, &UShopHUDWidget::HandleShopSlotClicked);
+				shopPanel->OnSlotClicked.AddDynamic(this, &UShopHUDWidget::HandleShopSlotClicked);
+
+				ShopPanels.Add(shopPanel);
+			}
+		}
 	}
 }
 
 void UShopHUDWidget::HandleBuyClicked()
 {
 	if (!ParentLobby) return;
+	if (!SelectedCategoryTag.IsValid()) return;
 	if (SelectedSlotIndex == INDEX_NONE) return;
 
-	const bool bSuccess = FPlayerAccountService::PurchaseShopSlot(this, SelectedSlotIndex);
+	const bool bSuccess = FPlayerAccountService::PurchaseShopSlot(this, SelectedCategoryTag, SelectedSlotIndex);
 	UE_LOG(LogTemp, Log, TEXT("ShopHUD Buy(%d) : %s"), SelectedSlotIndex, bSuccess ? TEXT("true") : TEXT("false"));
 
 	if (bSuccess)
@@ -265,12 +240,30 @@ void UShopHUDWidget::HandleSellClicked()
 	}
 }
 
+void UShopHUDWidget::HandleShopSlotClicked(FGameplayTag InCategoryTag, int32 InLocalIndex)
+{
+	SelectedCategoryTag = InCategoryTag;
+	SelectedSlotIndex = InLocalIndex;
+
+	for (UShopPanelWidget* shopPanel : ShopPanels)
+	{
+		if (shopPanel)
+		{
+			if (shopPanel->CategoryTag != InCategoryTag)
+			{
+				shopPanel->ClearSelection();
+			}
+			else
+			{
+				shopPanel->RefreshSelection();
+			}
+		}
+	}
+}
+
 void UShopHUDWidget::InitShop()
 {
-	if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
-	{
-		FPlayerAccountService::InitializeShop(gameInstance, EquipmentShopSlotCount, PotionShopSlotCount);
-	}
+	FPlayerAccountService::InitializeShop(this);
 }
 
 void UShopHUDWidget::BindShopTimer()
@@ -294,21 +287,11 @@ void UShopHUDWidget::HandleShopSecondChanged(int32 InRemainingSeconds)
 	{
 		if (UARGameInstance* gameInstance = Cast<UARGameInstance>(GetGameInstance()))
 		{
-			FPlayerAccountService::RefreshShop(gameInstance, EquipmentShopSlotCount, PotionShopSlotCount);
-			BuildShopRuntimeCache();
+			FPlayerAccountService::RefreshShop(gameInstance);
 			InRemainingSeconds = FPlayerAccountService::GetShopRemainingSeconds(gameInstance);
 		}
-
-		ApplyShopData(
-			CachedShopRowNames,
-			CachedShopSoldOutStates,
-			CachedShopIcons,
-			CachedShopNames,
-			CachedShopDescs,
-			CachedShopPrices
-		);
+		RefreshShopUI();
 	}
-
 	SetShopRemainingSeconds(InRemainingSeconds);
 }
 

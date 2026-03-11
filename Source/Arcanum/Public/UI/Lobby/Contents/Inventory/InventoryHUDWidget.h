@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "DataInfo/InventoryData/Data/InventoryViewSlot.h"
+#include "DataInfo/InventoryData/Data/FInventoryViewSlot.h"
 #include "InventoryHUDWidget.generated.h"
 
 class ULobbyHUD;

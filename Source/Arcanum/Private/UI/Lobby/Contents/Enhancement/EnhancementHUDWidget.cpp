@@ -4,7 +4,7 @@
 #include "UI/Lobby/LobbyHUD.h"
 #include "Core/ARGameInstance.h"
 #include "Core/SubSystem/GameDataSubsystem.h"
-#include "DataInfo/InventoryData/Data/InventoryViewSlot.h"
+#include "DataInfo/InventoryData/Data/FInventoryViewSlot.h"
 #include "DataInfo/ItemData/DataTable/DTItemCatalogRow.h"
 #include "DataInfo/EnhancementData/DataTable/DTEnhanceRuleRow.h"
 #include "Components/TextBlock.h"
@@ -88,7 +88,7 @@ void UEnhancementHUDWidget::RefreshSelectedItemSlot()
 		UGameDataSubsystem* dataSubsystem = gameInstance->GetSubsystem<UGameDataSubsystem>();
 		if (dataSubsystem)
 		{
-			const FDTItemCatalogRow* catalogRow = dataSubsystem->FindItemCatalogRowByTag(foundEquip->ItemTag);
+			const FDTItemCatalogRow* catalogRow = FPlayerAccountService::FindItemCatalogRowByTag(this, foundEquip->ItemTag);
 			if (catalogRow)
 			{
 				selectedSlot.Icon = catalogRow->Icon;
@@ -185,7 +185,7 @@ void UEnhancementHUDWidget::RefreshEnhancementInfo(const FInventoryViewSlot& InS
 				dataSubsystem = gameInstance->GetSubsystem<UGameDataSubsystem>();
 				if (dataSubsystem)
 				{
-					catalogRow = dataSubsystem->FindItemCatalogRowByTag(foundEquip->ItemTag);
+					catalogRow = FPlayerAccountService::FindItemCatalogRowByTag(this, foundEquip->ItemTag);
 					if (catalogRow && !catalogRow->DetailRowName.IsNone())
 					{
 						equipRow = dataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, catalogRow->DetailRowName);

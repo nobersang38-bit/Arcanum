@@ -63,17 +63,16 @@ void ULobbyHUD::NativeConstruct()
 	if (!CharacterDataTable)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("CharacterDataTable is nullptr!"));
-		return;
 	}
 
 	if (ShopHUDWidget)
 	{
 		ShopHUDWidget->SetParentLobby(this);
-		ShopHUDWidget->InitPanels();
 		ShopHUDWidget->InitShop();
-		ShopHUDWidget->RestartShopTimer();
-		ShopHUDWidget->BindShopTimer();
+		ShopHUDWidget->InitPanels();
 		ShopHUDWidget->RefreshShopUI();
+		ShopHUDWidget->RestartShopTimer();
+		ShopHUDWidget->BindShopTimer();;
 	}
 
 	if (InventoryHUDWidget)

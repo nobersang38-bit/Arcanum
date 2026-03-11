@@ -5,7 +5,7 @@
 #include "UI/DataType/EDialogResult.h"
 #include "UI/Lobby/Contents/Character/CharacterHUDWidget.h"
 #include "DataInfo/PlayerData/FPlayerData.h"
-#include "DataInfo/InventoryData/Data/InventoryViewSlot.h"
+#include "DataInfo/InventoryData/Data/FInventoryViewSlot.h"
 #include "LobbyHUD.generated.h"
 
 /*

@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "GameplayTagContainer.h"
-#include "DataInfo/InventoryData/Data/InventoryViewSlot.h"
+#include "DataInfo/InventoryData/Data/FInventoryViewSlot.h"
 #include "InventoryItemSlotWidget.generated.h"
 
 class UButton;

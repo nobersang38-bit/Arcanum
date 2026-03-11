@@ -2,12 +2,16 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "GameplayTagContainer.h"
+#include "DataInfo/ShopData/Data/FShopRuntimeData.h"
 #include "ShopHUDWidget.generated.h"
 
 class UTextBlock;
 class UCommonBtnWidget;
+class UPanelWidget;
 class UShopPanelWidget;
 class ULobbyHUD;
+struct FShopViewSlot;
 
 /**
  * 추영호
@@ -41,15 +45,6 @@ private:
 
 #pragma region 상점 슬롯
 public:
-	/* 상점 캐시 */
-	void ApplyShopData(
-		const TArray<FName>& InRowNames,
-		const TArray<bool>& InSoldOutStates,
-		const TArray<TSoftObjectPtr<UTexture2D>>& InIcons,
-		const TArray<FText>& InNames,
-		const TArray<FText>& InDescs,
-		const TArray<int64>& InPrices);
-
 	/* 상점 갱신될 때 선택 초기화*/
 	void ClearShopSelection();
 
@@ -62,26 +57,22 @@ public:
 	void InitPanels();
 
 protected:
-	/* 장비 패널 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget, AllowPrivateAccess = "true"))
-	TObjectPtr<UShopPanelWidget> EquipmentPanel;
+	/* 부모 컨테이너에서 상점 패널 목록 수집 및 바인딩 */
+	void BindShopPanels();
 
-	/* 물약 패널 */
+protected:
+	/* 상점 패널들을 담는 컨테이너 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget, AllowPrivateAccess = "true"))
-	TObjectPtr<UShopPanelWidget> PotionPanel;
+	TObjectPtr<UPanelWidget> ShopPanelContainer;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional, AllowPrivateAccess = "true"))
 	TObjectPtr<UTextBlock> ShopTimerText;
 
-	/* 장비 상점 슬롯 개수 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shop")
-	int32 EquipmentShopSlotCount = 5;
-
-	/* 물약 상점 슬롯 개수 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shop")
-	int32 PotionShopSlotCount = 6;
-
 private:
+	/* 부모 컨테이너에서 수집한 상점 패널 목록 */
+	UPROPERTY()
+	TArray<TObjectPtr<UShopPanelWidget>> ShopPanels;
+
 	/* 현재 선택 인덱스 */
 	UPROPERTY()
 	int32 SelectedSlotIndex = INDEX_NONE;
@@ -96,11 +87,9 @@ protected:
 	UFUNCTION()
 	void HandleSellClicked();
 
-	/* 패널 슬롯 클릭 수신 */
+	/* 상점 패널 슬롯 클릭 수신 */
 	UFUNCTION()
-	void HandleEquipmentSlotClicked(int32 InSlotIndex);
-	UFUNCTION()
-	void HandlePotionSlotClicked(int32 InSlotIndex);
+	void HandleShopSlotClicked(FGameplayTag InCategoryTag, int32 InLocalIndex);
 
 protected:
 	/* 구입 버튼 */
@@ -110,6 +99,11 @@ protected:
 	/* 판매 버튼 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget, AllowPrivateAccess = "true"))
 	TObjectPtr<UCommonBtnWidget> SellButton;
+
+private:
+	/* 현재 선택된 상점 카테고리 */
+	UPROPERTY()
+	FGameplayTag SelectedCategoryTag;
 #pragma endregion
 
 #pragma region 상점 타이머
@@ -131,22 +125,8 @@ protected:
 
 #pragma region 상점 표시 캐시
 private:
+	/* 카테고리별 상점 표시 캐시 */
 	UPROPERTY()
-	TArray<FName> CachedShopRowNames;
-
-	UPROPERTY()
-	TArray<bool> CachedShopSoldOutStates;
-
-	UPROPERTY()
-	TArray<TSoftObjectPtr<UTexture2D>> CachedShopIcons;
-
-	UPROPERTY()
-	TArray<FText> CachedShopNames;
-
-	UPROPERTY()
-	TArray<FText> CachedShopDescs;
-
-	UPROPERTY()
-	TArray<int64> CachedShopPrices;
+	TMap<FGameplayTag, FShopViewSlotList> CachedShopSlotsByCategory;
 #pragma endregion
 };

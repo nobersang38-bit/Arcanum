@@ -16,7 +16,7 @@ namespace Arcanum {
 		UE_DEFINE_GAMEPLAY_TAG(ItemCatalog, "Arcanum.DataTable.ItemCatalog");
 		UE_DEFINE_GAMEPLAY_TAG(StatDisplay, "Arcanum.DataTable.StatDisplay");
 		UE_DEFINE_GAMEPLAY_TAG(EnhanceRule, "Arcanum.DataTable.EnhanceRule");
-
+		UE_DEFINE_GAMEPLAY_TAG(ShopCategoryRule, "Arcanum.DataTable.ShopCategoryRule");
 
 
 		//UE_DEFINE_GAMEPLAY_TAG(BattleRegenStats,	"Arcanum.DataTable.BattleRegenStats");
@@ -204,6 +204,14 @@ namespace Arcanum {
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Frenzy, "Arcanum.Items.Potion.Frenzy", "광란의 포션");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Haste, "Arcanum.Items.Potion.Haste", "신속 포션");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Mana, "Arcanum.Items.Potion.Mana", "마나 포션");
+		}
+	}
+	namespace Shop
+	{
+		namespace Category
+		{
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Equipment, "Arcanum.Shop.Category.Equipment", "장비 상점");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Potion, "Arcanum.Shop.Category.Potion", "포션 상점");
 		}
 	}
 	namespace Inventory

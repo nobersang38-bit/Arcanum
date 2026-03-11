@@ -18,17 +18,18 @@ void UShopItemSlotWidget::NativeConstruct()
 }
 
 void UShopItemSlotWidget::SetSlotData(
-	int32 InSlotIndex, FName InRowName,
+	int32 InSlotIndex,
+	FGameplayTag InItemTag,
 	TSoftObjectPtr<UTexture2D> InIcon,
 	const FText& InName,
 	const FText& InDesc,
 	int64 InPrice,
 	bool InSoldOut)
 {
-	if (!InRowName.IsNone())
+	if (InItemTag.IsValid())
 	{
 		SlotIndex = InSlotIndex;
-		RowName = InRowName;
+		ItemTag = InItemTag;
 
 		ViewIcon = InIcon;
 		ViewName = InName;
@@ -50,8 +51,7 @@ void UShopItemSlotWidget::SetSlotData(
 void UShopItemSlotWidget::ClearSlot()
 {
 	SlotIndex = INDEX_NONE;
-	RowName = NAME_None;
-
+	ItemTag = FGameplayTag();
 	ViewIcon = nullptr;
 	ViewName = FText::GetEmpty();
 	ViewDesc = FText::GetEmpty();
@@ -90,7 +90,7 @@ void UShopItemSlotWidget::SetSoldOut(bool InSoldOut)
 
 bool UShopItemSlotWidget::IsPurchasable() const
 {
-	return (!bEmpty && !bSoldOut && RowName != NAME_None);
+	return (!bEmpty && !bSoldOut && ItemTag.IsValid());
 }
 
 void UShopItemSlotWidget::HandleSlotButtonClicked()
@@ -100,7 +100,6 @@ void UShopItemSlotWidget::HandleSlotButtonClicked()
 		OnShopItemSlotClicked.Broadcast(SlotIndex);
 	}
 }
-
 
 void UShopItemSlotWidget::RefreshSlotUI()
 {
