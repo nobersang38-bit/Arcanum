@@ -26,33 +26,66 @@ void UStatusActionComponent::BeginPlay()
 			CachedCharacterBattleStatsComponent = BattleStatComponent;
 		}
 	}
+	SetupAction();
+}
+
+
+// Called every frame
+void UStatusActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	// ...
+}
+
+void UStatusActionComponent::SetupAction()
+{
 	if (CachedCharacterBattleStatsComponent.IsValid())
 	{
 		// 리젠스탯 바인딩
+
+		for (auto& ActionDelegate : ActionDelegates)
+		{
+			if (ActionDelegate.Value.IsValid())
+			{
+				CachedCharacterBattleStatsComponent->OnCharacterRegenStatChanged.Remove(ActionDelegate.Value);
+				CachedCharacterBattleStatsComponent->OnCharacterNonRegenStatChanged.Remove(ActionDelegate.Value);
+			}
+		}
+
+		for (auto& Action : Actions)
+		{
+			if (Action.Value)
+			{
+				Action.Value->MarkAsGarbage();
+			}
+		}
+
 		Actions.Empty();
 		ActionDelegates.Empty();
 
-		const TArray<FRegenStat>& RegenStats = CachedCharacterBattleStatsComponent->GetRegenStats();
-		for (int i = 0; i < RegenStats.Num(); i++)
+		const TArray<FRegenStat>& RegenStat = CachedCharacterBattleStatsComponent->GetRegenStats();
+		for (int i = 0; i < RegenStat.Num(); i++)
 		{
-			if (ActionSet.Contains(RegenStats[i].ParentTag))
+			if (ActionSet.Contains(RegenStat[i].ParentTag))
 			{
-				UDAAction* ActionInstance = NewObject<UDAAction>(GetOwner(), *ActionSet.Find(RegenStats[i].ParentTag));
-				Actions.Add(RegenStats[i].ParentTag, ActionInstance);
-				if (FDelegateHandle* ActionDelegate = ActionDelegates.Find(RegenStats[i].ParentTag))
+				UClass* ActionClass = *ActionSet.Find(RegenStat[i].ParentTag);
+				UDAAction* ActionInstance = NewObject<UDAAction>(GetOwner(), ActionClass);
+				Actions.Add(RegenStat[i].ParentTag, ActionInstance);
+				if (FDelegateHandle* ActionDelegate = ActionDelegates.Find(RegenStat[i].ParentTag))
 				{
 					if (ActionDelegate->IsValid())
 					{
-						CachedCharacterBattleStatsComponent->OnCharacterRegenStatChanged.Remove(*ActionDelegate);
+						CachedCharacterBattleStatsComponent->OnCharacterNonRegenStatChanged.Remove(*ActionDelegate);
 					}
 				}
 				else
 				{
-					ActionDelegates.Add(RegenStats[i].ParentTag, FDelegateHandle());
+					ActionDelegates.Add(RegenStat[i].ParentTag, FDelegateHandle());
 				}
-
-				*ActionDelegates.Find(RegenStats[i].ParentTag) = CachedCharacterBattleStatsComponent->OnCharacterRegenStatChanged.AddUObject(ActionInstance, &UDAAction::StartAction);
-				ActionInstance->StartAction(RegenStats[i]);
+				*ActionDelegates.Find(RegenStat[i].ParentTag) = CachedCharacterBattleStatsComponent->OnCharacterNonRegenStatChanged.AddUObject(ActionInstance, &UDAAction::StartAction);
+				ActionInstance->StartAction(RegenStat[i]);
+				ActionInstance->AddEnableTag(RegenStat[i].ParentTag);
 			}
 		}
 
@@ -61,7 +94,8 @@ void UStatusActionComponent::BeginPlay()
 		{
 			if (ActionSet.Contains(NonRegenStats[i].TagName))
 			{
-				UDAAction* ActionInstance = NewObject<UDAAction>(this, *ActionSet.Find(NonRegenStats[i].TagName));
+				UClass* ActionClass = *ActionSet.Find(NonRegenStats[i].TagName);
+				UDAAction* ActionInstance = NewObject<UDAAction>(GetOwner(), ActionClass);
 				Actions.Add(NonRegenStats[i].TagName, ActionInstance);
 				if (FDelegateHandle* ActionDelegate = ActionDelegates.Find(NonRegenStats[i].TagName))
 				{
@@ -74,20 +108,11 @@ void UStatusActionComponent::BeginPlay()
 				{
 					ActionDelegates.Add(NonRegenStats[i].TagName, FDelegateHandle());
 				}
-
 				*ActionDelegates.Find(NonRegenStats[i].TagName) = CachedCharacterBattleStatsComponent->OnCharacterNonRegenStatChanged.AddUObject(ActionInstance, &UDAAction::StartAction);
 				ActionInstance->StartAction(NonRegenStats[i]);
+				ActionInstance->AddEnableTag(NonRegenStats[i].TagName);
 			}
 		}
 	}
-}
-
-
-// Called every frame
-void UStatusActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
 }
 

@@ -7,8 +7,9 @@
 
 void UDAAction_MoveSpeed::StartAction(const FNonRegenStat& Value)
 {
-	Super::StartAction(Value);
-	
+	if (!IsEnable(Value)) return;
+
+	UE_LOG(LogTemp, Error, TEXT("달리기 속도!!! %s"), *GetOuter()->GetName());
 	ACharacter* Character = Cast<ACharacter>(GetOuter());
 	if (Character)
 	{

@@ -27,12 +27,16 @@ public:
 
 #pragma endregion
 
+public:
+	UFUNCTION()
+	void SetupAction();
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TMap<FGameplayTag, TSubclassOf<UDAAction>> ActionSet;
 
 private:
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Runtime|Debug", meta = (AllowPrivateAccess = "true"))
 	TMap<FGameplayTag, UDAAction*> Actions;
 
 	TMap<FGameplayTag, FDelegateHandle> ActionDelegates;
