@@ -15,7 +15,6 @@ class USquareSlotWidget;
 class UCommonDialog;
 class UCharacterInfo;
 class UWidgetSwitcher;
-class UInventorySlot;
 class UInventoryHUDWidget;
 class UWrapBox;
 class ULobbyHUD;
@@ -40,7 +39,7 @@ protected:
 #pragma region 바인딩
 	// 캐릭터창, 유닛창, 장비창, 캐릭터 설명창, 캐릭터 강화창, 장비 인벤토리
 public:
-	void SetParentLobby(ULobbyHUD* InLobby) { ParentLobby = InLobby; }
+	void SetParentLobby(ULobbyHUD* InLobby);
 
 private:
 	UPROPERTY()
@@ -55,9 +54,6 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCharacterInfo> CharacterInfo;
-
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UInventorySlot> WeaponList;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCommonDialog> SetPlayerConfirm;

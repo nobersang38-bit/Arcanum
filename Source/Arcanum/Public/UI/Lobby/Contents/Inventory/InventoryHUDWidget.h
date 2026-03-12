@@ -9,6 +9,7 @@ class ULobbyHUD;
 class UWrapBox;
 class UCommonBtnWidget;
 class UInventoryItemSlotWidget;
+class UHorizontalBox;
 class UBorder;
 struct FDTItemCatalogRow;
 
@@ -39,7 +40,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInventorySlotSelected, const FInv
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInventoryCategoryChanged, EInventoryCategoryFilter, InFilter);
 
 /**
- * 추영호 
+ * 추영호
  * - 인벤토리 HUD
  * - 슬롯 생성 + 표시(ViewSlot 기반)
  */
@@ -173,6 +174,10 @@ protected:
 	int32 SelectedStackItemCount = 0;
 
 #pragma region 카테고리 버튼
+public:
+	/* 카테고리 패널 표시 여부 설정 */
+	void SetCategoryPanelVisible(bool bVisible);
+
 protected:
 	/* 카테고리 버튼 클릭 함수 */
 	UFUNCTION()
@@ -204,6 +209,10 @@ protected:
 	TObjectPtr<UBorder> EquipmentCategoryBorder;
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidgetOptional))
 	TObjectPtr<UBorder> ConsumableCategoryBorder;
+
+	/* 카테고리 패널 */
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UHorizontalBox> CategoryPanel;
 
 	/* 카테고리 필터 */
 	UPROPERTY()

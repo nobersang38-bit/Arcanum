@@ -159,6 +159,7 @@ namespace Arcanum {
 			}
 			namespace Common {
 				namespace Weapon {
+					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Items.Rarity.Common.Weapon", "일반 무기 루트");
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(GreatSword, "Arcanum.Items.Rarity.Common.Weapon.GreatSword", "대검");
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Staff, "Arcanum.Items.Rarity.Common.Weapon.Staff", "지팡이");
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Bow, "Arcanum.Items.Rarity.Common.Weapon.Bow", "활");
@@ -169,6 +170,15 @@ namespace Arcanum {
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Chest, "Arcanum.Items.Rarity.Common.Armor.Chest", "갑옷");
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Glove, "Arcanum.Items.Rarity.Common.Armor.Glove", "장갑");
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Boot, "Arcanum.Items.Rarity.Common.Armor.Boot", "신발");
+				}
+			}
+			namespace Legendary {
+				namespace Weapon {
+					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Items.Rarity.Legendary.Weapon", "전설 무기 루트");
+					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Scepter, "Arcanum.Items.Rarity.Legendary.Weapon.Scepter", "셉터");
+					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Scythe, "Arcanum.Items.Rarity.Legendary.Weapon.Scythe", "낫");
+				}
+				namespace Armor {
 				}
 			}
 			namespace SetItem {
@@ -187,14 +197,6 @@ namespace Arcanum {
 						UE_DEFINE_GAMEPLAY_TAG_COMMENT(Glove, "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Glove", "장갑");
 						UE_DEFINE_GAMEPLAY_TAG_COMMENT(Boot, "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Boot", "신발");
 					}
-				}
-			}
-			namespace Legendary {
-				namespace Weapon {
-					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Scepter, "Arcanum.Items.Rarity.Legendary.Weapon.Scepter", "셉터");
-					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Scythe, "Arcanum.Items.Rarity.Legendary.Weapon.Scythe", "낫");
-				}
-				namespace Armor {
 				}
 			}
 			namespace SetBonus {

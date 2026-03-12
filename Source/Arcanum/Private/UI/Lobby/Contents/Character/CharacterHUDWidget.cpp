@@ -45,11 +45,6 @@ void UCharacterHUDWidget::NativeConstruct()
         CharacterInfo->OnSetPlayerBtnClicked.AddDynamic(this, &UCharacterHUDWidget::SetPlayerCharacter);
     }
     
-    if (WeaponList)
-    {
-        WeaponList->OnSetupBtnClicked.AddDynamic(this, &UCharacterHUDWidget::SetupEquipment);
-    }
-
     if (!CharacterGridPanel || !RoundedSlotWidgetClass)
     return;
 
@@ -72,6 +67,14 @@ void UCharacterHUDWidget::NativeConstruct()
 FReply UCharacterHUDWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
     return FReply::Handled();
+}
+
+void UCharacterHUDWidget::SetParentLobby(ULobbyHUD* InLobby)
+{
+    ParentLobby = InLobby;
+
+    InventoryHUDWidget->SetParentLobby(ParentLobby);
+    InventoryHUDWidget->InitInventorySlots(ParentLobby->GetInventoryCapacity());
 }
 
 // ========================================================
@@ -554,6 +557,7 @@ void UCharacterHUDWidget::OnSquareSlotClicked(USquareSlotWidget* ClickedSlot, in
 
         if (InventoryHUDWidget)
         {
+            InventoryHUDWidget->SetCategoryPanelVisible(false);
             InventoryHUDWidget->RefreshEquipmentInventoryBySlot(equipFilter);
         }
     }
@@ -562,14 +566,8 @@ void UCharacterHUDWidget::OnSquareSlotClicked(USquareSlotWidget* ClickedSlot, in
 // ========================================================
 // 무기, 장비 인벤토리 출력
 // ========================================================
-void UCharacterHUDWidget::InitWeaponInventory(int32 SlotIndex)
-{
-    if (!ParentLobby || !WeaponList) return;
-    TArray<FEquipmentInfo> WeaponInventory = ParentLobby->CachedPlayerData.Inventory;
-   
-   WeaponList->CreateWeaponItems(WeaponInventory, SlotIndex);
-    
-}
+
+
 
 // ========================================================
 // 무기, 장비 슬롯 초기화

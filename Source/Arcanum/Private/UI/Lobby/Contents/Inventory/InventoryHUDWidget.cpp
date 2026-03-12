@@ -7,6 +7,7 @@
 #include "core/ARPlayerAccountService.h"
 #include "Components/WrapBox.h"
 #include "Components/Border.h"
+#include "Components/HorizontalBox.h"
 
 void UInventoryHUDWidget::NativeConstruct()
 {
@@ -395,24 +396,25 @@ bool UInventoryHUDWidget::IsMatchedEquipSlotFilter(const FGameplayTag& InItemTag
 	if (!InItemTag.IsValid()) return false;
 
 	if (CurrentEquipSlotFilter == EInventoryEquipSlotFilter::None) return true;
-	const FDTEquipmentInfoRow* equiprow = FPlayerAccountService::FindEquipmentInfoRowByTag(this, InItemTag);
-	if (!equiprow) return false;
+	const FDTEquipmentInfoRow* equipRow = FPlayerAccountService::FindEquipmentInfoRowByTag(this, InItemTag);
+	if (!equipRow) return false;
 
 	switch (CurrentEquipSlotFilter)
 	{
 	case EInventoryEquipSlotFilter::Weapon:
-		return equiprow->SlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Weapon::Slot1) ||
-			equiprow->SlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Weapon::Slot2);
+		return equipRow->SlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Weapon::LeftHand)
+			|| equipRow->SlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Weapon::RightHand)
+			|| equipRow->SlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Weapon::TwoHand);
 	case EInventoryEquipSlotFilter::Legendary:
-		return equiprow->SlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Weapon::Legendary);
+		return equipRow->SlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Weapon::Legendary);
 	case EInventoryEquipSlotFilter::Helmet:
-		return equiprow->SlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Armor::Helmet);
+		return equipRow->SlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Armor::Helmet);
 	case EInventoryEquipSlotFilter::Chest:
-		return equiprow->SlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Armor::Chest);
+		return equipRow->SlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Armor::Chest);
 	case EInventoryEquipSlotFilter::Glove:
-		return equiprow->SlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Armor::Glove);
+		return equipRow->SlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Armor::Glove);
 	case EInventoryEquipSlotFilter::Boots:
-		return equiprow->SlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Armor::Boot);
+		return equipRow->SlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Armor::Boot);
 
 	default:
 		break;
@@ -633,6 +635,14 @@ void UInventoryHUDWidget::HandleConsumableCategoryClicked()
 	RefreshCategoryButtonState();
 	OnCategoryChanged.Broadcast(CurrentFilter);
 	RefreshInventoryUI();
+}
+
+void UInventoryHUDWidget::SetCategoryPanelVisible(bool bVisible)
+{
+	if (CategoryPanel)
+	{
+		CategoryPanel->SetVisibility(bVisible ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+	}
 }
 
 void UInventoryHUDWidget::RefreshCategoryButtonState()
