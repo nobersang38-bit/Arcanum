@@ -9,6 +9,7 @@
 class UImage;
 class UButton;
 class UBorder;
+class UTextBlock;
 class UTexture2D;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnBannerClicked, FGameplayTag);
@@ -42,6 +43,8 @@ public:
     void SetBannerTexture(UTexture2D* InNormal, UTexture2D* InHover, UTexture2D* InClick);
     void UpdateBannerData(const FDTGachaBannerDataRow* InData);
 
+    void UpdateRemainingTimeText(FText InData);
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Button Settings", meta = (ExposeOnSpawn = "true"))
     TSoftObjectPtr<UTexture2D> NormalTexture;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Button Settings", meta = (ExposeOnSpawn = "true"))
@@ -51,5 +54,6 @@ public:
 
 protected:
     UPROPERTY(meta = (BindWidget)) TObjectPtr<UButton> BannerButton;
+    UPROPERTY(meta = (BindWidget)) TObjectPtr<UTextBlock> RemainingTimeText;
     #pragma endregion
 };
