@@ -12,6 +12,7 @@
 #include "NativeGameplayTags.h"
 #include "Data/Types/UnitData.h"
 #include "Data/Types/BattleStageInfo.h"
+#include "DataInfo/StageData/StageInfo/Data/FStageDataInfo.h"
 #include "BattlefieldManagerSubsystem.generated.h"
 
 USTRUCT(BlueprintType)
@@ -20,14 +21,9 @@ struct FInBattleData
 	GENERATED_BODY()
 public:
 	FPlayerData PlayerData;
-
+	FStageDataInfo StageData;
 	FBattleStageInfo BattleStageInfo;
-
 	FGradeStatData PlayerBattleStat;
-	
-	UPROPERTY()
-	TArray<FUnitInfoSetting> AllyUnits;
-
 };
 
 
@@ -51,16 +47,20 @@ public:
 
 public:
 #pragma region 스테이지 기본설정
-	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void SetStageData(const FCombatStageData& InData) { StageData = InData; }
-
-	UFUNCTION(BlueprintCallable)
-	AActor* GetBasement(FGameplayTag InTeamTag) const;
-
-	FBasementStat GetBasementStat(FGameplayTag InTeamTag) const;
+	UFUNCTION()
+	AActor* GetAllyBasement() const;
 
 	UFUNCTION()
-	void AddBasement(AActor* InNexus, FGameplayTag InTeamTag);
+	AActor* GetEnemyBasement() const;
+
+	const FEnemyBasement& GetAllyBasementStat() const;
+	const FEnemyBasement& GetEnemyBasementStat() const;
+
+	UFUNCTION()
+	void AddAllyBasement(AActor* InNexus);
+
+	UFUNCTION()
+	void AddEnemyBasement(AActor* InNexus);
 
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE ABattlefieldManagerActor* GetBattlefieldManagerActor() { return BattlefieldManagerActor.Get(); }
@@ -69,12 +69,15 @@ public:
 	void SetABattlefieldManagerActor(ABattlefieldManagerActor* InBattlefieldManagerActor);
 
 	UFUNCTION()
-	const TArray<FUnitInfoSetting>& GetUsingAllyUnitData();
+	const TMap<FGameplayTag, FUnitInfoSetting>& GetUsingAllyUnitData();
 
 	UFUNCTION()
 	FUnitInfoSetting GetAllyUnitData(FGameplayTag InUnitTag, bool& OutResult) const;
 	UFUNCTION()
 	FUnitInfoSetting GetEnemyUnitData(FGameplayTag InUnitTag, bool& OutResult) const;
+
+	UFUNCTION()
+	const FStageDataInfo& GetStageData() const { return InBattleData.StageData; }
 
 	UFUNCTION()
 	void StartTime();
@@ -124,27 +127,35 @@ protected:
 
 protected:
 #pragma region 스테이지 기본설정
-	FCombatStageData StageData;
-
 	FMatchData CurrentMatchData;
 
 	UPROPERTY()
 	TWeakObjectPtr<ABattlefieldManagerActor> BattlefieldManagerActor = nullptr;
 #pragma endregion
 
+#pragma region 데이터 캐시
 	FInBattleData InBattleData;
 
 	UPROPERTY()
-	TMap<FGameplayTag, AActor*> Basements;
+	TWeakObjectPtr<AActor> AllyBasement;
 
 	UPROPERTY()
-	TMap<FGameplayTag, FBasementStat> BasementStats;
+	TWeakObjectPtr<AActor> EnemyBasement;
+
+	UPROPERTY()
+	FEnemyBasement AllyBasementStat;
+
+	UPROPERTY()
+	FEnemyBasement EnemyBasementStat;
 
 	UPROPERTY()
 	TMap<FGameplayTag, FUnitInfoSetting> AllyUnitDatas;
 
 	UPROPERTY()
 	TMap<FGameplayTag, FUnitInfoSetting> EnemyUnitDatas;
+
+#pragma endregion
+
 
 protected:
 #pragma region 디버그(나중에 삭제)

@@ -1,4 +1,5 @@
 #include "Component/Stats/CharacterBattleStatsComponent.h"
+#include "DataInfo/BattleCharacter/BattleStats/DataTable/DTBattleStats.h"
 
 // ========================================================
 // 브로드 캐스트
@@ -21,6 +22,15 @@ UCharacterBattleStatsComponent::UCharacterBattleStatsComponent()
 void UCharacterBattleStatsComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+    if (DTBattleStatsRow.DataTable && !DTBattleStatsRow.RowName.IsNone()) {
+        const FDTBattleStatsContainerRow* Row = DTBattleStatsRow.DataTable->FindRow<FDTBattleStatsContainerRow>(DTBattleStatsRow.RowName, TEXT("Editor StatsRegen Load"));
+
+        if (!Row->GradeDataSteps.IsEmpty())
+        {
+            if (Row) GradeStatData = (*Row).GradeDataSteps[0];
+        }
+    }
 
 	InitComponent();
 
@@ -53,23 +63,18 @@ void UCharacterBattleStatsComponent::PostEditChangeProperty(FPropertyChangedEven
 
     const FName PropertyName = (PropertyChangedEvent.Property != nullptr) ? PropertyChangedEvent.Property->GetFName() : NAME_None;
     const FName MemberPropertyName = (PropertyChangedEvent.MemberProperty != nullptr) ? PropertyChangedEvent.MemberProperty->GetFName() : NAME_None;
-    if (MemberPropertyName == GET_MEMBER_NAME_CHECKED(UCharacterBattleStatsComponent, DTCharacterBattleRegenStatsRowHandle)) {
-        if (DTCharacterBattleRegenStatsRowHandle.DataTable && !DTCharacterBattleRegenStatsRowHandle.RowName.IsNone()) {
-            const FDTCharacterBattleRegenStatsRow* Row = DTCharacterBattleRegenStatsRowHandle.DataTable->FindRow<FDTCharacterBattleRegenStatsRow>(DTCharacterBattleRegenStatsRowHandle.RowName, TEXT("Editor StatsRegen Load"));
+    if (MemberPropertyName == GET_MEMBER_NAME_CHECKED(UCharacterBattleStatsComponent, DTBattleStatsRow)) {
+        if (DTBattleStatsRow.DataTable && !DTBattleStatsRow.RowName.IsNone()) {
+            const FDTBattleStatsContainerRow* Row = DTBattleStatsRow.DataTable->FindRow<FDTBattleStatsContainerRow>(DTBattleStatsRow.RowName, TEXT("Editor StatsRegen Load"));
 
-            if (Row) DTCharacterBattleRegenStatsRow = *Row;
-        }
-    }
-    if (MemberPropertyName == GET_MEMBER_NAME_CHECKED(UCharacterBattleStatsComponent, DTCharacterBattleNonRegenStatsRowHandle)) {
-        if (DTCharacterBattleNonRegenStatsRowHandle.DataTable && !DTCharacterBattleNonRegenStatsRowHandle.RowName.IsNone()) {
-            const FDTCharacterBattleNonRegenStatsRow* Row = DTCharacterBattleNonRegenStatsRowHandle.DataTable->FindRow<FDTCharacterBattleNonRegenStatsRow>(DTCharacterBattleNonRegenStatsRowHandle.RowName, TEXT("Editor StatsRegen Load"));
-
-            if (Row) DTCharacterBattleNonRegenStatsRow = *Row;
+            if (!Row->GradeDataSteps.IsEmpty())
+            {
+                if (Row) GradeStatData = (*Row).GradeDataSteps[0];
+            }
         }
     }
 
-    if (PropertyName == GET_MEMBER_NAME_CHECKED(UCharacterBattleStatsComponent, DTCharacterBattleRegenStatsRow) ||
-        PropertyName == GET_MEMBER_NAME_CHECKED(UCharacterBattleStatsComponent, DTCharacterBattleNonRegenStatsRow))
+    if (PropertyName == GET_MEMBER_NAME_CHECKED(UCharacterBattleStatsComponent, GradeStatData))
     {
         InitComponent();
     }
@@ -81,27 +86,18 @@ void UCharacterBattleStatsComponent::PostEditChangeProperty(FPropertyChangedEven
 void UCharacterBattleStatsComponent::InitComponent()
 {
     BaseRegenStats.Empty();
-    for (TFieldIterator<FProperty> It(FDTCharacterBattleRegenStatsRow::StaticStruct()); It; ++It) {
-        if (FStructProperty* StructProp = CastField<FStructProperty>(*It)) {
-            if (StructProp->Struct == FRegenStat::StaticStruct()) {
-                FRegenStat* StatPtr = StructProp->ContainerPtrToValuePtr<FRegenStat>(&DTCharacterBattleRegenStatsRow);
-                if (StatPtr) {
-                    StatPtr->InitializeTags();
-                    BaseRegenStats.Add(*StatPtr);
-                }
-            }
-        }
+    for (int i = 0; i < GradeStatData.RegenStats.Num(); i++)
+    {
+        FRegenStat RegenStat = GradeStatData.RegenStats[i];
+        RegenStat.InitializeTags();
+        BaseRegenStats.Add(RegenStat);
     }
+
     BaseNonRegenStats.Empty();
-    for (TFieldIterator<FProperty> It(FDTCharacterBattleNonRegenStatsRow::StaticStruct()); It; ++It) {
-        if (FStructProperty* StructProp = CastField<FStructProperty>(*It)) {
-            if (StructProp->Struct == FNonRegenStat::StaticStruct()) {
-                FNonRegenStat* StatPtr = StructProp->ContainerPtrToValuePtr<FNonRegenStat>(&DTCharacterBattleNonRegenStatsRow);
-                if (StatPtr) {
-                    BaseNonRegenStats.Add(*StatPtr);
-                }
-            }
-        }
+    for (int i = 0; i < GradeStatData.NonRegenStats.Num(); i++)
+    {
+        const FNonRegenStat& NonRegenStat = GradeStatData.NonRegenStats[i];
+        BaseNonRegenStats.Add(NonRegenStat);
     }
 
     RebuildTotalStats();
@@ -133,6 +129,17 @@ void UCharacterBattleStatsComponent::AddNonRegenBonus(const TArray<FNonRegenStat
     }
 
     RebuildTotalStats();
+}
+void UCharacterBattleStatsComponent::BroadcastAllStats()
+{
+    for (const FRegenStat& Stat : TotalRegenStats)
+    {
+        NotifyRegenStatChanged(Stat);
+    }
+    for (const FNonRegenStat& Stat : TotalNonRegenStats)
+    {
+        NotifyNonRegenStatChanged(Stat);
+    }
 }
 void UCharacterBattleStatsComponent::RebuildTotalStats()
 {

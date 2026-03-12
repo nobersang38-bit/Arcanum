@@ -35,6 +35,8 @@ class ARCANUM_API UPoolingSubsystem : public UWorldSubsystem
 {
 	GENERATED_BODY()
 public:
+	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
+
 	// 풀링 초기설정
 	void SetPoolSet(const FPoolingSet& SetData);
 
@@ -45,11 +47,15 @@ public:
 	// 풀링에 해당 오브젝트를 추가하는 설정도 포함 (세팅에 설정 안되어 있어도 사용 가능)
 	AActor* SpawnFromPool(TSubclassOf<AActor> InClass, const FTransform& InTransform);
 
+	// 아이템 활성화
+	bool ActivateItem(AActor* InActor);
+
 	// 아이템 비활성화 
 	bool DeactiveItem(AActor* InActor);
 
 	// 아이템 삭제
 	void DestroyItem(AActor* InActor);
+
 
 protected:
 	void Internal_ActivateItem(AActor* InActor, const FTransform& InTransform);
@@ -69,4 +75,7 @@ protected:
 	TMap<UClass*, FName> ClassToTagMap;
 
 	FPoolingSet PoolingSet;
+
+	UPROPERTY()
+	TWeakObjectPtr<class APostProcessVolume> CashedPostProcessVolume = nullptr;
 };

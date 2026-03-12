@@ -13,6 +13,7 @@
 #include "Interface/PoolingInterface.h"
 #include "BaseUnitCharacter.generated.h"
 
+
 // 김도현
 // 베이스 유닛 클래스
 UCLASS()
@@ -33,6 +34,7 @@ public:
 	virtual FGameplayTag GetTeamTag() override;
 
 	class UCharacterBattleStatsComponent* GetCharacterBattleStatsComponent() { return CharacterBattleStatsComponent; }
+	class UUnitCombatComponent* GetUnitCombatComponent() { return UnitCombatComponent; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -48,9 +50,11 @@ protected:
 	void UnitActivate();
 	void UnitDeactive();
 
+	void OuntLineStart(const UCurveFloat* CurveFloat, float InTime, float DeltaTime, FTimerHandle& InTimerHandle, UMaterialInstanceDynamic* MaterialInstance, float& RefTime);
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<class UUnitCombatComponent> UnitCombatComponent0 = nullptr;
+	TObjectPtr<class UUnitCombatComponent> UnitCombatComponent = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<class UCharacterBattleStatsComponent> CharacterBattleStatsComponent = nullptr;
@@ -64,6 +68,14 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MainData", meta = (DisplayPriority = "0"))
 	FUnitData UnitData;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MaterialCurve")
+	TObjectPtr<UCurveFloat> OutLineCurve = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MaterialCurve")
+	float OutLineTime = 0.3f;
+
+	float RefOutlineTime = 0.0f;
 
 private:
 	void AnimSetting();
@@ -87,4 +99,9 @@ private:
 	// IPoolingInterface을(를) 통해 상속됨
 	void ActivateItem() override;
 	void DeactiveItem() override;
+
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> OutlineDynamicMI = nullptr;
+
+	FTimerHandle OutlineTimeHandle;
 };

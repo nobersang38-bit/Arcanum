@@ -23,6 +23,7 @@
 #include "Animation/BaseUnitAnimInstance.h"
 #include "UI/InGame/UnitHealthWidget.h"
 #include "Components/CapsuleComponent.h"
+#include "NiagaraComponent.h"
 
 // Sets default values
 ABaseUnitCharacter::ABaseUnitCharacter()
@@ -30,7 +31,7 @@ ABaseUnitCharacter::ABaseUnitCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	UnitCombatComponent0 = CreateDefaultSubobject<UUnitCombatComponent>(TEXT("UnitCombatComponent"));
+	UnitCombatComponent = CreateDefaultSubobject<UUnitCombatComponent>(TEXT("UnitCombatComponent"));
 	CharacterBattleStatsComponent = CreateDefaultSubobject<UCharacterBattleStatsComponent>(TEXT("CharacterBattleStatsComponent"));
 	HealthBarComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBarComponent"));
 
@@ -66,7 +67,8 @@ FGameplayTag ABaseUnitCharacter::GetTeamTag()
 void ABaseUnitCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
+	OutlineDynamicMI = UMaterialInstanceDynamic::Create(GetMesh()->GetOverlayMaterial(), this);
+	GetMesh()->SetOverlayMaterial(OutlineDynamicMI);
 	DataInitialize();
 }
 
@@ -144,9 +146,11 @@ float ABaseUnitCharacter::GetAttackPower()
 
 void ABaseUnitCharacter::DataInitialize()
 {
+	GetCharacterMovement()->SetRVOAvoidanceWeight((FMath::Rand32() % 11) * 0.1f);
+	CharacterBattleStatsComponent->InitComponent();
 	CharacterBattleStatsComponent->OnCharacterRegenStatChanged.RemoveAll(this);
 	// Todo KDH : 임시
-	CharacterBattleStatsComponent->ChangeStatValue(Arcanum::BattleStat::Character::Regen::Health::Root, 100.0f, this);
+	//CharacterBattleStatsComponent->ChangeStatValue(Arcanum::BattleStat::Character::Regen::Health::Root, 100.0f, this);
 	if (!IsSetupUnit)
 	{
 		UpdateUnitData();
@@ -188,18 +192,20 @@ void ABaseUnitCharacter::DataInitialize()
 
 FUnitRuntimeData& ABaseUnitCharacter::GetUnitRuntimeData()
 {
-	return UnitCombatComponent0->GetUnitRuntimeData();
+	return UnitCombatComponent->GetUnitRuntimeData();
 }
 
 void ABaseUnitCharacter::OnAttackNotifyTriggered()
 {
-	UnitCombatComponent0->SendDamage(GetAttackPower());
+	UnitCombatComponent->SendDamage(GetAttackPower());
 }
 
 // 데미지 받기
 void ABaseUnitCharacter::RecievedDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
 	GetCharacterBattleStatsComponent()->ChangeStatValue(Arcanum::BattleStat::Character::Regen::Health::Root, -(FMath::Abs(Damage)), DamageCauser);
+	UnitCombatComponent->LightHitReaction(Damage);
+	OuntLineStart(OutLineCurve, OutLineTime, 0.005f, OutlineTimeHandle, OutlineDynamicMI, RefOutlineTime);
 }
 
 void ABaseUnitCharacter::UpdateUnitData()
@@ -224,9 +230,9 @@ const FUnitData& ABaseUnitCharacter::GetUnitData()
 
 bool ABaseUnitCharacter::GetIsDead()
 {
-	if (UnitCombatComponent0)
+	if (UnitCombatComponent)
 	{
-		return UnitCombatComponent0->GetIsDead();
+		return UnitCombatComponent->GetIsDead();
 	}
 	return true;
 }
@@ -234,19 +240,44 @@ bool ABaseUnitCharacter::GetIsDead()
 void ABaseUnitCharacter::UnitActivate()
 {
 	DataInitialize();
-	if (UnitCombatComponent0)
+	if (UnitCombatComponent)
 	{
-		UnitCombatComponent0->UnitActivate();
+		UnitCombatComponent->UnitActivate();
 	}
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void ABaseUnitCharacter::UnitDeactive()
 {
-	if (UnitCombatComponent0)
+	if (UnitCombatComponent)
 	{
-		UnitCombatComponent0->UnitDeactive();
+		UnitCombatComponent->UnitDeactive();
 	}
+}
+
+void ABaseUnitCharacter::OuntLineStart(const UCurveFloat* CurveFloat, float InTime, float DeltaTime, FTimerHandle& InTimerHandle, UMaterialInstanceDynamic* MaterialInstance, float& RefTime)
+{
+	RefTime = 0.0f;
+	FTimerDelegate OutlineDelegate;
+	OutlineDelegate.BindWeakLambda(this, [this, MaterialInstance, CurveFloat, InTime, DeltaTime, &InTimerHandle, &RefTime]()
+		{
+			if (MaterialInstance)
+			{
+				float Time = FMath::Clamp(RefTime / InTime, 0.0f, 1.0f);
+				float Value = CurveFloat->GetFloatValue(Time);
+				MaterialInstance->SetScalarParameterValue(FName("Weight0"), Value);
+				RefTime += DeltaTime;
+
+				if (Time >= 1.0f)
+				{
+					MaterialInstance->SetScalarParameterValue(FName("Weight0"), 0.0f);
+					GetWorld()->GetTimerManager().ClearTimer(InTimerHandle);
+				}
+			}
+		});
+
+	GetWorld()->GetTimerManager().ClearTimer(InTimerHandle);
+	GetWorld()->GetTimerManager().SetTimer(InTimerHandle, OutlineDelegate, DeltaTime, true);
 }
 
 void ABaseUnitCharacter::ActivateItem()
@@ -263,6 +294,7 @@ void ABaseUnitCharacter::DeactiveItem()
 {
 	UnitDeactive();
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SetActorLocation(FVector(0.0f, 0.0f, -9999.0f));
 	if (HealthBarComponent)
 	{
 		HealthBarComponent->SetHiddenInGame(true);
