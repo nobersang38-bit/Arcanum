@@ -279,10 +279,11 @@ void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerDa
 			if (UClass* DefaultCharacter = OwnedCharacter.CharacterInfo.BattleCharacterInitData.CharacterClass.LoadSynchronous())
 			{
 				UE_LOG(LogTemp, Error, TEXT("%s"), *DefaultCharacter->GetName());
-				GetWorld()->GetAuthGameMode()->DefaultPawnClass = DefaultCharacter;
-
-				/*APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-				PlayerController->CanRestartPlayer*/
+				APlayerController* PC = GetWorld()->GetFirstPlayerController();
+				FTransform Transform = PC->GetPawn()->GetActorTransform();
+				PC->GetPawn()->Destroy();
+				APawn* PlayerCharacterF = GetWorld()->SpawnActor<APawn>(DefaultCharacter, Transform);
+				PC->Possess(PlayerCharacterF);
 			}
 
 			UGameDataSubsystem* GameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();

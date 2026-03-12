@@ -11,6 +11,7 @@
 #include "Engine/OverlapResult.h"
 #include "Interface/RuntimeUnitDataInterface.h"
 #include "Core/SubSystem/BattlefieldManagerSubsystem.h"
+#include "Component/Stats/CharacterBattleStatsComponent.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -36,6 +37,8 @@ APlayerCharacter::APlayerCharacter()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 	Camera->bUsePawnControlRotation = false;
+
+	StatComponent = CreateDefaultSubobject<UCharacterBattleStatsComponent>(TEXT("StatComponent"));
 
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;

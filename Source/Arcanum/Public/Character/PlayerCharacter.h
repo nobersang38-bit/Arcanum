@@ -86,6 +86,10 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	TObjectPtr<class UCameraComponent> Camera = nullptr;
 
+	// 스탯 컴포넌트
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stat")
+	TObjectPtr<class UCharacterBattleStatsComponent> StatComponent = nullptr;
+
 	// 캐릭터 태그
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tags")
 	FGameplayTagContainer GameplayTags;
