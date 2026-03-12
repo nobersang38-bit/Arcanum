@@ -21,7 +21,7 @@ void UARGameInstance::Init()
 void UARGameInstance::InitializeGameData()
 {
     /// Todo : 추후 SaveSlot으로 저장이름 변경해줘야함. 지금 변경하면 테스트 불가.
-    ArSaveGame = Cast<UArcanumSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("PlayerSlot"), 0));
+    ArSaveGame = Cast<UArcanumSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, 0));
     if (!ArSaveGame) {
         ArSaveGame = Cast<UArcanumSaveGame>(UGameplayStatics::CreateSaveGameObject(UArcanumSaveGame::StaticClass()));
         AddIDPW(TEXT("Admin"), TEXT("12345"));
@@ -108,8 +108,6 @@ void UARGameInstance::InitializeNewPlayerData()
             PlayerData.OwnedCharacters[0].CharacterInfo.CurrStarLevel = 1;
         }
     }
-
-    /// 260311 변경 : 추가 (쫄병 캐릭터 리스트 생성)
     {
         UGameDataSubsystem* DataSubsystem = GetSubsystem<UGameDataSubsystem>();
         if (!DataSubsystem) return;
@@ -217,6 +215,7 @@ bool UARGameInstance::GenerateResults(const FDTGachaBannerDataRow* BannerData, i
         if (Pool) {
             FGachaItemResult Result = ResolvePickup(BannerData, *Pool, BannerState, Grade);
             Results.Add(Result);
+
         }
     }
 
@@ -566,3 +565,19 @@ void UARGameInstance::InitializeCharacter(FGameplayTag CharacterTag)
 
     UserCharacterRegistry.Add(CharacterTag, NewData);
 }
+
+bool UARGameInstance::AddTestGold()
+{
+    return FPlayerAccountService::AddCurrency(this, Arcanum::PlayerData::Currencies::NonRegen::Gold::Value, 10000);
+}
+
+bool UARGameInstance::AddTestSoul()
+{
+    return FPlayerAccountService::AddCurrency(this, Arcanum::PlayerData::Currencies::NonRegen::Soul::Value, 10000);
+}
+
+bool UARGameInstance::AddTestShard()
+{
+    return FPlayerAccountService::AddCurrency(this, Arcanum::PlayerData::Currencies::NonRegen::Shard::Value, 10000);
+}
+

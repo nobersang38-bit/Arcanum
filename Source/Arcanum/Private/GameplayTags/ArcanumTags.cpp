@@ -12,8 +12,14 @@ namespace Arcanum {
 		UE_DEFINE_GAMEPLAY_TAG(StageInfo, "Arcanum.DataTable.StageInfo");
 		UE_DEFINE_GAMEPLAY_TAG(AllyUnitInfo, "Arcanum.DataTable.AllyUnitInfo");
 		UE_DEFINE_GAMEPLAY_TAG(EnemyUnitInfo, "Arcanum.DataTable.EnemyUnitInfo");
+		UE_DEFINE_GAMEPLAY_TAG(AllyUnitStatInfo, "Arcanum.DataTable.AllyUnitStatInfo");
+		UE_DEFINE_GAMEPLAY_TAG(EnemyUnitStatInfo, "Arcanum.DataTable.EnemyUnitStatInfo");
 		UE_DEFINE_GAMEPLAY_TAG(Potion, "Arcanum.DataTable.Potion");
 		UE_DEFINE_GAMEPLAY_TAG(ItemCatalog, "Arcanum.DataTable.ItemCatalog");
+		UE_DEFINE_GAMEPLAY_TAG(StatDisplay, "Arcanum.DataTable.StatDisplay");
+		UE_DEFINE_GAMEPLAY_TAG(EnhanceRule, "Arcanum.DataTable.EnhanceRule");
+		UE_DEFINE_GAMEPLAY_TAG(ShopCategoryRule, "Arcanum.DataTable.ShopCategoryRule");
+
 
 		//UE_DEFINE_GAMEPLAY_TAG(BattleRegenStats,	"Arcanum.DataTable.BattleRegenStats");
 		//UE_DEFINE_GAMEPLAY_TAG(BattleNonRegenStats, "Arcanum.DataTable.BattleNonRegenStats");
@@ -50,10 +56,10 @@ namespace Arcanum
 
 		namespace Grade
 		{
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root,	"Arcanum.Player.Grade", "등급 루트");
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Common,	"Arcanum.Player.Grade.Common.0", "일반");
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Rare,	"Arcanum.Player.Grade.Rare.1", "레어");
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Epic,	"Arcanum.Player.Grade.Epic.2", "영웅");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Player.Grade", "등급 루트");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Common, "Arcanum.Player.Grade.Common.0", "일반");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Rare, "Arcanum.Player.Grade.Rare.1", "레어");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Epic, "Arcanum.Player.Grade.Epic.2", "영웅");
 		}
 	}
 }
@@ -132,6 +138,10 @@ namespace Arcanum {
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(LeftHand, "Arcanum.Items.ItemSlot.Weapon.LeftHand", "왼손");
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(RightHand, "Arcanum.Items.ItemSlot.Weapon.RightHand", "오른손");
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(TwoHand, "Arcanum.Items.ItemSlot.Weapon.TwoHand", "양손");
+
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Slot1, "Arcanum.Items.ItemSlot.Weapon.Slot1", "무기슬롯1");
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Slot2, "Arcanum.Items.ItemSlot.Weapon.Slot2", "무기슬롯2");
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Legendary, "Arcanum.Items.ItemSlot.Weapon.Legendary", "무기슬롯 레전더리");
 			}
 			namespace Armor {
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Helmet, "Arcanum.Items.ItemSlot.Armor.Helmet", "머리");
@@ -142,10 +152,10 @@ namespace Arcanum {
 		}
 		namespace Rarity {
 			namespace Grade {
-				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root,	 "Arcanum.Items.Rarity.Grade",			 "등급 루트");
-				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Common,	 "Arcanum.Items.Rarity.Grade.Common.0",	 "일반");
-				UE_DEFINE_GAMEPLAY_TAG_COMMENT(SetItem,	 "Arcanum.Items.Rarity.Grade.SetItem.1",  "레어");
-				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Legendary,"Arcanum.Items.Rarity.Grade.Legendary.2","영웅");
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Items.Rarity.Grade", "등급 루트");
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Common, "Arcanum.Items.Rarity.Grade.Common.0", "일반");
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(SetItem, "Arcanum.Items.Rarity.Grade.SetItem.1", "레어");
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Legendary, "Arcanum.Items.Rarity.Grade.Legendary.2", "영웅");
 			}
 			namespace Common {
 				namespace Weapon {
@@ -206,6 +216,14 @@ namespace Arcanum {
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Frenzy, "Arcanum.Items.Potion.Frenzy", "광란의 포션");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Haste, "Arcanum.Items.Potion.Haste", "신속 포션");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Mana, "Arcanum.Items.Potion.Mana", "마나 포션");
+		}
+	}
+	namespace Shop
+	{
+		namespace Category
+		{
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Equipment, "Arcanum.Shop.Category.Equipment", "장비 상점");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Potion, "Arcanum.Shop.Category.Potion", "포션 상점");
 		}
 	}
 	namespace Inventory
@@ -353,6 +371,9 @@ namespace Arcanum
 				}
 				namespace Tinker {
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Unit.Ally.Tinker", "팅커");
+				}
+				namespace PunchMan {
+					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Unit.Ally.PunchMan", "펀치맨");
 				}
 			}
 			// 적군

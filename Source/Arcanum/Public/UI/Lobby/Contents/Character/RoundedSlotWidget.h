@@ -39,6 +39,7 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UTexture2D> IconImg;
+	UPROPERTY() FGameplayTag Tag;
 
 	UPROPERTY() FGameplayTag Tag;
 protected:

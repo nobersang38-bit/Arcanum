@@ -73,16 +73,12 @@ void ABattlePlayerController::BeginPlay()
 	if (BattleSubsystem)
 	{
 		UsingAllyUnits.Empty();
-		for (int i = 0; i < BattleSubsystem->GetUsingAllyUnitData().Num(); i++)
+		for (auto Iter = BattleSubsystem->GetUsingAllyUnitData().begin(); Iter!= BattleSubsystem->GetUsingAllyUnitData().end(); ++Iter)
 		{
-			const FUnitInfoSetting& UnitDataE = BattleSubsystem->GetUsingAllyUnitData()[i];
+			const FUnitInfoSetting& UnitDataE = Iter->Value;
 			UsingAllyUnits.Add(UnitDataE.Tag, UnitDataE);
 		}
-		//UsingAllyUnits = BattleSubsystem->GetUsingAllyUnitData();
-		/*for (int i = 0; i < UsingAllyUnits.Num(); i++)
-		{
-			UE_LOG(LogTemp, Error, TEXT("UsingAllyUnits : %s"), *UsingAllyUnits[i].Info.InfoSetting.Tag.ToString());
-		}*/
+
 		SetAllyUsingWidget();
 
 		BattleSubsystem->OnMatchEnded.AddUObject(this, &ABattlePlayerController::BattleEnd);
@@ -191,12 +187,12 @@ void ABattlePlayerController::UpdatePlayerLocationProgress()
 	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 	if (!AllyBasement.IsValid() && BattleSubsystem)
 	{
-		AllyBasement = BattleSubsystem->GetBasement(Arcanum::Unit::Faction::Ally::Root);
+		AllyBasement = BattleSubsystem->GetAllyBasement();
 	}
 
 	if (!EnemyBasement.IsValid() && BattleSubsystem)
 	{
-		EnemyBasement = BattleSubsystem->GetBasement(Arcanum::Unit::Faction::Enemy::Root);
+		EnemyBasement = BattleSubsystem->GetEnemyBasement();
 	}
 
 	if (!AllyBasement.IsValid() && !EnemyBasement.IsValid()) return;

@@ -29,7 +29,7 @@ public:
 	/* 슬롯 표시 데이터 세팅 */
 	void SetSlotData(
 		int32 InSlotIndex,
-		FName InRowName,
+		FGameplayTag InItemTag,
 		TSoftObjectPtr<UTexture2D> InIcon,
 		const FText& InName,
 		const FText& InDesc,
@@ -57,10 +57,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	int32 GetSlotIndex() const { return SlotIndex; }
 
-	/* 원본 RowName 반환 (구매 시 사용) */
-	UFUNCTION(BlueprintCallable)
-	FName GetRowName() const { return RowName; }
-
 private:
 	/* 슬롯 버튼 클릭 처리 */
 	UFUNCTION()
@@ -84,27 +80,27 @@ private:
 	TObjectPtr<UButton> SlotButton;
 
 	/* 아이콘 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional, AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget, AllowPrivateAccess = "true"))
 	TObjectPtr<UImage> ItemIconImage;
 
 	/* 아이템명 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional, AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget, AllowPrivateAccess = "true"))
 	TObjectPtr<UTextBlock> ItemNameText;
 
 	/* 설명 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional, AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget, AllowPrivateAccess = "true"))
 	TObjectPtr<UTextBlock> DescText;
 
 	/* 가격 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional, AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget, AllowPrivateAccess = "true"))
 	TObjectPtr<UTextBlock> PriceText;
 
 	/* 슬롯 보더 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional, AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget, AllowPrivateAccess = "true"))
 	TObjectPtr<UBorder> SlotBorder;
 
 	/* 선택 강조 보더 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidgetOptional, AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget, AllowPrivateAccess = "true"))
 	TObjectPtr<UBorder> SelectedBorder;
 
 private:
@@ -117,9 +113,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	int32 SlotIndex = INDEX_NONE;
 
-	/* DT RowName */
+	/* 아이템 태그 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	FName RowName = NAME_None;
+	FGameplayTag ItemTag;
 
 	/* 빈 슬롯 여부 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))

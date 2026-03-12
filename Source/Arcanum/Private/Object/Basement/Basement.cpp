@@ -53,9 +53,9 @@ void ABasement::BeginPlay()
 			BasementCombatComponent->OnBasementChangeHealth.RemoveDynamic(TempHealthWidget, &UUnitHealthWidget::SetPercentFloat);
 			BasementCombatComponent->OnBasementChangeHealth.AddDynamic(TempHealthWidget, &UUnitHealthWidget::SetPercentFloat);
 
-			FBasementStat Stat = BasementCombatComponent->GetBasementStat();
-			float CurrentHealth = Stat.CommandCenterCurrentHP.BaseValue;
-			float MaxHealth = Stat.CommandCenterMaxHP.BaseValue;
+			FEnemyBasement Stat = BasementCombatComponent->GetBasementStat();
+			float CurrentHealth = Stat.CommandCenterHP.GetTotalValue();
+			float MaxHealth = CurrentHealth;
 			TempHealthWidget->SetPercentFloat(CurrentHealth, MaxHealth);
 		}
 	}

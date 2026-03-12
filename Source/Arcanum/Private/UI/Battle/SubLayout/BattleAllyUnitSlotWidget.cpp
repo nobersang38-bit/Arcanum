@@ -30,6 +30,12 @@ void UBattleAllyUnitSlotWidget::NativeConstruct()
 	Button->OnPressed.AddDynamic()*/
 }
 
+FReply UBattleAllyUnitSlotWidget::NativeOnMouseButtonUp(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	UE_LOG(LogTemp, Error, TEXT("마우스 올라감!!"));
+	return Super::NativeOnMouseButtonUp(InGeometry, InMouseEvent);
+}
+
 #if WITH_EDITOR
 void UBattleAllyUnitSlotWidget::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {

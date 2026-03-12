@@ -57,7 +57,6 @@ void URoundedSlotWidget::SetIconImage(UTexture2D* CharacterIcon, bool OwnedChara
         Brush.TintColor = FSlateColor(FLinearColor::Black);
     }
     IconImage->SetBrush(Brush);
-
     /// 260311 변경 : 추가 (태그 사용 할 수 있게 변경)
     Tag = InTag;
 }

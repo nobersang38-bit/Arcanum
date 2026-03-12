@@ -8,14 +8,44 @@
 void USquareSlotWidget::NativePreConstruct()
 {
     Super::NativePreConstruct();
-    if (BackgroundColor) BackgroundColor->SetBrushColor(RoundColor);
+    if (BackgroundColor) BackgroundColor->SetBrushColor(BackColor);
     if (IconImage && IconImg) IconImage->SetBrushFromTexture(IconImg);
 }
 
 FReply USquareSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
     Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+
     OnSlotClicked.Broadcast(this, SlotIndex);
 
     return FReply::Handled();
+}
+
+void USquareSlotWidget::SetSquareBackgroundColor(FLinearColor NewColor)
+{
+    if (BackgroundColor)
+    {
+        BackgroundColor->SetBrushColor(NewColor);
+    }
+}
+
+void USquareSlotWidget::SetItemIconImage(UTexture2D* ItemIcon)
+{
+    IconImage->SetBrushFromTexture(ItemIcon);
+    IconImg = ItemIcon;
+}
+
+void USquareSlotWidget::SetItemName(FText InText)
+{
+    EquipNameTxt= InText;
+}
+
+void USquareSlotWidget::SetWeaponTag(FGameplayTag InTag)
+{
+    WeaponTag = InTag;
+}
+
+void USquareSlotWidget::SetWeaponGuid(FGuid InGuid)
+{
+    WeaponGuid = InGuid;
 }
