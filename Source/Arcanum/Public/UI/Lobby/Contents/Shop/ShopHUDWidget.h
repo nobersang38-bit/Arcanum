@@ -130,4 +130,3 @@ private:
 	TMap<FGameplayTag, FShopViewSlotList> CachedShopSlotsByCategory;
 #pragma endregion
 };
-
