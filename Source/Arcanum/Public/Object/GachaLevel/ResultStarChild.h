@@ -29,17 +29,15 @@ public:
     void PlayOpenAnimation(const FGachaItemResult& Data);
     const FGachaItemResult& GetResultData() const { return ResultData; }
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite) TObjectPtr<UStaticMeshComponent> LeftPart;
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite) TObjectPtr<UStaticMeshComponent> RightPart;
+
 protected:
     virtual void BeginPlay() override;
 
-protected:
     UPROPERTY(VisibleAnywhere) TObjectPtr<USceneComponent> DefaultRoot;
-    
-    UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> LeftPart;
-    UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> RightPart;
 
     UPROPERTY(VisibleAnywhere) TObjectPtr<UNiagaraComponent> NiagaraComp;
-
     UPROPERTY(VisibleAnywhere) TObjectPtr<AActor> ResultActor;
 
     UPROPERTY() FGachaItemResult ResultData;

@@ -1,5 +1,6 @@
 #include "UI/Lobby/Contents/Gacha/SubLayout/GachaBannerButtonWidget.h"
 
+#include "Components/TextBlock.h"
 #include "Components/Button.h"
 #include "Components/Image.h"
 #include "Components/Border.h"
@@ -71,4 +72,8 @@ void UGachaBannerButtonWidget::UpdateBannerData(const FDTGachaBannerDataRow* InD
         UTexture2D* LoadedTex = InData->BannerImage.LoadSynchronous();
         if (LoadedTex) SetBannerTexture(LoadedTex);
     }
+}
+void UGachaBannerButtonWidget::UpdateRemainingTimeText(FText InData)
+{
+    if (RemainingTimeText) RemainingTimeText->SetText(InData);
 }

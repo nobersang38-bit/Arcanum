@@ -26,6 +26,7 @@ class UShopHUDWidget;
 class UARGameInstance;
 class UInventoryHUDWidget;
 class UEnhancementHUDWidget;
+class UGameTimeSubsystem;
 struct FDTItemCatalogRow;
 
 
@@ -51,6 +52,7 @@ public:
 
 public:
 	FPlayerData CachedPlayerData;
+	UPROPERTY() TObjectPtr<UGameTimeSubsystem> TimeSubsystem;
 #pragma endregion
 
 #pragma region 바인딩 메뉴 버튼
