@@ -47,6 +47,9 @@ public:
 	// 풀링에 해당 오브젝트를 추가하는 설정도 포함 (세팅에 설정 안되어 있어도 사용 가능)
 	AActor* SpawnFromPool(TSubclassOf<AActor> InClass, const FTransform& InTransform);
 
+	// 아이템 활성화
+	bool ActivateItem(AActor* InActor);
+
 	// 아이템 비활성화 
 	bool DeactiveItem(AActor* InActor);
 

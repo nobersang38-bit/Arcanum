@@ -9,6 +9,7 @@
 #include "Data/Rows/UnitsDataRow.h"
 #include "Core/SubSystem/GameTimeSubsystem.h"
 #include "DataInfo/BattleCharacter/BattleStats/DataTable/DTBattleStats.h"
+#include "GameFramework/GameMode.h"
 
 #include "Core/ARPlayerAccountService.h"
 
@@ -275,7 +276,15 @@ void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerDa
 		const FBattleCharacterData& OwnedCharacter = InBattleData.PlayerData.OwnedCharacters[i];
 		if (OwnedCharacter.bSelection)
 		{
-			//Arcanum.DataTable.BattleStats
+			if (UClass* DefaultCharacter = OwnedCharacter.CharacterInfo.BattleCharacterInitData.CharacterClass.LoadSynchronous())
+			{
+				UE_LOG(LogTemp, Error, TEXT("%s"), *DefaultCharacter->GetName());
+				GetWorld()->GetAuthGameMode()->DefaultPawnClass = DefaultCharacter;
+
+				/*APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+				PlayerController->CanRestartPlayer*/
+			}
+
 			UGameDataSubsystem* GameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
 			if (GameDataSubsystem)
 			{
@@ -298,7 +307,6 @@ void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerDa
 						FGradeStatData GradeStatData = DTBattleStatsContainerRow->GradeDataSteps[OwnedCharacter.CharacterInfo.CurrStarLevel - 1];
 						OutInBattleData.PlayerBattleStat = GradeStatData;
 
-						UE_LOG(LogTemp, Error, TEXT("%s"), *CharacterName);
 
 						//로그 부분 나중에 삭제
 						UE_LOG(LogTemp, Warning, TEXT("플레이어 스탯 리젠"));
@@ -343,7 +351,6 @@ void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerDa
 			}
 		}
 	}
-
 	//for (int i = 0; i < OutInBattleData.PlayerData.OwnedCharacters.Num(); i++)
 	//{
 	//	const FBattleCharacterData& OwnedCharacter = OutInBattleData.PlayerData.OwnedCharacters[i];
