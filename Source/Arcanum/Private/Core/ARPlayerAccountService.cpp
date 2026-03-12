@@ -993,21 +993,40 @@ const FDTItemCatalogRow* FPlayerAccountService::FindItemCatalogRowByTag(const UO
 	if (!WorldContextObject) return nullptr;
 	if (!InItemTag.IsValid()) return nullptr;
 
-	UARGameInstance* gameInstance = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
-	if (!gameInstance) return nullptr;
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return nullptr;
 
-	if (gameInstance->ItemCatalogRowByTag.Num() <= 0)
+	if (GI->ItemCatalogRowByTag.Num() <= 0)
 	{
-		BuildItemCatalogRowCache(gameInstance);
+		BuildItemCatalogRowCache(GI);
 	}
 
-	const FDTItemCatalogRow* const* foundRow = gameInstance->ItemCatalogRowByTag.Find(InItemTag);
+	const FDTItemCatalogRow* const* foundRow = GI->ItemCatalogRowByTag.Find(InItemTag);
 	if (foundRow)
 	{
 		return *foundRow;
 	}
 
 	return nullptr;
+}
+
+const FDTEquipmentInfoRow* FPlayerAccountService::FindEquipmentInfoRowByTag(const UObject* WorldContextObject, const FGameplayTag& InItemTag)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return nullptr;
+
+	if (!InItemTag.IsValid()) return nullptr;
+
+	UGameDataSubsystem* dataSubsystem = GI->GetSubsystem<UGameDataSubsystem>();
+	if (!dataSubsystem) return nullptr;
+
+	const FDTItemCatalogRow* catalogRow = FindItemCatalogRowByTag(GI, InItemTag);
+	if (!catalogRow) return nullptr;
+
+	if (!catalogRow->DetailTableTag.MatchesTagExact(Arcanum::DataTable::Equipment)) return nullptr;
+	if (catalogRow->DetailRowName.IsNone()) return nullptr;
+
+	return dataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, catalogRow->DetailRowName);
 }
 
 FDateTime FPlayerAccountService::GetCurrentTimeKST()

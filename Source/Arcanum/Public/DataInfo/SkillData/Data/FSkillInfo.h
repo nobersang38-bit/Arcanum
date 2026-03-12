@@ -6,6 +6,8 @@
 #include "NiagaraSystem.h"
 #include "FSkillInfo.generated.h"
 
+class ASkillActor;
+
 USTRUCT(BlueprintType)
 struct FLevelModifierEntry
 {
@@ -57,6 +59,10 @@ struct FSkillInfo {
     TArray<FGameplayTag> SkillVFXTag;
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     TSoftObjectPtr<UTexture2D> Icon;
+
+    /** 실행용 스킬 클래스 (BP) */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TSoftClassPtr<ASkillActor> SkillClass;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     TArray<FLevelModifierEntry> LevelModifiers;

@@ -16,6 +16,7 @@ class UCommonDialog;
 class UCharacterInfo;
 class UWidgetSwitcher;
 class UInventorySlot;
+class UInventoryHUDWidget;
 class UWrapBox;
 class ULobbyHUD;
 
@@ -148,6 +149,14 @@ private:
 	UTexture2D* WeaponSlotItemIcon = nullptr;
 
 	void UpdateSlotVisuals(const TMap<FGameplayTag, FGuid>& InEquipmentMap);
+
+#pragma endregion
+
+#pragma region 장비 인벤토리
+protected:
+	/* 장비칸 클릭 시 표시할 인벤토리 위젯 */
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UInventoryHUDWidget> InventoryHUDWidget;
 #pragma endregion
 
 };

@@ -3,11 +3,12 @@
 #include "UI/Lobby/Contents/Character/CharacterInfo.h"
 #include "UI/Lobby/Contents/Character/SquareSlotWidget.h"
 #include "UI/Lobby/Contents/Character/InventorySlot.h"
+#include "UI/Lobby/Contents/Inventory/InventoryHUDWidget.h"
+#include "UI/Common/CommonDialog.h"
+#include "UI/Lobby/LobbyHUD.h"
 #include "Components/WrapBox.h"
 #include "Components/WrapBoxSlot.h"
 #include "Components/WidgetSwitcher.h"
-#include "UI/Common/CommonDialog.h"
-#include "UI/Lobby/LobbyHUD.h"
 #include "GameplayTags/ArcanumTags.h"
 #include "Data/Types/BaseUnitData.h"
 
@@ -512,20 +513,50 @@ void UCharacterHUDWidget::OnSquareSlotClicked(USquareSlotWidget* ClickedSlot, in
                         InventorySlotWidget->SetEquipButtonEnabled(true);
                     }
                 }
-                else {
+                else 
+                {
                     if (InventorySlotWidget)
                     {
 
                         InventorySlotWidget->SetEquipButtonEnabled(false);
                     }
                 }
-
             }
-
         }
     }
-    
-    InitWeaponInventory(SlotIndex);
+
+    EInventoryEquipSlotFilter equipFilter = EInventoryEquipSlotFilter::None;
+    {
+        switch (SlotIndex)
+        {
+        case 0:
+        case 1:
+            equipFilter = EInventoryEquipSlotFilter::Weapon;
+            break;
+        case 2:
+            equipFilter = EInventoryEquipSlotFilter::Legendary;
+            break;
+        case 3:
+            equipFilter = EInventoryEquipSlotFilter::Helmet;
+            break;
+        case 4:
+            equipFilter = EInventoryEquipSlotFilter::Chest;
+            break;
+        case 5:
+            equipFilter = EInventoryEquipSlotFilter::Glove;
+            break;
+        case 6:
+            equipFilter = EInventoryEquipSlotFilter::Boots;
+            break;
+        default:
+            break;
+        }
+
+        if (InventoryHUDWidget)
+        {
+            InventoryHUDWidget->RefreshEquipmentInventoryBySlot(equipFilter);
+        }
+    }
 }
 
 // ========================================================

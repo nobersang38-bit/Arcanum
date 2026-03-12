@@ -187,8 +187,10 @@ public:
 	/* 스택 보유 수량 조회 */
 	static int32 GetStackItemCountByTag(const UObject* WorldContextObject, const FGameplayTag& InItemTag);
 
-	/* ItemTag로 ItemCatalog Row 캐시 조회 */
+	/* ItemTag로 ItemCatalog Row 조회 */
 	static const FDTItemCatalogRow* FindItemCatalogRowByTag(const UObject* WorldContextObject, const FGameplayTag& InItemTag);
+	/* ItemTag로 Equipment DT Row 조회 */
+	static const FDTEquipmentInfoRow* FindEquipmentInfoRowByTag(const UObject* WorldContextObject, const FGameplayTag& InItemTag);
 private:
 	/* 상점 전체 카테고리 상품 생성 */
 	static void GenerateShopItems(UARGameInstance* InGameInstance);

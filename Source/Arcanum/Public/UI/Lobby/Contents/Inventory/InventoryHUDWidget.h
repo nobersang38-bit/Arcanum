@@ -10,6 +10,7 @@ class UWrapBox;
 class UCommonBtnWidget;
 class UInventoryItemSlotWidget;
 class UBorder;
+struct FDTItemCatalogRow;
 
 UENUM(BlueprintType)
 enum class EInventoryCategoryFilter : uint8
@@ -17,6 +18,18 @@ enum class EInventoryCategoryFilter : uint8
 	All,
 	Equipment,
 	Consumable
+};
+
+UENUM(BlueprintType)
+enum class EInventoryEquipSlotFilter : uint8
+{
+	None,
+	Weapon,
+	Legendary,
+	Helmet,
+	Chest,
+	Glove,
+	Boots
 };
 
 /* 장비/포션 공용 선택된 아이템 알림 */
@@ -51,11 +64,6 @@ private:
 public:
 	/* 인벤 UI 갱신 */
 	void RefreshInventoryUI();
-
-	/* 장비 전용 표시 슬롯 생성 */
-	void RefreshEquipmentInventory();
-	/* 스택 전용 표시 슬롯 생성 */
-	void RefreshStackInventory();
 
 	/* 현재 카테고리 강제 설정 */
 	void SetCurrentFilter(EInventoryCategoryFilter InFilter);
@@ -200,5 +208,28 @@ protected:
 	/* 카테고리 필터 */
 	UPROPERTY()
 	EInventoryCategoryFilter CurrentFilter = EInventoryCategoryFilter::All;
+#pragma endregion
+
+#pragma region 물약, 장비 필터
+public:
+	/* 스택 전용 표시 슬롯 생성 */
+	void RefreshStackInventory();
+
+	/* 장비 전용 표시 슬롯 생성 */
+	void RefreshEquipmentInventory();
+
+	/* 특정 부위 장비만 표시 */
+	void RefreshEquipmentInventoryBySlot(EInventoryEquipSlotFilter InFilter);
+
+	/* 현재 장비 부위 필터 반환 */
+	EInventoryEquipSlotFilter GetCurrentEquipSlotFilter() const { return CurrentEquipSlotFilter; }
+
+private:
+	/* 장비 카탈로그가 현재 부위 필터와 맞는지 검사 */
+	bool IsMatchedEquipSlotFilter(const FGameplayTag& InItemTag) const;
+
+private:
+	UPROPERTY()
+	EInventoryEquipSlotFilter CurrentEquipSlotFilter = EInventoryEquipSlotFilter::None;
 #pragma endregion
 };
