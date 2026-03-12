@@ -1,0 +1,50 @@
+[
+  {
+    "Name": "Level_0",
+    "Level": 0,
+    "EnhanceGoldCost": 100,
+    "RerollSoulCost": 50,
+    "DisassembleSoulReward": 10,
+    "EnhanceSuccessRate": 100
+  },
+  {
+    "Name": "Level_1",
+    "Level": 1,
+    "EnhanceGoldCost": 200,
+    "RerollSoulCost": 100,
+    "DisassembleSoulReward": 20,
+    "EnhanceSuccessRate": 50
+  },
+  {
+    "Name": "Level_2",
+    "Level": 2,
+    "EnhanceGoldCost": 400,
+    "RerollSoulCost": 150,
+    "DisassembleSoulReward": 30,
+    "EnhanceSuccessRate": 25
+  },
+  {
+    "Name": "Level_3",
+    "Level": 3,
+    "EnhanceGoldCost": 800,
+    "RerollSoulCost": 200,
+    "DisassembleSoulReward": 40,
+    "EnhanceSuccessRate": 12
+  },
+  {
+    "Name": "Level_4",
+    "Level": 4,
+    "EnhanceGoldCost": 1600,
+    "RerollSoulCost": 250,
+    "DisassembleSoulReward": 50,
+    "EnhanceSuccessRate": 6
+  },
+  {
+    "Name": "Level_5",
+    "Level": 5,
+    "EnhanceGoldCost": 0,
+    "RerollSoulCost": 300,
+    "DisassembleSoulReward": 60,
+    "EnhanceSuccessRate": 0
+  }
+]

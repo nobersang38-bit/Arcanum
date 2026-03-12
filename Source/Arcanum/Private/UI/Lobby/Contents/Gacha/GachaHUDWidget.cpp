@@ -138,12 +138,13 @@ void UGachaHUDWidget::RequestGacha(int32 InPullCount)
     FGameplayTag SelectedTag = CurrentSelectedButton->BannerTag;
     bool bSuccess = FPlayerAccountService::ExecuteGacha(this, ParentLobby->CachedPlayerData, SelectedTag, CurrencyCost, InPullCount);
 
-    if (bSuccess) {
-        UE_LOG(LogTemp, Log, TEXT("Gacha Request Success: %d Times"), InPullCount);
-        FPlayerAccountService::SetHUDIndex(this, EHUDIndex::GachaMenu);
-        if (GachaMap.IsNull() == false) UGameplayStatics::OpenLevelBySoftObjectPtr(this, GachaMap);
-    }
-    else UE_LOG(LogTemp, Error, TEXT("Gacha Request Failed (Insufficient Currency?)"));
+    /// Test : 나중에 주석 풀기
+    //if (bSuccess) {
+    //    UE_LOG(LogTemp, Log, TEXT("Gacha Request Success: %d Times"), InPullCount);
+    //    FPlayerAccountService::SetHUDIndex(this, EHUDIndex::GachaMenu);
+    //    if (GachaMap.IsNull() == false) UGameplayStatics::OpenLevelBySoftObjectPtr(this, GachaMap);
+    //}
+    //else UE_LOG(LogTemp, Error, TEXT("Gacha Request Failed (Insufficient Currency?)"));
 
 }
 // ========================================================

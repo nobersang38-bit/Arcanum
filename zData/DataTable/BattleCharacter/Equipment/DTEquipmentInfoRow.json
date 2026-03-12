@@ -28,21 +28,21 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -5.0,
+              "Flat": 1.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -15.0,
+              "Flat": 5.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [
-          "Arcanum.Skills.SkillName.None"
-        ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
         "OwnerStats": [],
@@ -63,21 +63,21 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -15.0,
+              "Flat": 6.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -25.0,
+              "Flat": 10.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [
-          "Arcanum.Skills.SkillName.None"
-        ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
         "OwnerStats": [],
@@ -98,21 +98,21 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -25.0,
+              "Flat": 11.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -35.0,
+              "Flat": 15.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [
-          "Arcanum.Skills.SkillName.None"
-        ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
         "OwnerStats": [],
@@ -133,21 +133,21 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -35.0,
+              "Flat": 16.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -45.0,
+              "Flat": 20.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [
-          "Arcanum.Skills.SkillName.None"
-        ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
         "OwnerStats": [],
@@ -168,21 +168,21 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -45.0,
+              "Flat": 21.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -55.0,
+              "Flat": 25.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [
-          "Arcanum.Skills.SkillName.None"
-        ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
         "OwnerStats": [],
@@ -203,27 +203,24 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -55.0,
+              "Flat": 26.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -65.0,
+              "Flat": 30.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [
-          "Arcanum.Skills.SkillName.None"
-        ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       }
     ]
   },
-
-
-
   {
     "Name": "Staff",
     "ItemTag": "Arcanum.Items.Rarity.Common.Weapon.Staff",
@@ -253,19 +250,21 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -5.0,
+              "Flat": 1.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -15.0,
+              "Flat": 5.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
         "OwnerStats": [],
@@ -286,19 +285,21 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -15.0,
+              "Flat": 6.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -25.0,
+              "Flat": 10.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
         "OwnerStats": [],
@@ -319,19 +320,21 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -25.0,
+              "Flat": 11.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -35.0,
+              "Flat": 15.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
         "OwnerStats": [],
@@ -352,19 +355,21 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -35.0,
+              "Flat": 16.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -45.0,
+              "Flat": 20.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
         "OwnerStats": [],
@@ -385,19 +390,21 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -45.0,
+              "Flat": 21.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -55.0,
+              "Flat": 25.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
         "OwnerStats": [],
@@ -418,25 +425,24 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -55.0,
+              "Flat": 26.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -65.0,
+              "Flat": 30.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       }
     ]
   },
-
-
-
   {
     "Name": "Bow",
     "ItemTag": "Arcanum.Items.Rarity.Common.Weapon.Bow",
@@ -466,19 +472,21 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -5.0,
+              "Flat": 1.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -15.0,
+              "Flat": 5.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
         "OwnerStats": [],
@@ -499,19 +507,21 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -15.0,
+              "Flat": 6.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -25.0,
+              "Flat": 10.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
         "OwnerStats": [],
@@ -532,19 +542,21 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -25.0,
+              "Flat": 11.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -35.0,
+              "Flat": 15.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
         "OwnerStats": [],
@@ -565,19 +577,21 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -35.0,
+              "Flat": 16.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -45.0,
+              "Flat": 20.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
         "OwnerStats": [],
@@ -598,19 +612,21 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -45.0,
+              "Flat": 21.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -55.0,
+              "Flat": 25.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
         "OwnerStats": [],
@@ -631,25 +647,24 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -55.0,
+              "Flat": 26.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -65.0,
+              "Flat": 30.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       }
     ]
   },
-
-
-
   {
     "Name": "Shield",
     "ItemTag": "Arcanum.Items.Rarity.Common.Weapon.Shield",
@@ -679,19 +694,21 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -5.0,
+              "Flat": 1.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -15.0,
+              "Flat": 5.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
         "OwnerStats": [],
@@ -712,19 +729,21 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -15.0,
+              "Flat": 6.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -25.0,
+              "Flat": 10.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
         "OwnerStats": [],
@@ -745,19 +764,21 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -25.0,
+              "Flat": 11.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -35.0,
+              "Flat": 15.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
         "OwnerStats": [],
@@ -778,19 +799,21 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -35.0,
+              "Flat": 16.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -45.0,
+              "Flat": 20.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
         "OwnerStats": [],
@@ -811,19 +834,21 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -45.0,
+              "Flat": 21.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -55.0,
+              "Flat": 25.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
         "OwnerStats": [],
@@ -844,33 +869,24 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -55.0,
+              "Flat": 26.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -65.0,
+              "Flat": 30.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       }
     ]
   },
-
-
-
-
-
-
-
-
-
-
-
   {
     "Name": "Helmet",
     "ItemTag": "Arcanum.Items.Rarity.Common.Armor.Helmet",
@@ -882,60 +898,24 @@
     "SellPrice": 35,
     "BaseInfoSteps": [
       {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.Common.Armor.Helmet",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "Value": {
-              "Flat": 2.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
+        "OwnerStats": [],
         "OnHitTargetStats": [],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
               "Flat": 1.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 3.0,
+              "Flat": 5.0,
               "Mul": 1.0
             }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
+          },
           {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.Common.Armor.Helmet",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "Value": {
-              "Flat": 4.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
-          {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 3.0,
+              "Flat": 1.0,
               "Mul": 1.0
             },
             "MaxValue": {
@@ -945,145 +925,172 @@
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
-        "OwnerStats": [
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
           {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.Common.Armor.Helmet",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "Value": {
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
+            "MinValue": {
               "Flat": 6.0,
               "Mul": 1.0
             },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
-          {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "MinValue": {
-              "Flat": 5.0,
-              "Mul": 1.0
-            },
             "MaxValue": {
-              "Flat": 7.0,
-              "Mul": 1.0
-            }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.Common.Armor.Helmet",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "Value": {
-              "Flat": 8.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
-          {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "MinValue": {
-              "Flat": 7.0,
-              "Mul": 1.0
-            },
-            "MaxValue": {
-              "Flat": 9.0,
-              "Mul": 1.0
-            }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.Common.Armor.Helmet",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "Value": {
               "Flat": 10.0,
               "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
+            }
+          },
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 9.0,
+              "Flat": 6.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 11.0,
+              "Flat": 10.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.Common.Armor.Helmet",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "Value": {
-              "Flat": 12.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
+        "OwnerStats": [],
         "OnHitTargetStats": [],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
               "Flat": 11.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 13.0,
+              "Flat": 15.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
+            "MinValue": {
+              "Flat": 11.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 15.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
+            "MinValue": {
+              "Flat": 16.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 20.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
+            "MinValue": {
+              "Flat": 16.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 20.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
+            "MinValue": {
+              "Flat": 21.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 25.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
+            "MinValue": {
+              "Flat": 21.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 25.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
+            "MinValue": {
+              "Flat": 26.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 30.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
+            "MinValue": {
+              "Flat": 26.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 30.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       }
     ]
   },
-
-
-
   {
     "Name": "Chest",
     "ItemTag": "Arcanum.Items.Rarity.Common.Armor.Chest",
@@ -1095,93 +1102,56 @@
     "SellPrice": 45,
     "BaseInfoSteps": [
       {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.Common.Armor.Chest",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "Value": {
-              "Flat": 3.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
+        "OwnerStats": [],
         "OnHitTargetStats": [],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.MaxValue",
             "MinValue": {
-              "Flat": 2.0,
+              "Flat": 1.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 4.0,
+              "Flat": 5.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
+            "MinValue": {
+              "Flat": 1.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 5.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
-        "OwnerStats": [
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
           {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.Common.Armor.Chest",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "Value": {
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.MaxValue",
+            "MinValue": {
               "Flat": 6.0,
               "Mul": 1.0
             },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
-          {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "MinValue": {
-              "Flat": 5.0,
-              "Mul": 1.0
-            },
             "MaxValue": {
-              "Flat": 7.0,
+              "Flat": 10.0,
               "Mul": 1.0
             }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
+          },
           {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.Common.Armor.Chest",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "Value": {
-              "Flat": 9.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
-          {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 8.0,
+              "Flat": 6.0,
               "Mul": 1.0
             },
             "MaxValue": {
@@ -1191,112 +1161,140 @@
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.Common.Armor.Chest",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "Value": {
-              "Flat": 12.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
+        "OwnerStats": [],
         "OnHitTargetStats": [],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.MaxValue",
             "MinValue": {
               "Flat": 11.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 13.0,
-              "Mul": 1.0
-            }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.Common.Armor.Chest",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "Value": {
               "Flat": 15.0,
               "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
+            }
+          },
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 14.0,
+              "Flat": 11.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 16.0,
+              "Flat": 15.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.Common.Armor.Chest",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "Value": {
-              "Flat": 18.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
+        "OwnerStats": [],
         "OnHitTargetStats": [],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.MaxValue",
             "MinValue": {
-              "Flat": 17.0,
+              "Flat": 16.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 19.0,
+              "Flat": 20.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
+            "MinValue": {
+              "Flat": 16.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 20.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.MaxValue",
+            "MinValue": {
+              "Flat": 21.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 25.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
+            "MinValue": {
+              "Flat": 21.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 25.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.MaxValue",
+            "MinValue": {
+              "Flat": 26.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 30.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
+            "MinValue": {
+              "Flat": 26.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 30.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       }
     ]
   },
-
-
-
   {
     "Name": "Glove",
     "ItemTag": "Arcanum.Items.Rarity.Common.Armor.Glove",
@@ -1308,208 +1306,199 @@
     "SellPrice": 30,
     "BaseInfoSteps": [
       {
-        "OwnerStats": [
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
           {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.Common.Armor.Glove",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "Value": {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
+            "MinValue": {
               "Flat": 1.0,
               "Mul": 1.0
             },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
-          {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "MinValue": {
-              "Flat": 0.5,
-              "Mul": 1.0
-            },
             "MaxValue": {
-              "Flat": 1.5,
-              "Mul": 1.0
-            }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.Common.Armor.Glove",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "Value": {
-              "Flat": 2.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
-          {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "MinValue": {
-              "Flat": 1.5,
-              "Mul": 1.0
-            },
-            "MaxValue": {
-              "Flat": 2.5,
-              "Mul": 1.0
-            }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.Common.Armor.Glove",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "Value": {
-              "Flat": 3.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
-          {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "MinValue": {
-              "Flat": 2.5,
-              "Mul": 1.0
-            },
-            "MaxValue": {
-              "Flat": 3.5,
-              "Mul": 1.0
-            }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.Common.Armor.Glove",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "Value": {
-              "Flat": 4.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
-          {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "MinValue": {
-              "Flat": 3.5,
-              "Mul": 1.0
-            },
-            "MaxValue": {
-              "Flat": 4.5,
-              "Mul": 1.0
-            }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.Common.Armor.Glove",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "Value": {
               "Flat": 5.0,
               "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
+            }
+          },
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
             "MinValue": {
-              "Flat": 4.5,
+              "Flat": 1.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 5.5,
+              "Flat": 5.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
-        "OwnerStats": [
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
           {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.Common.Armor.Glove",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "Value": {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
+            "MinValue": {
               "Flat": 6.0,
               "Mul": 1.0
             },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
+            "MaxValue": {
+              "Flat": 10.0,
+              "Mul": 1.0
+            }
+          },
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
             "MinValue": {
-              "Flat": 5.5,
+              "Flat": 6.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 6.5,
+              "Flat": 10.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
+            "MinValue": {
+              "Flat": 11.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 15.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
+            "MinValue": {
+              "Flat": 11.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 15.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
+            "MinValue": {
+              "Flat": 16.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 20.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
+            "MinValue": {
+              "Flat": 16.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 20.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
+            "MinValue": {
+              "Flat": 21.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 25.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
+            "MinValue": {
+              "Flat": 21.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 25.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
+            "MinValue": {
+              "Flat": 26.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 30.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
+            "MinValue": {
+              "Flat": 26.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 30.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       }
     ]
   },
-
-
-
   {
     "Name": "Boot",
     "ItemTag": "Arcanum.Items.Rarity.Common.Armor.Boot",
@@ -1521,211 +1510,199 @@
     "SellPrice": 30,
     "BaseInfoSteps": [
       {
-        "OwnerStats": [
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
           {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.Common.Armor.Boot",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "Value": {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
+            "MinValue": {
               "Flat": 1.0,
               "Mul": 1.0
             },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
-          {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "MinValue": {
-              "Flat": 0.5,
-              "Mul": 1.0
-            },
             "MaxValue": {
-              "Flat": 1.5,
-              "Mul": 1.0
-            }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.Common.Armor.Boot",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "Value": {
-              "Flat": 2.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
-          {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "MinValue": {
-              "Flat": 1.5,
-              "Mul": 1.0
-            },
-            "MaxValue": {
-              "Flat": 2.5,
-              "Mul": 1.0
-            }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.Common.Armor.Boot",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "Value": {
-              "Flat": 3.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
-          {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "MinValue": {
-              "Flat": 2.5,
-              "Mul": 1.0
-            },
-            "MaxValue": {
-              "Flat": 3.5,
-              "Mul": 1.0
-            }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.Common.Armor.Boot",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "Value": {
-              "Flat": 4.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
-          {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "MinValue": {
-              "Flat": 3.5,
-              "Mul": 1.0
-            },
-            "MaxValue": {
-              "Flat": 4.5,
-              "Mul": 1.0
-            }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.Common.Armor.Boot",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "Value": {
               "Flat": 5.0,
               "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
+            }
+          },
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
             "MinValue": {
-              "Flat": 4.5,
+              "Flat": 1.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 5.5,
+              "Flat": 5.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
-        "OwnerStats": [
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
           {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.Common.Armor.Boot",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
-            "Value": {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
+            "MinValue": {
               "Flat": 6.0,
               "Mul": 1.0
             },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
+            "MaxValue": {
+              "Flat": 10.0,
+              "Mul": 1.0
+            }
+          },
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
             "MinValue": {
-              "Flat": 5.5,
+              "Flat": 6.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 6.5,
+              "Flat": 10.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
+            "MinValue": {
+              "Flat": 11.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 15.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
+            "MinValue": {
+              "Flat": 11.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 15.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
+            "MinValue": {
+              "Flat": 16.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 20.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
+            "MinValue": {
+              "Flat": 16.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 20.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
+            "MinValue": {
+              "Flat": 21.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 25.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
+            "MinValue": {
+              "Flat": 21.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 25.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
+            "MinValue": {
+              "Flat": 26.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 30.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
+            "MinValue": {
+              "Flat": 26.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 30.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       }
     ]
   },
-
-
-
-
-
-
   {
     "Name": "TalashaHelmet",
     "ItemTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Helmet",
@@ -1737,23 +1714,20 @@
     "SellPrice": 240,
     "BaseInfoSteps": [
       {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Helmet",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
-            "Value": {
-              "Flat": 3.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
+        "OwnerStats": [],
         "OnHitTargetStats": [],
         "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
+            "MinValue": {
+              "Flat": 1.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 5.0,
+              "Mul": 1.0
+            }
+          },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
@@ -1761,102 +1735,35 @@
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 4.0,
+              "Flat": 5.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Helmet",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
-            "Value": {
-              "Flat": 5.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
+        "OwnerStats": [],
         "OnHitTargetStats": [],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 3.0,
-              "Mul": 1.0
-            },
-            "MaxValue": {
               "Flat": 6.0,
               "Mul": 1.0
-            }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Helmet",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
-            "Value": {
-              "Flat": 7.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
-          {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
-            "MinValue": {
-              "Flat": 5.0,
-              "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 8.0,
+              "Flat": 10.0,
               "Mul": 1.0
             }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Helmet",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
-            "Value": {
-              "Flat": 9.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
+          },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 7.0,
+              "Flat": 6.0,
               "Mul": 1.0
             },
             "MaxValue": {
@@ -1866,59 +1773,25 @@
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
-        "OwnerStats": [
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
           {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Helmet",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
-            "Value": {
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
+            "MinValue": {
               "Flat": 11.0,
               "Mul": 1.0
             },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
-          {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
-            "MinValue": {
-              "Flat": 9.0,
-              "Mul": 1.0
-            },
             "MaxValue": {
-              "Flat": 12.0,
+              "Flat": 15.0,
               "Mul": 1.0
             }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Helmet",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
-            "Value": {
-              "Flat": 13.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
+          },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
@@ -1926,13 +1799,111 @@
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 14.0,
+              "Flat": 15.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
+            "MinValue": {
+              "Flat": 16.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 20.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
+            "MinValue": {
+              "Flat": 16.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 20.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
+            "MinValue": {
+              "Flat": 21.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 25.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
+            "MinValue": {
+              "Flat": 21.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 25.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
+            "MinValue": {
+              "Flat": 26.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 30.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
+            "MinValue": {
+              "Flat": 26.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 30.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       }
     ]
   },
@@ -1947,93 +1918,56 @@
     "SellPrice": 280,
     "BaseInfoSteps": [
       {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Chest",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
-            "Value": {
-              "Flat": 5.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
+        "OwnerStats": [],
         "OnHitTargetStats": [],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.MaxValue",
             "MinValue": {
-              "Flat": 3.0,
+              "Flat": 1.0,
               "Mul": 1.0
             },
             "MaxValue": {
+              "Flat": 5.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
+            "MinValue": {
+              "Flat": 1.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 5.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.MaxValue",
+            "MinValue": {
               "Flat": 6.0,
               "Mul": 1.0
-            }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Chest",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
-            "Value": {
-              "Flat": 7.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
-          {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
-            "MinValue": {
-              "Flat": 5.0,
-              "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 8.0,
+              "Flat": 10.0,
               "Mul": 1.0
             }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Chest",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
-            "Value": {
-              "Flat": 9.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
+          },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 7.0,
+              "Flat": 6.0,
               "Mul": 1.0
             },
             "MaxValue": {
@@ -2043,113 +1977,140 @@
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Chest",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
-            "Value": {
-              "Flat": 11.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
+        "OwnerStats": [],
         "OnHitTargetStats": [],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
-            "MinValue": {
-              "Flat": 9.0,
-              "Mul": 1.0
-            },
-            "MaxValue": {
-              "Flat": 12.0,
-              "Mul": 1.0
-            }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Chest",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
-            "Value": {
-              "Flat": 13.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
-          {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.MaxValue",
             "MinValue": {
               "Flat": 11.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 14.0,
-              "Mul": 1.0
-            }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Chest",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
-            "Value": {
               "Flat": 15.0,
               "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
+            }
+          },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 13.0,
+              "Flat": 11.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 16.0,
+              "Flat": 15.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.MaxValue",
+            "MinValue": {
+              "Flat": 16.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 20.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
+            "MinValue": {
+              "Flat": 16.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 20.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.MaxValue",
+            "MinValue": {
+              "Flat": 21.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 25.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
+            "MinValue": {
+              "Flat": 21.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 25.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.MaxValue",
+            "MinValue": {
+              "Flat": 26.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 30.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
+            "MinValue": {
+              "Flat": 26.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 30.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       }
     ]
   },
-
-
-
-
   {
     "Name": "TalashaGlove",
     "ItemTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Glove",
@@ -2161,21 +2122,7 @@
     "SellPrice": 220,
     "BaseInfoSteps": [
       {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Glove",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
-            "Value": {
-              "Flat": 2.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
+        "OwnerStats": [],
         "OnHitTargetStats": [],
         "RandomStatRanges": [
           {
@@ -2185,69 +2132,14 @@
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 3.0,
+              "Flat": 5.0,
               "Mul": 1.0
             }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
+          },
           {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Glove",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
-            "Value": {
-              "Flat": 3.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
-          {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
             "MinValue": {
-              "Flat": 2.0,
-              "Mul": 1.0
-            },
-            "MaxValue": {
-              "Flat": 4.0,
-              "Mul": 1.0
-            }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Glove",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
-            "Value": {
-              "Flat": 4.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
-          {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
-            "MinValue": {
-              "Flat": 3.0,
+              "Flat": 1.0,
               "Mul": 1.0
             },
             "MaxValue": {
@@ -2257,90 +2149,12 @@
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Glove",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
-            "Value": {
-              "Flat": 5.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
-          {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
-            "MinValue": {
-              "Flat": 4.0,
-              "Mul": 1.0
-            },
-            "MaxValue": {
-              "Flat": 6.0,
-              "Mul": 1.0
-            }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Glove",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
-            "Value": {
-              "Flat": 6.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
-          {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
-            "MinValue": {
-              "Flat": 5.0,
-              "Mul": 1.0
-            },
-            "MaxValue": {
-              "Flat": 7.0,
-              "Mul": 1.0
-            }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Glove",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
-            "Value": {
-              "Flat": 7.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
+        "OwnerStats": [],
         "OnHitTargetStats": [],
         "RandomStatRanges": [
           {
@@ -2350,19 +2164,157 @@
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 8.0,
+              "Flat": 10.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
+            "MinValue": {
+              "Flat": 6.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 10.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
+            "MinValue": {
+              "Flat": 11.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 15.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
+            "MinValue": {
+              "Flat": 11.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 15.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
+            "MinValue": {
+              "Flat": 16.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 20.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
+            "MinValue": {
+              "Flat": 16.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 20.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
+            "MinValue": {
+              "Flat": 21.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 25.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
+            "MinValue": {
+              "Flat": 21.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 25.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
+            "MinValue": {
+              "Flat": 26.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 30.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
+            "MinValue": {
+              "Flat": 26.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 30.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       }
     ]
   },
-
-
-
   {
     "Name": "TalashaBoot",
     "ItemTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Boot",
@@ -2374,60 +2326,88 @@
     "SellPrice": 220,
     "BaseInfoSteps": [
       {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Boot",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
-            "Value": {
-              "Flat": 10.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
+        "OwnerStats": [],
         "OnHitTargetStats": [],
         "RandomStatRanges": [
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
             "MinValue": {
-              "Flat": 7.0,
+              "Flat": 1.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 12.0,
+              "Flat": 5.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
+            "MinValue": {
+              "Flat": 1.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 5.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Boot",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
-            "Value": {
-              "Flat": 13.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
+        "OwnerStats": [],
         "OnHitTargetStats": [],
         "RandomStatRanges": [
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
             "MinValue": {
+              "Flat": 6.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
               "Flat": 10.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
+            "MinValue": {
+              "Flat": 6.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 10.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
+            "MinValue": {
+              "Flat": 11.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 15.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
+            "MinValue": {
+              "Flat": 11.0,
               "Mul": 1.0
             },
             "MaxValue": {
@@ -2437,145 +2417,108 @@
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Boot",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
-            "Value": {
-              "Flat": 16.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
+        "OwnerStats": [],
         "OnHitTargetStats": [],
         "RandomStatRanges": [
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
             "MinValue": {
-              "Flat": 13.0,
+              "Flat": 16.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 18.0,
+              "Flat": 20.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
+            "MinValue": {
+              "Flat": 16.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 20.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Boot",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
-            "Value": {
-              "Flat": 19.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
+        "OwnerStats": [],
         "OnHitTargetStats": [],
         "RandomStatRanges": [
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
             "MinValue": {
-              "Flat": 16.0,
-              "Mul": 1.0
-            },
-            "MaxValue": {
               "Flat": 21.0,
               "Mul": 1.0
-            }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Boot",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
-            "Value": {
-              "Flat": 22.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
-          {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
-            "MinValue": {
-              "Flat": 19.0,
-              "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 24.0,
-              "Mul": 1.0
-            }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Boot",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
-            "Value": {
               "Flat": 25.0,
               "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
+            }
+          },
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
             "MinValue": {
-              "Flat": 22.0,
+              "Flat": 21.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 27.0,
+              "Flat": 25.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
+            "MinValue": {
+              "Flat": 26.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 30.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
+            "MinValue": {
+              "Flat": 26.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 30.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       }
     ]
   },
-
-
-
   {
     "Name": "SigonHelmet",
     "ItemTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Helmet",
@@ -2587,93 +2530,24 @@
     "SellPrice": 240,
     "BaseInfoSteps": [
       {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Helmet",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
-            "Value": {
-              "Flat": 2.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
+        "OwnerStats": [],
         "OnHitTargetStats": [],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
               "Flat": 1.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 3.0,
+              "Flat": 5.0,
               "Mul": 1.0
             }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
+          },
           {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Helmet",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
-            "Value": {
-              "Flat": 3.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
-          {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 2.0,
-              "Mul": 1.0
-            },
-            "MaxValue": {
-              "Flat": 4.0,
-              "Mul": 1.0
-            }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Helmet",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
-            "Value": {
-              "Flat": 4.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
-          {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
-            "MinValue": {
-              "Flat": 3.0,
+              "Flat": 1.0,
               "Mul": 1.0
             },
             "MaxValue": {
@@ -2683,112 +2557,172 @@
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Helmet",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
-            "Value": {
-              "Flat": 5.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
+        "OwnerStats": [],
         "OnHitTargetStats": [],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
-            "MinValue": {
-              "Flat": 4.0,
-              "Mul": 1.0
-            },
-            "MaxValue": {
-              "Flat": 6.0,
-              "Mul": 1.0
-            }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Helmet",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
-            "Value": {
-              "Flat": 6.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
-          {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
-            "MinValue": {
-              "Flat": 5.0,
-              "Mul": 1.0
-            },
-            "MaxValue": {
-              "Flat": 7.0,
-              "Mul": 1.0
-            }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Helmet",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
-            "Value": {
-              "Flat": 7.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
-          {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
               "Flat": 6.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 8.0,
+              "Flat": 10.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
+            "MinValue": {
+              "Flat": 6.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 10.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
+            "MinValue": {
+              "Flat": 11.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 15.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
+            "MinValue": {
+              "Flat": 11.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 15.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
+            "MinValue": {
+              "Flat": 16.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 20.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
+            "MinValue": {
+              "Flat": 16.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 20.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
+            "MinValue": {
+              "Flat": 21.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 25.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
+            "MinValue": {
+              "Flat": 21.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 25.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
+            "MinValue": {
+              "Flat": 26.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 30.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
+            "MinValue": {
+              "Flat": 26.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 30.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       }
     ]
   },
-
-
-
   {
     "Name": "SigonChest",
     "ItemTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Chest",
@@ -2800,27 +2734,24 @@
     "SellPrice": 280,
     "BaseInfoSteps": [
       {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Chest",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
-            "Value": {
-              "Flat": 4.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
+        "OwnerStats": [],
         "OnHitTargetStats": [],
         "RandomStatRanges": [
           {
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.MaxValue",
+            "MinValue": {
+              "Flat": 1.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 5.0,
+              "Mul": 1.0
+            }
+          },
+          {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 2.0,
+              "Flat": 1.0,
               "Mul": 1.0
             },
             "MaxValue": {
@@ -2830,162 +2761,61 @@
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Chest",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
-            "Value": {
-              "Flat": 6.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
+        "OwnerStats": [],
         "OnHitTargetStats": [],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
-            "MinValue": {
-              "Flat": 4.0,
-              "Mul": 1.0
-            },
-            "MaxValue": {
-              "Flat": 7.0,
-              "Mul": 1.0
-            }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Chest",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
-            "Value": {
-              "Flat": 8.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
-          {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.MaxValue",
             "MinValue": {
               "Flat": 6.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 9.0,
-              "Mul": 1.0
-            }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Chest",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
-            "Value": {
               "Flat": 10.0,
               "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
+            }
+          },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 8.0,
+              "Flat": 6.0,
               "Mul": 1.0
             },
             "MaxValue": {
+              "Flat": 10.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.MaxValue",
+            "MinValue": {
               "Flat": 11.0,
               "Mul": 1.0
-            }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Chest",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
-            "Value": {
-              "Flat": 12.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
-          {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
-            "MinValue": {
-              "Flat": 10.0,
-              "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 13.0,
+              "Flat": 15.0,
               "Mul": 1.0
             }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Chest",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
-            "Value": {
-              "Flat": 14.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
+          },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 12.0,
+              "Flat": 11.0,
               "Mul": 1.0
             },
             "MaxValue": {
@@ -2995,13 +2825,108 @@
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.MaxValue",
+            "MinValue": {
+              "Flat": 16.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 20.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
+            "MinValue": {
+              "Flat": 16.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 20.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.MaxValue",
+            "MinValue": {
+              "Flat": 21.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 25.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
+            "MinValue": {
+              "Flat": 21.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 25.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.MaxValue",
+            "MinValue": {
+              "Flat": 26.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 30.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
+            "MinValue": {
+              "Flat": 26.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 30.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       }
     ]
   },
-
-
-
   {
     "Name": "SigonGlove",
     "ItemTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Glove",
@@ -3013,27 +2938,24 @@
     "SellPrice": 220,
     "BaseInfoSteps": [
       {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Glove",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
-            "Value": {
-              "Flat": 4.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
+        "OwnerStats": [],
         "OnHitTargetStats": [],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
             "MinValue": {
-              "Flat": 2.0,
+              "Flat": 1.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 5.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
+            "MinValue": {
+              "Flat": 1.0,
               "Mul": 1.0
             },
             "MaxValue": {
@@ -3043,162 +2965,61 @@
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Glove",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
-            "Value": {
-              "Flat": 6.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
+        "OwnerStats": [],
         "OnHitTargetStats": [],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
-            "MinValue": {
-              "Flat": 4.0,
-              "Mul": 1.0
-            },
-            "MaxValue": {
-              "Flat": 7.0,
-              "Mul": 1.0
-            }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Glove",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
-            "Value": {
-              "Flat": 8.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
-          {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
             "MinValue": {
               "Flat": 6.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 9.0,
-              "Mul": 1.0
-            }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Glove",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
-            "Value": {
               "Flat": 10.0,
               "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
+            }
+          },
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
             "MinValue": {
-              "Flat": 8.0,
+              "Flat": 6.0,
               "Mul": 1.0
             },
             "MaxValue": {
+              "Flat": 10.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
+            "MinValue": {
               "Flat": 11.0,
               "Mul": 1.0
-            }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Glove",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
-            "Value": {
-              "Flat": 12.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
-          {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
-            "MinValue": {
-              "Flat": 10.0,
-              "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 13.0,
+              "Flat": 15.0,
               "Mul": 1.0
             }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
+          },
           {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Glove",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
-            "Value": {
-              "Flat": 14.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
-          {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
             "MinValue": {
-              "Flat": 12.0,
+              "Flat": 11.0,
               "Mul": 1.0
             },
             "MaxValue": {
@@ -3208,13 +3029,108 @@
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
+            "MinValue": {
+              "Flat": 16.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 20.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
+            "MinValue": {
+              "Flat": 16.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 20.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
+            "MinValue": {
+              "Flat": 21.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 25.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
+            "MinValue": {
+              "Flat": 21.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 25.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
+            "MinValue": {
+              "Flat": 26.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 30.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
+            "MinValue": {
+              "Flat": 26.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 30.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       }
     ]
   },
-
-
-
   {
     "Name": "SigonBoot",
     "ItemTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Boot",
@@ -3226,27 +3142,56 @@
     "SellPrice": 220,
     "BaseInfoSteps": [
       {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Boot",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
-            "Value": {
-              "Flat": 8.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
+        "OwnerStats": [],
         "OnHitTargetStats": [],
         "RandomStatRanges": [
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
             "MinValue": {
+              "Flat": 1.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
               "Flat": 5.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
+            "MinValue": {
+              "Flat": 1.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 5.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
+            "MinValue": {
+              "Flat": 6.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 10.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
+            "MinValue": {
+              "Flat": 6.0,
               "Mul": 1.0
             },
             "MaxValue": {
@@ -3256,162 +3201,93 @@
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Boot",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
-            "Value": {
-              "Flat": 11.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
+        "OwnerStats": [],
         "OnHitTargetStats": [],
         "RandomStatRanges": [
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
             "MinValue": {
-              "Flat": 8.0,
+              "Flat": 11.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 13.0,
+              "Flat": 15.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
+            "MinValue": {
+              "Flat": 11.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 15.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Boot",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
-            "Value": {
-              "Flat": 14.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
+        "OwnerStats": [],
         "OnHitTargetStats": [],
         "RandomStatRanges": [
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
             "MinValue": {
-              "Flat": 11.0,
-              "Mul": 1.0
-            },
-            "MaxValue": {
               "Flat": 16.0,
               "Mul": 1.0
-            }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Boot",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
-            "Value": {
-              "Flat": 17.0,
-              "Mul": 1.0
             },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
+            "MaxValue": {
+              "Flat": 20.0,
+              "Mul": 1.0
+            }
+          },
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
             "MinValue": {
-              "Flat": 14.0,
+              "Flat": 16.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 19.0,
+              "Flat": 20.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
-        "OwnerStats": [
-          {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Boot",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
-            "Value": {
-              "Flat": 20.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
+        "OwnerStats": [],
         "OnHitTargetStats": [],
         "RandomStatRanges": [
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
             "MinValue": {
-              "Flat": 17.0,
+              "Flat": 21.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 22.0,
+              "Flat": 25.0,
               "Mul": 1.0
             }
-          }
-        ],
-        "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
-      },
-      {
-        "OwnerStats": [
+          },
           {
-            "ModifierId": "00000000000000000000000000000000",
-            "SourceTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Boot",
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
-            "Value": {
-              "Flat": 23.0,
-              "Mul": 1.0
-            },
-            "bIsPermanent": true,
-            "Duration": 0,
-            "ModifierPolicy": "Refresh",
-            "MaxStack": 0
-          }
-        ],
-        "OnHitTargetStats": [],
-        "RandomStatRanges": [
-          {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
             "MinValue": {
-              "Flat": 20.0,
+              "Flat": 21.0,
               "Mul": 1.0
             },
             "MaxValue": {
@@ -3421,14 +3297,44 @@
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.None" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
+      },
+      {
+        "OwnerStats": [],
+        "OnHitTargetStats": [],
+        "RandomStatRanges": [
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
+            "MinValue": {
+              "Flat": 26.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 30.0,
+              "Mul": 1.0
+            }
+          },
+          {
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
+            "MinValue": {
+              "Flat": 26.0,
+              "Mul": 1.0
+            },
+            "MaxValue": {
+              "Flat": 30.0,
+              "Mul": 1.0
+            }
+          }
+        ],
+        "MaxUpgradeLevel": 5,
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       }
     ]
   },
-
-
-
-
   {
     "Name": "Scepter",
     "ItemTag": "Arcanum.Items.Rarity.Legendary.Weapon.Scepter",
@@ -3458,19 +3364,21 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -70.0,
+              "Flat": 1.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -90.0,
+              "Flat": 5.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.SolarFlare" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
         "OwnerStats": [],
@@ -3491,19 +3399,21 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -90.0,
+              "Flat": 6.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -110.0,
+              "Flat": 10.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.SolarFlare" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
         "OwnerStats": [],
@@ -3524,19 +3434,21 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -110.0,
+              "Flat": 11.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -130.0,
+              "Flat": 15.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.SolarFlare" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
         "OwnerStats": [],
@@ -3557,19 +3469,21 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -130.0,
+              "Flat": 16.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -150.0,
+              "Flat": 20.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.SolarFlare" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
         "OwnerStats": [],
@@ -3590,19 +3504,21 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -150.0,
+              "Flat": 21.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -170.0,
+              "Flat": 25.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.SolarFlare" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
         "OwnerStats": [],
@@ -3623,25 +3539,24 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -170.0,
+              "Flat": 26.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -190.0,
+              "Flat": 30.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.SolarFlare" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       }
     ]
   },
-
-
-
   {
     "Name": "Scythe",
     "ItemTag": "Arcanum.Items.Rarity.Legendary.Weapon.Scythe",
@@ -3671,19 +3586,21 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -65.0,
+              "Flat": 1.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -85.0,
+              "Flat": 5.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.VoidEclipse" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
         "OwnerStats": [],
@@ -3704,19 +3621,21 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -85.0,
+              "Flat": 6.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -105.0,
+              "Flat": 10.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.VoidEclipse" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
         "OwnerStats": [],
@@ -3737,19 +3656,21 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -105.0,
+              "Flat": 11.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -125.0,
+              "Flat": 15.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.VoidEclipse" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
         "OwnerStats": [],
@@ -3770,19 +3691,21 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -125.0,
+              "Flat": 16.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -145.0,
+              "Flat": 20.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.VoidEclipse" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
         "OwnerStats": [],
@@ -3803,19 +3726,21 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -145.0,
+              "Flat": 21.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -165.0,
+              "Flat": 25.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.VoidEclipse" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       },
       {
         "OwnerStats": [],
@@ -3836,19 +3761,21 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
             "MinValue": {
-              "Flat": -165.0,
+              "Flat": 26.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": -185.0,
+              "Flat": 30.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
-        "Skills": [ "Arcanum.Skills.SkillName.VoidEclipse" ]
+        "Skills": {
+          "Arcanum.Skills.SkillName.None": 0
+        }
       }
     ]
   }

@@ -13,7 +13,8 @@
 
 #include "DataInfo/ItemData/DataTable/DTPotionInfoRow.h"
 #include "DataInfo/ItemData/DataTable/DTItemCatalogRow.h"
-#include "DataInfo/InventoryData/Data/InventoryViewSlot.h"
+#include "DataInfo/InventoryData/Data/FInventoryViewSlot.h"
+#include "DataInfo/ShopData/DataTable/DTShopCategoryRuleRow.h"
 
 #include "ARPlayerAccountService.generated.h"
 
@@ -31,21 +32,6 @@ enum class EDisposeType : uint8
 	Sell,                // 판매(골드)
 	DisassembleItem,     // 장비/무기 분해(소울)
 	DisassembleCharacter // 캐릭터 분해(조각)
-};
-
-USTRUCT(BlueprintType)
-struct FShopItemPools
-{
-	GENERATED_BODY()
-
-	UPROPERTY()
-	TArray<FName> CommonRows;
-
-	UPROPERTY()
-	TArray<FName> SetRows;
-
-	UPROPERTY()
-	TArray<FName> LegendaryRows;
 };
 
 class UARGameInstance;
@@ -154,19 +140,28 @@ public:
 #pragma endregion
 
 #pragma region Enhancement Widget 관련
+public:
+	/* 장비 강화 */
+	static bool EnhanceEquipment(const UObject* WorldContextObject, const FGuid& InItemGuid);
 
+	/* 장비 옵션 리롤 */
+	static bool RerollEquipment(const UObject* WorldContextObject, const FGuid& InItemGuid);
+
+	/* 장비 분해 */
+	static bool DisassembleEquipment(const UObject* WorldContextObject, const FGuid& InItemGuid);
+
+private:
+	/* 장비 랜덤 능력치 OwnerStats 생성 */
+	static void RollEquipmentStats(const FItemDefinition& InItemDefinition, TArray<FDerivedStatModifier>& OutOwnerStats);
 #pragma endregion
 
 #pragma region Shop Widget 관련
 public:
-	/** DT의 장비목록을 반환하는 함수*/
-	TArray<FName> GetEquipmentList(const UObject* WorldContextObject);
-	/** 상점에서 구매시 사용하는 함수*/
-	static bool PurchaseEquipment(const UObject* WorldContextObject, FName RowName);
 	/** */
 	static const FDTEquipmentInfoRow* GetItemDefinition(UGameDataSubsystem* DataSubsystem, const FGameplayTag& ItemTag);
-	/* 장비 DT에서 ItemTag로 Row를 찾는다 */
-	//static const FDTEquipmentInfoRow* GetRowByItemTag(const UObject* WorldContextObject, const FGameplayTag& InItemTag);
+
+	/* 상점 상품 구매 */
+	static bool PurchaseShopSlot(const UObject* WorldContextObject, const FGameplayTag& InCategoryTag, int32 InLocalIndex);
 
 	/* Guid(장비) 아이템 판매 */
 	static bool SellItemByGuid(const UObject* WorldContextObject, const FGuid& InItemGuid);
@@ -174,20 +169,11 @@ public:
 	/* stack(물약) 아이템 판매 */
 	static bool SellStackItemByTag(const UObject* WorldContextObject, const FGameplayTag& InItemTag, int32 InSellCount);
 
-	/* 상점 진입 시 초기화 (저장시간 확인 후 유지/갱신 판정) */
-	static void InitializeShop(const UObject* WorldContextObject, int32 InEquipmentSlotCount, int32 InPotionSlotCount);
+	/* 상점 초기화 */
+	static void InitializeShop(const UObject* WorldContextObject);
 
-	/* 상점 강제 갱신 (10분 만료시) */
-	static void RefreshShop(const UObject* WorldContextObject, int32 InEquipmentSlotCount, int32 InPotionSlotCount);
-
-	/* 상점 슬롯 데이터 조회: TableTag + RowName을 함께 반환 */
-	static bool GetShopSlotData(const UObject* WorldContextObject, int32 InSlotIndex, FGameplayTag& OutTableTag, FName& OutRowName, bool& OutSoldOut);
-
-	/* 상점 슬롯 구매(TableTag 기준으로 포션 / 장비 분기) */
-	static bool PurchaseShopSlot(const UObject* WorldContextObject, int32 InSlotIndex);
-
-	/* 구매 성공 후 슬롯 품절 처리 */
-	static bool SetShopSlotSoldOut(const UObject* WorldContextObject, int32 InSlotIndex);
+	/* 상점 전체 갱신  */
+	static void RefreshShop(const UObject* WorldContextObject);
 
 	/* 저장된 상점 시간이 유효한지 확인 */
 	static bool IsShopRefreshExpired(const UObject* WorldContextObject);
@@ -201,36 +187,29 @@ public:
 	/* 스택 보유 수량 조회 */
 	static int32 GetStackItemCountByTag(const UObject* WorldContextObject, const FGameplayTag& InItemTag);
 
-	/* 스택형 아이템 구매 */
-	static bool PurchaseStackItemByRowName(const UObject* WorldContextObject, FName InCatalogRowName, int32 InBuyCount);
-
+	/* ItemTag로 ItemCatalog Row 캐시 조회 */
+	static const FDTItemCatalogRow* FindItemCatalogRowByTag(const UObject* WorldContextObject, const FGameplayTag& InItemTag);
 private:
-	/* 상점 슬롯 전체 생성 */
-	static void GenerateShopItems(UARGameInstance* InGameInstance, int32 InEquipmentSlotCount, int32 InPotionSlotCount, bool bInRefreshEquipmentOnly);
+	/* 상점 전체 카테고리 상품 생성 */
+	static void GenerateShopItems(UARGameInstance* InGameInstance);
 
-	/* 상점 아이템 후보군 구성 (일반/세트/전설 분류) */
-	static void BuildShopItemPools(UARGameInstance* InGameInstance, FShopItemPools& OutItemPools);
+	/* 상점 1개 카테고리 상품 생성 */
+	static void GenerateShopCategory(UARGameInstance* InGameInstance, const FShopCategoryRule& InShopRule);
 
-	/* 상점 등급 확률 판정 (일반/세트/전설) */
-	static EShopRarityType PickShopRarityType(UARGameInstance* InGameInstance);
+	/* 장비 카테고리 새로 생성 (타이머 갱신) */
+	static void RefreshEquipmentShopCategory(UARGameInstance* InGameInstance);
 
-	/* 상점 아이템 1개 선택 */
-	static FName PickShopItemRow(EShopRarityType InRarityType, FShopItemPools& InOutItemPools);
+	/* ItemCatalog 후보 ItemTag 목록 수집 */
+	static void BuildCatalogItemTagsByRule(UARGameInstance* InGameInstance, const FShopCategoryRule& InShopRule, TArray<FGameplayTag>& OutItemTags);
 
-	/* 상점 저장 데이터 초기화 */
-	static void ResetShopSoldOutStates(UARGameInstance* InGameInstance, int32 InEquipmentSlotCount);
+	/* 후보 ItemTag 목록에서 하나 랜덤 선택 후 제거 */
+	static FGameplayTag PickItemTagFromPool(TArray<FGameplayTag>& InOutItemTags);
+
+	/* 인덱스로 런타임 상품 엔트리 찾기 */
+	static FShopProductEntry* FindShopProductEntry(UARGameInstance* InGameInstance, const FGameplayTag& InCategoryTag, int32 InLocalIndex);
 
 	/* 다음 갱신 시각 설정 (현재시간 + 10분) */
 	static void SetNextShopRefreshTime(UARGameInstance* InGameInstance);
-
-	/* ItemCatalog에서 StorePolicyTag로 RowName 목록 수집 */
-	static void BuildCatalogRowNamesByStorePolicy(
-		UARGameInstance* InGameInstance,
-		const FGameplayTag& InStorePolicyTag,
-		TArray<FName>& OutRowNames);
-
-	/* RowName 목록에서 하나 랜덤 선택 후 목록에서 제거 */
-	static FName PickCatalogRowNameFromRowNames(TArray<FName>& InOutRowNames);
 
 	using FAddGuidHandler = bool(*)(const UObject* WorldContextObject, const FDTItemCatalogRow* InCatalogRow);
 
@@ -243,8 +222,15 @@ private:
 	/* Equipment 전용: 카탈로그 DetailRowName으로 장비 인스턴스 생성 후 Inventory에 추가 */
 	static bool AddGuidFromEquipment(const UObject* WorldContextObject, const FDTItemCatalogRow* InCatalogRow);
 
-	/* ItemTag 목록에서 랜덤으로 하나 뽑아 RowName로 반환 */
-	static FName PickCatalogRowNameFromTags(TArray<FGameplayTag>& InOutItemTags);
+	/* Guid 아이템 1개 추가 시 인벤 슬롯 여유가 있는지 확인 */
+	static bool CanAddGuidItem(const FPlayerData& InPlayerData, UARGameInstance* InGameInstance, int32 InInventoryCapacity);
+	/* 스택 아이템 추가 시 인벤 슬롯 여유가 있는지 확인 */
+	static bool CanAddStackItem(const FPlayerData& InPlayerData, UARGameInstance* InGameInstance, const FGameplayTag& InItemTag, int32 InAddCount, int32 InInventoryCapacity);
+	static int32 GetUsedStackSlotCount(const FPlayerData& InPlayerData, UARGameInstance* InGameInstance);
+	static int32 GetExtraStackSlotsNeeded(int32 InOldCount, int32 InAddCount, int32 InMaxStack);
+
+	/* ItemCatalog Row 캐시 빌드 */
+	static void BuildItemCatalogRowCache(UARGameInstance* InGameInstance);
 #pragma endregion
 
 

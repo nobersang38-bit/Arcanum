@@ -7,6 +7,8 @@
 #include "DataInfo/PlayerData/PlayerBattleData/DataTable/DTPlayerBattleStats.h"
 #include "DataInfo/BattleCharacter/CharacterInfo/DataTable/DTCharacterBaseInfo.h"
 
+#include "Data/Rows/UnitsDataRow.h"
+
 // ========================================================
 // 초기화 관련
 // ========================================================
@@ -19,7 +21,7 @@ void UARGameInstance::Init()
 void UARGameInstance::InitializeGameData()
 {
     /// Todo : 추후 SaveSlot으로 저장이름 변경해줘야함. 지금 변경하면 테스트 불가.
-    ArSaveGame = Cast<UArcanumSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("PlayerSlot"), 0));
+    ArSaveGame = Cast<UArcanumSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, 0));
     if (!ArSaveGame) {
         ArSaveGame = Cast<UArcanumSaveGame>(UGameplayStatics::CreateSaveGameObject(UArcanumSaveGame::StaticClass()));
         AddIDPW(TEXT("Admin"), TEXT("12345"));
@@ -74,7 +76,7 @@ void UARGameInstance::InitializeNewPlayerData()
         }
     }
 
-    // 배틀 캐릭터 리스트 생성
+    // 플레이어블 캐릭터 리스트 생성
     {
         UGameDataSubsystem* DataSubsystem = GetSubsystem<UGameDataSubsystem>();
         if (!DataSubsystem) return;
@@ -100,11 +102,26 @@ void UARGameInstance::InitializeNewPlayerData()
 
             PlayerData.OwnedCharacters.Add(NewCharacter);
         }
-    }
 
-    if (!PlayerData.OwnedCharacters.IsEmpty()) {
-        PlayerData.OwnedCharacters[0].bSelection = true;
-        PlayerData.OwnedCharacters[0].CharacterInfo.CurrStarLevel = 1;
+        if (!PlayerData.OwnedCharacters.IsEmpty()) {
+            PlayerData.OwnedCharacters[0].bSelection = true;
+            PlayerData.OwnedCharacters[0].CharacterInfo.CurrStarLevel = 1;
+        }
+    }
+    {
+        UGameDataSubsystem* DataSubsystem = GetSubsystem<UGameDataSubsystem>();
+        if (!DataSubsystem) return;
+
+        UDataTable** TablePtr = DataSubsystem->MasterDataTables.Find(Arcanum::DataTable::AllyUnitInfo);
+        if (!TablePtr) return;
+        UDataTable* Table = *TablePtr;
+        PlayerData.AllyburdenCharacters.Empty();
+        for (const auto& Pair : Table->GetRowMap()) {
+            FUnitsDataRow* Row = (FUnitsDataRow*)Pair.Value;
+            if (!Row) continue;
+            const FUnitInfoSetting& UnitInfo = Row->UnitData;
+            PlayerData.AllyburdenCharacters.Add(UnitInfo);
+        }
     }
 }
 // ========================================================
@@ -198,6 +215,7 @@ bool UARGameInstance::GenerateResults(const FDTGachaBannerDataRow* BannerData, i
         if (Pool) {
             FGachaItemResult Result = ResolvePickup(BannerData, *Pool, BannerState, Grade);
             Results.Add(Result);
+
         }
     }
 
@@ -547,3 +565,19 @@ void UARGameInstance::InitializeCharacter(FGameplayTag CharacterTag)
 
     UserCharacterRegistry.Add(CharacterTag, NewData);
 }
+
+bool UARGameInstance::AddTestGold()
+{
+    return FPlayerAccountService::AddCurrency(this, Arcanum::PlayerData::Currencies::NonRegen::Gold::Value, 10000);
+}
+
+bool UARGameInstance::AddTestSoul()
+{
+    return FPlayerAccountService::AddCurrency(this, Arcanum::PlayerData::Currencies::NonRegen::Soul::Value, 10000);
+}
+
+bool UARGameInstance::AddTestShard()
+{
+    return FPlayerAccountService::AddCurrency(this, Arcanum::PlayerData::Currencies::NonRegen::Shard::Value, 10000);
+}
+
