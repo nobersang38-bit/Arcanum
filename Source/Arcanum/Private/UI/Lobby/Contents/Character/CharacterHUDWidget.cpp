@@ -25,9 +25,9 @@ void UCharacterHUDWidget::NativeConstruct()
         DataSubsystem = GI->GetSubsystem<UGameDataSubsystem>();
     }
 
-    EquipmentSlots.Add(RightHandSlot);
-    EquipmentSlots.Add(LeftHandSlot);
-    EquipmentSlots.Add(TwoHandSlot);
+    EquipmentSlots.Add(Weapon1Slot);
+    EquipmentSlots.Add(Weapon2Slot);
+    EquipmentSlots.Add(LegendaryWeaponSlot);
     EquipmentSlots.Add(HelmetSlot);
     EquipmentSlots.Add(ChestSlot);
     EquipmentSlots.Add(GloveSlot);
@@ -272,20 +272,20 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
 
         if (CharacterSwitcher)
         {
-            CharacterSwitcher->SetActiveWidgetIndex(0);
-            UCharacterInfo* InfoWidget = Cast<UCharacterInfo>(CharacterSwitcher->GetWidgetAtIndex(0));
+            CharacterSwitcher->SetActiveWidgetIndex(2);
+            UCharacterInfo* InfoWidget = Cast<UCharacterInfo>(CharacterSwitcher->GetWidgetAtIndex(2));
 
             if (InfoWidget)
             {
                 InfoWidget->SetCharacterName(CharacterName);
-                InfoWidget->SetStarCharcterInfo(CharacterStar);
-                InfoWidget->SetEnhanceButtonEnabled(SlotCharacterOwned, RequiredSoul, soulAmount, TargetGradeIndex);
-                InfoWidget->SetPlayerButtonEnabled(SlotCharacterOwned, SlotCharacterOwned);
-                InfoWidget->SetGradeCharcterInfo(CharacterGrade);
-                //InfoWidget->SetCharcterInfo(InFinalText);
+                //InfoWidget->SetStarCharcterInfo(CharacterStar);
+                //InfoWidget->SetEnhanceButtonEnabled(SlotCharacterOwned, RequiredSoul, soulAmount, TargetGradeIndex);
+                //InfoWidget->SetPlayerButtonEnabled(false, SlotCharacterOwned);
+                //InfoWidget->SetGradeCharcterInfo(CharacterGrade);
+                InfoWidget->SetCharcterInfo(FText::FromString(TEXT("데이터\n")));
+                //InfoWidget->SetEnhanceBtnText(InButtonText);
             }
         }
-
     }
 }
 
@@ -470,6 +470,13 @@ void UCharacterHUDWidget::UpdateCharacterInfo(FName CharacterName, bool bSetChar
 
 void UCharacterHUDWidget::OnSquareSlotClicked(USquareSlotWidget* ClickedSlot, int32 SlotIndex)
 {
+    /// 260312 변경 (로직 변경, UCharacterHUDWidget에서 USquareSlotWidget 클릭해서 00-Global 찾으시면,
+    ///              tag넣는곳 있어요. 거기서 해당 슬롯과 맞는 태그를 설정하세요.)
+    /// 
+    if (!ClickedSlot) return;
+
+    const FGameplayTag SlotTag = ClickedSlot->WidgetTag;
+
     if (CharacterSwitcher)
     {
         UWidget* ActiveWidget = nullptr;
@@ -563,7 +570,8 @@ void UCharacterHUDWidget::InitEquipment(FName CharacterName)
 
         if (bIsSelected)
         {
-            UpdateSlotVisuals(TargetData.Weapons);
+            UpdateSlotVisuals(TargetData.WeaponSlots);
+            UpdateSlotVisuals(TargetData.LegendaryWeaponSlots);
             UpdateSlotVisuals(TargetData.ArmorSlots);
         }
     }
@@ -598,13 +606,13 @@ void UCharacterHUDWidget::SetupEquipment(USquareSlotWidget* ClickedSlot, int32 S
         switch (SlotIndex)
         {
         case 0: 
-            TargetUI = RightHandSlot;
+            TargetUI = Weapon1Slot;
             break;
         case 1:
-            TargetUI = LeftHandSlot;
+            TargetUI = Weapon2Slot;
             break;
         case 2: 
-            TargetUI = TwoHandSlot;
+            TargetUI = LegendaryWeaponSlot;
             break;
         case 3:
             TargetUI = HelmetSlot;
@@ -626,7 +634,7 @@ void UCharacterHUDWidget::SetupEquipment(USquareSlotWidget* ClickedSlot, int32 S
         {
             if (SlotIndex <= 2)
             {
-                TargetData.Weapons.Add(SelectedTag, WeaponGuid);
+                TargetData.WeaponSlots.Add(SelectedTag, WeaponGuid);
             }
             else
             {
@@ -639,3 +647,18 @@ void UCharacterHUDWidget::SetupEquipment(USquareSlotWidget* ClickedSlot, int32 S
     }
 
 }
+
+//void UCharacterHUDWidget::SetupEquipment(bool bNewEquipped)
+//{
+//    bool bIsEquipped = bNewEquipped;
+//    UE_LOG(LogTemp, Warning, TEXT("Equip State : %s"), bIsEquipped ? TEXT("True") : TEXT("False"));
+//
+//    if (bIsEquipped)
+//    {
+//        BackgroundColor->SetBrushColor(FLinearColor::Green);
+//    }
+//    else
+//    {
+//        BackgroundColor->SetBrushColor(FLinearColor::White);
+//    }
+//}

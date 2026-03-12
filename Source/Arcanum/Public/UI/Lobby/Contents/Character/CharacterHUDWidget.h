@@ -62,13 +62,13 @@ protected:
 	TObjectPtr<UCommonDialog> SetPlayerConfirm;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<USquareSlotWidget> RightHandSlot;
+	TObjectPtr<USquareSlotWidget> Weapon1Slot;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<USquareSlotWidget> LeftHandSlot;
+	TObjectPtr<USquareSlotWidget> Weapon2Slot;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<USquareSlotWidget> TwoHandSlot;
+	TObjectPtr<USquareSlotWidget> LegendaryWeaponSlot;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<USquareSlotWidget> HelmetSlot;
@@ -101,6 +101,7 @@ protected:
 	void UpdateCharacterInfo(FName CharacterName, bool bSetCharacter, bool SlotCharacterOwned, FText InFinalText, FText ButtonText, int64 soulAmount);
 
 	UFUNCTION()
+	//void SetupEquipment(bool bNewEquipped);
 	void SetupEquipment(USquareSlotWidget* ClickedSlot, int32 SlotIndex);
 	
 	int GetCurrentGrade;

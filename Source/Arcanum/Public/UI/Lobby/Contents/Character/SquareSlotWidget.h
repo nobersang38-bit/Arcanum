@@ -32,6 +32,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UTexture2D> IconImg;
 
+	/// 260312 변경 (추가 태그)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "00-Global") FGameplayTag WidgetTag;
+
 	UFUNCTION(BlueprintCallable)
 	void SetSquareBackgroundColor(FLinearColor NewColor);
 

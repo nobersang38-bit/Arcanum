@@ -145,6 +145,10 @@ void UInventorySlot::ClickEquipSetupBtn()
     //FGameplayTag ClickedItemTag= ClickedSlot->GetWeaponTag();
 
     OnSetupBtnClicked.Broadcast(CurrentSelectedSlot, SlotIndex);
+    
+    /// 20260312
+    //IsState = !IsState;
+    //OnSetupBtnClicked.Broadcast(IsState);
 }
 
 // ========================================================

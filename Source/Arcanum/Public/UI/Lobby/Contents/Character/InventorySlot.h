@@ -12,6 +12,8 @@ class UTextBlock;
 class USquareSlotWidget;
 class UWrapBox;
 
+/// 260312 변경 (변경 , 상태 전달하는 oneparam 추가.)
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSetupBtnClicked, bool, IsState);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSetupBtnClicked, USquareSlotWidget*, ClickedSlot,int32, SlotIndex);
 
 /**
@@ -34,7 +36,10 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnSetupBtnClicked OnSetupBtnClicked;
 
+	bool IsState = false;
+
 	UFUNCTION()
+	//void CreateWeaponItems(TArray<FEquipmentInfo> WeaponList, FGameplayTag SlotTag);
 	void CreateWeaponItems(TArray<FEquipmentInfo> WeaponList,int32 SlotIndex);
 	
 	UFUNCTION(BlueprintCallable)
