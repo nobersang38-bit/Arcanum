@@ -11,6 +11,7 @@
 #include "Core/ARGameInstance.h"
 #include "Core/ARPlayerAccountService.h"
 #include "Kismet/GameplayStatics.h"
+#include "Core/SubSystem/GameTimeSubsystem.h"
 
 // ========================================================
 // 언리얼 기본생성 / 초기화
@@ -20,6 +21,11 @@ void UGachaHUDWidget::NativeConstruct()
     Super::NativeConstruct();
 
     InitBannerList();
+
+    if (UGameTimeSubsystem* TimeSubsystem = GetGameInstance()->GetSubsystem<UGameTimeSubsystem>()) {
+        TimeSubsystem->OnTimeUpdated.RemoveDynamic(this, &UGachaHUDWidget::HandleTimeUpdated);
+        TimeSubsystem->OnTimeUpdated.AddDynamic(this, &UGachaHUDWidget::HandleTimeUpdated);
+    }
 }
 void UGachaHUDWidget::InitBannerList()
 {
@@ -41,6 +47,7 @@ void UGachaHUDWidget::InitBannerList()
             NewButton->UpdateBannerData(&ActiveBannerDataList[i]);
             NewButton->BannerClicked.RemoveAll(this);
             NewButton->BannerClicked.AddUObject(this, &UGachaHUDWidget::OnBannerSelected);
+            BannerButtons.Add(NewButton);
 
             UVerticalBoxSlot* ButtonSlot = BannerVerticalBox->AddChildToVerticalBox(NewButton);
             if (ButtonSlot) {
@@ -158,5 +165,29 @@ void UGachaHUDWidget::HandleProbabilityButtonClicked()
         if (ProbabilityWidget->GetVisibility() == ESlateVisibility::Visible) {
             //ProbabilityWidget->UpdateData(CurrentBannerData);
         }
+    }
+}
+
+void UGachaHUDWidget::HandleTimeUpdated(FDateTime CurrentTime)
+{
+    for (int32 i = 0; i < ActiveBannerDataList.Num(); ++i) {
+        const FDTGachaBannerDataRow& BannerData = ActiveBannerDataList[i];
+
+        if (BannerData.GachaTypeTag == Arcanum::Gacha::Type::Standard::Standard) {
+            BannerButtons[i]->UpdateRemainingTimeText(FText::FromString(TEXT("상시")));
+            continue;
+        }
+
+        FDateTime EndTime;
+        if (!FDateTime::Parse(BannerData.EndTime, EndTime)) continue;
+
+        FTimespan Remaining = EndTime - CurrentTime;
+        int32 RemainingSeconds = FMath::Max(0, (int32)Remaining.GetTotalSeconds());
+
+        int32 Hours = RemainingSeconds / 3600;
+        int32 Minutes = (RemainingSeconds % 3600) / 60;
+
+        FText TimeText = FText::Format(FText::FromString(TEXT("{0}시간 {1}분")), Hours, Minutes);
+        BannerButtons[i]->UpdateRemainingTimeText(TimeText);
     }
 }

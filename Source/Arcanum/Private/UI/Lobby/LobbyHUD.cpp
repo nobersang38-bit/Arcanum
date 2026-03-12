@@ -13,14 +13,14 @@
 #include "Components/WidgetSwitcher.h"
 #include "DataInfo/PlayerData/FPlayerData.h"
 #include "Core/ARPlayerAccountService.h"
+#include "Core/SubSystem/GameTimeSubsystem.h"
 
 void ULobbyHUD::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	/// 02/26 수정 : 서비스레이어 거치도록
 	CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
-
+	TimeSubsystem = GetGameInstance()->GetSubsystem<UGameTimeSubsystem>();
 
 	if (ExitCommonDialog) ExitCommonDialog->SetVisibility(ESlateVisibility::Collapsed);
 	if (BackgroundBlur) BackgroundBlur->SetVisibility(ESlateVisibility::Collapsed);
@@ -126,6 +126,8 @@ void ULobbyHUD::ClickBattleMenuBtn()
 	if (WidgetSwitcher)
 	{
 		WidgetSwitcher->SetActiveWidgetIndex(0);
+
+		if (TimeSubsystem) TimeSubsystem->bBannerActive = false;
 	}
 }
 
@@ -135,6 +137,8 @@ void ULobbyHUD::ClickCharacterMenuBtn()
 		CharacterWidget->SetParentLobby(this);
 		CharacterWidget->InitCharacterHUD();
 		WidgetSwitcher->SetActiveWidget(CharacterWidget);
+
+		if (TimeSubsystem) TimeSubsystem->bBannerActive = false;
 	}
 }
 
@@ -143,6 +147,8 @@ void ULobbyHUD::ClickEnhancementMenuBtn()
 	if (WidgetSwitcher)
 	{
 		WidgetSwitcher->SetActiveWidgetIndex(2);
+
+		if (TimeSubsystem) TimeSubsystem->bBannerActive = false;
 	}
 }
 
@@ -152,6 +158,8 @@ void ULobbyHUD::ClickShopMenuBtn()
 	{
 		ShopHUDWidget->SetParentLobby(this);
 		WidgetSwitcher->SetActiveWidgetIndex(3);
+
+		if (TimeSubsystem) TimeSubsystem->bBannerActive = false;
 	}
 }
 
@@ -160,6 +168,8 @@ void ULobbyHUD::ClickGachaMenuBtn()
 	if (UGachaHUDWidget* GachaWidget = Cast<UGachaHUDWidget>(WidgetSwitcher->GetWidgetAtIndex(4))) {
 		GachaWidget->SetParentLobby(this);
 		WidgetSwitcher->SetActiveWidget(GachaWidget);
+
+		if (TimeSubsystem) TimeSubsystem->bBannerActive = true;
 	}
 }
 
