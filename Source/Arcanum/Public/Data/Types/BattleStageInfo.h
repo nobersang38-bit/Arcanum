@@ -16,7 +16,7 @@ struct FBasementStat
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FRegenStat CommandCenterHP;
+	FNonRegenStat CommandCenterHP;
 };
 
 /**
@@ -30,11 +30,6 @@ public:
 	// 적 웨이브
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FEnemyWaveDataInfo EnemyWaveDataInfo;
-
-	//나중에 
-	//
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FEnemyBasement EnemyBasementStat;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float StageLimitTime = 100.0f;

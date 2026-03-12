@@ -57,8 +57,9 @@ void UUnitState_Attack::Attack()
 
 		int32 IDX = FMath::RandRange(0, (Internal_UnitCombatComponent->UnitData.Info.AnimSetting.Attacks.Num() - 1));
 		UAnimMontage* AttackMontage = Internal_UnitCombatComponent->UnitData.Info.AnimSetting.Attacks[IDX].Montage;
-		NextAttackCoolTime = Internal_UnitCombatComponent->UnitData.Info.AnimSetting.Attacks[IDX].AttackRate;
-		Internal_UnitCombatComponent->OwnerCharacter->PlayAnimMontage(AttackMontage);
+		NextAttackCoolTime = Internal_UnitCombatComponent->UnitData.Info.AnimSetting.Attacks[IDX].AttackRate / Internal_UnitCombatComponent->AttackSpeed;
+		//Internal_UnitCombatComponent->OwnerCharacter->GetMesh()->GetAnimInstance()->Montage_SetPlayRate(AttackMontage, Internal_UnitCombatComponent->AttackSpeed);
+		Internal_UnitCombatComponent->OwnerCharacter->PlayAnimMontage(AttackMontage, Internal_UnitCombatComponent->AttackSpeed);
 
 		FOnMontageEnded EndDelegate;
 		EndDelegate.BindUObject(this, &UUnitState_Attack::OnAttackMontageEnded);

@@ -28,6 +28,9 @@
 #include "Object/Object/FSM/Unit/UnitState_Death.h"
 #include "Interface/RuntimeUnitDataInterface.h"
 #include "Core/SubSystem/PoolingSubsystem.h"
+#include "Data/DataAssets/Actions/DAAction_MoveSpeed.h"
+#include "Object/Actor/FloatingDamageText.h"
+#include "NiagaraFunctionLibrary.h"
 
 // ========================================================
 // 언리얼 기본 생성
@@ -84,11 +87,17 @@ void UUnitCombatComponent::UnitDeactive()
 void UUnitCombatComponent::DeferredBeginPlay()
 {
 	bIsDead = false;
-	// Death바인딩
+
+	UCharacterBattleStatsComponent* StatComponent = nullptr;
+	// 스탯 바인딩
 	if (ABaseUnitCharacter* TempOwner = Cast<ABaseUnitCharacter>(GetOwner()))
 	{
-		TempOwner->GetCharacterBattleStatsComponent()->OnCharacterRegenStatChanged.RemoveAll(this);
-		TempOwner->GetCharacterBattleStatsComponent()->OnCharacterRegenStatChanged.AddUObject(this, &UUnitCombatComponent::Death);
+		StatComponent = TempOwner->GetCharacterBattleStatsComponent();
+		StatComponent->OnCharacterRegenStatChanged.RemoveAll(this);
+		StatComponent->OnCharacterNonRegenStatChanged.RemoveAll(this);
+		StatComponent->OnCharacterRegenStatChanged.AddUObject(this, &UUnitCombatComponent::Death);
+		StatComponent->OnCharacterRegenStatChanged.AddUObject(this, &UUnitCombatComponent::SetRegenStat);
+		StatComponent->OnCharacterNonRegenStatChanged.AddUObject(this, &UUnitCombatComponent::SetNonRegenStat);
 	}
 
 	if (ACharacter* TempOwnerCharacter = Cast<ACharacter>(GetOwner()))
@@ -113,6 +122,10 @@ void UUnitCombatComponent::DeferredBeginPlay()
 
 	SetupStates();
 	SetupTick();
+	if (StatComponent)
+	{
+		StatComponent->BroadcastAllStats();
+	}
 }
 
 void UUnitCombatComponent::TickUpdate()
@@ -148,7 +161,7 @@ void UUnitCombatComponent::AIInitialize()
 				{
 					AttackRangeKey = BBComp->GetKeyID(UnitData.Info.AISetting.BBAttackRangeName);
 					BBComp->SetValue<UBlackboardKeyType_Float>(AttackRangeKey, UnitData.Info.AISetting.AttackRange);
-					BBComp->SetValue<UBlackboardKeyType_Float>(BBComp->GetKeyID(FName("MoveRange")), UnitData.Info.AISetting.AttackRange - 10.0f);
+					BBComp->SetValue<UBlackboardKeyType_Float>(BBComp->GetKeyID(FName("MoveRange")), UnitData.Info.AISetting.AttackRange - 30.0f);
 				}
 			}
 		}
@@ -158,17 +171,17 @@ void UUnitCombatComponent::AIInitialize()
 	// 적 베이스, 아군 베이스 중 공격 대상 가지고 있기, 타겟으로 지정하기
 	if (UBattlefieldManagerSubsystem* BattlefieldManager = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
 	{
-		if (BattlefieldManager->GetBasement(AllyTeamTag) && BattlefieldManager->GetBasement(EnemyTeamTag) && GetOwner()->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()))
+		if (BattlefieldManager->GetAllyBasement() && BattlefieldManager->GetEnemyBasement() && GetOwner()->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()))
 		{
 			auto Interface = Cast<ITeamInterface>(GetOwner());
 			FGameplayTag MyTeamID = Interface->GetTeamTag();
 			if (MyTeamID.MatchesTag(AllyTeamTag))
 			{
-				TargetBasement = BattlefieldManager->GetBasement(EnemyTeamTag);
+				TargetBasement = BattlefieldManager->GetEnemyBasement();
 			}
 			else if (MyTeamID.MatchesTag(EnemyTeamTag))
 			{
-				TargetBasement = BattlefieldManager->GetBasement(AllyTeamTag);
+				TargetBasement = BattlefieldManager->GetAllyBasement();
 			}
 			TeamTag = MyTeamID;
 
@@ -406,13 +419,54 @@ bool UUnitCombatComponent::IsCanAttackRange()
 	return false;
 }
 
+void UUnitCombatComponent::SetRegenStat(const FRegenStat& InValue)
+{
+	const FGameplayTag& Tag = InValue.ParentTag;
+	if (ActionSet.Contains(Tag))
+	{
+		ActionSet.Find(Tag)->GetDefaultObject()->StartAction(GetOwner(), InValue);
+	}
+}
+
+void UUnitCombatComponent::SetNonRegenStat(const FNonRegenStat& InValue)
+{
+	const FGameplayTag& Tag = InValue.TagName;
+
+	if (ActionSet.Contains(Tag))
+	{
+		ActionSet.Find(Tag)->GetDefaultObject()->StartAction(GetOwner(), InValue);
+	}
+}
+
 
 // ========================================================
 // 상태
 // ========================================================
-void UUnitCombatComponent::LightHitReaction()
+void UUnitCombatComponent::LightHitReaction(float InDamage)
 {
+	//UE_LOG(LogTemp, Error, TEXT("InDamage : %f"), InDamage);
+	UPoolingSubsystem* PoolingSystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
+	if (PoolingSystem && FloatingTextActorClass)
+	{
+		FTransform Transform;
+		Transform.SetLocation((GetOwner()->GetActorLocation() + (GetOwner()->GetActorUpVector() * 60.0f)) + (FMath::VRand() * 20.0f));
+		AActor* FloatingActor = PoolingSystem->SpawnFromPool(FloatingTextActorClass, Transform);
+		if (AFloatingDamageText* FloatingText = Cast<AFloatingDamageText>(FloatingActor))
+		{
+			FloatingText->SetText(InDamage);
+		}
+	}
 
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+		this,
+		UnitData.Info.AISetting.HitEffect,
+		GetOwner()->GetTransform().TransformPosition(UnitData.Info.AISetting.HitEffectRelativeLocation),
+		GetOwner()->GetActorRotation(),
+		FVector::OneVector,
+		true,
+		true,
+		ENCPoolMethod::FreeInPool,
+		true);
 }
 
 void UUnitCombatComponent::Death(const FRegenStat& InData)
@@ -422,7 +476,10 @@ void UUnitCombatComponent::Death(const FRegenStat& InData)
 		GetWorld()->GetTimerManager().ClearTimer(TickTimerHandle);
 		bIsDead = true;
 		StateChange(EUnitState::Death);
-		OwnerAIC->BrainComponent->StopLogic(TEXT("정지"));
+		if (OwnerAIC.IsValid() && OwnerAIC->BrainComponent)
+		{
+			OwnerAIC->BrainComponent->StopLogic(TEXT("정지"));
+		}
 		OwnerCapsuleComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		//OwnerCharacter->StopAnimMontage();
 		UAnimMontage* DeathMontage = nullptr;

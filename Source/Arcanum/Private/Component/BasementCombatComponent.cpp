@@ -22,10 +22,24 @@ void UBasementCombatComponent::BeginPlay()
 	GetOwner()->OnTakeAnyDamage.RemoveDynamic(this, &UBasementCombatComponent::RecievedDamage);
 	GetOwner()->OnTakeAnyDamage.AddDynamic(this, &UBasementCombatComponent::RecievedDamage);
 
-	if (UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
+	if (GetOwner()->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()))
 	{
-		SetBasementStat(BattleSubsystem->GetBasementStat(BattleSubsystem->EnemyTeamTag));
+		auto Interface = Cast<ITeamInterface>(GetOwner());
+		FGameplayTag Tag = Interface->GetTeamTag();
+		if (UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
+		{
+			if (Tag == BattleSubsystem->AllyTeamTag)
+			{
+				SetBasementStat(BattleSubsystem->GetAllyBasementStat());
+			}
+			else
+			{
+				SetBasementStat(BattleSubsystem->GetEnemyBasementStat());
+			}
+			MaxHealth = BasementStat.CommandCenterHP.BaseValue;
+		}
 	}
+	
 }
 
 
@@ -37,19 +51,18 @@ void UBasementCombatComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	// ...
 }
 
-void UBasementCombatComponent::SetBasementStat(const FBasementStat& InBasementStat)
+void UBasementCombatComponent::SetBasementStat(const FEnemyBasement& InBasementStat)
 {
 	BasementStat = InBasementStat;
-	BasementStat.CommandCenterHP.Current = BasementStat.CommandCenterHP.BaseMax;
 }
 
 void UBasementCombatComponent::RecievedDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
-	float Health = BasementStat.CommandCenterHP.Current;
-	BasementStat.CommandCenterHP.Current = FMath::Clamp(Health - Damage, 0, FLT_MAX);
-	OnBasementChangeHealth.Broadcast(BasementStat.CommandCenterHP.Current, BasementStat.CommandCenterHP.BaseMax);
+	float Health = BasementStat.CommandCenterHP.GetTotalValue();
+	BasementStat.CommandCenterHP.BaseValue = FMath::Clamp(Health - Damage, 0, FLT_MAX);
+	OnBasementChangeHealth.Broadcast(BasementStat.CommandCenterHP.GetBaseValue(), MaxHealth);
 
-	if (BasementStat.CommandCenterHP.Current <= 0.0f)
+	if (BasementStat.CommandCenterHP.GetTotalValue() <= 0.0f)
 	{
 		UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 		if (BattleSubsystem)

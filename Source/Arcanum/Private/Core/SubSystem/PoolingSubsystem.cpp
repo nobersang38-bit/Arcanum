@@ -4,6 +4,20 @@
 #include "Interface/PoolingInterface.h"
 #include "Engine/World.h"
 #include "TimerManager.h"
+#include "Kismet/GameplayStatics.h"
+#include "Engine/PostProcessVolume.h"
+
+void UPoolingSubsystem::OnWorldBeginPlay(UWorld& InWorld)
+{
+	Super::OnWorldBeginPlay(InWorld);
+	TArray<AActor*> PostProcessVolumes;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APostProcessVolume::StaticClass(), PostProcessVolumes);
+
+	if(!PostProcessVolumes.IsEmpty())
+	{
+		CashedPostProcessVolume = Cast<APostProcessVolume>(PostProcessVolumes[0]);
+	}
+}
 
 void UPoolingSubsystem::SetPoolSet(const FPoolingSet& SetData)
 {
@@ -149,6 +163,25 @@ AActor* UPoolingSubsystem::SpawnFromPool(TSubclassOf<AActor> InClass, const FTra
 	}
 
 	return nullptr;
+}
+
+bool UPoolingSubsystem::ActivateItem(AActor* InActor)
+{
+	if (!InActor) return false;
+
+	if (FName* CategoryName = ClassToTagMap.Find(InActor->GetClass()))
+	{
+		if (FPoolItemsData* PoolItemData = DeactivedItems.Find(*CategoryName))
+		{
+			if (AActor** FindActor = PoolItemData->Items.Find(InActor))
+			{
+				ActivateItems.FindOrAdd(*CategoryName).Items.Add(InActor);
+				DeactivedItems.FindOrAdd(*CategoryName).Items.Remove(InActor);
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 bool UPoolingSubsystem::DeactiveItem(AActor* InActor)

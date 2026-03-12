@@ -3,12 +3,13 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "GameplayTagContainer.h"
+#include "Interface/PoolingInterface.h"
 #include "SkillActor.generated.h"
 
 class USkillBase;
 
 UCLASS(Abstract)
-class ARCANUM_API ASkillActor : public AActor
+class ARCANUM_API ASkillActor : public AActor, public IPoolingInterface
 {
     GENERATED_BODY()
 
@@ -42,6 +43,9 @@ protected:
 
     /** 풀로 되돌릴 때 호출 */
     virtual void ReturnToPool();
+
+    void ActivateItem() override;
+    void DeactiveItem() override;
 
 public:
     bool IsActive() const { return bIsActive; }

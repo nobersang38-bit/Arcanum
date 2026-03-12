@@ -7,6 +7,8 @@
 #include "DataInfo/PlayerData/PlayerBattleData/DataTable/DTPlayerBattleStats.h"
 #include "DataInfo/BattleCharacter/CharacterInfo/DataTable/DTCharacterBaseInfo.h"
 
+#include "Data/Rows/UnitsDataRow.h"
+
 // ========================================================
 // 초기화 관련
 // ========================================================
@@ -74,7 +76,7 @@ void UARGameInstance::InitializeNewPlayerData()
         }
     }
 
-    // 배틀 캐릭터 리스트 생성
+    // 플레이어블 캐릭터 리스트 생성
     {
         UGameDataSubsystem* DataSubsystem = GetSubsystem<UGameDataSubsystem>();
         if (!DataSubsystem) return;
@@ -95,16 +97,31 @@ void UARGameInstance::InitializeNewPlayerData()
             NewCharacter.CharacterInfo.BattleCharacterInitData = Row->BattleCharacterInfo;
             NewCharacter.CharacterInfo.CurrShardCount = 0;
             NewCharacter.CharacterInfo.CurrGrade = Row->BattleCharacterInfo.DefaultGrade;
-            NewCharacter.CharacterInfo.CurrentGrade = 0;
+            NewCharacter.CharacterInfo.CurrStarLevel = 0;
             NewCharacter.CharacterInfo.CurrentLevel = 1;
 
             PlayerData.OwnedCharacters.Add(NewCharacter);
         }
-    }
 
-    if (!PlayerData.OwnedCharacters.IsEmpty()) {
-        PlayerData.OwnedCharacters[0].bSelection = true;
-        PlayerData.OwnedCharacters[0].CharacterInfo.CurrentGrade = 1;
+        if (!PlayerData.OwnedCharacters.IsEmpty()) {
+            PlayerData.OwnedCharacters[0].bSelection = true;
+            PlayerData.OwnedCharacters[0].CharacterInfo.CurrStarLevel = 1;
+        }
+    }
+    {
+        UGameDataSubsystem* DataSubsystem = GetSubsystem<UGameDataSubsystem>();
+        if (!DataSubsystem) return;
+
+        UDataTable** TablePtr = DataSubsystem->MasterDataTables.Find(Arcanum::DataTable::AllyUnitInfo);
+        if (!TablePtr) return;
+        UDataTable* Table = *TablePtr;
+        PlayerData.AllyburdenCharacters.Empty();
+        for (const auto& Pair : Table->GetRowMap()) {
+            FUnitsDataRow* Row = (FUnitsDataRow*)Pair.Value;
+            if (!Row) continue;
+            const FUnitInfoSetting& UnitInfo = Row->UnitData;
+            PlayerData.AllyburdenCharacters.Add(UnitInfo);
+        }
     }
 }
 // ========================================================
@@ -198,6 +215,7 @@ bool UARGameInstance::GenerateResults(const FDTGachaBannerDataRow* BannerData, i
         if (Pool) {
             FGachaItemResult Result = ResolvePickup(BannerData, *Pool, BannerState, Grade);
             Results.Add(Result);
+
         }
     }
 
@@ -325,27 +343,61 @@ FGameplayTag UARGameInstance::GetRandomFromGrade(const FGachaGradePool& Pool, FG
     static const FGameplayTag ItemRoot = FGameplayTag::RequestGameplayTag("Arcanum.Items.Rarity");
 
     if (GachaIndex.MatchesTag(CharacterRoot)) {
+        TArray<FName> CandidateRows;
+
         for (const FName& RowName : RowNames) {
             if (FDTCharacterBaseInfoRow* CharRow = DataSubsystem->GetRow<FDTCharacterBaseInfoRow>(Arcanum::DataTable::CharacterInfo, RowName)) {
-                if (CharRow->BattleCharacterInfo.DefaultGrade == Pool.GradeTag) {
-                    ValidList.Add(CharRow->BattleCharacterInfo.CharacterTag);
-                    continue;
-                }
+                if (CharRow->BattleCharacterInfo.DefaultGrade == Pool.GradeTag) CandidateRows.Add(RowName);
+            }
+        }
+
+        if (CandidateRows.Num() > 0) {
+            int32 RandIndex = FMath::RandRange(0, CandidateRows.Num() - 1);
+            FName SelectedRow = CandidateRows[RandIndex];
+            if (FDTCharacterBaseInfoRow* CharRow = DataSubsystem->GetRow<FDTCharacterBaseInfoRow>(Arcanum::DataTable::CharacterInfo, SelectedRow)) {
+                FGameplayTag CharacterTag = CharRow->BattleCharacterInfo.CharacterTag;
+                ValidList.Add(CharacterTag);
+                AddCharacterToBattleCharacter(CharRow);
             }
         }
     }
     else if (GachaIndex.MatchesTag(ItemRoot)) {
+        TArray<FName> CandidateRows;
         for (const FName& RowName : RowNames) {
             if (FDTEquipmentInfoRow* ItemRow = DataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, RowName)) {
-                if (ItemRow->ItemTag.MatchesTag(Pool.GradeTag)) {
-                    ValidList.Add(ItemRow->ItemTag);
-                    AddRandomEquipmentToInventory(ItemRow);
-                }
+                if (ItemRow->ItemTag.MatchesTag(Pool.GradeTag)) CandidateRows.Add(RowName);
+            }
+        }
+
+        if (CandidateRows.Num() > 0) {
+            int32 RandIndex = FMath::RandRange(0, CandidateRows.Num() - 1);
+            FName SelectedRow = CandidateRows[RandIndex];
+
+            if (FDTEquipmentInfoRow* ItemRow = DataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, SelectedRow)) {
+                ValidList.Add(ItemRow->ItemTag);
+                AddRandomEquipmentToInventory(ItemRow);
             }
         }
     }
 
     return ValidList.Num() > 0 ? ValidList[FMath::RandRange(0, ValidList.Num() - 1)] : FGameplayTag::EmptyTag;
+}
+void UARGameInstance::AddCharacterToBattleCharacter(FDTCharacterBaseInfoRow* CharRow)
+{
+    if (!CharRow) return;
+
+    const FGameplayTag CharacterTag = CharRow->BattleCharacterInfo.CharacterTag;
+    for (FBattleCharacterData& CharData : PlayerData.OwnedCharacters) {
+        if (CharData.Character == CharacterTag) {
+            if (CharData.CharacterInfo.CurrStarLevel == 0) {
+                CharData.CharacterInfo.CurrStarLevel = 1;
+                CharData.CharacterInfo.CurrGrade = CharRow->BattleCharacterInfo.DefaultGrade;
+            }
+            else CharData.CharacterInfo.CurrShardCount += CharData.CharacterInfo.BattleCharacterInitData.DuplicateShardReward;
+            
+            return;
+        }
+    }
 }
 void UARGameInstance::AddRandomEquipmentToInventory(FDTEquipmentInfoRow* InRow)
 {
@@ -371,7 +423,17 @@ void UARGameInstance::AddRandomEquipmentToInventory(FDTEquipmentInfoRow* InRow)
         NewItem.Equipment.OnHitTargetStats.Add(FinalStat);
     }
 
-    PlayerData.Inventory.Add(NewItem);
+    if (PlayerData.Inventory.Num() < PlayerData.InventoryCapacity) PlayerData.Inventory.Add(NewItem);
+    else {
+        if (PlayerData.Mailbox.Num() < PlayerData.MailboxCapacity) {
+            FMailItem MailItem;
+            MailItem.Equipment = NewItem;
+            MailItem.ExpireTime = FDateTime::UtcNow() + FTimespan::FromDays(30);
+
+            PlayerData.Mailbox.Add(MailItem);
+        }
+    }
+    
 
     //if (NewItem.Equipment.OnHitTargetStats.Num() > 0)
     //{

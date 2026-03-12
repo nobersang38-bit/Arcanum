@@ -50,6 +50,7 @@ struct FItemDefinition
     TMap<FGameplayTag, int32> Skills;
 };
 
+
 USTRUCT(BlueprintType)
 struct FEquipmentInfo {
     GENERATED_BODY()
@@ -66,4 +67,19 @@ struct FEquipmentInfo {
     /** 현재 강화 수치 */
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int32 CurrUpgradeLevel = 0;
+};
+
+/**
+ * @brief 메일박스용 구조체
+ */
+USTRUCT(BlueprintType)
+struct FMailItem
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
+    FEquipmentInfo Equipment;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
+    FDateTime ExpireTime;
 };

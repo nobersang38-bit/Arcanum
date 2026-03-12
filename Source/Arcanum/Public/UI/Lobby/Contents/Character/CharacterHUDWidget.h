@@ -59,9 +59,6 @@ protected:
 	TObjectPtr<UInventorySlot> WeaponList;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UInventorySlot> EquipmentList;
-
-	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCommonDialog> SetPlayerConfirm;
 
 	UPROPERTY(meta = (BindWidget))
@@ -83,7 +80,7 @@ protected:
 	TObjectPtr<USquareSlotWidget> GloveSlot;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<USquareSlotWidget> BootsSlot;
+	TObjectPtr<USquareSlotWidget> BootSlot;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UWidgetSwitcher>CharacterSwitcher;
@@ -93,6 +90,7 @@ protected:
 
 	UPROPERTY()
 	TArray<URoundedSlotWidget*> CreatedCharacterSlots;
+	UPROPERTY() TArray<URoundedSlotWidget*> CreatedServantCharacterSlots;
 
 	UFUNCTION()
 	void CharacterEnhancement(FText CharacterName,int32 InRequiredSoul);
@@ -100,13 +98,18 @@ protected:
 	void SetPlayerCharacter(FText CharacterName);
 
 	UFUNCTION()
-	void UpdateCharacterInfo(FName CharacterName, bool SlotCharacterOwned, FText InFinalText, FText ButtonText, int64 soulAmount);
+	void UpdateCharacterInfo(FName CharacterName, bool bSetCharacter, bool SlotCharacterOwned, FText InFinalText, FText ButtonText, int64 soulAmount);
 
 	UFUNCTION()
-	void SetupEquipment();
+	//void SetupEquipment(bool bNewEquipped);
+	void SetupEquipment(USquareSlotWidget* ClickedSlot, int32 SlotIndex);
+	
 	int GetCurrentGrade;
-
 	int32 RequiredSoul;
+	// 무기, 장비 슬롯
+	UPROPERTY()
+	TArray<USquareSlotWidget*> EquipmentSlots;
+
 
 public:
 	UPROPERTY(BlueprintAssignable)
@@ -119,6 +122,12 @@ public:
 	UGameDataSubsystem* DataSubsystem;
 
 	void InitCharacterHUD();
+	void InitServantCharacter();
+
+	void InitWeaponInventory(int32 SlotIndex);
+	void InitEquipment(FName CharacterName);
+
+
 private:
 	UFUNCTION()
 	void OnSquareSlotClicked(USquareSlotWidget* ClickedSlot, int32 SlotIndex);
@@ -131,7 +140,14 @@ private:
 	FText FinalText;
 	FString CombinedInfoString;
 	FText ButtonText;
-	
+
+	int32 SelectedIndex = INDEX_NONE;
+	FName CurrentSelectedCharacterName; // 선택된 캐릭터
+
+	UPROPERTY()
+	UTexture2D* WeaponSlotItemIcon = nullptr;
+
+	void UpdateSlotVisuals(const TMap<FGameplayTag, FGuid>& InEquipmentMap);
 #pragma endregion
 
 };
