@@ -21,7 +21,8 @@ void UARGameInstance::Init()
 void UARGameInstance::InitializeGameData()
 {
     /// Todo : 추후 SaveSlot으로 저장이름 변경해줘야함. 지금 변경하면 테스트 불가.
-    ArSaveGame = Cast<UArcanumSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, 0));
+    ArSaveGame = Cast<UArcanumSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("d"), 0));
+    //ArSaveGame = Cast<UArcanumSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, 0));
     if (!ArSaveGame) {
         ArSaveGame = Cast<UArcanumSaveGame>(UGameplayStatics::CreateSaveGameObject(UArcanumSaveGame::StaticClass()));
         AddIDPW(TEXT("Admin"), TEXT("12345"));
@@ -99,6 +100,15 @@ void UARGameInstance::InitializeNewPlayerData()
             NewCharacter.CharacterInfo.CurrGrade = Row->BattleCharacterInfo.DefaultGrade;
             NewCharacter.CharacterInfo.CurrStarLevel = 0;
             NewCharacter.CharacterInfo.CurrentLevel = 1;
+
+            FGuid EmptyGuid;
+            NewCharacter.WeaponSlots.Add(Arcanum::Items::ItemSlot::Weapon::Slot1, EmptyGuid);
+            NewCharacter.WeaponSlots.Add(Arcanum::Items::ItemSlot::Weapon::Slot2, EmptyGuid);
+            NewCharacter.LegendaryWeaponSlots.Add(Arcanum::Items::ItemSlot::Weapon::Legendary, EmptyGuid);
+            NewCharacter.ArmorSlots.Add(Arcanum::Items::ItemSlot::Armor::Boot, EmptyGuid);
+            NewCharacter.ArmorSlots.Add(Arcanum::Items::ItemSlot::Armor::Chest, EmptyGuid);
+            NewCharacter.ArmorSlots.Add(Arcanum::Items::ItemSlot::Armor::Glove, EmptyGuid);
+            NewCharacter.ArmorSlots.Add(Arcanum::Items::ItemSlot::Armor::Helmet, EmptyGuid);
 
             PlayerData.OwnedCharacters.Add(NewCharacter);
         }

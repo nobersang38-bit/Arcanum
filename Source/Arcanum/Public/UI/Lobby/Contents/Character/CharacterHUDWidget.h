@@ -124,7 +124,8 @@ public:
 	void InitCharacterHUD();
 	void InitServantCharacter();
 
-	void InitWeaponInventory(int32 SlotIndex);
+	//void InitWeaponInventory(int32 SlotIndex);
+	void InitWeaponInventory(FGameplayTag SlotTag);
 	void InitEquipment(FName CharacterName);
 
 
