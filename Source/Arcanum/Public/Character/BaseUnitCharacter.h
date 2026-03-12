@@ -60,6 +60,9 @@ protected:
 	TObjectPtr<class UCharacterBattleStatsComponent> CharacterBattleStatsComponent = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<class UStatusActionComponent> StatusActionComponent = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<class UWidgetComponent> HealthBarComponent = nullptr;
 
 protected:
@@ -104,4 +107,6 @@ private:
 	TObjectPtr<UMaterialInstanceDynamic> OutlineDynamicMI = nullptr;
 
 	FTimerHandle OutlineTimeHandle;
+
+	FDelegateHandle SetPercentDelegateHandle;
 };

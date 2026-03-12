@@ -12,6 +12,7 @@
 #include "Interface/RuntimeUnitDataInterface.h"
 #include "Core/SubSystem/BattlefieldManagerSubsystem.h"
 #include "Component/Stats/CharacterBattleStatsComponent.h"
+#include "Component/StatusActionComponent.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -40,6 +41,8 @@ APlayerCharacter::APlayerCharacter()
 
 	StatComponent = CreateDefaultSubobject<UCharacterBattleStatsComponent>(TEXT("StatComponent"));
 
+	StatusActionComponent = CreateDefaultSubobject<UStatusActionComponent>(TEXT("StatusActionComponent"));
+
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
 }
@@ -54,21 +57,7 @@ void APlayerCharacter::BeginPlay()
 	if (BattleSubsystem)
 	{
 		TeamTag = BattleSubsystem->AllyTeamTag;
-
-		RegenStats.Empty();
-		NonRegenStats.Empty();
-
-		const TArray<FRegenStat>& RegenStatsBack = BattleSubsystem->GetInBattleData().PlayerBattleStat.RegenStats;
-		for (int i = 0; i < RegenStatsBack.Num(); i++)
-		{
-			RegenStats.Add(RegenStatsBack[i].ParentTag, RegenStatsBack[i]);
-		}
-
-		const TArray<FNonRegenStat>& NonRegenStatsBack = BattleSubsystem->GetInBattleData().PlayerBattleStat.NonRegenStats;
-		for (int i = 0; i < NonRegenStatsBack.Num(); i++)
-		{
-			NonRegenStats.Add(NonRegenStatsBack[i].TagName, NonRegenStatsBack[i]);
-		}
+		StatComponent->SetData(BattleSubsystem->GetInBattleData().PlayerBattleStat);
 	}
 	FGameplayTag PlayerID = FGameplayTag::RequestGameplayTag(TEXT("Arcanum.Player.ID.Elara"));
 	GameplayTags.AddTag(PlayerID);
@@ -81,10 +70,9 @@ void APlayerCharacter::BeginPlay()
 	ABattlePlayerController* OwnerPC = Cast<ABattlePlayerController>(GetController());
 	if (OwnerPC)
 	{
-		FRegenStat* HealthStat = RegenStats.Find(HealthTag);
-		if (HealthStat)
+		if (const FRegenStat* RegenStat = StatComponent->FindRegenStat(HealthTag))
 		{
-			OwnerPC->SetPlayerHealthProgress(HealthStat->Current, HealthStat->GetTotalMax());
+			OwnerPC->SetPlayerHealthProgress(RegenStat->Current, RegenStat->GetBaseMax());
 		}
 	}
 }
@@ -111,16 +99,13 @@ FGameplayTag APlayerCharacter::GetTeamTag()
 void APlayerCharacter::RecievedDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
 {
 	ABattlePlayerController* OwnerPC = Cast<ABattlePlayerController>(GetController());
-	FRegenStat* HealthStat = RegenStats.Find(HealthTag);
+	const FRegenStat* HealthStat = StatComponent->FindRegenStat(HealthTag);
 	if (HealthStat)
 	{
 		if (OwnerPC)
 		{
-			{
-				HealthStat->Current -= Damage;
-				HealthStat->Current = FMath::Clamp(HealthStat->Current, 0.0f, HealthStat->GetTotalMax());
-				OwnerPC->SetPlayerHealthProgress(HealthStat->Current, HealthStat->GetTotalMax());
-			}
+			StatComponent->ChangeStatValue(HealthTag, -Damage, DamageCauser);
+			OwnerPC->SetPlayerHealthProgress(HealthStat->Current, HealthStat->GetTotalMax());
 		}
 		if (HealthStat->Current <= 0.0f)
 		{
@@ -241,45 +226,6 @@ void APlayerCharacter::PlayerBasicAttack()
 			UGameplayStatics::ApplyDamage(OutOverlaps[i].GetActor(), 30.0f, GetController(), this, nullptr);
 		}
 	}
-}
-
-void APlayerCharacter::SetupStat()
-{
-	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
-
-	RegenStats.Empty();
-
-	if (BattleSubsystem)
-	{
-		const FGradeStatData& GradeStatData = BattleSubsystem->GetInBattleData().PlayerBattleStat;
-		for (int i = 0; i < GradeStatData.RegenStats.Num(); i++)
-		{
-			RegenStats.Add(GradeStatData.RegenStats[i].ParentTag, GradeStatData.RegenStats[i]);
-		}
-
-		for (int i = 0; i < GradeStatData.RegenStats.Num(); i++)
-		{
-			NonRegenStats.Add(GradeStatData.NonRegenStats[i].TagName, GradeStatData.NonRegenStats[i]);
-		}
-	}
-}
-
-FRegenStat* APlayerCharacter::FindRegenStat(FGameplayTag InTag)
-{
-	if (FRegenStat* RegenStat = RegenStats.Find(InTag))
-	{
-		return RegenStat;
-	}
-	return nullptr;
-}
-
-FNonRegenStat* APlayerCharacter::FindNonRegenStat(FGameplayTag InTag)
-{
-	if (FNonRegenStat* NonRegenStat = NonRegenStats.Find(InTag))
-	{
-		return NonRegenStat;
-	}
-	return nullptr;
 }
 
 void APlayerCharacter::AddCurrentStat(FGameplayTag InTag, float InValue)

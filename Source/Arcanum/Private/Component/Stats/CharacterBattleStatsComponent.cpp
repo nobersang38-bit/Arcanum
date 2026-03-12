@@ -28,11 +28,9 @@ void UCharacterBattleStatsComponent::BeginPlay()
 
         if (!Row->GradeDataSteps.IsEmpty())
         {
-            if (Row) GradeStatData = (*Row).GradeDataSteps[0];
+            SetData((*Row).GradeDataSteps[0]);
         }
     }
-
-	InitComponent();
 
 	if (GetWorld()) GetWorld()->GetTimerManager().SetTimer(RegenTimerHandle, this, &UCharacterBattleStatsComponent::ProcessRegen, TimerTick, true);
 }
@@ -140,6 +138,11 @@ void UCharacterBattleStatsComponent::BroadcastAllStats()
     {
         NotifyNonRegenStatChanged(Stat);
     }
+}
+void UCharacterBattleStatsComponent::SetData(const FGradeStatData& InGradeStatData)
+{
+    GradeStatData = InGradeStatData;
+    InitComponent();
 }
 void UCharacterBattleStatsComponent::RebuildTotalStats()
 {
@@ -300,4 +303,28 @@ void UCharacterBattleStatsComponent::UpdateFinalStatValue(FGameplayTag Tag)
         NotifyNonRegenStatChanged(*NStat);
         return;
     }
+}
+
+const FRegenStat* UCharacterBattleStatsComponent::FindRegenStat(const FGameplayTag& InFindTag) const
+{
+    for (int i = 0; i < TotalRegenStats.Num(); i++)
+    {
+        if (TotalRegenStats[i].ParentTag == InFindTag)
+        {
+            return &TotalRegenStats[i];
+        }
+    }
+    return nullptr;
+}
+
+const FNonRegenStat* UCharacterBattleStatsComponent::FindNonRegenStat(const FGameplayTag& InFindTag) const
+{
+    for (int i = 0; i < TotalNonRegenStats.Num(); i++)
+    {
+        if (TotalNonRegenStats[i].TagName == InFindTag)
+        {
+            return &TotalNonRegenStats[i];
+        }
+    }
+    return nullptr;
 }

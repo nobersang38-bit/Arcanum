@@ -5,11 +5,11 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
-void UDAAction_MoveSpeed::StartAction(AActor* TargetActor, const FNonRegenStat& Value)
+void UDAAction_MoveSpeed::StartAction(const FNonRegenStat& Value)
 {
-	Super::StartAction(TargetActor, Value);
+	Super::StartAction(Value);
 	
-	ACharacter* Character = Cast<ACharacter>(TargetActor);
+	ACharacter* Character = Cast<ACharacter>(GetOuter());
 	if (Character)
 	{
 		Character->GetCharacterMovement()->MaxWalkSpeed = Value.GetTotalValue();

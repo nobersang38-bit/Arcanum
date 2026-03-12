@@ -15,6 +15,6 @@ class ARCANUM_API UDAAction : public UDataAsset
 {
 	GENERATED_BODY()
 public:
-	virtual void StartAction(AActor* TargetActor, const FRegenStat& Stat);
-	virtual void StartAction(AActor* TargetActor, const FNonRegenStat& Stat);
+	virtual void StartAction(const FRegenStat& Stat);
+	virtual void StartAction(const FNonRegenStat& Stat);
 };

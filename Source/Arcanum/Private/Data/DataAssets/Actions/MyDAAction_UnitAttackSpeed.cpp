@@ -5,10 +5,10 @@
 #include "Character/BaseUnitCharacter.h"
 #include "Component/UnitCombatComponent.h"
 
-void UMyDAAction_UnitAttackSpeed::StartAction(AActor* TargetActor, const FNonRegenStat& Stat)
+void UMyDAAction_UnitAttackSpeed::StartAction(const FNonRegenStat& Stat)
 {
-	Super::StartAction(TargetActor, Stat);
-	if (ABaseUnitCharacter* Unit = Cast<ABaseUnitCharacter>(TargetActor))
+	Super::StartAction(Stat);
+	if (ABaseUnitCharacter* Unit = Cast<ABaseUnitCharacter>(GetOuter()))
 	{
 		Unit->GetUnitCombatComponent()->SetAttackSpeed(Stat.GetTotalValue());
 	}

@@ -48,29 +48,6 @@ public:
 #pragma endregion
 
 #pragma region 스탯
-	void SetupStat();
-
-	/*UPROPERTY(EditAnywhere, BlueprintReadOnly, SaveGame)
-	float Current = 0.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, SaveGame)
-	float BaseMax = 0.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, SaveGame)
-	float BaseTick = 0.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, SaveGame)
-	float BonusMax = 0.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, SaveGame)
-	float ModifierMax = 0.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, SaveGame)
-	float ModifierTick = 0.0f;*/
-
-	FRegenStat* FindRegenStat(FGameplayTag InTag);
-	FNonRegenStat* FindNonRegenStat(FGameplayTag InTag);
-
 	void AddCurrentStat(FGameplayTag InTag, float InValue);
 
 #pragma endregion
@@ -90,6 +67,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stat")
 	TObjectPtr<class UCharacterBattleStatsComponent> StatComponent = nullptr;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "StatusAction")
+	TObjectPtr<class UStatusActionComponent> StatusActionComponent = nullptr;
+
 	// 캐릭터 태그
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tags")
 	FGameplayTagContainer GameplayTags;
@@ -104,10 +84,10 @@ protected:
 	FGameplayTag ManaTag = Arcanum::BattleStat::Character::Regen::Mana::Root;
 
 protected:
-	UPROPERTY()
-	TMap<FGameplayTag, FRegenStat> RegenStats;
+	//UPROPERTY()
+	//TMap<FGameplayTag, FRegenStat> RegenStats;
 
-	UPROPERTY()
-	TMap<FGameplayTag, FNonRegenStat> NonRegenStats;
+	//UPROPERTY()
+	//TMap<FGameplayTag, FNonRegenStat> NonRegenStats;
 
 };

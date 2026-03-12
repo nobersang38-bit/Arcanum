@@ -60,6 +60,10 @@ public:
 	UFUNCTION()
 	void BroadcastAllStats();
 
+	// 20260312 김도현 : 스탯 초기화 함수 추가
+	UFUNCTION()
+	void SetData(const FGradeStatData& InGradeStatData);
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "0_Stats|Base")
 	float TimerTick = 1.f;
 public:
@@ -126,6 +130,8 @@ private:
 public:
 	const TArray<FRegenStat>& GetRegenStats() const { return TotalRegenStats; }
 	const TArray<FNonRegenStat>& GetNonRegenStats() const { return TotalNonRegenStats; }
+	const FRegenStat* FindRegenStat(const FGameplayTag& InFindTag) const;
+	const FNonRegenStat* FindNonRegenStat(const FGameplayTag& InFindTag) const;
 private:
 	UPROPERTY(VisibleAnywhere, Category = "1_Stats|RunTimeDebug") TArray<FRegenStat> TotalRegenStats;
 	UPROPERTY(VisibleAnywhere, Category = "1_Stats|RunTimeDebug") TArray<FNonRegenStat> TotalNonRegenStats;

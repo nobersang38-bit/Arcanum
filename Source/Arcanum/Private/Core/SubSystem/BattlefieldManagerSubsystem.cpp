@@ -325,7 +325,6 @@ void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerDa
 						break;
 					}
 				}
-
 			}
 		}
 	}
