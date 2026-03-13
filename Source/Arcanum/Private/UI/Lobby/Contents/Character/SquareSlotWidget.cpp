@@ -1,51 +1,74 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "UI/Lobby/Contents/Character/SquareSlotWidget.h"
 #include "Components/Border.h"
 #include "Components/Image.h"
+#include "Components/TextBlock.h"
 
 void USquareSlotWidget::NativePreConstruct()
 {
-    Super::NativePreConstruct();
-    if (BackgroundColor) BackgroundColor->SetBrushColor(BackColor);
-    if (IconImage && IconImg) IconImage->SetBrushFromTexture(IconImg);
+	Super::NativePreConstruct();
+	if (BackgroundColor) BackgroundColor->SetBrushColor(BackColor);
+	if (IconImage && IconImg) IconImage->SetBrushFromTexture(IconImg);
 }
 
 FReply USquareSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-    Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+	Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 
-    OnSlotClicked.Broadcast(this, SlotIndex);
+	OnSlotClicked.Broadcast(this, SlotIndex);
 
-    return FReply::Handled();
+	return FReply::Handled();
 }
 
 void USquareSlotWidget::SetSquareBackgroundColor(FLinearColor NewColor)
 {
-    if (BackgroundColor)
-    {
-        BackgroundColor->SetBrushColor(NewColor);
-    }
+	if (BackgroundColor)
+	{
+		BackgroundColor->SetBrushColor(NewColor);
+	}
 }
 
 void USquareSlotWidget::SetItemIconImage(UTexture2D* ItemIcon)
 {
-    IconImage->SetBrushFromTexture(ItemIcon);
-    IconImg = ItemIcon;
+	IconImage->SetBrushFromTexture(ItemIcon);
+	IconImg = ItemIcon;
 }
 
 void USquareSlotWidget::SetItemName(FText InText)
 {
-    EquipNameTxt= InText;
+	EquipNameTxt = InText;
 }
 
 void USquareSlotWidget::SetWeaponTag(FGameplayTag InTag)
 {
-    WeaponTag = InTag;
+	WeaponTag = InTag;
 }
 
 void USquareSlotWidget::SetWeaponGuid(FGuid InGuid)
 {
-    WeaponGuid = InGuid;
+	WeaponGuid = InGuid;
+}
+
+void USquareSlotWidget::SetUpgradeLevel(int32 InUpgradeLevel)
+{
+	if (UpgradeLevelText)
+	{
+		if (InUpgradeLevel > 0)
+		{
+			UpgradeLevelText->SetVisibility(ESlateVisibility::Visible);
+			UpgradeLevelText->SetText(FText::FromString(FString::Printf(TEXT("+%d"), InUpgradeLevel)));
+		}
+		else
+		{
+			ClearUpgradeLevel();
+		}
+	}
+}
+
+void USquareSlotWidget::ClearUpgradeLevel()
+{
+	if (UpgradeLevelText)
+	{
+		UpgradeLevelText->SetText(FText::GetEmpty());
+		UpgradeLevelText->SetVisibility(ESlateVisibility::Collapsed);
+	}
 }

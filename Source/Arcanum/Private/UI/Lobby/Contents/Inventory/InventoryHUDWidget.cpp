@@ -4,8 +4,10 @@
 #include "UI/Common/CommonBtnWidget.h"
 #include "Core/SubSystem/GameDataSubsystem.h"
 #include "Core/ARGameInstance.h"
+#include "core/ARPlayerAccountService.h"
 #include "Components/WrapBox.h"
 #include "Components/Border.h"
+#include "Components/HorizontalBox.h"
 
 void UInventoryHUDWidget::NativeConstruct()
 {
@@ -166,7 +168,6 @@ void UInventoryHUDWidget::AppendStackItemSlots(TArray<FInventoryViewSlot>& OutSl
 	}
 }
 
-
 void UInventoryHUDWidget::AppendGuidSlots(TArray<FInventoryViewSlot>& OutSlots, int32 InSlotLimit) const
 {
 	if (InSlotLimit <= 0) return;
@@ -186,6 +187,7 @@ void UInventoryHUDWidget::AppendGuidSlots(TArray<FInventoryViewSlot>& OutSlots, 
 
 		const FDTItemCatalogRow* catalogRow = FPlayerAccountService::FindItemCatalogRowByTag(this, equip.ItemTag);
 		if (!catalogRow) continue;
+		if (!IsMatchedEquipSlotFilter(equip.ItemTag)) continue;
 
 		// 카테고리 필터
 		if (CurrentFilter == EInventoryCategoryFilter::Consumable) continue;
@@ -238,6 +240,8 @@ void UInventoryHUDWidget::AppendGuidSlotsSorted(TArray<FInventoryViewSlot>& OutS
 
 		const FDTItemCatalogRow* catalogRow = FPlayerAccountService::FindItemCatalogRowByTag(this, equip.ItemTag);
 		if (!catalogRow) continue;
+
+		if (!IsMatchedEquipSlotFilter(equip.ItemTag)) continue;
 
 		// 카테고리 필터
 		if (CurrentFilter == EInventoryCategoryFilter::Consumable) continue;
@@ -343,6 +347,78 @@ void UInventoryHUDWidget::RefreshEquipmentInventory()
 			OnInventorySlotSelected.Broadcast(FInventoryViewSlot());
 		}
 	}
+}
+
+void UInventoryHUDWidget::RefreshEquipmentInventoryBySlot(EInventoryEquipSlotFilter InFilter)
+{
+	CurrentFilter = EInventoryCategoryFilter::Equipment;
+	CurrentEquipSlotFilter = InFilter;
+
+	if (!ParentLobby) return;
+
+	const int32 slotCount = FMath::Max(1, ParentLobby->GetCachedPlayerData().InventoryCapacity);
+
+	TArray<FInventoryViewSlot> viewSlots;
+	viewSlots.Reserve(slotCount);
+
+	BuildInventoryViewSlots(viewSlots, slotCount);
+	ApplyInventorySlots(viewSlots);
+
+	int32 foundIndex = INDEX_NONE;
+	if (SelectedInventoryItemGuid.IsValid())
+	{
+		for (int32 i = 0; i < CachedViewSlots.Num(); i++)
+		{
+			const FInventoryViewSlot& slot = CachedViewSlots[i];
+			if (slot.Type == EInventoryViewSlotType::Equipment &&
+				slot.ItemGuid == SelectedInventoryItemGuid)
+			{
+				foundIndex = i;
+				break;
+			}
+		}
+	}
+
+	if (foundIndex != INDEX_NONE)
+	{
+		SelectedSlotIndex = foundIndex;
+		RefreshSelection();
+	}
+	else
+	{
+		ClearSelection();
+		OnInventorySlotSelected.Broadcast(FInventoryViewSlot());
+	}
+}
+
+bool UInventoryHUDWidget::IsMatchedEquipSlotFilter(const FGameplayTag& InItemTag) const
+{
+	if (!InItemTag.IsValid()) return false;
+
+	if (CurrentEquipSlotFilter == EInventoryEquipSlotFilter::None) return true;
+	const FDTEquipmentInfoRow* equipRow = FPlayerAccountService::FindEquipmentInfoRowByTag(this, InItemTag);
+	if (!equipRow) return false;
+
+	switch (CurrentEquipSlotFilter)
+	{
+	case EInventoryEquipSlotFilter::Weapon:
+		return equipRow->ItemTag.MatchesTag(Arcanum::Items::Rarity::Common::Weapon::Root);
+	case EInventoryEquipSlotFilter::Legendary:
+		return equipRow->ItemTag.MatchesTag(Arcanum::Items::Rarity::Legendary::Weapon::Root);
+	case EInventoryEquipSlotFilter::Helmet:
+		return equipRow->SlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Armor::Helmet);
+	case EInventoryEquipSlotFilter::Chest:
+		return equipRow->SlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Armor::Chest);
+	case EInventoryEquipSlotFilter::Glove:
+		return equipRow->SlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Armor::Glove);
+	case EInventoryEquipSlotFilter::Boots:
+		return equipRow->SlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Armor::Boot);
+
+	default:
+		break;
+	}
+
+	return false;
 }
 
 void UInventoryHUDWidget::RefreshStackInventory()
@@ -557,6 +633,14 @@ void UInventoryHUDWidget::HandleConsumableCategoryClicked()
 	RefreshCategoryButtonState();
 	OnCategoryChanged.Broadcast(CurrentFilter);
 	RefreshInventoryUI();
+}
+
+void UInventoryHUDWidget::SetCategoryPanelVisible(bool bVisible)
+{
+	if (CategoryPanel)
+	{
+		CategoryPanel->SetVisibility(bVisible ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+	}
 }
 
 void UInventoryHUDWidget::RefreshCategoryButtonState()

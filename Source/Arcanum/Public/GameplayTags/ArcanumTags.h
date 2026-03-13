@@ -181,6 +181,7 @@ namespace Arcanum {
 				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Legendary);
 			}
 			namespace Armor {
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
 				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Helmet);
 				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Chest);
 				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Glove);
@@ -197,6 +198,7 @@ namespace Arcanum {
 		namespace Rarity {
 			namespace Common {
 				namespace Weapon {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
 					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(GreatSword); // 대검
 					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Staff);      // 지팡이
 					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Bow);        // 활
@@ -209,9 +211,17 @@ namespace Arcanum {
 					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Boot);       // 신발
 				}
 			}
+			namespace Legendary {
+				namespace Weapon {
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Scepter);    // 셉터
+					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Scythe);     // 낫
+				}
+			}
 			namespace SetItem {
 				namespace Talasha {
 					namespace Armor {
+						ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
 						ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Helmet); // 투구 
 						ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Chest);  // 갑옷
 						ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Glove);  // 장갑
@@ -220,17 +230,12 @@ namespace Arcanum {
 				}
 				namespace Sigon {
 					namespace Armor {
+						ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
 						ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Helmet); // 투구 
 						ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Chest);  // 갑옷
 						ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Glove);  // 장갑
 						ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Boot);   // 신발
 					}
-				}
-			}
-			namespace Legendary {
-				namespace Weapon {
-					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Scepter);    // 셉터
-					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Scythe);     // 낫
 				}
 			}
 		}

@@ -123,6 +123,7 @@ void UEnhancementHUDWidget::RefreshEquipmentInventory()
 {
 	if (EnhancementInventoryWidget)
 	{
+		EnhancementInventoryWidget->SetCurrentFilter(EInventoryCategoryFilter::Equipment);
 		EnhancementInventoryWidget->RefreshEquipmentInventory();
 	}
 }

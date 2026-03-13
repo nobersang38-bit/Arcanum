@@ -256,9 +256,171 @@ void FPlayerAccountService::StopShopOnBattleStart(const UObject* WorldContextObj
 		gameTimeSubsystem->StopShop();
 	}
 }
+
 // ========================================================
 // Character Widget 관련
 // ========================================================
+
+bool FPlayerAccountService::EquipItemToCharacter(const UObject* WorldContextObject, const FName& InCharacterName, const FGameplayTag& InEquipSlotTag, const FGuid& InItemGuid)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return false;
+	if (InCharacterName.IsNone() || !InEquipSlotTag.IsValid() || !InItemGuid.IsValid()) return false;
+
+	FPlayerData& playerData = GI->GetPlayerData();
+
+	FEquipmentInfo* foundEquip = nullptr;
+	for (FEquipmentInfo& equip : playerData.Inventory)
+	{
+		if (equip.ItemGuid == InItemGuid)
+		{
+			foundEquip = &equip;
+			break;
+		}
+	}
+	if (!foundEquip) return false;
+
+	const FDTEquipmentInfoRow* equipRow = FindEquipmentInfoRowByTag(WorldContextObject, foundEquip->ItemTag);
+	if (!equipRow) return false;
+
+	const FGameplayTag itemSlotTag = equipRow->SlotTag;
+	if (!itemSlotTag.IsValid()) return false;
+
+	// 장착 가능 부위 검사
+	if (InEquipSlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Weapon::Slot1) ||
+		InEquipSlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Weapon::Slot2))
+	{
+		if (!foundEquip->ItemTag.MatchesTag(Arcanum::Items::Rarity::Common::Weapon::Root) &&
+			!foundEquip->ItemTag.MatchesTag(Arcanum::Items::Rarity::Legendary::Weapon::Root))
+		{
+			return false;
+
+		}
+	}
+	else if (InEquipSlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Weapon::Legendary))
+	{
+		if (!foundEquip->ItemTag.MatchesTag(Arcanum::Items::Rarity::Legendary::Weapon::Root))
+		{
+			return false;
+		}
+	}
+	else if (InEquipSlotTag.MatchesTag(Arcanum::Items::ItemSlot::Armor::Root))
+	{
+		if (!itemSlotTag.MatchesTagExact(InEquipSlotTag))
+		{
+			return false;
+		}
+	}
+	else
+	{
+		return false;
+	}
+
+	FBattleCharacterData* foundCharacter = FindOwnedCharacterByName(playerData, InCharacterName);
+	if (!foundCharacter) return false;
+	TMap<FGameplayTag, FGuid>* slotMap = GetEquipmentSlotMapBySlotTag(*foundCharacter, InEquipSlotTag);
+	if (!slotMap) return false;
+
+	// 장착 중복 처리
+	if (InEquipSlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Weapon::Slot1) ||
+		InEquipSlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Weapon::Slot2))
+	{
+		FGameplayTag OtherSlotTag;
+
+		if (InEquipSlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Weapon::Slot1))
+		{
+			OtherSlotTag = Arcanum::Items::ItemSlot::Weapon::Slot2;
+		}
+		else
+		{
+			OtherSlotTag = Arcanum::Items::ItemSlot::Weapon::Slot1;
+		}
+
+		FGuid* OtherGuidPtr = slotMap->Find(OtherSlotTag);
+		if (OtherGuidPtr && OtherGuidPtr->IsValid())
+		{
+			if (*OtherGuidPtr == InItemGuid)
+			{
+				slotMap->Remove(OtherSlotTag);
+			}
+			else
+			{
+				const FEquipmentInfo* otherEquip = nullptr;
+				for (const FEquipmentInfo& equip : playerData.Inventory)
+				{
+					if (equip.ItemGuid == *OtherGuidPtr)
+					{
+						otherEquip = &equip;
+						break;
+					}
+				}
+				if (otherEquip && otherEquip->ItemTag == foundEquip->ItemTag)
+				{
+					return false;
+				}
+			}
+		}
+	}
+
+	slotMap->FindOrAdd(InEquipSlotTag) = InItemGuid;
+	return SavePlayerData(GI);
+}
+
+bool FPlayerAccountService::UnequipItemFromCharacter(const UObject* WorldContextObject, const FName& InCharacterName, const FGameplayTag& InEquipSlotTag)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return false;
+	if (InCharacterName.IsNone() || !InEquipSlotTag.IsValid()) return false;
+
+	FPlayerData& playerData = GI->GetPlayerData();
+
+	FBattleCharacterData* foundCharacter = FindOwnedCharacterByName(playerData, InCharacterName);
+	if (!foundCharacter) return false;
+
+	TMap<FGameplayTag, FGuid>* slotMap = GetEquipmentSlotMapBySlotTag(*foundCharacter, InEquipSlotTag);
+	if (!slotMap) return false;
+
+	if (slotMap->Remove(InEquipSlotTag) > 0)
+	{
+		return SavePlayerData(GI);
+	}
+
+	return false;
+}
+
+FBattleCharacterData* FPlayerAccountService::FindOwnedCharacterByName(FPlayerData& InPlayerData, const FName& InCharacterName)
+{
+	for (FBattleCharacterData& characterData : InPlayerData.OwnedCharacters)
+	{
+		const FName characterName = GetLeafNameFromTag(characterData.CharacterInfo.BattleCharacterInitData.CharacterTag);
+		if (characterName == InCharacterName)
+		{
+			return &characterData;
+		}
+	}
+	return nullptr;
+}
+
+TMap<FGameplayTag, FGuid>* FPlayerAccountService::GetEquipmentSlotMapBySlotTag(FBattleCharacterData& InCharacterData, const FGameplayTag& InEquipSlotTag)
+{
+	if (InEquipSlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Weapon::Slot1) ||
+		InEquipSlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Weapon::Slot2))
+	{
+		return &InCharacterData.WeaponSlots;
+	}
+
+	if (InEquipSlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Weapon::Legendary))
+	{
+		return &InCharacterData.LegendaryWeaponSlots;
+	}
+
+	if (InEquipSlotTag.MatchesTag(Arcanum::Items::ItemSlot::Armor::Root))
+	{
+		return &InCharacterData.ArmorSlots;
+	}
+
+	return nullptr;
+}
 
 // ========================================================
 // Enhancement Widget 관련
@@ -993,21 +1155,40 @@ const FDTItemCatalogRow* FPlayerAccountService::FindItemCatalogRowByTag(const UO
 	if (!WorldContextObject) return nullptr;
 	if (!InItemTag.IsValid()) return nullptr;
 
-	UARGameInstance* gameInstance = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
-	if (!gameInstance) return nullptr;
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return nullptr;
 
-	if (gameInstance->ItemCatalogRowByTag.Num() <= 0)
+	if (GI->ItemCatalogRowByTag.Num() <= 0)
 	{
-		BuildItemCatalogRowCache(gameInstance);
+		BuildItemCatalogRowCache(GI);
 	}
 
-	const FDTItemCatalogRow* const* foundRow = gameInstance->ItemCatalogRowByTag.Find(InItemTag);
+	const FDTItemCatalogRow* const* foundRow = GI->ItemCatalogRowByTag.Find(InItemTag);
 	if (foundRow)
 	{
 		return *foundRow;
 	}
 
 	return nullptr;
+}
+
+const FDTEquipmentInfoRow* FPlayerAccountService::FindEquipmentInfoRowByTag(const UObject* WorldContextObject, const FGameplayTag& InItemTag)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return nullptr;
+
+	if (!InItemTag.IsValid()) return nullptr;
+
+	UGameDataSubsystem* dataSubsystem = GI->GetSubsystem<UGameDataSubsystem>();
+	if (!dataSubsystem) return nullptr;
+
+	const FDTItemCatalogRow* catalogRow = FindItemCatalogRowByTag(GI, InItemTag);
+	if (!catalogRow) return nullptr;
+
+	if (!catalogRow->DetailTableTag.MatchesTagExact(Arcanum::DataTable::Equipment)) return nullptr;
+	if (catalogRow->DetailRowName.IsNone()) return nullptr;
+
+	return dataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, catalogRow->DetailRowName);
 }
 
 FDateTime FPlayerAccountService::GetCurrentTimeKST()
@@ -1096,7 +1277,7 @@ bool FPlayerAccountService::ExecuteGacha(const UObject* WorldContextObject, cons
 		UpdateCurrency(WorldContextObject, PlayerData, Cost.ConsumptionCurrencyTag, -SpendAmount);
 		res = true;
 	}
-	
+
 	return res;
 }
 // ========================================================
