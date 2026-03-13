@@ -294,19 +294,42 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
 			CharacterSwitcher->SetActiveWidgetIndex(2);
 			UCharacterInfo* InfoWidget = Cast<UCharacterInfo>(CharacterSwitcher->GetWidgetAtIndex(2));
 
-			if (InfoWidget)
-			{
-				InfoWidget->SetCharacterName(CharacterName);
-				//InfoWidget->SetStarCharcterInfo(CharacterStar);
-				//InfoWidget->SetEnhanceButtonEnabled(SlotCharacterOwned, RequiredSoul, soulAmount, TargetGradeIndex);
-				//InfoWidget->SetPlayerButtonEnabled(false, SlotCharacterOwned);
-				//InfoWidget->SetGradeCharcterInfo(CharacterGrade);
-				InfoWidget->SetCharcterInfo(FText::FromString(TEXT("데이터\n")));
-				//InfoWidget->SetEnhanceBtnText(InButtonText);
+			for (int32 i = 0; i < ParentLobby->CachedPlayerData.AllyburdenCharacters.Num(); i++) {
+
+				const FUnitInfoSetting& UnitData = ParentLobby->CachedPlayerData.AllyburdenCharacters[i];
+
+				FGameplayTag CharacterTag = UnitData.Tag;
+				FName ListUnitName = GetLeafNameFromTag(CharacterTag);
+
+				bool bIsSelected = (ListUnitName == CharacterName);
+				if (bIsSelected)
+				{
+					FText Desc = UnitData.Description;
+					float MeatCost = UnitData.MeatCost;
+					float CoolTime = UnitData.CoolTime;
+					FText ResultText = FText::Format(
+						FText::FromString("{0}\n{1}\n{2}"),
+						Desc,
+						FText::AsNumber(MeatCost),
+						FText::AsNumber(CoolTime)
+					);
+					if (InfoWidget)
+					{
+						InfoWidget->SetCharacterName(CharacterName);
+						//InfoWidget->SetStarCharcterInfo(CharacterStar);
+						//InfoWidget->SetEnhanceButtonEnabled(SlotCharacterOwned, RequiredSoul, soulAmount, TargetGradeIndex);
+						//InfoWidget->SetPlayerButtonEnabled(false, SlotCharacterOwned);
+						//InfoWidget->SetGradeCharcterInfo(CharacterGrade);
+						InfoWidget->SetCharcterInfo(ResultText);
+						//InfoWidget->SetEnhanceBtnText(InButtonText);
+					}
+				}
 			}
+
 		}
 	}
 }
+
 
 void UCharacterHUDWidget::UpdateSlotVisuals(const TMap<FGameplayTag, FGuid>& InEquipmentMap)
 {

@@ -145,6 +145,10 @@ void ULobbyHUD::ClickCharacterMenuBtn()
 
 void ULobbyHUD::ClickEnhancementMenuBtn()
 {
+	if (EnhancementHUDWidget)
+	{
+		EnhancementHUDWidget->RefreshEquipmentInventory();
+	}
 	if (WidgetSwitcher)
 	{
 		WidgetSwitcher->SetActiveWidgetIndex(2);
@@ -155,6 +159,11 @@ void ULobbyHUD::ClickEnhancementMenuBtn()
 
 void ULobbyHUD::ClickShopMenuBtn()
 {
+	if (InventoryHUDWidget)
+	{
+		InventoryHUDWidget->SetCurrentFilter(EInventoryCategoryFilter::All);
+		InventoryHUDWidget->RefreshInventoryUI();
+	}
 	if (WidgetSwitcher && ShopHUDWidget)
 	{
 		ShopHUDWidget->SetParentLobby(this);
