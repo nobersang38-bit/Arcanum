@@ -51,7 +51,7 @@ void UGachaHUDWidget::InitBannerList()
 
             UVerticalBoxSlot* ButtonSlot = BannerVerticalBox->AddChildToVerticalBox(NewButton);
             if (ButtonSlot) {
-                ButtonSlot->SetPadding(FMargin(0.f, 0.f, 0.f, 20.f));
+                ButtonSlot->SetPadding(FMargin(0.f, 0.f, 0.f, 10.f));
                 ButtonSlot->SetSize(FSlateChildSize(ESlateSizeRule::Automatic));
             }
 

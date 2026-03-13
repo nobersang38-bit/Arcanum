@@ -34,6 +34,8 @@ public:
 	virtual FGameplayTag GetTeamTag() override;
 
 	class UCharacterBattleStatsComponent* GetCharacterBattleStatsComponent() { return CharacterBattleStatsComponent; }
+
+	UFUNCTION(BlueprintCallable)
 	class UUnitCombatComponent* GetUnitCombatComponent() { return UnitCombatComponent; }
 
 protected:
@@ -58,6 +60,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<class UCharacterBattleStatsComponent> CharacterBattleStatsComponent = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<class UStatusActionComponent> StatusActionComponent = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<class UWidgetComponent> HealthBarComponent = nullptr;
@@ -104,4 +109,6 @@ private:
 	TObjectPtr<UMaterialInstanceDynamic> OutlineDynamicMI = nullptr;
 
 	FTimerHandle OutlineTimeHandle;
+
+	FDelegateHandle SetPercentDelegateHandle;
 };

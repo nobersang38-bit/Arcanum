@@ -10,6 +10,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/HorizontalBox.h"
 #include "Components/BackgroundBlur.h"
+#include "Components/Image.h"
 #include "Components/WidgetSwitcher.h"
 #include "DataInfo/PlayerData/FPlayerData.h"
 #include "Core/ARPlayerAccountService.h"
@@ -144,6 +145,10 @@ void ULobbyHUD::ClickCharacterMenuBtn()
 
 void ULobbyHUD::ClickEnhancementMenuBtn()
 {
+	if (EnhancementHUDWidget)
+	{
+		EnhancementHUDWidget->RefreshEquipmentInventory();
+	}
 	if (WidgetSwitcher)
 	{
 		WidgetSwitcher->SetActiveWidgetIndex(2);
@@ -154,6 +159,11 @@ void ULobbyHUD::ClickEnhancementMenuBtn()
 
 void ULobbyHUD::ClickShopMenuBtn()
 {
+	if (InventoryHUDWidget)
+	{
+		InventoryHUDWidget->SetCurrentFilter(EInventoryCategoryFilter::All);
+		InventoryHUDWidget->RefreshInventoryUI();
+	}
 	if (WidgetSwitcher && ShopHUDWidget)
 	{
 		ShopHUDWidget->SetParentLobby(this);
@@ -195,6 +205,7 @@ void ULobbyHUD::ClickQuitBtn()
 
 		ExitCommonDialog->SetVisibility(ESlateVisibility::Visible);
 		BackgroundBlur->SetVisibility(ESlateVisibility::Visible);
+		BgImg->SetVisibility(ESlateVisibility::Hidden);
 
 		ExitCommonDialog->OnResult.RemoveDynamic(this, &ULobbyHUD::OnExitCommonDialog);
 		ExitCommonDialog->OnResult.AddDynamic(this, &ULobbyHUD::OnExitCommonDialog);
@@ -266,6 +277,7 @@ void ULobbyHUD::OnExitCommonDialog(EDialogResult res)
 
 		ExitCommonDialog->SetVisibility(ESlateVisibility::Hidden);
 		BackgroundBlur->SetVisibility(ESlateVisibility::Collapsed);
+		BgImg->SetVisibility(ESlateVisibility::Visible);
 
 		if (MenuHorizontalBox)
 		{

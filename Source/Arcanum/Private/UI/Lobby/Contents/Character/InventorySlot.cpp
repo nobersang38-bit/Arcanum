@@ -42,24 +42,26 @@ void UInventorySlot::NativeConstruct()
 // ========================================================
 // 인벤토리에 보유중인 무기, 장비 출력하기 
 // ========================================================
-void UInventorySlot::CreateWeaponItems(TArray<FEquipmentInfo> WeaponList, int32 InSlotIndex)
+void UInventorySlot::CreateWeaponItems(TArray<FEquipmentInfo> WeaponList, FGameplayTag InSlotTag)
 {
     FGameplayTag ListItemTag;
+    FGameplayTag WeaponTag;
     EquipGridPanel->ClearChildren();
     InventoryEquipmentSlots.Empty();
 
-    static const TArray<FString> ItemTags = {
-    TEXT("Arcanum.Items.ItemSlot.Weapon.RightHand"),          
-    TEXT("Arcanum.Items.ItemSlot.Weapon.LeftHand"),         
-    TEXT("Arcanum.Items.ItemSlot.Weapon.TwoHand"),  
-    TEXT("Arcanum.Items.ItemSlot.Armor.Helmet"),    
-    TEXT("Arcanum.Items.ItemSlot.Armor.Chest"),     
-    TEXT("Arcanum.Items.ItemSlot.Armor.Glove"),     
-    TEXT("Arcanum.Items.ItemSlot.Armor.Boot")       
-    };
 
-    const FString& TargetPath = ItemTags[InSlotIndex];
-    SlotIndex = InSlotIndex;
+    //static const TArray<FString> ItemTags = {
+    //TEXT("Arcanum.Items.ItemSlot.Weapon.RightHand"),          
+    //TEXT("Arcanum.Items.ItemSlot.Weapon.LeftHand"),         
+    //TEXT("Arcanum.Items.ItemSlot.Weapon.TwoHand"),  
+    //TEXT("Arcanum.Items.ItemSlot.Armor.Helmet"),    
+    //TEXT("Arcanum.Items.ItemSlot.Armor.Chest"),     
+    //TEXT("Arcanum.Items.ItemSlot.Armor.Glove"),     
+    //TEXT("Arcanum.Items.ItemSlot.Armor.Boot")       
+    //};
+
+    //const FString& TargetPath = ItemTags[InSlotIndex];
+    //SlotIndex = InSlotIndex;
 
     if (!USquareSlotWidgetClass)
         return;
@@ -99,24 +101,57 @@ void UInventorySlot::CreateWeaponItems(TArray<FEquipmentInfo> WeaponList, int32 
                         {
                             WeaponInventoryItemIcon = row->Icon.LoadSynchronous();
                             EquipNameTxt = row->Desc;
-                            // 무기만 출력되는 if문 SlotTag가 Weapon인거
-                            //if (IsSpecificSlotType(row->SlotTag, TargetPath))
-                            if(row->SlotTag.ToString() == TargetPath)
-                            { 
-                                if (NewSlot)
-                                {
-                                    NewSlot->SetItemIconImage(WeaponInventoryItemIcon);
-                                    NewSlot->SetItemName(EquipNameTxt);
-                                    NewSlot->SetWeaponTag(row->ItemTag);
-                                    NewSlot->SetWeaponGuid(WeaponList[i].ItemGuid);
-                                    NewSlot->OnSlotClicked.AddDynamic(this, &UInventorySlot::OnSlotClicked);
-                                    InventoryEquipmentSlots.Add(NewSlot);
-                                    UWrapBoxSlot* WrapSlot = EquipGridPanel->AddChildToWrapBox(NewSlot);
 
-                                    if (WrapSlot)
+                            // 무기 슬롯 눌렀을 때
+                            if (InSlotTag.MatchesTag(FGameplayTag::RequestGameplayTag("Arcanum.Items.ItemSlot.Weapon")))
+                            {
+                                 WeaponTag = FGameplayTag::RequestGameplayTag("Arcanum.Items.Rarity.Common.Weapon");
+                                // 전설 무기 슬롯이면
+                                if (InSlotTag.MatchesTag(FGameplayTag::RequestGameplayTag("Arcanum.Items.ItemSlot.Weapon.Legendary")))
+                                {
+                                     WeaponTag = FGameplayTag::RequestGameplayTag("Arcanum.Items.Rarity.Legendary.Weapon");
+                                }
+
+                                if (row->ItemTag.MatchesTag(WeaponTag))
+                                {
+                                    if (NewSlot)
                                     {
-                                        WrapSlot->SetHorizontalAlignment(HAlign_Fill);
-                                        WrapSlot->SetVerticalAlignment(VAlign_Fill);
+                                        NewSlot->SetItemIconImage(WeaponInventoryItemIcon);
+                                        NewSlot->SetItemName(EquipNameTxt);
+                                        NewSlot->SetWeaponTag(row->ItemTag);
+                                        NewSlot->SetWeaponGuid(WeaponList[i].ItemGuid);
+                                        NewSlot->OnSlotClicked.AddDynamic(this, &UInventorySlot::OnSlotClicked);
+                                        InventoryEquipmentSlots.Add(NewSlot);
+                                        UWrapBoxSlot* WrapSlot = EquipGridPanel->AddChildToWrapBox(NewSlot);
+
+                                        if (WrapSlot)
+                                        {
+                                            WrapSlot->SetHorizontalAlignment(HAlign_Fill);
+                                            WrapSlot->SetVerticalAlignment(VAlign_Fill);
+                                        }
+                                    }
+                                }
+                            }
+                            // 장비 슬롯 눌렀을 때
+                            else
+                            {
+                                if (row->SlotTag.MatchesTagExact(InSlotTag))
+                                {
+                                    if (NewSlot)
+                                    {
+                                        NewSlot->SetItemIconImage(WeaponInventoryItemIcon);
+                                        NewSlot->SetItemName(EquipNameTxt);
+                                        NewSlot->SetWeaponTag(row->ItemTag);
+                                        NewSlot->SetWeaponGuid(WeaponList[i].ItemGuid);
+                                        NewSlot->OnSlotClicked.AddDynamic(this, &UInventorySlot::OnSlotClicked);
+                                        InventoryEquipmentSlots.Add(NewSlot);
+                                        UWrapBoxSlot* WrapSlot = EquipGridPanel->AddChildToWrapBox(NewSlot);
+
+                                        if (WrapSlot)
+                                        {
+                                            WrapSlot->SetHorizontalAlignment(HAlign_Fill);
+                                            WrapSlot->SetVerticalAlignment(VAlign_Fill);
+                                        }
                                     }
                                 }
                             }
@@ -149,6 +184,10 @@ void UInventorySlot::ClickEquipSetupBtn()
     /// 20260312
     //IsState = !IsState;
     //OnSetupBtnClicked.Broadcast(IsState);
+    if (IsState)
+    {
+
+    }
 }
 
 // ========================================================
