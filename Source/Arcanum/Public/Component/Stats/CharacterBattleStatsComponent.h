@@ -14,6 +14,9 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnCharacterRegenStatChanged, const FRegenSt
 // 2. NonRegen 계열용 (이동속도 같은것들)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnCharacterNonRegenStatChanged, const FNonRegenStat&);
 
+// 통합 호출용
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnCharacterStatChanged, const FRegenStat&, const FNonRegenStat&);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ARCANUM_API UCharacterBattleStatsComponent : public UActorComponent
 {
@@ -23,9 +26,11 @@ class ARCANUM_API UCharacterBattleStatsComponent : public UActorComponent
 public:
 	FOnCharacterRegenStatChanged OnCharacterRegenStatChanged;
 	FOnCharacterNonRegenStatChanged OnCharacterNonRegenStatChanged;
+	FOnCharacterStatChanged OnCharacterStatChanged;
 private:
 	void NotifyRegenStatChanged(const FRegenStat& Stat);
 	void NotifyNonRegenStatChanged(const FNonRegenStat& Stat);
+	void NotifyStatChanged(const FRegenStat& RegenStat, const FNonRegenStat& NonRegenStat);
 #pragma endregion
 	
 #pragma region 언리얼 기본 생성
@@ -59,6 +64,10 @@ public:
 	// 20260310 김도현 : 스탯 전체 브로드캐스트 함수 추가
 	UFUNCTION()
 	void BroadcastAllStats();
+
+	// 20260312 김도현 : 스탯 초기화 함수 추가
+	UFUNCTION()
+	void SetData(const FGradeStatData& InGradeStatData);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "0_Stats|Base")
 	float TimerTick = 1.f;
@@ -126,6 +135,8 @@ private:
 public:
 	const TArray<FRegenStat>& GetRegenStats() const { return TotalRegenStats; }
 	const TArray<FNonRegenStat>& GetNonRegenStats() const { return TotalNonRegenStats; }
+	const FRegenStat* FindRegenStat(const FGameplayTag& InFindTag) const;
+	const FNonRegenStat* FindNonRegenStat(const FGameplayTag& InFindTag) const;
 private:
 	UPROPERTY(VisibleAnywhere, Category = "1_Stats|RunTimeDebug") TArray<FRegenStat> TotalRegenStats;
 	UPROPERTY(VisibleAnywhere, Category = "1_Stats|RunTimeDebug") TArray<FNonRegenStat> TotalNonRegenStats;

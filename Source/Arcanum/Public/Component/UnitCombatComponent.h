@@ -59,7 +59,9 @@ public:
 
 	FORCEINLINE bool GetIsDead() const { return bIsDead; }
 
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void SetAttackSpeed(float InAttackSpeedRate) { AttackSpeed = InAttackSpeedRate; }
+
 #pragma endregion
 
 
@@ -119,12 +121,6 @@ protected:
 	// 공격이 가능한 거리라면 true
 	bool IsCanAttackRange();
 
-	// 스탯 변경
-	UFUNCTION()
-	void SetRegenStat(const FRegenStat& InValue);
-	UFUNCTION()
-	void SetNonRegenStat(const FNonRegenStat& InValue);
-	
 #pragma endregion
 
 #pragma region 스탯 변경
@@ -148,9 +144,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FGameplayTag EnemyTeamTag;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TMap<FGameplayTag, TSubclassOf<class UDAAction>> ActionSet;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<AActor> FloatingTextActorClass = nullptr;
@@ -217,10 +210,11 @@ private:
 #pragma endregion
 
 
-#pragma region 타이머 핸들
+#pragma region 핸들
 	private:
 		FTimerHandle TickTimerHandle;
 		FTimerHandle DeathTimerHandle;
 
+		FDelegateHandle DeathDelegateHandle;
 #pragma endregion
 };
