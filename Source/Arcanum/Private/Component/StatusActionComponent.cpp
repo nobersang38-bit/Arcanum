@@ -41,7 +41,7 @@ void UStatusActionComponent::SetupAction()
 	{
 		// 리젠스탯 바인딩
 
-		for (auto& ActionDelegate : ActionDelegates)
+		for (auto& ActionDelegate : StartActionDelegates)
 		{
 			if (ActionDelegate.Value.IsValid())
 			{
@@ -49,34 +49,100 @@ void UStatusActionComponent::SetupAction()
 			}
 		}
 
-		Actions.Empty();
-		ActionDelegates.Empty();
+		Instanced_Actions.Empty();
+		StartActionDelegates.Empty();
+		StopActionDelegates.Empty();
 
 		const TArray<FRegenStat>& RegenStat = CachedCharacterBattleStatsComponent->GetRegenStats();
+		//SetupStat<UStatusAction>(RegenStat,
+		//	[](const FRegenStat& InStat)
+		//	{
+		//		return InStat.ParentTag;
+		//	},
+		//	[](UStatusAction* InStatusActionInst, const FRegenStat& InRegenStat)
+		//	{
+		//		InStatusActionInst->Internal_StartAction(InRegenStat, FNonRegenStat());
+		//	},
+		//	[](UStatusAction* InStatusActionInst, const FRegenStat& InRegenStat)
+		//	{
+		//		InStatusActionInst->Internal_InitializeAction(InRegenStat, FNonRegenStat());
+		//	}
+		//);
+
 		for (int i = 0; i < RegenStat.Num(); i++)
 		{
 			if (ActionSet.Contains(RegenStat[i].ParentTag))
 			{
 				UClass* ActionClass = *ActionSet.Find(RegenStat[i].ParentTag);
 				UStatusAction* ActionInstance = NewObject<UStatusAction>(GetOwner(), ActionClass);
-				Actions.Add(RegenStat[i].ParentTag, ActionInstance);
-				if (FDelegateHandle* ActionDelegate = ActionDelegates.Find(RegenStat[i].ParentTag))
+				Instanced_Actions.Add(RegenStat[i].ParentTag, ActionInstance);
+
+				// 델리게이트들 초기화 및 추가
+				if (FDelegateHandle* StartActionDelegate = StartActionDelegates.Find(RegenStat[i].ParentTag))
 				{
-					if (ActionDelegate->IsValid())
+					if (StartActionDelegate->IsValid())
 					{
-						CachedCharacterBattleStatsComponent->OnCharacterStatChanged.Remove(*ActionDelegate);
+						CachedCharacterBattleStatsComponent->OnCharacterStatChanged.Remove(*StartActionDelegate);
 					}
 				}
 				else
 				{
-					ActionDelegates.Add(RegenStat[i].ParentTag, FDelegateHandle());
+					StartActionDelegates.Add(RegenStat[i].ParentTag, FDelegateHandle());
 				}
-				*ActionDelegates.Find(RegenStat[i].ParentTag) = CachedCharacterBattleStatsComponent->OnCharacterStatChanged.AddUObject(ActionInstance, &UStatusAction::StartAction);
-				if (ActionInstance->bUseStartOnInit)
+
+				if (FDelegateHandle* StopActionDelegate = StopActionDelegates.Find(RegenStat[i].ParentTag))
 				{
-					ActionInstance->StartAction(RegenStat[i], FNonRegenStat());
+					if (StopActionDelegate->IsValid())
+					{
+						CachedCharacterBattleStatsComponent->OnCharacterStatChanged.Remove(*StopActionDelegate);
+					}
 				}
-				ActionInstance->AddEnableTag(RegenStat[i].ParentTag);
+				else
+				{
+					StopActionDelegates.Add(RegenStat[i].ParentTag, FDelegateHandle());
+				}
+
+				// 델리게이트 바인딩
+				*StartActionDelegates.Find(RegenStat[i].ParentTag) = CachedCharacterBattleStatsComponent->OnCharacterStatChanged.AddUObject(ActionInstance, &UStatusAction::Internal_StartAction);
+				*StopActionDelegates.Find(RegenStat[i].ParentTag) = CachedCharacterBattleStatsComponent->OnCharacterStatChanged.AddUObject(ActionInstance, &UStatusAction::Internal_StopAction);
+				
+				// 초기설정
+				switch (ActionInstance->EnableTagMergeType)
+				{
+				case EStatusActionTagType::OnlyThisTags:
+					break;
+				case EStatusActionTagType::OnlyStatusActionCompTags:
+					ActionInstance->ChangeEnableTags(RegenStat[i].ParentTag);
+					break;
+				case EStatusActionTagType::AddTags:
+					ActionInstance->AddEnableTag(RegenStat[i].ParentTag);
+					break;
+				default:
+					break;
+				}
+
+				switch (ActionInstance->DisableTagMergeType)
+				{
+				case EStatusActionTagType::OnlyThisTags:
+					break;
+				case EStatusActionTagType::OnlyStatusActionCompTags:
+					ActionInstance->ChangeDisableTags(RegenStat[i].ParentTag);
+					break;
+				case EStatusActionTagType::AddTags:
+					ActionInstance->AddDisableTag(RegenStat[i].ParentTag);
+					break;
+				default:
+					break;
+				}
+
+				// 초기화 함수 실행
+				ActionInstance->Internal_InitializeAction(RegenStat[i], FNonRegenStat());
+
+				if (ActionInstance->bUseStartOnStartAction)
+				{
+					// 액션 함수 실행
+					ActionInstance->Internal_StartAction(RegenStat[i], FNonRegenStat());
+				}
 			}
 		}
 
@@ -87,24 +153,74 @@ void UStatusActionComponent::SetupAction()
 			{
 				UClass* ActionClass = *ActionSet.Find(NonRegenStats[i].TagName);
 				UStatusAction* ActionInstance = NewObject<UStatusAction>(GetOwner(), ActionClass);
-				Actions.Add(NonRegenStats[i].TagName, ActionInstance);
-				if (FDelegateHandle* ActionDelegate = ActionDelegates.Find(NonRegenStats[i].TagName))
+				Instanced_Actions.Add(NonRegenStats[i].TagName, ActionInstance);
+
+				// 델리게이트들 초기화 및 추가
+				if (FDelegateHandle* StartActionDelegate = StartActionDelegates.Find(NonRegenStats[i].TagName))
 				{
-					if (ActionDelegate->IsValid())
+					if (StartActionDelegate->IsValid())
 					{
-						CachedCharacterBattleStatsComponent->OnCharacterStatChanged.Remove(*ActionDelegate);
+						CachedCharacterBattleStatsComponent->OnCharacterStatChanged.Remove(*StartActionDelegate);
 					}
 				}
 				else
 				{
-					ActionDelegates.Add(NonRegenStats[i].TagName, FDelegateHandle());
+					StartActionDelegates.Add(NonRegenStats[i].TagName, FDelegateHandle());
 				}
-				*ActionDelegates.Find(NonRegenStats[i].TagName) = CachedCharacterBattleStatsComponent->OnCharacterStatChanged.AddUObject(ActionInstance, &UStatusAction::StartAction);
-				if (ActionInstance->bUseStartOnInit)
+
+				if (FDelegateHandle* StopActionDelegate = StopActionDelegates.Find(NonRegenStats[i].TagName))
 				{
-					ActionInstance->StartAction(FRegenStat(), NonRegenStats[i]);
+					if (StopActionDelegate->IsValid())
+					{
+						CachedCharacterBattleStatsComponent->OnCharacterStatChanged.Remove(*StopActionDelegate);
+					}
 				}
-				ActionInstance->AddEnableTag(NonRegenStats[i].TagName);
+				else
+				{
+					StopActionDelegates.Add(NonRegenStats[i].TagName, FDelegateHandle());
+				}
+
+				// 델리게이트 바인딩
+				*StartActionDelegates.Find(NonRegenStats[i].TagName) = CachedCharacterBattleStatsComponent->OnCharacterStatChanged.AddUObject(ActionInstance, &UStatusAction::Internal_StartAction);
+				*StopActionDelegates.Find(NonRegenStats[i].TagName) = CachedCharacterBattleStatsComponent->OnCharacterStatChanged.AddUObject(ActionInstance, &UStatusAction::Internal_StopAction);
+
+				// 초기설정
+				switch (ActionInstance->EnableTagMergeType)
+				{
+				case EStatusActionTagType::OnlyThisTags:
+					break;
+				case EStatusActionTagType::OnlyStatusActionCompTags:
+					ActionInstance->ChangeEnableTags(NonRegenStats[i].TagName);
+					break;
+				case EStatusActionTagType::AddTags:
+					ActionInstance->AddEnableTag(NonRegenStats[i].TagName);
+					break;
+				default:
+					break;
+				}
+
+				switch (ActionInstance->DisableTagMergeType)
+				{
+				case EStatusActionTagType::OnlyThisTags:
+					break;
+				case EStatusActionTagType::OnlyStatusActionCompTags:
+					ActionInstance->ChangeDisableTags(NonRegenStats[i].TagName);
+					break;
+				case EStatusActionTagType::AddTags:
+					ActionInstance->AddDisableTag(NonRegenStats[i].TagName);
+					break;
+				default:
+					break;
+				}
+
+				// 초기화 함수 실행
+				ActionInstance->Internal_InitializeAction(FRegenStat(), NonRegenStats[i]);
+
+				if (ActionInstance->bUseStartOnStartAction)
+				{
+					// 액션 함수 실행
+					ActionInstance->Internal_StartAction(FRegenStat(), NonRegenStats[i]);
+				}
 			}
 		}
 	}

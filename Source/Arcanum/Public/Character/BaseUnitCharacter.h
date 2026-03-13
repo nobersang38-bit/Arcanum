@@ -34,6 +34,8 @@ public:
 	virtual FGameplayTag GetTeamTag() override;
 
 	class UCharacterBattleStatsComponent* GetCharacterBattleStatsComponent() { return CharacterBattleStatsComponent; }
+
+	UFUNCTION(BlueprintCallable)
 	class UUnitCombatComponent* GetUnitCombatComponent() { return UnitCombatComponent; }
 
 protected:

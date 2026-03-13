@@ -59,6 +59,7 @@ public:
 
 	FORCEINLINE bool GetIsDead() const { return bIsDead; }
 
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void SetAttackSpeed(float InAttackSpeedRate) { AttackSpeed = InAttackSpeedRate; }
 
 #pragma endregion
