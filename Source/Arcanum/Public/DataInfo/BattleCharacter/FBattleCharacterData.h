@@ -32,6 +32,8 @@ struct FBattleCharacterData
     /// 용례 <Arcanum.Items.ItemSlot.Weapon.Slot1, Guid>를 통해서 get/set 하시면 됩니다.
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TMap<FGameplayTag, FGuid> WeaponSlots;
+
+
     /// 260312 변경 (변수 추가)
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TMap<FGameplayTag, FGuid> LegendaryWeaponSlots;

@@ -12,20 +12,11 @@ void UGameTimeSubsystem::Deinitialize()
 
 void UGameTimeSubsystem::Tick(float DeltaTime)
 {
-	if (bBannerActive) {
-		FDateTime CurrentTimeKST = FDateTime::UtcNow() + FTimespan(9, 0, 0);
-		FTimespan Diff = BannerEndTime - CurrentTimeKST;
-
-		int32 RemainingSeconds = FMath::Max(0, static_cast<int32>(Diff.GetTotalSeconds()));
-		if (RemainingSeconds != LastBannerSecond) {
-			LastBannerSecond = RemainingSeconds;
-			OnBannerSecondChanged.Broadcast(RemainingSeconds);
-
-			if (RemainingSeconds <= 0) {
-				StopBanner();
-				// 여기에 GachaSubsystem->ProcessSettlement() 같은 정산 트리거를 연결하면 됨
-			}
-		}
+	AccumulatedTime += DeltaTime;
+	const FDateTime CurrentTimeKST = FDateTime::UtcNow() + FTimespan(9, 0, 0);
+	if (bBannerActive && AccumulatedTime >= 1.f) {
+		AccumulatedTime = 0.f;
+		OnTimeUpdated.Broadcast(CurrentTimeKST);
 	}
 
 	if (bIsBattleActive) {
@@ -43,9 +34,7 @@ void UGameTimeSubsystem::Tick(float DeltaTime)
 	}
 
 	// 상점 타이머
-	if (bShopActive)
-	{
-		FDateTime CurrentTimeKST = FDateTime::UtcNow() + FTimespan(9, 0, 0);
+	if (bShopActive) {
 		FTimespan Diff = ShopEndTime - CurrentTimeKST;
 
 		const int32 RemainingAfter = static_cast<int32>(Diff.GetTotalSeconds());

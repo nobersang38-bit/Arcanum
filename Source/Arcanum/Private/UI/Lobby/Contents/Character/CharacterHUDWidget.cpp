@@ -53,7 +53,7 @@ void UCharacterHUDWidget::NativeConstruct()
     return;
 
     /// Test : 유닛창 테스트용
-      for (int32 Index = 0; Index < 12; ++Index)
+    /*  for (int32 Index = 0; Index < 12; ++Index)
     {
         URoundedSlotWidget* NewSlot = CreateWidget<URoundedSlotWidget>(GetWorld(), RoundedSlotWidgetClass);
         if (!NewSlot)
@@ -65,7 +65,7 @@ void UCharacterHUDWidget::NativeConstruct()
             WrapSlot->SetHorizontalAlignment(HAlign_Fill);
             WrapSlot->SetVerticalAlignment(VAlign_Fill);
         }
-    }
+    }*/
 }
 
 FReply UCharacterHUDWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -136,6 +136,9 @@ void UCharacterHUDWidget::InitCharacterHUD()
     InitServantCharacter();
 }
 
+// ========================================================
+// 유닛 슬롯 출력
+// ========================================================
 void UCharacterHUDWidget::InitServantCharacter()
 {
     UnitGridPanel->ClearChildren();
@@ -266,7 +269,7 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
     }
     InitEquipment(CharacterName);
 
-    /// 260311 변경 : 추가 (클릭 시 데이터 변경되게 info 관련은 변경해주세요.)
+
     FGameplayTag TargetTag = FGameplayTag::RequestGameplayTag(FName("Arcanum.Unit.Ally"));
     if (ClickedSlot->Tag.MatchesTag(TargetTag)) {
 
@@ -275,16 +278,38 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
             CharacterSwitcher->SetActiveWidgetIndex(2);
             UCharacterInfo* InfoWidget = Cast<UCharacterInfo>(CharacterSwitcher->GetWidgetAtIndex(2));
 
-            if (InfoWidget)
-            {
-                InfoWidget->SetCharacterName(CharacterName);
-                //InfoWidget->SetStarCharcterInfo(CharacterStar);
-                //InfoWidget->SetEnhanceButtonEnabled(SlotCharacterOwned, RequiredSoul, soulAmount, TargetGradeIndex);
-                //InfoWidget->SetPlayerButtonEnabled(false, SlotCharacterOwned);
-                //InfoWidget->SetGradeCharcterInfo(CharacterGrade);
-                InfoWidget->SetCharcterInfo(FText::FromString(TEXT("데이터\n")));
-                //InfoWidget->SetEnhanceBtnText(InButtonText);
+            for (int32 i = 0; i < ParentLobby->CachedPlayerData.AllyburdenCharacters.Num(); i++) {
+
+                const FUnitInfoSetting& UnitData = ParentLobby->CachedPlayerData.AllyburdenCharacters[i];
+
+                FGameplayTag CharacterTag = UnitData.Tag;
+                FName ListUnitName = GetLeafNameFromTag(CharacterTag);
+
+                bool bIsSelected = (ListUnitName == CharacterName);
+                if (bIsSelected)
+                {
+                    FText Desc = UnitData.Description;
+                    float MeatCost = UnitData.MeatCost;
+                    float CoolTime = UnitData.CoolTime;
+                    FText ResultText = FText::Format(
+                        FText::FromString("{0}\n{1}\n{2}"),
+                        Desc,
+                        FText::AsNumber(MeatCost),
+                        FText::AsNumber(CoolTime)
+                    );
+                    if (InfoWidget)
+                    {
+                        InfoWidget->SetCharacterName(CharacterName);
+                        //InfoWidget->SetStarCharcterInfo(CharacterStar);
+                        //InfoWidget->SetEnhanceButtonEnabled(SlotCharacterOwned, RequiredSoul, soulAmount, TargetGradeIndex);
+                        //InfoWidget->SetPlayerButtonEnabled(false, SlotCharacterOwned);
+                        //InfoWidget->SetGradeCharcterInfo(CharacterGrade);
+                        InfoWidget->SetCharcterInfo(ResultText);
+                        //InfoWidget->SetEnhanceBtnText(InButtonText);
+                    }
+                }
             }
+
         }
     }
 }
@@ -525,18 +550,18 @@ void UCharacterHUDWidget::OnSquareSlotClicked(USquareSlotWidget* ClickedSlot, in
         }
     }
     
-    InitWeaponInventory(SlotIndex);
+    InitWeaponInventory(SlotTag);
 }
 
 // ========================================================
 // 무기, 장비 인벤토리 출력
 // ========================================================
-void UCharacterHUDWidget::InitWeaponInventory(int32 SlotIndex)
+void UCharacterHUDWidget::InitWeaponInventory(FGameplayTag SlotTag)
 {
     if (!ParentLobby || !WeaponList) return;
     TArray<FEquipmentInfo> WeaponInventory = ParentLobby->CachedPlayerData.Inventory;
    
-   WeaponList->CreateWeaponItems(WeaponInventory, SlotIndex);
+   WeaponList->CreateWeaponItems(WeaponInventory, SlotTag);
     
 }
 

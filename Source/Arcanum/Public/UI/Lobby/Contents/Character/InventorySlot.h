@@ -39,8 +39,8 @@ public:
 	bool IsState = false;
 
 	UFUNCTION()
-	//void CreateWeaponItems(TArray<FEquipmentInfo> WeaponList, FGameplayTag SlotTag);
-	void CreateWeaponItems(TArray<FEquipmentInfo> WeaponList,int32 SlotIndex);
+	void CreateWeaponItems(TArray<FEquipmentInfo> WeaponList, FGameplayTag SlotTag);
+	//void CreateWeaponItems(TArray<FEquipmentInfo> WeaponList,int32 SlotIndex);
 	
 	UFUNCTION(BlueprintCallable)
 	void SetEquipButtonEnabled(bool bWeaponClicked);
