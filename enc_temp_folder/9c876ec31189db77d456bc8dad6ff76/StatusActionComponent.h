@@ -7,7 +7,6 @@
 #include "NativeGameplayTags.h"
 #include "StatusActionComponent.generated.h"
 
-//김도현
 class UDAAction;
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ARCANUM_API UStatusActionComponent : public UActorComponent

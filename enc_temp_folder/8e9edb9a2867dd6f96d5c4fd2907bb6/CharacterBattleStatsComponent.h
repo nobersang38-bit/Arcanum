@@ -14,9 +14,6 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnCharacterRegenStatChanged, const FRegenSt
 // 2. NonRegen 계열용 (이동속도 같은것들)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnCharacterNonRegenStatChanged, const FNonRegenStat&);
 
-// 통합 호출용
-DECLARE_MULTICAST_DELEGATE_TwoParams(FOnCharacterStatChanged, const FRegenStat&, const FNonRegenStat&);
-
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ARCANUM_API UCharacterBattleStatsComponent : public UActorComponent
 {
@@ -26,11 +23,9 @@ class ARCANUM_API UCharacterBattleStatsComponent : public UActorComponent
 public:
 	FOnCharacterRegenStatChanged OnCharacterRegenStatChanged;
 	FOnCharacterNonRegenStatChanged OnCharacterNonRegenStatChanged;
-	FOnCharacterStatChanged OnCharacterStatChanged;
 private:
 	void NotifyRegenStatChanged(const FRegenStat& Stat);
 	void NotifyNonRegenStatChanged(const FNonRegenStat& Stat);
-	void NotifyStatChanged(const FRegenStat& RegenStat, const FNonRegenStat& NonRegenStat);
 #pragma endregion
 	
 #pragma region 언리얼 기본 생성

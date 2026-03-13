@@ -9,7 +9,7 @@
 #include "DAAction.generated.h"
 
 /**
- * 김도현
+ * 
  */
 UCLASS()
 class ARCANUM_API UDAAction : public UDataAsset

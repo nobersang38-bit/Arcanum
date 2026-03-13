@@ -7,16 +7,10 @@
 void UCharacterBattleStatsComponent::NotifyRegenStatChanged(const FRegenStat& Stat)
 {
 	OnCharacterRegenStatChanged.Broadcast(Stat);
-    NotifyStatChanged(Stat, FNonRegenStat());
 }
 void UCharacterBattleStatsComponent::NotifyNonRegenStatChanged(const FNonRegenStat& Stat)
 {
 	OnCharacterNonRegenStatChanged.Broadcast(Stat);
-    NotifyStatChanged(FRegenStat(), Stat);
-}
-void UCharacterBattleStatsComponent::NotifyStatChanged(const FRegenStat& RegenStat, const FNonRegenStat& NonRegenStat)
-{
-    OnCharacterStatChanged.Broadcast(RegenStat, NonRegenStat);
 }
 // ========================================================
 // 언리얼 기본 생성
