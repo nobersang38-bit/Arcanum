@@ -280,10 +280,16 @@ void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerDa
 			{
 				UE_LOG(LogTemp, Error, TEXT("%s"), *DefaultCharacter->GetName());
 				APlayerController* PC = GetWorld()->GetFirstPlayerController();
-				FTransform Transform = PC->GetPawn()->GetActorTransform();
-				PC->GetPawn()->Destroy();
-				APawn* PlayerCharacterF = GetWorld()->SpawnActor<APawn>(DefaultCharacter, Transform);
-				PC->Possess(PlayerCharacterF);
+				if (PC)
+				{
+					if (PC->GetPawn())
+					{
+						FTransform Transform = PC->GetPawn()->GetActorTransform();
+						PC->GetPawn()->Destroy();
+						APawn* PlayerCharacterF = GetWorld()->SpawnActor<APawn>(DefaultCharacter, Transform);
+						PC->Possess(PlayerCharacterF);
+					}
+				}
 			}
 
 			UGameDataSubsystem* GameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
