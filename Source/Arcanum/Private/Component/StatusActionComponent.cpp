@@ -18,13 +18,10 @@ UStatusActionComponent::UStatusActionComponent()
 void UStatusActionComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	UActorComponent* BattleStatActorComponent = GetOwner()->FindComponentByClass(UCharacterBattleStatsComponent::StaticClass());
-	if (BattleStatActorComponent)
+	UCharacterBattleStatsComponent* BattleStatComponent = GetOwner()->FindComponentByClass<UCharacterBattleStatsComponent>();
+	if (BattleStatComponent)
 	{
-		if (UCharacterBattleStatsComponent* BattleStatComponent = Cast<UCharacterBattleStatsComponent>(BattleStatActorComponent))
-		{
-			CachedCharacterBattleStatsComponent = BattleStatComponent;
-		}
+		CachedCharacterBattleStatsComponent = BattleStatComponent;
 	}
 	SetupAction();
 }
@@ -48,16 +45,7 @@ void UStatusActionComponent::SetupAction()
 		{
 			if (ActionDelegate.Value.IsValid())
 			{
-				CachedCharacterBattleStatsComponent->OnCharacterRegenStatChanged.Remove(ActionDelegate.Value);
-				CachedCharacterBattleStatsComponent->OnCharacterNonRegenStatChanged.Remove(ActionDelegate.Value);
-			}
-		}
-
-		for (auto& Action : Actions)
-		{
-			if (Action.Value)
-			{
-				Action.Value->MarkAsGarbage();
+				CachedCharacterBattleStatsComponent->OnCharacterStatChanged.Remove(ActionDelegate.Value);
 			}
 		}
 
