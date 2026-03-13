@@ -14,5 +14,5 @@ class ARCANUM_API UMyDAAction_UnitAttackSpeed : public UDAAction
 {
 	GENERATED_BODY()
 public:
-	virtual void StartAction(AActor* TargetActor, const FNonRegenStat& Stat) override;
+	virtual void StartAction(const FNonRegenStat& Stat) override;
 };

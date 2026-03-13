@@ -67,6 +67,9 @@ struct FEquipmentInfo {
     /** 현재 강화 수치 */
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int32 CurrUpgradeLevel = 0;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    bool IsEquipment = false; // false면 장착X (인벤에서 보여주기)
 };
 
 /**

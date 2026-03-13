@@ -29,6 +29,7 @@ private:
     /** 배너 목록 초기화 (데이터 테이블 기반으로 생성) */
     void InitBannerList();
     UPROPERTY() TArray<FDTGachaBannerDataRow> ActiveBannerDataList;
+    UFUNCTION() void HandleTimeUpdated(FDateTime CurrentTime);
 #pragma endregion
 
 #pragma region 배너 버튼 관련
@@ -41,7 +42,9 @@ protected:
 
     /** 선택된 배너의 상세 픽업 일러스트 */
     UPROPERTY(meta = (BindWidget)) TObjectPtr<UImage> DetailedBannerImage;
-    private:
+private:
+    /** 현재 유효한 배너 버튼 전부 보관 */
+    UPROPERTY() TArray<TObjectPtr<UGachaBannerButtonWidget>> BannerButtons;
     /** 현재 선택된 배너 버튼 보관 */
     UPROPERTY() TObjectPtr<UGachaBannerButtonWidget> CurrentSelectedButton;
     /** 버튼 클릭 시 호출될 함수 */

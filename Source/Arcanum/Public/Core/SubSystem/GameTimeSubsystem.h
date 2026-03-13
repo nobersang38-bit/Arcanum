@@ -6,6 +6,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStageSecondChanged, int32, RemainingSeconds);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBannerSecondChanged, int32, RemainingSeconds);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTimeUpdated, FDateTime, CurrentTime);
 
 /**
  * 전역 게임 시간 관리 서브시스템
@@ -16,7 +17,7 @@ class ARCANUM_API UGameTimeSubsystem : public UGameInstanceSubsystem, public FTi
 {
 	GENERATED_BODY()
 	
-	public:
+public:
 
 	// ---------------------------
 	// Subsystem
@@ -41,6 +42,11 @@ class ARCANUM_API UGameTimeSubsystem : public UGameInstanceSubsystem, public FTi
 	UPROPERTY(BlueprintAssignable, Category = "Time|Banner")
 	FOnBannerSecondChanged OnBannerSecondChanged;
 
+	UPROPERTY(BlueprintAssignable, Category = "Time|Banner")
+	FOnTimeUpdated OnTimeUpdated;
+
+	float AccumulatedTime = 0.f;
+	bool bBannerActive = false;
 	// ---------------------------
 	// Stage Timer (DeltaTime 기반)
 	// ---------------------------
@@ -56,7 +62,7 @@ class ARCANUM_API UGameTimeSubsystem : public UGameInstanceSubsystem, public FTi
 
 private:
 	// Banner
-	bool bBannerActive = false;
+	
 	FDateTime BannerEndTime;
 	int32 LastBannerSecond = -1;
 
