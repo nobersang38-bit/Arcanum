@@ -8,7 +8,7 @@
 #include "StatusActionComponent.generated.h"
 
 //김도현
-class UDAAction;
+class UStatusAction;
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ARCANUM_API UStatusActionComponent : public UActorComponent
 {
@@ -34,11 +34,11 @@ public:
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TMap<FGameplayTag, TSubclassOf<UDAAction>> ActionSet;
+	TMap<FGameplayTag, TSubclassOf<UStatusAction>> ActionSet;
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Runtime|Debug", meta = (AllowPrivateAccess = "true"))
-	TMap<FGameplayTag, UDAAction*> Actions;
+	TMap<FGameplayTag, UStatusAction*> Actions;
 
 	TMap<FGameplayTag, FDelegateHandle> ActionDelegates;
 

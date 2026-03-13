@@ -7,14 +7,6 @@
 #include "DataInfo/CommonData/Stats/FBattleStats.h"
 #include "StatusAction.generated.h"
 
-UENUM(BlueprintType)
-enum class EStatusActionEnableTagType : uint8
-{
-	OnlyThisTags				UMETA(DisplayName = "OnlyThisTags", ToolTip = "오로지 StatuAction의 태그만 사용합니다"),
-	OnlyStatusActionCompTags	UMETA(DisplayName = "OnlyStatusActionCompTags", ToolTip = "오로지 StatusActionComponent의 태그만 사용합니다"),
-	AddTags						UMETA(DisplayName = "AddTags", ToolTip = "StatusAction과 StatusActionComponent의 태그를 합칩니다"),
-};
-
 /**
  * 김도현
  */
@@ -22,9 +14,6 @@ UCLASS(Blueprintable)
 class ARCANUM_API UStatusAction : public UObject
 {
 	GENERATED_BODY()
-
-	friend class UStatusActionComponent;
-
 public:
 	// 실행할때의 로직
 	UFUNCTION(BlueprintNativeEvent, Category = "StatusAction")
@@ -41,14 +30,6 @@ public:
 	// 활성화 태그 추가
 	UFUNCTION(BlueprintCallable, Category = "StatusAction")
 	FORCEINLINE void AddEnableTag(const FGameplayTag& InTag) { EnableTags.AddTag(InTag); }
-
-	// 비활성화 태그들 추가
-	UFUNCTION(BlueprintCallable, Category = "StatusAction")
-	FORCEINLINE void AddDisableTags(const FGameplayTagContainer& InTags) { DisableTags = InTags; }
-
-	// 비활성화 태그 추가
-	UFUNCTION(BlueprintCallable, Category = "StatusAction")
-	FORCEINLINE void AddDisableTag(const FGameplayTag& InTag) { DisableTags.AddTag(InTag); }
 
 protected:
 	// 이걸 우선 호출 후 검사 완료후에 StartAction을 실행 시켜야함
@@ -72,19 +53,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
 	bool bUseInstancing = true;
 
-	// 이 액션이 StatusActionComponent에 할당되면 바로 시작 할 것인가
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
-	bool bUseStartOnInit = true;
-
-	// StatusActionComponent에서 할당된 태그와의 병합 방식
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
-	EStatusActionEnableTagType EnableTagMergeType = EStatusActionEnableTagType::AddTags;
-
 	// 이 안의 태그중 하나라도 들어오면 액션 발동
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
 	FGameplayTagContainer EnableTags;
 
-	// 이 안의 태그중 하나라도 들어오면 액션 취소
+	// 이 안의 태그중 하나라도 들어오면 액션 취소ko
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
 	FGameplayTagContainer DisableTags;
 };

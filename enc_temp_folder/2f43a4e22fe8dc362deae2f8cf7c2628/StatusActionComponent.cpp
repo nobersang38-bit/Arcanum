@@ -84,10 +84,7 @@ void UStatusActionComponent::SetupAction()
 					ActionDelegates.Add(RegenStat[i].ParentTag, FDelegateHandle());
 				}
 				*ActionDelegates.Find(RegenStat[i].ParentTag) = CachedCharacterBattleStatsComponent->OnCharacterStatChanged.AddUObject(ActionInstance, &UStatusAction::StartAction);
-				if (ActionInstance->bUseStartOnInit)
-				{
-					ActionInstance->StartAction(RegenStat[i], FNonRegenStat());
-				}
+				ActionInstance->StartAction(RegenStat[i], FNonRegenStat());
 				ActionInstance->AddEnableTag(RegenStat[i].ParentTag);
 			}
 		}
@@ -112,10 +109,7 @@ void UStatusActionComponent::SetupAction()
 					ActionDelegates.Add(NonRegenStats[i].TagName, FDelegateHandle());
 				}
 				*ActionDelegates.Find(NonRegenStats[i].TagName) = CachedCharacterBattleStatsComponent->OnCharacterStatChanged.AddUObject(ActionInstance, &UStatusAction::StartAction);
-				if (ActionInstance->bUseStartOnInit)
-				{
-					ActionInstance->StartAction(FRegenStat(), NonRegenStats[i]);
-				}
+				ActionInstance->StartAction(FRegenStat(), NonRegenStats[i]);
 				ActionInstance->AddEnableTag(NonRegenStats[i].TagName);
 			}
 		}
