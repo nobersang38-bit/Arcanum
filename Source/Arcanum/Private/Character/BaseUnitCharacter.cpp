@@ -24,6 +24,7 @@
 #include "UI/InGame/UnitHealthWidget.h"
 #include "Components/CapsuleComponent.h"
 #include "NiagaraComponent.h"
+#include "Component/StatusActionComponent.h"
 
 // Sets default values
 ABaseUnitCharacter::ABaseUnitCharacter()
@@ -34,6 +35,7 @@ ABaseUnitCharacter::ABaseUnitCharacter()
 	UnitCombatComponent = CreateDefaultSubobject<UUnitCombatComponent>(TEXT("UnitCombatComponent"));
 	CharacterBattleStatsComponent = CreateDefaultSubobject<UCharacterBattleStatsComponent>(TEXT("CharacterBattleStatsComponent"));
 	HealthBarComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBarComponent"));
+	StatusActionComponent = CreateDefaultSubobject<UStatusActionComponent>(TEXT("StatusActionComponent"));
 
 	HealthBarComponent->SetupAttachment(RootComponent);
 
@@ -148,7 +150,10 @@ void ABaseUnitCharacter::DataInitialize()
 {
 	GetCharacterMovement()->SetRVOAvoidanceWeight((FMath::Rand32() % 11) * 0.1f);
 	CharacterBattleStatsComponent->InitComponent();
-	CharacterBattleStatsComponent->OnCharacterRegenStatChanged.RemoveAll(this);
+	if (SetPercentDelegateHandle.IsValid())
+	{
+		CharacterBattleStatsComponent->OnCharacterRegenStatChanged.Remove(SetPercentDelegateHandle);
+	}
 	// Todo KDH : 임시
 	//CharacterBattleStatsComponent->ChangeStatValue(Arcanum::BattleStat::Character::Regen::Health::Root, 100.0f, this);
 	if (!IsSetupUnit)
@@ -161,7 +166,7 @@ void ABaseUnitCharacter::DataInitialize()
 	{
 		if (UUnitHealthWidget* TempHealthWidget = Cast<UUnitHealthWidget>(TempHealthWidgetUser))
 		{
-			CharacterBattleStatsComponent->OnCharacterRegenStatChanged.AddUObject(TempHealthWidget, &UUnitHealthWidget::SetPercent);
+			SetPercentDelegateHandle = CharacterBattleStatsComponent->OnCharacterRegenStatChanged.AddUObject(TempHealthWidget, &UUnitHealthWidget::SetPercent);
 			float CurrentHealth = 0.0f;
 			float MaxHealth = 0.0f;
 

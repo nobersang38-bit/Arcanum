@@ -93,11 +93,11 @@ void UUnitCombatComponent::DeferredBeginPlay()
 	if (ABaseUnitCharacter* TempOwner = Cast<ABaseUnitCharacter>(GetOwner()))
 	{
 		StatComponent = TempOwner->GetCharacterBattleStatsComponent();
-		StatComponent->OnCharacterRegenStatChanged.RemoveAll(this);
-		StatComponent->OnCharacterNonRegenStatChanged.RemoveAll(this);
-		StatComponent->OnCharacterRegenStatChanged.AddUObject(this, &UUnitCombatComponent::Death);
-		StatComponent->OnCharacterRegenStatChanged.AddUObject(this, &UUnitCombatComponent::SetRegenStat);
-		StatComponent->OnCharacterNonRegenStatChanged.AddUObject(this, &UUnitCombatComponent::SetNonRegenStat);
+		if (DeathDelegateHandle.IsValid())
+		{
+			StatComponent->OnCharacterRegenStatChanged.Remove(DeathDelegateHandle);
+		}
+		DeathDelegateHandle = StatComponent->OnCharacterRegenStatChanged.AddUObject(this, &UUnitCombatComponent::Death);
 	}
 
 	if (ACharacter* TempOwnerCharacter = Cast<ACharacter>(GetOwner()))
@@ -418,26 +418,6 @@ bool UUnitCombatComponent::IsCanAttackRange()
 	}
 	return false;
 }
-
-void UUnitCombatComponent::SetRegenStat(const FRegenStat& InValue)
-{
-	const FGameplayTag& Tag = InValue.ParentTag;
-	if (ActionSet.Contains(Tag))
-	{
-		ActionSet.Find(Tag)->GetDefaultObject()->StartAction(GetOwner(), InValue);
-	}
-}
-
-void UUnitCombatComponent::SetNonRegenStat(const FNonRegenStat& InValue)
-{
-	const FGameplayTag& Tag = InValue.TagName;
-
-	if (ActionSet.Contains(Tag))
-	{
-		ActionSet.Find(Tag)->GetDefaultObject()->StartAction(GetOwner(), InValue);
-	}
-}
-
 
 // ========================================================
 // 상태

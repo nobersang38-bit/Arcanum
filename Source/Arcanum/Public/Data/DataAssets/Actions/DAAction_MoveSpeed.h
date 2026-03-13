@@ -13,5 +13,5 @@ UCLASS()
 class ARCANUM_API UDAAction_MoveSpeed : public UDAAction
 {
 	GENERATED_BODY()
-	virtual void StartAction(AActor* TargetActor, const FNonRegenStat& Value) override;
+	virtual void StartAction(const FNonRegenStat& Value) override;
 };

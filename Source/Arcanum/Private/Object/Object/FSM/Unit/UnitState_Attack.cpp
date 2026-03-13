@@ -116,6 +116,7 @@ void UUnitState_Attack::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterr
 		Internal_UnitCombatComponent->StateChange(EUnitState::Move);
 	}
 
+	// 타겟이 죽었다면 상태 변경
 	if (Internal_UnitCombatComponent->TargetActor.IsValid() && Internal_UnitCombatComponent->TargetActor->GetClass()->ImplementsInterface(URuntimeUnitDataInterface::StaticClass()))
 	{
 		auto Interface = Cast<IRuntimeUnitDataInterface>(Internal_UnitCombatComponent->TargetActor);
