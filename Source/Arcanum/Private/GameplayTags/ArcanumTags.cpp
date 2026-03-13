@@ -144,6 +144,7 @@ namespace Arcanum {
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Legendary, "Arcanum.Items.ItemSlot.Weapon.Legendary", "무기슬롯 레전더리");
 			}
 			namespace Armor {
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Items.ItemSlot.Armor", "방어구 슬롯 루트");
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Helmet, "Arcanum.Items.ItemSlot.Armor.Helmet", "머리");
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Chest, "Arcanum.Items.ItemSlot.Armor.Chest", "몸통");
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Glove, "Arcanum.Items.ItemSlot.Armor.Glove", "손");
@@ -184,6 +185,7 @@ namespace Arcanum {
 			namespace SetItem {
 				namespace Talasha {
 					namespace Armor {
+						UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Items.Rarity.SetItem.Talasha.Armor", "탈라샤 방어구 루트");
 						UE_DEFINE_GAMEPLAY_TAG_COMMENT(Helmet, "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Helmet", "투구");
 						UE_DEFINE_GAMEPLAY_TAG_COMMENT(Chest, "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Chest", "갑옷");
 						UE_DEFINE_GAMEPLAY_TAG_COMMENT(Glove, "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Glove", "장갑");
@@ -192,6 +194,7 @@ namespace Arcanum {
 				}
 				namespace Sigon {
 					namespace Armor {
+						UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Items.Rarity.SetItem.Sigon.Armor", "시곤 방어구 루트");
 						UE_DEFINE_GAMEPLAY_TAG_COMMENT(Helmet, "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Helmet", "투구");
 						UE_DEFINE_GAMEPLAY_TAG_COMMENT(Chest, "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Chest", "갑옷");
 						UE_DEFINE_GAMEPLAY_TAG_COMMENT(Glove, "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Glove", "장갑");

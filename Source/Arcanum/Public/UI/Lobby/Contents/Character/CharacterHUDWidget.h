@@ -6,20 +6,20 @@
 #include "Blueprint/UserWidget.h"
 #include "UI/DataType/EDialogResult.h"
 #include "GameplayTags/ArcanumTags.h"
-#include "Core/ARGameInstance.h"
-#include "Core/SubSystem/GameDataSubsystem.h"
 #include "CharacterHUDWidget.generated.h"
 
+class UARGameInstance;
+class UGameDataSubsystem;
 class URoundedSlotWidget;
 class USquareSlotWidget;
+class UCharacterEquipWidget;
 class UCommonDialog;
 class UCharacterInfo;
 class UWidgetSwitcher;
-class UInventoryHUDWidget;
 class UWrapBox;
 class ULobbyHUD;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnhanceOKClicked,int32, RequiredSoul);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnhanceOKClicked, int32, RequiredSoul);
 
 /**
  *  김유진
@@ -33,7 +33,7 @@ class ARCANUM_API UCharacterHUDWidget : public UUserWidget
 #pragma region 언리얼 기본 생성
 protected:
 	virtual void NativeConstruct() override;
-	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry,const FPointerEvent& InMouseEvent) override;
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 #pragma endregion
 
 #pragma region 바인딩
@@ -82,7 +82,7 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UWidgetSwitcher>CharacterSwitcher;
 
-	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Slot")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slot")
 	TSubclassOf<URoundedSlotWidget> RoundedSlotWidgetClass;
 
 	UPROPERTY()
@@ -90,7 +90,7 @@ protected:
 	UPROPERTY() TArray<URoundedSlotWidget*> CreatedServantCharacterSlots;
 
 	UFUNCTION()
-	void CharacterEnhancement(FText CharacterName,int32 InRequiredSoul);
+	void CharacterEnhancement(FText CharacterName, int32 InRequiredSoul);
 	UFUNCTION()
 	void SetPlayerCharacter(FText CharacterName);
 
@@ -100,8 +100,8 @@ protected:
 	UFUNCTION()
 	//void SetupEquipment(bool bNewEquipped);
 	void SetupEquipment(USquareSlotWidget* ClickedSlot, int32 SlotIndex);
-	
-	int GetCurrentGrade;
+
+	int32 CurrentGrade;
 	int32 RequiredSoul;
 	// 무기, 장비 슬롯
 	UPROPERTY()
@@ -120,10 +120,7 @@ public:
 
 	void InitCharacterHUD();
 	void InitServantCharacter();
-
-	void InitWeaponInventory(int32 SlotIndex);
 	void InitEquipment(FName CharacterName);
-
 
 private:
 	UFUNCTION()
@@ -148,11 +145,17 @@ private:
 
 #pragma endregion
 
-#pragma region 장비 인벤토리
-protected:
-	/* 장비칸 클릭 시 표시할 인벤토리 위젯 */
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UInventoryHUDWidget> InventoryHUDWidget;
-#pragma endregion
+#pragma region 장비 장착 위젯
+private:
+	/* 장착 위젯에서 장착 버튼 클릭 시 실제 장착 요청 처리 */
+	UFUNCTION()
+	void HandleCharacterEquipRequested(const FGameplayTag& InEquipSlotTag, const FGuid& InItemGuid);
 
+	/* 장착 위젯에서 해제 버튼 클릭 시 실제 해제 요청 처리 */
+	UFUNCTION()
+	void HandleCharacterUnequipRequested(const FGameplayTag& InEquipSlotTag);
+protected:
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UCharacterEquipWidget> CharacterEquipWidget;
+#pragma endregion
 };

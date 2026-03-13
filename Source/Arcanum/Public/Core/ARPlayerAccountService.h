@@ -136,7 +136,16 @@ public:
 
 #pragma region Character Widget 관련
 public:
+	/* 선택 캐릭터의 장착칸에서 장비 장착 */
+	static bool EquipItemToCharacter(const UObject* WorldContextObject, const FName& InCharacterName, const FGameplayTag& InEquipSlotTag, const FGuid& InItemGuid);
 
+	/* 선택 캐릭터의 장착칸에서 장비 해제 */
+	static bool UnequipItemFromCharacter(const UObject* WorldContextObject, const FName& InCharacterName, const FGameplayTag& InEquipSlotTag);
+
+	/* 이름으로 소유 캐릭터 찾기 */
+	static FBattleCharacterData* FindOwnedCharacterByName(FPlayerData& InPlayerData, const FName& InCharacterName);
+	/* 슬롯 태그에 맞는 장착 맵 반환 */
+	static TMap<FGameplayTag, FGuid>* GetEquipmentSlotMapBySlotTag(FBattleCharacterData& InCharacterData, const FGameplayTag& InEquipSlotTag);
 #pragma endregion
 
 #pragma region Enhancement Widget 관련

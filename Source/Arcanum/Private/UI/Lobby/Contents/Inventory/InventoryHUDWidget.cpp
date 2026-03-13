@@ -402,11 +402,9 @@ bool UInventoryHUDWidget::IsMatchedEquipSlotFilter(const FGameplayTag& InItemTag
 	switch (CurrentEquipSlotFilter)
 	{
 	case EInventoryEquipSlotFilter::Weapon:
-		return equipRow->SlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Weapon::LeftHand)
-			|| equipRow->SlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Weapon::RightHand)
-			|| equipRow->SlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Weapon::TwoHand);
+		return equipRow->ItemTag.MatchesTag(Arcanum::Items::Rarity::Common::Weapon::Root);
 	case EInventoryEquipSlotFilter::Legendary:
-		return equipRow->SlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Weapon::Legendary);
+		return equipRow->ItemTag.MatchesTag(Arcanum::Items::Rarity::Legendary::Weapon::Root);
 	case EInventoryEquipSlotFilter::Helmet:
 		return equipRow->SlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Armor::Helmet);
 	case EInventoryEquipSlotFilter::Chest:

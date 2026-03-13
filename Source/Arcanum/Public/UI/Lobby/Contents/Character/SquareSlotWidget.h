@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -9,6 +7,7 @@
 
 class UImage;
 class UBorder;
+class UTextBlock;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnWeaponSlotClicked,USquareSlotWidget*, ClickedSlot,int32, SlotIndex);
 /**
@@ -65,5 +64,18 @@ protected:
 	FText EquipNameTxt;
 	UPROPERTY()
 	FGuid WeaponGuid;
+
+#pragma region 강화 수치 표시
+public:
+	UFUNCTION(BlueprintCallable)
+	void SetUpgradeLevel(int32 InUpgradeLevel);
+
+	UFUNCTION(BlueprintCallable)
+	void ClearUpgradeLevel();
+
+protected:
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UTextBlock> UpgradeLevelText;
+#pragma endregion
 
 };

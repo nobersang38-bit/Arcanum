@@ -170,6 +170,7 @@ namespace Arcanum {
 				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Legendary);
 			}
 			namespace Armor {
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
 				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Helmet);
 				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Chest);
 				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Glove);
@@ -209,6 +210,7 @@ namespace Arcanum {
 			namespace SetItem {
 				namespace Talasha {
 					namespace Armor {
+						ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
 						ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Helmet); // 투구 
 						ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Chest);  // 갑옷
 						ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Glove);  // 장갑
@@ -217,6 +219,7 @@ namespace Arcanum {
 				}
 				namespace Sigon {
 					namespace Armor {
+						ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
 						ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Helmet); // 투구 
 						ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Chest);  // 갑옷
 						ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Glove);  // 장갑
