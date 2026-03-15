@@ -524,7 +524,11 @@ bool FPlayerAccountService::RerollEquipment(const UObject* WorldContextObject, c
 	const FGameplayTag soulTag = Arcanum::PlayerData::Currencies::NonRegen::Soul::Value;
 	const int64 currentSoul = GI->GetCurrencyAmount(soulTag);
 	if (currentSoul == INDEX_NONE_LONG) return false;
-	if (currentSoul < ruleRow->RerollSoulCost) return false;
+	if (currentSoul < ruleRow->RerollSoulCost)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("소울 부족"));
+		return false;
+	}
 
 	UpdateCurrency(WorldContextObject, GI->GetPlayerDataCopy(), soulTag, -ruleRow->RerollSoulCost);
 

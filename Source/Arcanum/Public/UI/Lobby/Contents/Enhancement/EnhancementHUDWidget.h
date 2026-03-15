@@ -7,12 +7,12 @@
 class ULobbyHUD;
 class UInventoryHUDWidget;
 class UInventoryItemSlotWidget;
+class UItemTitlePanelWidget;
+class UItemStatPanelWidget;
 class UTextBlock;
 class UCommonBtnWidget;
 struct FInventoryViewSlot;
 struct FEquipmentInfo;
-struct FDTItemCatalogRow;
-struct FDTEquipmentInfoRow;
 
 /**
  * 추영호
@@ -63,54 +63,6 @@ public:
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UInventoryItemSlotWidget> SelectedItemSlotWidget;
-#pragma endregion
-
-#pragma region 강화 정보 표시
-private:
-	/* 실제 장비 데이터 조회 */
-	const FEquipmentInfo* FindSelectedEquipment(const FGuid& InItemGuid) const;
-
-	/* 강화 정보창 전체 갱신 */
-	void RefreshEnhancementInfo(const FInventoryViewSlot& InSlot);
-
-	/* 강화 정보 텍스트 채움 */
-	void ApplyEnhancementInfo(const FDTItemCatalogRow* InCatalogRow, const FDTEquipmentInfoRow* InEquipRow, const FEquipmentInfo* InEquipInfo);
-
-	/* 정보창 초기화 */
-	void ClearEnhancementInfo();
-
-protected:
-	/* 장비 이름 + 현재 강화 수치 */
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UTextBlock> CurrentUpgradeText;
-
-	/* 현재 구간 제목 */
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UTextBlock> CurrentTitleText;
-
-	/* 현재 스탯 1줄 */
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UTextBlock> CurrentStatText1;
-
-	/* 현재 스탯 2줄 */
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UTextBlock> CurrentStatText2;
-
-	/* 강화 후 구간 제목 */
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UTextBlock> NextTitleText;
-
-	/* 강화 후 스탯 1줄 */
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UTextBlock> NextStatText1;
-
-	/* 강화 후 스탯 2줄 */
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UTextBlock> NextStatText2;
-
-	/* 강화 성공 확률 */
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UTextBlock> EnhanceChanceText;
 #pragma endregion
 
 #pragma region 장비 강화
@@ -174,5 +126,32 @@ protected:
 	/* 상세 확률표 텍스트 */
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UTextBlock> DetailChanceText;
+#pragma endregion
+
+#pragma region 강화 정보 표시
+private:
+	/* 가운데 강화 정보 갱신 */
+	void RefreshEnhancementInfo();
+
+	/* 강화 정보창 전체 초기화 */
+	void ClearEnhancementInfo();
+
+protected:
+	/* 가운데 아이템 이름 패널 */
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UItemTitlePanelWidget> ItemTitlePanelWidget;
+
+	/* 가운데 현재 능력치 패널 */
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UItemStatPanelWidget> CurrentStatPanelWidget;
+
+	/* 가운데 강화 후 능력치 패널 */
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UItemStatPanelWidget> NextStatPanelWidget;
+
+	/* 강화 성공 확률 텍스트 */
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UTextBlock> EnhanceChanceText;
+
 #pragma endregion
 };

@@ -14,10 +14,12 @@ class UBorder;
 /* 슬롯 클릭시 슬롯 인덱스 전달 */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInventorySlotClicked, int32, InSlotIndex);
 
+
 /**
  * 추영호
  * 인벤토리 하나 슬롯
  */
+
 UCLASS()
 class ARCANUM_API UInventoryItemSlotWidget : public UUserWidget
 {
@@ -50,7 +52,6 @@ private:
 	/* 현재 상태 갱신 */
 	void RefreshSlotUI();
 
-
 public:
 	UPROPERTY(BlueprintAssignable, Category = "Inventory")
 	FOnInventorySlotClicked OnInventorySlotClicked;
@@ -78,5 +79,21 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	bool bSelected = false;
+
+#pragma region 인벤 툴팁
+protected:
+	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
+
+private:
+	/* 슬롯 툴팁 갱신 */
+	void RefreshTooltip();
+
+protected:
+	/* 슬롯 툴팁 위젯 클래스 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
+	TSubclassOf<class UItemTooltipWidget> ItemTooltipWidgetClass;
+
+#pragma endregion
 };
 

@@ -1,4 +1,6 @@
 #include "UI/Lobby/Contents/Inventory/SubLayout/InventoryItemSlotWidget.h"
+#include "UI/Lobby/Contents/ItemDetail/ItemTooltipWidget.h"
+#include "UI/Lobby/Contents/ItemDetail/ItemDetailHelper.h"
 #include "Components/Button.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
@@ -124,4 +126,67 @@ void UInventoryItemSlotWidget::RefreshSlotUI()
 			}
 		}
 	}
+}
+
+void UInventoryItemSlotWidget::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
+
+	RefreshTooltip();
+}
+
+void UInventoryItemSlotWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseLeave(InMouseEvent);
+
+	SetToolTip(nullptr);
+}
+
+void UInventoryItemSlotWidget::RefreshTooltip()
+{
+	if (ViewSlot.Type == EInventoryViewSlotType::Empty)
+	{
+		SetToolTip(nullptr);
+		return;
+	}
+
+	if (!ItemTooltipWidgetClass)
+	{
+		SetToolTip(nullptr);
+		return;
+	}
+
+	UItemTooltipWidget* tooltipWidget = CreateWidget<UItemTooltipWidget>(this, ItemTooltipWidgetClass);
+	if (!tooltipWidget)
+	{
+		SetToolTip(nullptr);
+		return;
+	}
+
+	FItemDisplayViewData viewData;
+
+	if (ViewSlot.Type == EInventoryViewSlotType::Equipment)
+	{
+		if (!FItemDetailHelper::BuildEquipmentDisplayViewData(this, ViewSlot.ItemGuid, viewData))
+		{
+			SetToolTip(nullptr);
+			return;
+		}
+	}
+	else if (ViewSlot.Type == EInventoryViewSlotType::StackItem)
+	{
+		if (!FItemDetailHelper::BuildStackItemDisplayViewData(this, ViewSlot.ItemTag, viewData))
+		{
+			SetToolTip(nullptr);
+			return;
+		}
+	}
+	else
+	{
+		SetToolTip(nullptr);
+		return;
+	}
+
+	tooltipWidget->ApplyDisplayData(viewData);
+	SetToolTip(tooltipWidget);
 }
