@@ -52,6 +52,10 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Button Settings")
     void SetButtonText(FText InText);
 
+    UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Button Settings")
+    void SetSelectedState(bool bIsSelected);
+    virtual void SetSelectedState_Implementation(bool bIsSelected);
+   
     // --- 위젯 바인딩 (WBP의 컴포넌트와 이름 일치 필수) ---
     UPROPERTY(meta = (BindWidget))
     class UButton* MainButton;
@@ -64,6 +68,9 @@ public:
 
     UPROPERTY(meta = (BindWidget))
     class UButton* IconButton;
+
+    UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional, ShowOnlyInnerProperties), Category = "Button Settings")
+    class UCommonButtonBase* HQUI_Button;
 
 protected:
     virtual void NativePreConstruct() override;
@@ -80,4 +87,7 @@ protected:
 
     UFUNCTION()
     void HandleButtonClicked();
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Button State")
+    bool bIsSelectedState;
 };
