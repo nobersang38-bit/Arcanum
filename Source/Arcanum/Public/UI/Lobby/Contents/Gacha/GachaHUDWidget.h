@@ -42,6 +42,7 @@ protected:
 
     /** 선택된 배너의 상세 픽업 일러스트 */
     UPROPERTY(meta = (BindWidget)) TObjectPtr<UImage> DetailedBannerImage;
+
 private:
     /** 현재 유효한 배너 버튼 전부 보관 */
     UPROPERTY() TArray<TObjectPtr<UGachaBannerButtonWidget>> BannerButtons;
