@@ -221,8 +221,8 @@ protected:
 
 #pragma region 물약, 장비 필터
 public:
-	/* 스택 전용 표시 슬롯 생성 */
-	void RefreshStackInventory();
+	/* 소비 전용 표시 슬롯 생성 */
+	void RefreshConsumableInventory();
 
 	/* 장비 전용 표시 슬롯 생성 */
 	void RefreshEquipmentInventory();

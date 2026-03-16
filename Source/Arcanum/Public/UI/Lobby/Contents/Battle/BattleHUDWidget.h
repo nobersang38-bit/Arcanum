@@ -25,7 +25,7 @@ class ARCANUM_API UBattleHUDWidget : public UUserWidget
 
 #pragma region 기본
 public:
-	void SetParentLobby(ULobbyHUD* InLobby) { ParentLobby = InLobby; }
+	void SetParentLobby(ULobbyHUD* InLobby);
 protected:
 	virtual void NativeConstruct() override;
 private:
@@ -47,6 +47,10 @@ protected:
 #pragma endregion
 
 #pragma region 물약 아이템 장착
+public:
+	/* 장작 슬롯 화면 갱신 */
+	void RefreshBattlePotionSlots();
+
 private:
 	/* 물약 슬롯 클릭 */
 	UFUNCTION()
@@ -59,12 +63,13 @@ private:
 	UFUNCTION()
 	void HandleInventorySlotSelected(const FInventoryViewSlot& InSlot);
 
-	/* 장착 버튼 클릭 */
+	/* 장착 버튼 */
 	UFUNCTION()
 	void HandleSetItemBtnClicked();
 
-	/* 물약 장착 처리 */
-	void EquipSelectedPotionToSlot();
+	/* 해제 버튼 */
+	UFUNCTION()
+	void HandleRemoveItemBtnClicked();
 
 	/* 물약 인벤토리 열기 */
 	void ShowPotionInventory();

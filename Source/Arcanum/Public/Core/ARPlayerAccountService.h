@@ -132,6 +132,12 @@ public:
 
 	/* 스테이지 입장 시 상점 타이머 정지 */
 	static void StopShopOnBattleStart(const UObject* WorldContextObject);
+
+	/* 전투 물약 슬롯 저장 */
+	static bool SetBattlePotionSlot(const UObject* WorldContextObject, int32 InSlotIndex, const FGameplayTag& InPotionTag, int32 InCount);
+
+	/* 전투 물약 슬롯 해제 */
+	static bool ClearBattlePotionSlot(const UObject* WorldContextObject, int32 InSlotIndex);
 #pragma endregion
 
 #pragma region Character Widget 관련

@@ -421,8 +421,13 @@ bool UInventoryHUDWidget::IsMatchedEquipSlotFilter(const FGameplayTag& InItemTag
 	return false;
 }
 
-void UInventoryHUDWidget::RefreshStackInventory()
+void UInventoryHUDWidget::RefreshConsumableInventory()
 {
+	SetCategoryPanelVisible(false);
+
+	CurrentFilter = EInventoryCategoryFilter::Consumable;
+	CurrentEquipSlotFilter = EInventoryEquipSlotFilter::None;
+
 	if (!ParentLobby) return;
 
 	const FPlayerData& playerData = ParentLobby->GetCachedPlayerData();

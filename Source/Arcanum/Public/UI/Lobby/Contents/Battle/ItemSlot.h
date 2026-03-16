@@ -6,9 +6,10 @@
 
 class UCommonBtnWidget;
 class UInventoryHUDWidget;
+class UCommonBtnWidget;
 
-/* 장착 버튼 */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSetItemBtnClicked);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRemoveItemBtnClicked);
 
 /**
  * 추영호
@@ -35,13 +36,28 @@ private:
 	UFUNCTION()
 	void ClickSetItemBtn();
 
+	/* 해제 버튼 */
+	UFUNCTION()
+	void ClickRemoveBtn();
+
+	UFUNCTION()
+	void ClickCloseBtn();
 public:
-	UPROPERTY(BlueprintAssignable, Category = "ItemSlot")
+	UPROPERTY(BlueprintAssignable)
 	FOnSetItemBtnClicked OnSetItemBtnClicked;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnRemoveItemBtnClicked OnRemoveItemBtnClicked;
 
 protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCommonBtnWidget> SetItemBtn;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UCommonBtnWidget> RemoveBtn;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UCommonBtnWidget> CloseBtn;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInventoryHUDWidget> BattleInventoryWidget;

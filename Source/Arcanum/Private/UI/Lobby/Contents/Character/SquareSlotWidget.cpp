@@ -91,11 +91,8 @@ void USquareSlotWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 
 void USquareSlotWidget::RefreshTooltip()
 {
-
-	UE_LOG(LogTemp, Warning, TEXT("Square=%s WidgetClass=%s TooltipClass=%s"), *GetNameSafe(this), *GetClass()->GetName(), *GetNameSafe(ItemTooltipWidgetClass));
 	if (!EquippedItemGuid.IsValid() || !ItemTooltipWidgetClass)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("SquareTooltip GuidValid=%d ClassValid=%d"), EquippedItemGuid.IsValid(), ItemTooltipWidgetClass != nullptr);
 		SetToolTip(nullptr);
 		return;
 	}

@@ -2,6 +2,7 @@
 #include "UI/Lobby/Contents/Character/SquareSlotWidget.h"
 #include "UI/Lobby/Contents/Inventory/InventoryHUDWidget.h"
 #include "UI/Lobby/Contents/Inventory/SubLayout/InventoryItemSlotWidget.h"
+#include "UI/Lobby/LobbyHUD.h"
 #include "UI/Lobby/Contents/Battle/ItemSlot.h"
 #include "UI/Common/CommonBtnWidget.h"
 #include "UI/Lobby/Contents/Battle/StageList.h"
@@ -98,6 +99,21 @@ void UBattleHUDWidget::NativeConstruct()
 	}
 
 	if (StageWidgets.Num() > 0 && StageWidgets[0]) OnStageClicked(StageWidgets[0]);
+
+	RefreshBattlePotionSlots();
+}
+
+void UBattleHUDWidget::SetParentLobby(ULobbyHUD* InLobby)
+{
+	ParentLobby = InLobby;
+
+	if (ItemListSlot)
+	{
+		if (UInventoryHUDWidget* battleInventoryWidget = ItemListSlot->GetBattleInventoryWidget())
+		{
+			battleInventoryWidget->SetParentLobby(InLobby);
+		}
+	}
 }
 
 void UBattleHUDWidget::SetUnit()
@@ -155,19 +171,25 @@ void UBattleHUDWidget::HandleEquippedPotionSlot2Clicked(int32 InIgnoredIndex)
 
 void UBattleHUDWidget::HandleEquippedPotionSlotClicked(int32 InSlotIndex)
 {
-	if (EquippedPotionSlots.IsValidIndex(InSlotIndex))
+	if (ItemListSlot &&	SelectedPotionSlotIndex == InSlotIndex && ItemListSlot->GetVisibility() == ESlateVisibility::Visible)
 	{
-		SelectedPotionSlotIndex = InSlotIndex;
+		SelectedPotionSlotIndex = INDEX_NONE;
 		RefreshEquippedPotionSlotSelection();
+		ItemListSlot->SetVisibility(ESlateVisibility::Collapsed);
 
-		if (ItemListSlot)
+		return;
+	}
+
+	SelectedPotionSlotIndex = InSlotIndex;
+	RefreshEquippedPotionSlotSelection();
+
+	if (ItemListSlot)
+	{
+		ItemListSlot->SetVisibility(ESlateVisibility::Visible);
+
+		if (UInventoryHUDWidget* battleInventoryWidget = ItemListSlot->GetBattleInventoryWidget())
 		{
-			ItemListSlot->SetVisibility(ESlateVisibility::Visible);
-
-			if (UInventoryHUDWidget* battleInventoryWidget = ItemListSlot->GetBattleInventoryWidget())
-			{
-				ItemListSlot->ShowBattleInventory();
-			}
+			ItemListSlot->ShowBattleInventory();
 		}
 	}
 }
@@ -179,53 +201,123 @@ void UBattleHUDWidget::HandleInventorySlotSelected(const FInventoryViewSlot& InS
 
 void UBattleHUDWidget::HandleSetItemBtnClicked()
 {
-	EquipSelectedPotionToSlot();
-}
-
-void UBattleHUDWidget::EquipSelectedPotionToSlot()
-{
-	if (!EquippedPotionSlots.IsValidIndex(SelectedPotionSlotIndex))	return;
-	if (!EquippedPotionSlotDatas.IsValidIndex(SelectedPotionSlotIndex)) return;
+	if (SelectedPotionSlotIndex == INDEX_NONE) return;
 	if (SelectedInventorySlot.Type != EInventoryViewSlotType::StackItem) return;
 	if (!SelectedInventorySlot.ItemTag.IsValid()) return;
-	if (SelectedInventorySlot.StackCount < EquippedPotionCount) return;
 
-	for (int32 slotIndex = 0; slotIndex < EquippedPotionSlotDatas.Num(); slotIndex++)
+	const int32 setCount = FMath::Min(SelectedInventorySlot.StackCount, EquippedPotionCount);
+
+	const bool bSuccess = FPlayerAccountService::SetBattlePotionSlot(this, SelectedPotionSlotIndex, SelectedInventorySlot.ItemTag, setCount);
+
+	if (bSuccess)
 	{
-		if (slotIndex != SelectedPotionSlotIndex)
+		if (ParentLobby)
 		{
-			const FInventoryViewSlot& equippedSlotData = EquippedPotionSlotDatas[slotIndex];
+			ParentLobby->RefreshAllLobbyUI();
+		}
 
-			if (equippedSlotData.Type == EInventoryViewSlotType::StackItem &&
-				equippedSlotData.ItemTag.MatchesTagExact(SelectedInventorySlot.ItemTag))
+		RefreshBattlePotionSlots();
+
+		SelectedInventorySlot = FInventoryViewSlot();
+		//SelectedPotionSlotIndex = INDEX_NONE;
+		//RefreshEquippedPotionSlotSelection();
+
+		if (ItemListSlot)
+		{
+			if (UInventoryHUDWidget* battleInventoryWidget = ItemListSlot->GetBattleInventoryWidget())
 			{
-				return;
+				battleInventoryWidget->ClearSelection();
+			}
+		}
+
+		HidePotionInventory();
+	}
+}
+
+void UBattleHUDWidget::HandleRemoveItemBtnClicked()
+{
+	if (SelectedPotionSlotIndex == INDEX_NONE) return;
+
+	const bool bSuccess = FPlayerAccountService::ClearBattlePotionSlot(this, SelectedPotionSlotIndex);
+
+	if (bSuccess)
+	{
+		if (ParentLobby)
+		{
+			ParentLobby->RefreshAllLobbyUI();
+		}
+
+		RefreshBattlePotionSlots();
+
+		SelectedInventorySlot = FInventoryViewSlot();
+
+		if (ItemListSlot)
+		{
+			if (UInventoryHUDWidget* battleInventoryWidget = ItemListSlot->GetBattleInventoryWidget())
+			{
+				battleInventoryWidget->ClearSelection();
+			}
+		}
+
+		HidePotionInventory();
+	}
+}
+
+
+void UBattleHUDWidget::RefreshBattlePotionSlots()
+{
+	if (!ParentLobby) return;
+
+	const FPlayerData& playerData = ParentLobby->GetCachedPlayerData();
+
+	if (EquippedPotionSlotDatas.Num() < EquippedPotionSlots.Num())
+	{
+		EquippedPotionSlotDatas.SetNum(EquippedPotionSlots.Num());
+	}
+
+	for (int32 slotIndex = 0; slotIndex < EquippedPotionSlots.Num(); slotIndex++)
+	{
+		FInventoryViewSlot viewSlot;
+
+		if (playerData.BattlePotionSlots.IsValidIndex(slotIndex))
+		{
+			const FBattlePotionSlotData& potionSlotData = playerData.BattlePotionSlots[slotIndex];
+
+			if (potionSlotData.PotionTag.IsValid() && potionSlotData.Count > 0)
+			{
+				viewSlot.Type = EInventoryViewSlotType::StackItem;
+				viewSlot.ItemTag = potionSlotData.PotionTag;
+				viewSlot.StackCount = potionSlotData.Count;
+
+				if (const FDTItemCatalogRow* catalogRow = FPlayerAccountService::FindItemCatalogRowByTag(this, potionSlotData.PotionTag))
+				{
+					viewSlot.Icon = catalogRow->Icon;
+				}
+			}
+		}
+
+		EquippedPotionSlotDatas[slotIndex] = viewSlot;
+
+		if (UInventoryItemSlotWidget* slotWidget = EquippedPotionSlots[slotIndex])
+		{
+			if (viewSlot.Type == EInventoryViewSlotType::Empty)
+			{
+				slotWidget->ClearSlot(slotIndex);
+			}
+			else
+			{
+				slotWidget->SetSlotData(viewSlot, slotIndex);
 			}
 		}
 	}
-
-	FInventoryViewSlot equipSlot = SelectedInventorySlot;
-	equipSlot.StackCount = EquippedPotionCount;
-
-	EquippedPotionSlotDatas[SelectedPotionSlotIndex] = equipSlot;
-	if (UInventoryItemSlotWidget* targetSlot = EquippedPotionSlots[SelectedPotionSlotIndex])
-	{
-		targetSlot->SetSlotData(equipSlot, SelectedPotionSlotIndex);
-		targetSlot->SetSelected(true);
-	}
-
-	HidePotionInventory();
 }
+
 void UBattleHUDWidget::ShowPotionInventory()
 {
 	if (ItemListSlot)
 	{
 		ItemListSlot->SetVisibility(ESlateVisibility::Visible);
-
-		if (UInventoryHUDWidget* battleInventoryWidget = ItemListSlot->GetBattleInventoryWidget())
-		{
-			battleInventoryWidget->RefreshStackInventory();
-		}
+		ItemListSlot->ShowBattleInventory();
 	}
 }
 

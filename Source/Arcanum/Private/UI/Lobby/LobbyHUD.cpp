@@ -115,7 +115,9 @@ void ULobbyHUD::RefreshAllLobbyUI()
 	CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
 
 	// TODO: 로비 갱신
+
 	RefreshLobbyCurrencyUI();
+
 	if (InventoryHUDWidget)
 	{
 		InventoryHUDWidget->RefreshInventoryUI();
@@ -124,6 +126,11 @@ void ULobbyHUD::RefreshAllLobbyUI()
 	if (EnhancementHUDWidget)
 	{
 		EnhancementHUDWidget->RefreshEquipmentInventory();
+	}
+
+	if (BattleHUDWidget)
+	{
+		BattleHUDWidget->RefreshBattlePotionSlots();
 	}
 }
 

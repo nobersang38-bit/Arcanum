@@ -175,7 +175,7 @@ void UEnhancementHUDWidget::RefreshEnhancementInfo()
 
 		if (EnhanceChanceText)
 		{
-			EnhanceChanceText->SetText(nextStatData.EnhanceChanceText);
+			EnhanceChanceText->SetText(FText::Format(FText::FromString(TEXT("성공확률 : {0}")),	nextStatData.EnhanceChanceText));
 		}
 	}
 	else
