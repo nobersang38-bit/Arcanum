@@ -6,7 +6,7 @@
     "Modifiers": [
       {
         "SourceTag": "(TagName=\"Arcanum.Items.Potion.Health\")",
-        "StatTag": "(TagName=\"Arcanum.BattleStat.Character.Regen.Health.Value\")",
+        "StatTag": "(TagName=\"Arcanum.BattleStat.Character.Regen.Health.Regen\")",
         "Value": {
           "Flat": 50.0,
           "Mul": 1.0
@@ -25,7 +25,7 @@
     "Modifiers": [
       {
         "SourceTag": "(TagName=\"Arcanum.Items.Potion.Mana\")",
-        "StatTag": "(TagName=\"Arcanum.BattleStat.Character.Regen.Mana.Value\")",
+        "StatTag": "(TagName=\"Arcanum.BattleStat.Character.Regen.Mana.Regen\")",
         "Value": {
           "Flat": 50.0,
           "Mul": 1.0

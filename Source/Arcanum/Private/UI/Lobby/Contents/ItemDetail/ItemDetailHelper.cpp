@@ -36,6 +36,8 @@ bool FItemDetailHelper::BuildEquipmentDisplayViewData(const UObject* WorldContex
 	OutViewData.SellPriceText = BuildSellPriceText(catalogRow->SellPrice);
 
 	OutViewData.bShowUpgradeLevel = true;
+	OutViewData.EquippedCharacterText = BuildEquippedCharacterText(WorldContextObject, InItemGuid);
+	OutViewData.bShowEquippedCharacter = !OutViewData.EquippedCharacterText.IsEmpty();
 
 	for (const FDerivedStatModifier& stat : equipInfo.Equipment.OwnerStats)
 	{
@@ -85,12 +87,6 @@ bool FItemDetailHelper::BuildStackItemDisplayViewData(const UObject* WorldContex
 		const FDTPotionInfoRow* potionRow = dataSubsystem->GetRow<FDTPotionInfoRow>(Arcanum::DataTable::Potion, catalogRow->DetailRowName);
 		if (potionRow)
 		{
-			FItemStatLineViewData cooldownLine;
-			cooldownLine.StatNameText = FText::FromString(TEXT("쿨타임"));
-			cooldownLine.StatValueText = BuildCooldownText(potionRow->CooldownSeconds);
-			cooldownLine.bVisible = true;
-			OutViewData.StatLines.Add(cooldownLine);
-
 			for (const FDerivedStatModifier& stat : potionRow->Modifiers)
 			{
 				FItemStatLineViewData line;
@@ -108,127 +104,12 @@ bool FItemDetailHelper::BuildStackItemDisplayViewData(const UObject* WorldContex
 				line.bVisible = true;
 				OutViewData.StatLines.Add(line);
 			}
-		}
-	}
 
-	return true;
-}
-
-bool FItemDetailHelper::BuildEquippedTotalStatsViewData(const UObject* WorldContextObject, const FName& InCharacterName, FEquippedTotalStatViewData& OutViewData)
-{
-	ClearEquippedTotalStatViewData(OutViewData);
-
-	if (!WorldContextObject) return false;
-	if (InCharacterName.IsNone()) return false;
-
-	UARGameInstance* gameInstance = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
-	if (!gameInstance) return false;
-
-	UGameDataSubsystem* dataSubsystem = gameInstance->GetSubsystem<UGameDataSubsystem>();
-	if (!dataSubsystem) return false;
-
-	const FPlayerData playerData = FPlayerAccountService::GetPlayerDataCopy(WorldContextObject);
-
-	const FBattleCharacterData* foundCharacter = nullptr;
-	for (const FBattleCharacterData& characterData : playerData.OwnedCharacters)
-	{
-		const FName characterName = GetLeafNameFromTag(characterData.CharacterInfo.BattleCharacterInitData.CharacterTag);
-		if (characterName == InCharacterName)
-		{
-			foundCharacter = &characterData;
-			break;
-		}
-	}
-	if (!foundCharacter) return false;
-
-	TMap<FGameplayTag, FExternalStatModifier> totalStats;
-	auto AccumulateEquipmentStats =
-		[&playerData, &totalStats](const TMap<FGameplayTag, FGuid>& InEquipmentMap)
-		{
-			for (const TPair<FGameplayTag, FGuid>& pair : InEquipmentMap)
-			{
-				const FGuid& itemGuid = pair.Value;
-				if (itemGuid.IsValid())
-				{
-					const FEquipmentInfo* foundEquip = nullptr;
-					for (const FEquipmentInfo& equip : playerData.Inventory)
-					{
-						if (equip.ItemGuid == itemGuid)
-						{
-							foundEquip = &equip;
-							break;
-						}
-					}
-					if (foundEquip)
-					{
-						for (const FDerivedStatModifier& stat : foundEquip->Equipment.OwnerStats)
-						{
-							if (stat.StatTag.IsValid())
-							{
-								FExternalStatModifier& totalValue = totalStats.FindOrAdd(stat.StatTag);
-								totalValue.Flat += stat.Value.Flat;
-								totalValue.Mul += stat.Value.Mul;
-							}
-						}
-					}
-				}
-			}
-		};
-
-	AccumulateEquipmentStats(foundCharacter->WeaponSlots);
-	AccumulateEquipmentStats(foundCharacter->LegendaryWeaponSlots);
-	AccumulateEquipmentStats(foundCharacter->ArmorSlots);
-
-	TArray<FGameplayTag> sortedTags;
-	totalStats.GetKeys(sortedTags);
-
-	sortedTags.Sort(
-		[dataSubsystem](const FGameplayTag& InA, const FGameplayTag& InB)
-		{
-			int32 sortOrderA = MAX_int32;
-			int32 sortOrderB = MAX_int32;
-
-			if (const FDTStatDisplayRow* statRowA = FItemDetailHelper::FindStatDisplayRowByTag(dataSubsystem, InA))
-			{
-				sortOrderA = statRowA->SortOrder;
-			}
-
-			if (const FDTStatDisplayRow* statRowB = FItemDetailHelper::FindStatDisplayRowByTag(dataSubsystem, InB))
-			{
-				sortOrderB = statRowB->SortOrder;
-			}
-
-			if (sortOrderA != sortOrderB)
-			{
-				return sortOrderA < sortOrderB;
-			}
-
-			return InA.GetTagName().LexicalLess(InB.GetTagName());
-		});
-
-	for (const FGameplayTag& statTag : sortedTags)
-	{
-		const FExternalStatModifier* totalValue = totalStats.Find(statTag);
-		if (totalValue)
-		{
-			FItemStatLineViewData line;
-			line.StatNameText = BuildStatNameText(dataSubsystem, statTag);
-
-			FDerivedStatModifier totalStat;
-			totalStat.StatTag = statTag;
-			totalStat.Value = *totalValue;
-
-			if (const FDTStatDisplayRow* statRow = FindStatDisplayRowByTag(dataSubsystem, statTag))
-			{
-				line.StatValueText = BuildCurrentStatValueText(totalStat, statRow->bUsePercent);
-			}
-			else
-			{
-				line.StatValueText = BuildCurrentStatValueText(totalStat, false);
-			}
-
-			line.bVisible = true;
-			OutViewData.StatLines.Add(line);
+			FItemStatLineViewData cooldownLine;
+			cooldownLine.StatNameText = FText::FromString(TEXT("쿨타임"));
+			cooldownLine.StatValueText = BuildCooldownText(potionRow->CooldownSeconds);
+			cooldownLine.bVisible = true;
+			OutViewData.StatLines.Add(cooldownLine);
 		}
 	}
 
@@ -242,6 +123,7 @@ void FItemDetailHelper::ClearDisplayViewData(FItemDisplayViewData& OutViewData)
 	OutViewData.StatLines.Empty();
 	OutViewData.DescText = FText::GetEmpty();
 	OutViewData.SellPriceText = FText::GetEmpty();
+	OutViewData.EquippedCharacterText = FText::GetEmpty();
 
 	OutViewData.bShowUpgradeLevel = false;
 }
@@ -305,6 +187,122 @@ void FItemDetailHelper::ClearEnhancementNextStatViewData(FEnhancementNextStatVie
 {
 	OutViewData.NextStatLines.Empty();
 	OutViewData.EnhanceChanceText = FText::GetEmpty();
+}
+
+bool FItemDetailHelper::BuildEquippedArmorStatsViewData(const UObject* WorldContextObject, const FName& InCharacterName, FEquippedTotalStatViewData& OutViewData)
+{
+	ClearEquippedTotalStatViewData(OutViewData);
+
+	if (!WorldContextObject) return false;
+	if (InCharacterName.IsNone()) return false;
+
+	UARGameInstance* gameInstance = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!gameInstance) return false;
+
+	UGameDataSubsystem* dataSubsystem = gameInstance->GetSubsystem<UGameDataSubsystem>();
+	if (!dataSubsystem) return false;
+
+	const FPlayerData playerData = FPlayerAccountService::GetPlayerDataCopy(WorldContextObject);
+
+	const FBattleCharacterData* foundCharacter = nullptr;
+	for (const FBattleCharacterData& characterData : playerData.OwnedCharacters)
+	{
+		const FName characterName = GetLeafNameFromTag(characterData.CharacterInfo.BattleCharacterInitData.CharacterTag);
+		if (characterName == InCharacterName)
+		{
+			foundCharacter = &characterData;
+			break;
+		}
+	}
+	if (!foundCharacter) return false;
+
+	TMap<FGameplayTag, FExternalStatModifier> totalStats;
+
+	for (const TPair<FGameplayTag, FGuid>& pair : foundCharacter->ArmorSlots)
+	{
+		const FGuid& itemGuid = pair.Value;
+		if (!itemGuid.IsValid()) continue;
+
+		const FEquipmentInfo* foundEquip = nullptr;
+		for (const FEquipmentInfo& equip : playerData.Inventory)
+		{
+			if (equip.ItemGuid == itemGuid)
+			{
+				foundEquip = &equip;
+				break;
+			}
+		}
+		if (!foundEquip) continue;
+
+		for (const FDerivedStatModifier& stat : foundEquip->Equipment.OwnerStats)
+		{
+			if (!stat.StatTag.IsValid()) continue;
+
+			FExternalStatModifier& totalValue = totalStats.FindOrAdd(stat.StatTag);
+
+			if (FMath::IsNearlyEqual(totalValue.Mul, 1.0f))
+			{
+				totalValue.Mul = 0.0f;
+			}
+
+			totalValue.Flat += stat.Value.Flat;
+			totalValue.Mul += stat.Value.Mul;
+		}
+	}
+
+	TArray<FGameplayTag> sortedTags;
+	totalStats.GetKeys(sortedTags);
+
+	sortedTags.Sort(
+		[dataSubsystem](const FGameplayTag& InA, const FGameplayTag& InB)
+		{
+			int32 sortOrderA = MAX_int32;
+			int32 sortOrderB = MAX_int32;
+
+			if (const FDTStatDisplayRow* statRowA = FItemDetailHelper::FindStatDisplayRowByTag(dataSubsystem, InA))
+			{
+				sortOrderA = statRowA->SortOrder;
+			}
+
+			if (const FDTStatDisplayRow* statRowB = FItemDetailHelper::FindStatDisplayRowByTag(dataSubsystem, InB))
+			{
+				sortOrderB = statRowB->SortOrder;
+			}
+
+			if (sortOrderA != sortOrderB)
+			{
+				return sortOrderA < sortOrderB;
+			}
+
+			return InA.GetTagName().LexicalLess(InB.GetTagName());
+		});
+
+	for (const FGameplayTag& statTag : sortedTags)
+	{
+		const FExternalStatModifier* totalValue = totalStats.Find(statTag);
+		if (!totalValue) continue;
+
+		FItemStatLineViewData line;
+		line.StatNameText = BuildStatNameText(dataSubsystem, statTag);
+
+		FDerivedStatModifier totalStat;
+		totalStat.StatTag = statTag;
+		totalStat.Value = *totalValue;
+
+		if (const FDTStatDisplayRow* statRow = FindStatDisplayRowByTag(dataSubsystem, statTag))
+		{
+			line.StatValueText = BuildCurrentStatValueText(totalStat, statRow->bUsePercent);
+		}
+		else
+		{
+			line.StatValueText = BuildCurrentStatValueText(totalStat, false);
+		}
+
+		line.bVisible = true;
+		OutViewData.StatLines.Add(line);
+	}
+
+	return true;
 }
 
 void FItemDetailHelper::ClearEquippedTotalStatViewData(FEquippedTotalStatViewData& OutViewData)
@@ -426,4 +424,43 @@ FText FItemDetailHelper::BuildCooldownText(float InCooldownSeconds)
 FText FItemDetailHelper::BuildUpgradeLevelText(int32 InUpgradeLevel)
 {
 	return FText::FromString(FString::Printf(TEXT("+%d"), InUpgradeLevel));
+}
+
+FText FItemDetailHelper::BuildEquippedCharacterText(const UObject* WorldContextObject, const FGuid& InItemGuid)
+{
+	if (!WorldContextObject) return FText::GetEmpty();
+	if (!InItemGuid.IsValid()) return FText::GetEmpty();
+
+	const FPlayerData playerData = FPlayerAccountService::GetPlayerDataCopy(WorldContextObject);
+
+	for (const FBattleCharacterData& characterData : playerData.OwnedCharacters)
+	{
+		const FName characterName = GetLeafNameFromTag(characterData.CharacterInfo.BattleCharacterInitData.CharacterTag);
+
+		for (const TPair<FGameplayTag, FGuid>& pair : characterData.WeaponSlots)
+		{
+			if (pair.Value == InItemGuid)
+			{
+				return FText::Format(FText::FromString(TEXT("장착중 : {0}")), FText::FromName(characterName));
+			}
+		}
+
+		for (const TPair<FGameplayTag, FGuid>& pair : characterData.LegendaryWeaponSlots)
+		{
+			if (pair.Value == InItemGuid)
+			{
+				return FText::Format(FText::FromString(TEXT("장착중 : {0}")), FText::FromName(characterName));
+			}
+		}
+
+		for (const TPair<FGameplayTag, FGuid>& pair : characterData.ArmorSlots)
+		{
+			if (pair.Value == InItemGuid)
+			{
+				return FText::Format(FText::FromString(TEXT("장착중 : {0}")), FText::FromName(characterName));
+			}
+		}
+	}
+
+	return FText::GetEmpty();
 }

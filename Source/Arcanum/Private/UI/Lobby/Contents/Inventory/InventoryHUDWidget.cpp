@@ -509,7 +509,7 @@ void UInventoryHUDWidget::ApplyInventorySlots(const TArray<FInventoryViewSlot>& 
 void UInventoryHUDWidget::ClearSelection()
 {
 	SelectedSlotIndex = INDEX_NONE;
-	SelectedInventoryItemGuid.IsValid();
+	SelectedInventoryItemGuid.Invalidate();
 	SelectedStackItemTag = FGameplayTag();
 	SelectedStackItemCount = 0;
 

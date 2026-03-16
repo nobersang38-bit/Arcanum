@@ -27,6 +27,7 @@ class UARGameInstance;
 class UInventoryHUDWidget;
 class UEnhancementHUDWidget;
 class UGameTimeSubsystem;
+class UBattleHUDWidget;
 struct FDTItemCatalogRow;
 
 
@@ -34,7 +35,7 @@ UCLASS()
 class ARCANUM_API ULobbyHUD : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
 #pragma region 언리얼 기본 생성
 protected:
 	virtual void NativeConstruct() override;
@@ -101,7 +102,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Data")
 	TObjectPtr<UDataTable> CharacterBattleStatsDataTable;
-	
+
 private:
 	UFUNCTION()
 	void ClickBattleMenuBtn();
@@ -138,16 +139,18 @@ protected:
 #pragma endregion
 
 #pragma region 전투
-
+protected:
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UBattleHUDWidget> BattleHUDWidget;
 #pragma endregion
 
 #pragma region 캐릭터
-//protected:
-//	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
-//	TSubclassOf<UCharacterHUDWidget> CharacterWidgetClass;
-//
-//private:
-//	UCharacterHUDWidget* CharacterWidget = nullptr;
+	//protected:
+	//	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	//	TSubclassOf<UCharacterHUDWidget> CharacterWidgetClass;
+	//
+	//private:
+	//	UCharacterHUDWidget* CharacterWidget = nullptr;
 #pragma endregion
 
 #pragma region 강화

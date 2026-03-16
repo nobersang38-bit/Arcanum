@@ -44,4 +44,7 @@ protected:
 	/* 판매 가격 텍스트 */
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UTextBlock> SellPriceText;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UTextBlock> EquippedCharacterText;
 };

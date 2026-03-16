@@ -38,6 +38,10 @@ struct FItemDisplayViewData
 	GENERATED_BODY()
 
 public:
+	/* 장착자 표시 텍스트 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FText EquippedCharacterText;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FText ItemNameText;
 
@@ -55,6 +59,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bShowUpgradeLevel = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bShowEquippedCharacter = false;
 };
 
 /* 강화 상세 패널 표시용 */
@@ -124,14 +131,10 @@ private:
 	static FText BuildEnhanceChanceText(int32 InSuccessRate);
 #pragma endregion
 
-#pragma region 장착 전체 능력치 패널
+#pragma region 장착 능력치 패널
 public:
-	/* 선택 캐릭터 장착 전체 능력치 패널 데이터 생성 */
-	static bool BuildEquippedTotalStatsViewData(
-		const UObject* WorldContextObject,
-		const FName& InCharacterName,
-		FEquippedTotalStatViewData& OutViewData
-	);
+	/* 선택 캐릭터 장착 방어구 4개 능력치 패널 데이터 생성 */
+	static bool BuildEquippedArmorStatsViewData(const UObject* WorldContextObject, const FName& InCharacterName, FEquippedTotalStatViewData& OutViewData);
 
 	/* 장착 전체 능력치 패널 데이터 초기화 */
 	static void ClearEquippedTotalStatViewData(FEquippedTotalStatViewData& OutViewData);
@@ -165,5 +168,8 @@ private:
 
 	/* 강화 수치 텍스트 생성 */
 	static FText BuildUpgradeLevelText(int32 InUpgradeLevel);
+
+	/* 현재 장착 중인 캐릭터 텍스트 생성 */
+	static FText BuildEquippedCharacterText(const UObject* WorldContextObject, const FGuid& InItemGuid);
 #pragma endregion
 };

@@ -45,10 +45,7 @@ void UInventoryItemSlotWidget::SetSelected(bool InSelected)
 
 void UInventoryItemSlotWidget::HandleSlotClicked()
 {
-	if (ViewSlot.Type != EInventoryViewSlotType::Empty)
-	{
-		OnInventorySlotClicked.Broadcast(SlotIndex);
-	}
+	OnInventorySlotClicked.Broadcast(SlotIndex);
 }
 
 void UInventoryItemSlotWidget::RefreshSlotUI()
@@ -57,7 +54,7 @@ void UInventoryItemSlotWidget::RefreshSlotUI()
 
 	if (SlotButton)
 	{
-		SlotButton->SetIsEnabled(!bIsEmpty);
+		SlotButton->SetIsEnabled(true);
 	}
 
 	if (SelectedBorder)
@@ -113,9 +110,9 @@ void UInventoryItemSlotWidget::RefreshSlotUI()
 			}
 		}
 		// Potion
-		else 
+		else
 		{
-			if (ViewSlot.StackCount > 0)			{
+			if (ViewSlot.StackCount > 0) {
 				StackOrUpgradeText->SetVisibility(ESlateVisibility::Visible);
 				StackOrUpgradeText->SetText(FText::FromString(FString::Printf(TEXT("x%d"), ViewSlot.StackCount)));
 			}

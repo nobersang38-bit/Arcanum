@@ -5,6 +5,7 @@
 #include "UI/Lobby/Contents/Currency/CurrencyWidget.h"
 #include "UI/Lobby/Contents/Inventory/InventoryHUDWidget.h"
 #include "UI/Lobby/Contents/Enhancement/EnhancementHUDWidget.h"
+#include "UI/Lobby/Contents/Battle/BattleHUDWidget.h"
 #include "UI/Lobby/Contents/Gacha/GachaHUDWidget.h"
 //#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -85,6 +86,11 @@ void ULobbyHUD::NativeConstruct()
 	if (EnhancementHUDWidget)
 	{
 		EnhancementHUDWidget->SetParentLobby(this);
+	}
+
+	if (BattleHUDWidget)
+	{
+		BattleHUDWidget->SetParentLobby(this);
 	}
 
 	RefreshAllLobbyUI();
@@ -246,12 +252,6 @@ void ULobbyHUD::RefreshLobbyCurrencyUI()
 // ========================================================
 // 상점
 // ========================================================
-
-
-
-
-
-
 
 
 

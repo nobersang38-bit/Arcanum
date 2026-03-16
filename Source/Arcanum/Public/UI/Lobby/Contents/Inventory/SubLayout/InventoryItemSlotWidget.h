@@ -91,7 +91,7 @@ private:
 
 protected:
 	/* 슬롯 툴팁 위젯 클래스 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tooltip")
 	TSubclassOf<class UItemTooltipWidget> ItemTooltipWidgetClass;
 
 #pragma endregion

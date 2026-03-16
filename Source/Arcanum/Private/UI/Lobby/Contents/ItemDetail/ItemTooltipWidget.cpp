@@ -72,4 +72,11 @@ void UItemTooltipWidget::ApplyDisplayData(const FItemDisplayViewData& InViewData
 	{
 		SellPriceText->SetText(InViewData.SellPriceText);
 	}
+
+	if (EquippedCharacterText)
+	{
+		EquippedCharacterText->SetText(InViewData.EquippedCharacterText);
+		EquippedCharacterText->SetVisibility(InViewData.EquippedCharacterText.IsEmpty() ? ESlateVisibility::Collapsed : ESlateVisibility::Visible
+		);
+	}
 }

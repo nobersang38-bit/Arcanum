@@ -321,6 +321,40 @@ bool FPlayerAccountService::EquipItemToCharacter(const UObject* WorldContextObje
 	TMap<FGameplayTag, FGuid>* slotMap = GetEquipmentSlotMapBySlotTag(*foundCharacter, InEquipSlotTag);
 	if (!slotMap) return false;
 
+	// 다른 캐릭터 포함 이미 장착 중인 장비면 실패
+	for (const FBattleCharacterData& characterData : playerData.OwnedCharacters)
+	{
+		const FName otherCharacterName = GetLeafNameFromTag(characterData.CharacterInfo.BattleCharacterInitData.CharacterTag);
+		if (otherCharacterName == InCharacterName)	continue;
+
+		for (const TPair<FGameplayTag, FGuid>& pair : characterData.WeaponSlots)
+		{
+			if (pair.Value == InItemGuid)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("이미 장착중입니다."));
+				return false;
+			}
+		}
+
+		for (const TPair<FGameplayTag, FGuid>& pair : characterData.LegendaryWeaponSlots)
+		{
+			if (pair.Value == InItemGuid)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("이미 장착중입니다."));
+				return false;
+			}
+		}
+
+		for (const TPair<FGameplayTag, FGuid>& pair : characterData.ArmorSlots)
+		{
+			if (pair.Value == InItemGuid)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("이미 장착중입니다."));
+				return false;
+			}
+		}
+	}
+
 	// 장착 중복 처리
 	if (InEquipSlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Weapon::Slot1) ||
 		InEquipSlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Weapon::Slot2))

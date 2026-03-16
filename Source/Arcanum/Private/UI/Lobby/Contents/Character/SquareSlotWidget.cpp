@@ -1,4 +1,6 @@
 #include "UI/Lobby/Contents/Character/SquareSlotWidget.h"
+#include "UI/Lobby/Contents/ItemDetail/ItemTooltipWidget.h"
+#include "UI/Lobby/Contents/ItemDetail/ItemDetailHelper.h"
 #include "Components/Border.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
@@ -45,7 +47,7 @@ void USquareSlotWidget::SetWeaponTag(FGameplayTag InTag)
 
 void USquareSlotWidget::SetWeaponGuid(FGuid InGuid)
 {
-	WeaponGuid = InGuid;
+	EquippedItemGuid = InGuid;
 }
 
 void USquareSlotWidget::SetUpgradeLevel(int32 InUpgradeLevel)
@@ -71,4 +73,47 @@ void USquareSlotWidget::ClearUpgradeLevel()
 		UpgradeLevelText->SetText(FText::GetEmpty());
 		UpgradeLevelText->SetVisibility(ESlateVisibility::Collapsed);
 	}
+}
+
+void USquareSlotWidget::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
+
+	RefreshTooltip();
+}
+
+void USquareSlotWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseLeave(InMouseEvent);
+
+	SetToolTip(nullptr);
+}
+
+void USquareSlotWidget::RefreshTooltip()
+{
+
+	UE_LOG(LogTemp, Warning, TEXT("Square=%s WidgetClass=%s TooltipClass=%s"), *GetNameSafe(this), *GetClass()->GetName(), *GetNameSafe(ItemTooltipWidgetClass));
+	if (!EquippedItemGuid.IsValid() || !ItemTooltipWidgetClass)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("SquareTooltip GuidValid=%d ClassValid=%d"), EquippedItemGuid.IsValid(), ItemTooltipWidgetClass != nullptr);
+		SetToolTip(nullptr);
+		return;
+	}
+
+	UItemTooltipWidget* tooltipWidget = CreateWidget<UItemTooltipWidget>(this, ItemTooltipWidgetClass);
+	if (!tooltipWidget)
+	{
+		SetToolTip(nullptr);
+		return;
+	}
+
+	FItemDisplayViewData viewData;
+	if (!FItemDetailHelper::BuildEquipmentDisplayViewData(this, EquippedItemGuid, viewData))
+	{
+		SetToolTip(nullptr);
+		return;
+	}
+
+	tooltipWidget->ApplyDisplayData(viewData);
+	SetToolTip(tooltipWidget);
 }

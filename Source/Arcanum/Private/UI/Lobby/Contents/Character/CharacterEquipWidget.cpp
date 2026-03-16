@@ -69,6 +69,19 @@ void UCharacterEquipWidget::SetEquipSlotTag(const FGameplayTag& InEquipSlotTag)
 	}
 }
 
+void UCharacterEquipWidget::ShowEquipmentInventory()
+{
+	ClearSelectedItem();
+
+	if (InventoryHUDWidget)
+	{
+		InventoryHUDWidget->SetCategoryPanelVisible(false);
+		InventoryHUDWidget->ClearSelection();
+		InventoryHUDWidget->SetCurrentFilter(EInventoryCategoryFilter::Equipment);
+		InventoryHUDWidget->RefreshEquipmentInventoryBySlot(EInventoryEquipSlotFilter::None);
+	}
+}
+
 void UCharacterEquipWidget::ClearSelectedItem()
 {
 	SelectedItemGuid.Invalidate();
