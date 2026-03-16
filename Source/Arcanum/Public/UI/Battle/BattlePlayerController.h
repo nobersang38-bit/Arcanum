@@ -121,13 +121,16 @@ protected:
 	void AutoManualModePC();
 
 	UFUNCTION()
-	void ReadySpawnUnit(FGameplayTag InTag);
+	void SlotSelectCancel();
 
 	UFUNCTION()
-	void SpawnUnit(FGameplayTag InTag);
+	void CommonButton();
 
 	UFUNCTION()
-	void Internal_SpawnUnit();
+	void ReadySpawnUnit(FGameplayTag InTag, UBattleAllyUnitSlotWidget* Slot);
+
+	UFUNCTION()
+	ABaseUnitCharacter* Internal_SpawnUnit();
 
 	// 사용할 고기
 	UFUNCTION()
@@ -204,11 +207,23 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> IA_AutoManual = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_InputCancel = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_CommonButton = nullptr;
 #pragma endregion
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
 	float PlayerLocationProgressUpdateInterval = 0.05f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
+	TSubclassOf<class AHologramVisualizer> HologramActorClass = nullptr;
+
+	UPROPERTY()
+	TObjectPtr<class AHologramVisualizer> HologramActorInstance = nullptr;
 
 protected:
 	UPROPERTY()
@@ -234,12 +249,14 @@ protected:
 	FTimerHandle MeatTimer;
 	FTimerHandle ManaTimer;
 	FTimerHandle CoolTimeTimer;
-	FTimerHandle SpawnUnitTimer;
 
 	FGameplayTag SpawnTag;
 
-	FVector SpawnLocationBackup = FVector::ZeroVector;
-	int32 TrySpawnUnit = 0;
+	UPROPERTY()
+	TWeakObjectPtr<UBattleAllyUnitSlotWidget> SelectedSlot = nullptr;
+
+	UPROPERTY()
+	TWeakObjectPtr<ABaseUnitCharacter> SelectedUnit = nullptr;
 
 private:
 	FTimerHandle PlayerLocationProgressTimeHandle;

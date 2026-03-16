@@ -18,6 +18,7 @@
 #include "UI/Battle/SubLayout/BattleAllyUnitSlotWidget.h"
 #include "UI/Battle/SubLayout/BattleBattleEndWidget.h"
 #include "Kismet/GameplayStatics.h"
+#include "Object/Actor/HologramVisualizer.h"
 
 // ========================================================
 // 언리얼 기본 생성
@@ -30,6 +31,13 @@ void ABattlePlayerController::BeginPlay()
 	UClass* LoadAllyUnit = StaticLoadClass(UObject::StaticClass(), nullptr, *AllyUnitClassPath);
 
 	UnitClass = LoadAllyUnit;*/
+	if (HologramActorClass)
+	{
+		FTransform Transform;
+		Transform.SetRotation(FVector::ForwardVector.Rotation().Quaternion());
+		Transform.SetLocation(FVector(0.0f, 0.0f, -9999.0f));
+		HologramActorInstance = GetWorld()->SpawnActor<AHologramVisualizer>(HologramActorClass, Transform);
+	}
 
 	if (HUDWidgetClass)
 	{
@@ -126,6 +134,8 @@ void ABattlePlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(IA_Item2, ETriggerEvent::Completed, this, &ABattlePlayerController::Item2);
 		EnhancedInputComponent->BindAction(IA_WeaponSwap, ETriggerEvent::Completed, this, &ABattlePlayerController::WeaponSwap);
 		EnhancedInputComponent->BindAction(IA_AutoManual, ETriggerEvent::Completed, this, &ABattlePlayerController::AutoManualModePC);
+		EnhancedInputComponent->BindAction(IA_InputCancel, ETriggerEvent::Started, this, &ABattlePlayerController::SlotSelectCancel);
+		EnhancedInputComponent->BindAction(IA_CommonButton, ETriggerEvent::Started, this, &ABattlePlayerController::CommonButton);
 	}
 	else
 	{
@@ -136,6 +146,13 @@ void ABattlePlayerController::SetupInputComponent()
 void ABattlePlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (SelectedUnit.IsValid())
+	{
+		FHitResult HitResult;
+		GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, HitResult);
+		SelectedUnit->SetActorLocation(HitResult.ImpactPoint);
+	}
 }
 
 // ========================================================
@@ -217,8 +234,7 @@ void ABattlePlayerController::SetAllyUsingWidget()
 			UnitSlot->SetUnitInfo(UsingAllyUnit.Value.MeatCost, UsingAllyUnit.Value.Icon, UsingAllyUnit.Value.Tag);
 			UnitSlot->SetActivateCost(false);
 			UnitSlot->SetCoolTimeProgress(0.0f, 0.0f);
-			UnitSlot->OnPressUnitSlot.AddDynamic(this, &ABattlePlayerController::ReadySpawnUnit);
-			UnitSlot->OnReleasedUnitSlot.AddDynamic(this, &ABattlePlayerController::SpawnUnit);
+			UnitSlot->OnClickUnitSlot.AddDynamic(this, &ABattlePlayerController::ReadySpawnUnit);
 			UsingAllyUnitSlots.Add(UsingAllyUnit.Key, UnitSlot);
 		}
 	}
@@ -329,37 +345,55 @@ void ABattlePlayerController::AutoManualModePC()
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("AutoManualMode"));
 }
 
-void ABattlePlayerController::ReadySpawnUnit(FGameplayTag InTag)
+void ABattlePlayerController::SlotSelectCancel()
+{
+	if (SelectedSlot.IsValid())
+	{
+		SelectedSlot = nullptr;
+	}
+
+	if (SpawnTag.IsValid())
+	{
+		SpawnTag = FGameplayTag::EmptyTag;
+	}
+
+	for (auto& UsingAllyUnitSlot : UsingAllyUnitSlots)
+	{
+		UsingAllyUnitSlot.Value->SetSelectSlot(false);
+	}
+
+	if (SelectedUnit.IsValid())
+	{
+		UPoolingSubsystem* PoolingSystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
+		if (PoolingSystem)
+		{
+			PoolingSystem->DeactiveItem(SelectedUnit.Get());
+		}
+	}
+}
+
+void ABattlePlayerController::CommonButton()
+{
+	Internal_SpawnUnit();
+}
+
+void ABattlePlayerController::ReadySpawnUnit(FGameplayTag InTag, UBattleAllyUnitSlotWidget* Slot)
 {
 	if (!IsUnitUsingEnable(InTag)) return;
 
-	//UE_LOG(LogTemp, Error, TEXT("눌렀다"));
-	SpawnTag = InTag;
+	SlotSelectCancel();
 
-	float X;
-	float Y;
-	GetMousePosition(X, Y);
-	SpawnLocationBackup = FVector(X, Y, 0);
-}
-
-void ABattlePlayerController::SpawnUnit(FGameplayTag InTag)
-{
-	TrySpawnUnit = 0;
-	GetWorld()->GetTimerManager().ClearTimer(SpawnUnitTimer);
-	GetWorld()->GetTimerManager().SetTimer(SpawnUnitTimer, this, &ABattlePlayerController::Internal_SpawnUnit, 0.01f, true, 0.0f);
-	SetupInputMode();
-}
-
-void ABattlePlayerController::Internal_SpawnUnit()
-{
-	//UE_LOG(LogTemp, Error, TEXT("땟다"));
-	TrySpawnUnit++;
-	if (TrySpawnUnit > 100)
+	if (Slot)
 	{
-		GetWorld()->GetTimerManager().ClearTimer(SpawnUnitTimer);
-		return;
+		SpawnTag = InTag;
+		Slot->SetSelectSlot(true);
+		SelectedSlot = Slot;
 	}
 
+	if (HologramActorInstance)
+	{
+
+	}
 	if (FUnitInfoSetting* UnitData = UsingAllyUnits.Find(SpawnTag))
 	{
 		UPoolingSubsystem* PoolingSubsystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
@@ -368,17 +402,31 @@ void ABattlePlayerController::Internal_SpawnUnit()
 
 			FHitResult HitResult;
 			GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, HitResult);
+			FTransform Transform;
+			Transform.SetLocation(HitResult.ImpactPoint);
+			// Todo KDH : 미리 로드해 놓아야함
+			AActor* EnemyUnitInstance = PoolingSubsystem->SpawnFromPool(UnitData->UnitClass.LoadSynchronous(), Transform);
+			ABaseUnitCharacter* EnemyUnitCharacter = Cast<ABaseUnitCharacter>(EnemyUnitInstance);
 
-			float X;
-			float Y;
-			GetMousePosition(X, Y);
-			FVector MouseBackUp = FVector(X, Y, 0);
-			if ((SpawnLocationBackup - MouseBackUp).SquaredLength() < 100.0f)
+			if (EnemyUnitCharacter)
 			{
-				GetWorld()->GetTimerManager().ClearTimer(SpawnUnitTimer);
-				return;
+				EnemyUnitCharacter->SetUnit(*UnitData, true);
+				SelectedUnit = EnemyUnitCharacter;
 			}
-			
+		}
+	}
+}
+
+ABaseUnitCharacter* ABattlePlayerController::Internal_SpawnUnit()
+{
+	if (FUnitInfoSetting* UnitData = UsingAllyUnits.Find(SpawnTag))
+	{
+		UPoolingSubsystem* PoolingSubsystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
+		if (PoolingSubsystem)
+		{
+
+			FHitResult HitResult;
+			GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, HitResult);
 			if (IsUnitUsingEnable(SpawnTag))
 			{
 				UsingUnitCost(SpawnTag);
@@ -391,13 +439,14 @@ void ABattlePlayerController::Internal_SpawnUnit()
 				if (EnemyUnitCharacter)
 				{
 					EnemyUnitCharacter->SetUnit(*UnitData);
-					GetWorld()->GetTimerManager().ClearTimer(SpawnUnitTimer);
-					//UE_LOG(LogTemp, Error, TEXT("ASDLocation : %.0f, %.0f, %.0f"), HitResult.ImpactPoint.X, HitResult.ImpactPoint.Y, HitResult.ImpactPoint.Z);
-					return;
+					SlotSelectCancel();
+					return EnemyUnitCharacter;
 				}
 			}
 		}
 	}
+
+	return nullptr;
 }
 
 bool ABattlePlayerController::UseMeatValue(float Value)

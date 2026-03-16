@@ -64,7 +64,6 @@ public:
 
 #pragma endregion
 
-
 #pragma region 액션
 public:
 	void SendDamage(float InDamage);
