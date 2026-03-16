@@ -52,7 +52,7 @@ void UBattleHUDWidget::NativeConstruct()
                 StageWidget->StageTag = RowPtr->StageData.StageTag;
                 StageWidget->StgName = RowPtr->StageData.StageName;
                 StageWidget->StgInfo = RowPtr->StageData.StageDesc;
-                StageWidget->StageImg = RowPtr->StageData.StageImg.Get();
+                StageWidget->StageImg = RowPtr->StageData.StageImg.LoadSynchronous();
                 StageWidget->OnStageClicked.RemoveDynamic(this, &UBattleHUDWidget::OnStageClicked);
                 StageWidget->OnStageClicked.AddDynamic(this, &UBattleHUDWidget::OnStageClicked);
                 StageScrollBox->AddChild(StageWidget);

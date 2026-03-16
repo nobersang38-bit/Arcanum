@@ -23,7 +23,7 @@ void UGachaBannerButtonWidget::NativeConstruct()
         BannerButton->OnClicked.RemoveDynamic(this, &UGachaBannerButtonWidget::HandleClicked);
         BannerButton->OnClicked.AddDynamic(this, &UGachaBannerButtonWidget::HandleClicked);
 
-        BannerButton->SetBackgroundColor(FLinearColor(1.f, 1.f, 1.f, 0.f));
+        BannerButton->SetBackgroundColor(FLinearColor(1.f, 1.f, 1.f, 1.f));
 
         FButtonStyle NewStyle = BannerButton->WidgetStyle;
         if (NormalTexture.IsValid()) NewStyle.Normal.SetResourceObject(NormalTexture.Get());

@@ -28,15 +28,37 @@ void UStageList::SetSelected(bool bInSelected)
     if (bSelected) {
         FSlateBrush NewBrush = SelectBorder->Background;
         NewBrush.DrawAs = ESlateBrushDrawType::Border;
-        NewBrush.Margin = FMargin(1.f);
+        NewBrush.Margin = FMargin(1.0f);
+        FLinearColor Color = FLinearColor(FColor::White);
+        NewBrush.TintColor = Color;
         SelectBorder->SetBrush(NewBrush);
+
+        // 깜빡이는 애니메이션
+        if (BlinkAnim)
+        {
+            PlayAnimation(BlinkAnim, 0.f, 0);// 0은 무한 반복
+        }
     }
     else {
         FSlateBrush NewBrush = SelectBorder->Background;
         NewBrush.DrawAs = ESlateBrushDrawType::Border;
-        NewBrush.Margin = FMargin(0.5f);
+        NewBrush.Margin = FMargin(1.0f);
+        FLinearColor Color = FLinearColor(FColor::FromHex("FF781FFF"));
+        NewBrush.TintColor = Color;
         SelectBorder->SetBrush(NewBrush);
+
+        if (BlinkAnim)
+        {
+            StopAnimation(BlinkAnim);
+        }
+
+        SelectBorder->SetRenderOpacity(1.f);
     }
+}
+
+void UStageList::SetStageImg(TObjectPtr<UTexture2D> InStageImg)
+{
+    if (StageImage && InStageImg) StageImage->SetBrushFromTexture(InStageImg);
 }
 
 void UStageList::SetText(FString StageName, FString StageInfo)
