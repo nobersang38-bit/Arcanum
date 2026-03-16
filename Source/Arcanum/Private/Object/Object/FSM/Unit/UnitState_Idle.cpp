@@ -33,6 +33,11 @@ void UUnitState_Idle::OnExit()
 	GetWorld()->GetTimerManager().ClearTimer(IdleTimer);
 }
 
+void UUnitState_Idle::OnAbort()
+{
+	GetWorld()->GetTimerManager().ClearTimer(IdleTimer);
+}
+
 void UUnitState_Idle::IdleExit()
 {
 	if (!Internal_UnitCombatComponent.IsValid()) return;

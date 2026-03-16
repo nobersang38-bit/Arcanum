@@ -130,6 +130,9 @@ protected:
 	void ReadySpawnUnit(FGameplayTag InTag, UBattleAllyUnitSlotWidget* Slot);
 
 	UFUNCTION()
+	void SetSpawnDecalActive(bool bIsOn);
+
+	UFUNCTION()
 	ABaseUnitCharacter* Internal_SpawnUnit();
 
 	// 사용할 고기
@@ -255,8 +258,11 @@ protected:
 	UPROPERTY()
 	TWeakObjectPtr<UBattleAllyUnitSlotWidget> SelectedSlot = nullptr;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TWeakObjectPtr<ABaseUnitCharacter> SelectedUnit = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TWeakObjectPtr<ABaseUnitCharacter> SelectedUnit2 = nullptr;
 
 private:
 	FTimerHandle PlayerLocationProgressTimeHandle;

@@ -68,8 +68,14 @@ public:
 public:
 	void SendDamage(float InDamage);
 
-	void UnitActivate();
+	void UnitActivate(bool bIsHologram);
 	void UnitDeactive();
+
+	UFUNCTION()
+	void SetupStates();
+
+	UFUNCTION()
+	void ClearStates();
 #pragma endregion
 
 
@@ -91,9 +97,6 @@ protected:
 
 	UFUNCTION()
 	void SetupTick();
-
-	UFUNCTION()
-	void SetupStates();
 
 #pragma endregion
 
@@ -205,7 +208,7 @@ private:
 	int32 AttackerCount = 0;
 
 	bool bIsDead = false;
-
+	bool bIsHologramMode = false;
 #pragma endregion
 
 

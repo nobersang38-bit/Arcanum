@@ -52,6 +52,7 @@ void ABaseUnitCharacter::SetUnit(FUnitInfoSetting InUnitData, bool bUseReadyHolo
 	UnitData.Info.InfoSetting = InUnitData;
 	IsSetupUnit = true;
 	DataInitialize(bUseReadyHologram);
+	SetActorHiddenInGame(false);
 }
 
 FGameplayTag ABaseUnitCharacter::GetTeamTag()
@@ -252,7 +253,7 @@ void ABaseUnitCharacter::UnitActivate()
 	DataInitialize();
 	if (UnitCombatComponent)
 	{
-		UnitCombatComponent->UnitActivate();
+		UnitCombatComponent->UnitActivate(false);
 	}
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
@@ -304,6 +305,7 @@ void ABaseUnitCharacter::SetHologramType(bool bUseHologram)
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		GetCharacterMovement()->Activate();
 		HealthBarComponent->GetWidget()->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		UnitCombatComponent->UnitActivate(false);
 	}
 	else
 	{
@@ -317,6 +319,7 @@ void ABaseUnitCharacter::SetHologramType(bool bUseHologram)
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		GetCharacterMovement()->Deactivate();
 		HealthBarComponent->GetWidget()->SetVisibility(ESlateVisibility::Hidden);
+		UnitCombatComponent->UnitActivate(true);
 	}
 }
 

@@ -46,6 +46,24 @@ void UUnitState_Attack::OnExit()
 	TargetActorBackup = nullptr;
 }
 
+void UUnitState_Attack::OnAbort()
+{
+	if (AttackTimerHandle.IsValid())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(AttackTimerHandle);
+	}
+	if (FocusTargetActorTimerHandle.IsValid())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(FocusTargetActorTimerHandle);
+	}
+
+	if (Internal_UnitCombatComponent.IsValid())
+	{
+		Internal_UnitCombatComponent->OwnerCharacter->StopAnimMontage();
+		TargetActorBackup = nullptr;
+	}
+}
+
 
 void UUnitState_Attack::Attack()
 {

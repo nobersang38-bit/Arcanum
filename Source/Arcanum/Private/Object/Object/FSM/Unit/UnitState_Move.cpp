@@ -47,3 +47,7 @@ void UUnitState_Move::OnTick(float DeltaTime)
 void UUnitState_Move::OnExit()
 {
 }
+
+void UUnitState_Move::OnAbort()
+{
+}

@@ -19,6 +19,8 @@
 #include "UI/Battle/SubLayout/BattleBattleEndWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Object/Actor/HologramVisualizer.h"
+#include "Components/CapsuleComponent.h"
+#include "Object/Actor/SpawnCheckDecal.h"
 
 // ========================================================
 // 언리얼 기본 생성
@@ -151,7 +153,77 @@ void ABattlePlayerController::Tick(float DeltaTime)
 	{
 		FHitResult HitResult;
 		GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, HitResult);
-		SelectedUnit->SetActorLocation(HitResult.ImpactPoint);
+		FVector ResultLocation = HitResult.ImpactPoint;
+		float CapsuleHeight = SelectedUnit->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 0.5f;
+		ResultLocation = ResultLocation + (FVector::UpVector * CapsuleHeight);
+		SelectedUnit->SetActorLocation(ResultLocation);
+
+		FVector Direction = FVector::RightVector;
+		SelectedUnit->SetActorRotation(Direction.Rotation());
+
+		UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+		if (BattleSubsystem)
+		{
+			if (BattleSubsystem->GetSpawnCheckDecal())
+			{
+				bool bIsInside = false;
+				FVector ResultLocation2 = BattleSubsystem->GetSpawnCheckDecal()->CalculateMinDistanceLocation(ResultLocation, bIsInside);
+				ResultLocation2 += FVector::UpVector * 100.0f;
+
+				//ResultLocation = 스폰되어야할 최종 위치
+				if (bIsInside)
+				{
+					// 마우스가 안에 있을때의 로직
+
+					if (SelectedUnit2.IsValid())
+					{
+						SelectedUnit2->SetActorHiddenInGame(true);
+					}
+				}
+				else
+				{
+					if (SelectedUnit2.IsValid())
+					{
+						SelectedUnit2->SetActorHiddenInGame(false);
+					}
+					else
+					{
+						// 내부에 액터가 없으면 생성
+						if (FUnitInfoSetting* UnitData = UsingAllyUnits.Find(SpawnTag))
+						{
+							UPoolingSubsystem* PoolingSubsystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
+							if (PoolingSubsystem)
+							{
+
+								FHitResult HitResult2;
+								GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, HitResult2);
+								FTransform Transform;
+								Transform.SetLocation(HitResult2.ImpactPoint);
+								Transform.SetRotation(Direction.Rotation().Quaternion());
+								// Todo KDH : 미리 로드해 놓아야함
+								AActor* EnemyUnitInstance = PoolingSubsystem->SpawnFromPool(UnitData->UnitClass.LoadSynchronous(), Transform);
+								ABaseUnitCharacter* EnemyUnitCharacter = Cast<ABaseUnitCharacter>(EnemyUnitInstance);
+								SetSpawnDecalActive(true);
+								if (EnemyUnitCharacter)
+								{
+									EnemyUnitCharacter->SetUnit(*UnitData, true);
+									SelectedUnit2 = EnemyUnitCharacter;
+								}
+							}
+						}
+					}
+
+					if (SelectedUnit2.IsValid())
+					{
+						FHitResult HitResult3;
+						GetWorld()->LineTraceSingleByChannel(HitResult3, ResultLocation2, ResultLocation2 + FVector::UpVector * -1000.0f, ECollisionChannel::ECC_WorldStatic);
+						float Unit2Height = SelectedUnit2->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 0.5f;
+						FVector ResultUnit2Location = HitResult3.ImpactPoint + FVector::UpVector * Unit2Height;
+						SelectedUnit2->SetActorLocation(ResultUnit2Location);
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -370,6 +442,17 @@ void ABattlePlayerController::SlotSelectCancel()
 			PoolingSystem->DeactiveItem(SelectedUnit.Get());
 		}
 	}
+	if (SelectedUnit2.IsValid())
+	{
+		UPoolingSubsystem* PoolingSystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
+		if (PoolingSystem)
+		{
+			PoolingSystem->DeactiveItem(SelectedUnit2.Get());
+		}
+	}
+	SetSpawnDecalActive(false);
+	SelectedUnit = nullptr;
+	SelectedUnit2 = nullptr;
 }
 
 void ABattlePlayerController::CommonButton()
@@ -389,11 +472,6 @@ void ABattlePlayerController::ReadySpawnUnit(FGameplayTag InTag, UBattleAllyUnit
 		Slot->SetSelectSlot(true);
 		SelectedSlot = Slot;
 	}
-
-	if (HologramActorInstance)
-	{
-
-	}
 	if (FUnitInfoSetting* UnitData = UsingAllyUnits.Find(SpawnTag))
 	{
 		UPoolingSubsystem* PoolingSubsystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
@@ -407,12 +485,24 @@ void ABattlePlayerController::ReadySpawnUnit(FGameplayTag InTag, UBattleAllyUnit
 			// Todo KDH : 미리 로드해 놓아야함
 			AActor* EnemyUnitInstance = PoolingSubsystem->SpawnFromPool(UnitData->UnitClass.LoadSynchronous(), Transform);
 			ABaseUnitCharacter* EnemyUnitCharacter = Cast<ABaseUnitCharacter>(EnemyUnitInstance);
-
+			SetSpawnDecalActive(true);
 			if (EnemyUnitCharacter)
 			{
 				EnemyUnitCharacter->SetUnit(*UnitData, true);
 				SelectedUnit = EnemyUnitCharacter;
 			}
+		}
+	}
+}
+
+void ABattlePlayerController::SetSpawnDecalActive(bool bIsOn)
+{
+	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (BattleSubsystem)
+	{
+		if (ASpawnCheckDecal* SpawnCheckDecal = BattleSubsystem->GetSpawnCheckDecal())
+		{
+			SpawnCheckDecal->SetSpawnDecalActive(bIsOn);
 		}
 	}
 }
@@ -430,8 +520,28 @@ ABaseUnitCharacter* ABattlePlayerController::Internal_SpawnUnit()
 			if (IsUnitUsingEnable(SpawnTag))
 			{
 				UsingUnitCost(SpawnTag);
+
+				GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, HitResult);
+				FVector ResultLocation = HitResult.ImpactPoint;
+				float CapsuleHeight = SelectedUnit->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 0.5f;
+
+				FVector Direction = FVector::RightVector;
+
+				UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+				if (BattleSubsystem)
+				{
+					if (BattleSubsystem->GetSpawnCheckDecal())
+					{
+						bool bIsInSide = false;
+						ResultLocation = BattleSubsystem->GetSpawnCheckDecal()->CalculateMinDistanceLocation(ResultLocation, bIsInSide);
+					}
+				}
+
+				ResultLocation = ResultLocation + (FVector::UpVector * CapsuleHeight);
+
 				FTransform Transform;
-				Transform.SetLocation(HitResult.ImpactPoint);
+				Transform.SetLocation(ResultLocation);
+				Transform.SetRotation(Direction.Rotation().Quaternion());
 				// Todo KDH : 미리 로드해 놓아야함
 				AActor* EnemyUnitInstance = PoolingSubsystem->SpawnFromPool(UnitData->UnitClass.LoadSynchronous(), Transform);
 				ABaseUnitCharacter* EnemyUnitCharacter = Cast<ABaseUnitCharacter>(EnemyUnitInstance);

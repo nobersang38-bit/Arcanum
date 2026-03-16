@@ -14,3 +14,7 @@ void UUnitState_HitReaction::OnTick(float DeltaTime)
 void UUnitState_HitReaction::OnExit()
 {
 }
+
+void UUnitState_HitReaction::OnAbort()
+{
+}

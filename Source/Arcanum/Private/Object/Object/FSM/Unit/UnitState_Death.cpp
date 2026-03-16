@@ -17,3 +17,8 @@ void UUnitState_Death::OnTick(float DeltaTime)
 void UUnitState_Death::OnExit()
 {
 }
+
+void UUnitState_Death::OnAbort()
+{
+
+}
