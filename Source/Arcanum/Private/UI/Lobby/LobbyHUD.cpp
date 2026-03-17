@@ -5,6 +5,7 @@
 #include "UI/Lobby/Contents/Currency/CurrencyWidget.h"
 #include "UI/Lobby/Contents/Inventory/InventoryHUDWidget.h"
 #include "UI/Lobby/Contents/Enhancement/EnhancementHUDWidget.h"
+#include "UI/Lobby/Contents/Battle/BattleHUDWidget.h"
 #include "UI/Lobby/Contents/Gacha/GachaHUDWidget.h"
 //#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -107,6 +108,11 @@ void ULobbyHUD::NativeConstruct()
 		EnhancementHUDWidget->SetParentLobby(this);
 	}
 
+	if (BattleHUDWidget)
+	{
+		BattleHUDWidget->SetParentLobby(this);
+	}
+
 	RefreshAllLobbyUI();
 
 	ClickCharacterMenuBtn();
@@ -136,6 +142,7 @@ void ULobbyHUD::RefreshAllLobbyUI()
 	CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
 
 	// TODO: 로비 갱신
+
 	RefreshLobbyCurrencyUI();
 
 	if (InventoryHUDWidget)
@@ -146,6 +153,11 @@ void ULobbyHUD::RefreshAllLobbyUI()
 	if (EnhancementHUDWidget)
 	{
 		EnhancementHUDWidget->RefreshEquipmentInventory();
+	}
+
+	if (BattleHUDWidget)
+	{
+		BattleHUDWidget->RefreshBattlePotionSlots();
 	}
 }
 
@@ -295,12 +307,6 @@ void ULobbyHUD::RefreshLobbyCurrencyUI()
 // ========================================================
 // 상점
 // ========================================================
-
-
-
-
-
-
 
 
 

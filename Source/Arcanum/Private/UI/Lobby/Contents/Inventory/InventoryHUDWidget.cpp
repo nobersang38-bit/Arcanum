@@ -421,8 +421,13 @@ bool UInventoryHUDWidget::IsMatchedEquipSlotFilter(const FGameplayTag& InItemTag
 	return false;
 }
 
-void UInventoryHUDWidget::RefreshStackInventory()
+void UInventoryHUDWidget::RefreshConsumableInventory()
 {
+	SetCategoryPanelVisible(false);
+
+	CurrentFilter = EInventoryCategoryFilter::Consumable;
+	CurrentEquipSlotFilter = EInventoryEquipSlotFilter::None;
+
 	if (!ParentLobby) return;
 
 	const FPlayerData& playerData = ParentLobby->GetCachedPlayerData();
@@ -509,7 +514,7 @@ void UInventoryHUDWidget::ApplyInventorySlots(const TArray<FInventoryViewSlot>& 
 void UInventoryHUDWidget::ClearSelection()
 {
 	SelectedSlotIndex = INDEX_NONE;
-	SelectedInventoryItemGuid.IsValid();
+	SelectedInventoryItemGuid.Invalidate();
 	SelectedStackItemTag = FGameplayTag();
 	SelectedStackItemCount = 0;
 

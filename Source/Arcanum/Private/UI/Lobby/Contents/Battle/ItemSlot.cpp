@@ -1,39 +1,53 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "UI/Lobby/Contents/Battle/ItemSlot.h"
-#include "Components/TextBlock.h"
 #include "UI/Common/CommonBtnWidget.h"
-
-void UItemSlot::NativePreConstruct()
-{
-    Super::NativePreConstruct();
-
-    FText DefaultName = FText::FromString(TEXT("아이템 이름"));
-    FText DefaultInfo = FText::FromString(TEXT("아이템 설명"));
-
-    if (ItemNameText)
-    {
-        ItemNameText->SetText(ItemNameTxt.IsEmpty() ? DefaultName : ItemNameTxt);
-    }
-
-    if (ItemInfoText)
-    {
-        ItemInfoText->SetText(ItemInfoTxt.IsEmpty() ? DefaultInfo : ItemInfoTxt);
-    }
-}
+#include "UI/Lobby/Contents/Inventory/InventoryHUDWidget.h"
+#include "Components/PanelWidget.h"
 
 void UItemSlot::NativeConstruct()
 {
-    if (SetItemBtn) {
-        SetItemBtn->OnClicked.RemoveDynamic(this, &UItemSlot::ClickSetItemBtn);
-        SetItemBtn->OnClicked.AddDynamic(this, &UItemSlot::ClickSetItemBtn);
-    }
+	Super::NativeConstruct();
 
-    
+	if (SetItemBtn)
+	{
+		SetItemBtn->OnClicked.RemoveDynamic(this, &UItemSlot::ClickSetItemBtn);
+		SetItemBtn->OnClicked.AddDynamic(this, &UItemSlot::ClickSetItemBtn);
+	}
+
+	if (CloseBtn)
+	{
+		CloseBtn->OnClicked.RemoveDynamic(this, &UItemSlot::ClickCloseBtn);
+		CloseBtn->OnClicked.AddDynamic(this, &UItemSlot::ClickCloseBtn);
+	}
+
+	if (RemoveBtn)
+	{
+		RemoveBtn->OnClicked.RemoveDynamic(this, &UItemSlot::ClickRemoveBtn);
+		RemoveBtn->OnClicked.AddDynamic(this, &UItemSlot::ClickRemoveBtn);
+	}
+}
+
+void UItemSlot::ShowBattleInventory()
+{
+	SetVisibility(ESlateVisibility::Visible);
+
+	if (BattleInventoryWidget)
+	{
+		BattleInventoryWidget->RefreshConsumableInventory();
+	}
 }
 
 void UItemSlot::ClickSetItemBtn()
 {
-    OnSetItemBtnClicked.Broadcast();
+	OnSetItemBtnClicked.Broadcast();
 }
+
+void UItemSlot::ClickRemoveBtn()
+{
+	OnRemoveItemBtnClicked.Broadcast();
+}
+
+void UItemSlot::ClickCloseBtn()
+{
+	SetVisibility(ESlateVisibility::Collapsed);
+}
+

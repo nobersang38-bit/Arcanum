@@ -2,18 +2,13 @@
   {
     "Name": "HealthPotion",
     "PotionTag": "(TagName=\"Arcanum.Items.Potion.Health\")",
-    "Desc": "체력 회복",
-    "Icon": "Texture2D'/Game/Assets/Potion/Textures/Icon_Potion_Health.Icon_Potion_Health'",
-    "BuyPrice": 200,
-    "SellPrice": 20,
     "CooldownSeconds": 10.0,
     "Modifiers": [
       {
-        "ModifierId": "00000000-0000-0000-0000-000000000000",
         "SourceTag": "(TagName=\"Arcanum.Items.Potion.Health\")",
         "StatTag": "(TagName=\"Arcanum.BattleStat.Character.Regen.Health.Regen\")",
         "Value": {
-          "Flat": 0.0,
+          "Flat": 50.0,
           "Mul": 1.0
         },
         "bIsPermanent": false,
@@ -26,19 +21,14 @@
   {
     "Name": "ManaPotion",
     "PotionTag": "(TagName=\"Arcanum.Items.Potion.Mana\")",
-    "Desc": "마나 재생 속도 증가",
-    "Icon": "Texture2D'/Game/Assets/Potion/Textures/Icon_Potion_Mana.Icon_Potion_Mana'",
-    "BuyPrice": 300,
-    "SellPrice": 30,
     "CooldownSeconds": 15.0,
     "Modifiers": [
       {
-        "ModifierId": "00000000-0000-0000-0000-000000000000",
         "SourceTag": "(TagName=\"Arcanum.Items.Potion.Mana\")",
         "StatTag": "(TagName=\"Arcanum.BattleStat.Character.Regen.Mana.Regen\")",
         "Value": {
-          "Flat": 0.0,
-          "Mul": 1.2
+          "Flat": 50.0,
+          "Mul": 1.0
         },
         "bIsPermanent": false,
         "Duration": 15.0,
@@ -50,19 +40,14 @@
   {
     "Name": "PowerPotion",
     "PotionTag": "(TagName=\"Arcanum.Items.Potion.Power\")",
-    "Desc": "공격력 증가",
-    "Icon": "Texture2D'/Game/Assets/Potion/Textures/Icon_Potion_Power.Icon_Potion_Power'",
-    "BuyPrice": 100,
-    "SellPrice": 10,
     "CooldownSeconds": 20.0,
     "Modifiers": [
       {
-        "ModifierId": "00000000-0000-0000-0000-000000000000",
         "SourceTag": "(TagName=\"Arcanum.Items.Potion.Power\")",
-        "StatTag": "(TagName=\"Arcanum.BattleStat.Character.NonRegen.AttackPower.Value\")",
+        "StatTag": "(TagName=\"Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue\")",
         "Value": {
-          "Flat": 0.0,
-          "Mul": 1.2
+          "Flat": 20.0,
+          "Mul": 1.0
         },
         "bIsPermanent": false,
         "Duration": 20.0,
@@ -74,19 +59,14 @@
   {
     "Name": "FocusPotion",
     "PotionTag": "(TagName=\"Arcanum.Items.Potion.Focus\")",
-    "Desc": "치명타 확률 증가",
-    "Icon": "Texture2D'/Game/Assets/Potion/Textures/Icon_Potion_Focus.Icon_Potion_Focus'",
-    "BuyPrice": 100,
-    "SellPrice": 10,
     "CooldownSeconds": 20.0,
     "Modifiers": [
       {
-        "ModifierId": "00000000-0000-0000-0000-000000000000",
         "SourceTag": "(TagName=\"Arcanum.Items.Potion.Focus\")",
-        "StatTag": "(TagName=\"Arcanum.BattleStat.Character.NonRegen.CritChance.Value\")",
+        "StatTag": "(TagName=\"Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue\")",
         "Value": {
-          "Flat": 0.15,
-          "Mul": 1.0
+          "Flat": 0.0,
+          "Mul": 0.2
         },
         "bIsPermanent": false,
         "Duration": 20.0,
@@ -98,19 +78,14 @@
   {
     "Name": "FrenzyPotion",
     "PotionTag": "(TagName=\"Arcanum.Items.Potion.Frenzy\")",
-    "Desc": "공격속도 증가",
-    "Icon": "Texture2D'/Game/Assets/Potion/Textures/Icon_Potion_Frenzy.Icon_Potion_Frenzy'",
-    "BuyPrice": 100,
-    "SellPrice": 10,
     "CooldownSeconds": 20.0,
     "Modifiers": [
       {
-        "ModifierId": "00000000-0000-0000-0000-000000000000",
         "SourceTag": "(TagName=\"Arcanum.Items.Potion.Frenzy\")",
-        "StatTag": "(TagName=\"Arcanum.BattleStat.Character.NonRegen.AttackSpeed.Value\")",
+        "StatTag": "(TagName=\"Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue\")",
         "Value": {
           "Flat": 0.0,
-          "Mul": 1.25
+          "Mul": 0.2
         },
         "bIsPermanent": false,
         "Duration": 20.0,
@@ -122,19 +97,14 @@
   {
     "Name": "HastePotion",
     "PotionTag": "(TagName=\"Arcanum.Items.Potion.Haste\")",
-    "Desc": "이동속도 증가",
-    "Icon": "Texture2D'/Game/Assets/Potion/Textures/Icon_Potion_Haste.Icon_Potion_Haste'",
-    "BuyPrice": 100,
-    "SellPrice": 10,
     "CooldownSeconds": 20.0,
     "Modifiers": [
       {
-        "ModifierId": "00000000-0000-0000-0000-000000000000",
         "SourceTag": "(TagName=\"Arcanum.Items.Potion.Haste\")",
-        "StatTag": "(TagName=\"Arcanum.BattleStat.Character.NonRegen.MoveSpeed.Value\")",
+        "StatTag": "(TagName=\"Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue\")",
         "Value": {
           "Flat": 0.0,
-          "Mul": 1.3
+          "Mul": 0.2
         },
         "bIsPermanent": false,
         "Duration": 20.0,

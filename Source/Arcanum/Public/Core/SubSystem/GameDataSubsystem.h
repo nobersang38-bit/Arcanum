@@ -39,34 +39,4 @@ public:
 				MasterDataTables.Add(TableTag, LoadedTable);
 		}
 	}
-
-#pragma region 스탯 디스플레이 DT 조회
-public:
-	const FDTStatDisplayRow* FindStatDisplayRowByTag(const FGameplayTag& InStatTag) const
-	{
-		if (!InStatTag.IsValid())
-		{
-			return nullptr;
-		}
-
-		UDataTable* const* tablePtr = MasterDataTables.Find(Arcanum::DataTable::StatDisplay);
-		if (!tablePtr || !(*tablePtr))
-		{
-			return nullptr;
-		}
-
-		UDataTable* table = *tablePtr;
-
-		for (const TPair<FName, uint8*>& pair : table->GetRowMap())
-		{
-			const FDTStatDisplayRow* row = reinterpret_cast<const FDTStatDisplayRow*>(pair.Value);
-			if (row && row->StatTag.MatchesTagExact(InStatTag))
-			{
-				return row;
-			}
-		}
-
-		return nullptr;
-	}
-#pragma endregion
 };

@@ -14,6 +14,7 @@ class URoundedSlotWidget;
 class USquareSlotWidget;
 class UCharacterEquipWidget;
 class UCommonDialog;
+class UCommonBtnWidget;
 class UCharacterInfo;
 class UWidgetSwitcher;
 class UWrapBox;
@@ -107,7 +108,6 @@ protected:
 	UPROPERTY()
 	TArray<USquareSlotWidget*> EquipmentSlots;
 
-
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnEnhanceOKClicked OnEnhanceOKClicked;
@@ -154,8 +154,19 @@ private:
 	/* 장착 위젯에서 해제 버튼 클릭 시 실제 해제 요청 처리 */
 	UFUNCTION()
 	void HandleCharacterUnequipRequested(const FGameplayTag& InEquipSlotTag);
+
+	/* 장비창 열기 버튼 클릭 */
+	UFUNCTION()
+	void HandleEquipOpenBtnClicked();
+
+	/* 장착 방어구 능력치 패널 갱신 */
+	void RefreshArmorStatPanel();
+
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UCharacterEquipWidget> CharacterEquipWidget;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UCommonBtnWidget> EquipOpenBtn;
 #pragma endregion
 };

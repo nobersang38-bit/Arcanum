@@ -243,6 +243,7 @@ bool FPlayerAccountService::GetStageData(const UObject* WorldContextObject, TArr
 
 	return OutRows.Num() > 0;
 }
+
 void FPlayerAccountService::StopShopOnBattleStart(const UObject* WorldContextObject)
 {
 	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
@@ -255,6 +256,63 @@ void FPlayerAccountService::StopShopOnBattleStart(const UObject* WorldContextObj
 	{
 		gameTimeSubsystem->StopShop();
 	}
+}
+
+bool FPlayerAccountService::SetBattlePotionSlot(const UObject* WorldContextObject, int32 InSlotIndex, const FGameplayTag& InPotionTag, int32 InCount)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return false;
+	if (InSlotIndex < 0) return false;
+	if (!InPotionTag.IsValid()) return false;
+	if (InCount <= 0) return false;
+
+	FPlayerData& playerData = GI->GetPlayerData();
+
+	if (playerData.BattlePotionSlots.Num() < 2)
+	{
+		playerData.BattlePotionSlots.SetNum(2);
+	}	
+	if (!playerData.BattlePotionSlots.IsValidIndex(InSlotIndex)) return false;
+
+	const int32 ownedCount = playerData.StackCounts.FindRef(InPotionTag);
+	if (ownedCount <= 0) return false;
+
+	const int32 setCount = FMath::Min(ownedCount, InCount);
+	if (setCount <= 0) return false;
+
+	for (int32 slotIndex = 0; slotIndex < playerData.BattlePotionSlots.Num(); slotIndex++)
+	{
+		if (slotIndex != InSlotIndex)
+		{
+			const FBattlePotionSlotData& slotData = playerData.BattlePotionSlots[slotIndex];
+
+			if (slotData.PotionTag.MatchesTagExact(InPotionTag))
+			{
+				return false;
+			}
+		}
+	}
+
+	FBattlePotionSlotData& targetSlot = playerData.BattlePotionSlots[InSlotIndex];
+	targetSlot.PotionTag = InPotionTag;
+	targetSlot.Count = setCount;
+
+	return SavePlayerData(GI);
+}
+
+bool FPlayerAccountService::ClearBattlePotionSlot(const UObject* WorldContextObject, int32 InSlotIndex)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return false;
+	if (InSlotIndex < 0) return false;
+
+	FPlayerData& playerData = GI->GetPlayerData();
+	if (!playerData.BattlePotionSlots.IsValidIndex(InSlotIndex)) return false;
+
+	playerData.BattlePotionSlots[InSlotIndex].PotionTag = FGameplayTag();
+	playerData.BattlePotionSlots[InSlotIndex].Count = 0;
+
+	return SavePlayerData(GI);
 }
 
 // ========================================================
@@ -318,8 +376,44 @@ bool FPlayerAccountService::EquipItemToCharacter(const UObject* WorldContextObje
 
 	FBattleCharacterData* foundCharacter = FindOwnedCharacterByName(playerData, InCharacterName);
 	if (!foundCharacter) return false;
+	if (!foundCharacter->bSelection) return false;
+
 	TMap<FGameplayTag, FGuid>* slotMap = GetEquipmentSlotMapBySlotTag(*foundCharacter, InEquipSlotTag);
 	if (!slotMap) return false;
+
+	// 다른 캐릭터 포함 이미 장착 중인 장비면 실패
+	for (const FBattleCharacterData& characterData : playerData.OwnedCharacters)
+	{
+		const FName otherCharacterName = GetLeafNameFromTag(characterData.CharacterInfo.BattleCharacterInitData.CharacterTag);
+		if (otherCharacterName == InCharacterName)	continue;
+
+		for (const TPair<FGameplayTag, FGuid>& pair : characterData.WeaponSlots)
+		{
+			if (pair.Value == InItemGuid)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("이미 장착중입니다."));
+				return false;
+			}
+		}
+
+		for (const TPair<FGameplayTag, FGuid>& pair : characterData.LegendaryWeaponSlots)
+		{
+			if (pair.Value == InItemGuid)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("이미 장착중입니다."));
+				return false;
+			}
+		}
+
+		for (const TPair<FGameplayTag, FGuid>& pair : characterData.ArmorSlots)
+		{
+			if (pair.Value == InItemGuid)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("이미 장착중입니다."));
+				return false;
+			}
+		}
+	}
 
 	// 장착 중복 처리
 	if (InEquipSlotTag.MatchesTagExact(Arcanum::Items::ItemSlot::Weapon::Slot1) ||
@@ -524,7 +618,11 @@ bool FPlayerAccountService::RerollEquipment(const UObject* WorldContextObject, c
 	const FGameplayTag soulTag = Arcanum::PlayerData::Currencies::NonRegen::Soul::Value;
 	const int64 currentSoul = GI->GetCurrencyAmount(soulTag);
 	if (currentSoul == INDEX_NONE_LONG) return false;
-	if (currentSoul < ruleRow->RerollSoulCost) return false;
+	if (currentSoul < ruleRow->RerollSoulCost)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("소울 부족"));
+		return false;
+	}
 
 	UpdateCurrency(WorldContextObject, GI->GetPlayerDataCopy(), soulTag, -ruleRow->RerollSoulCost);
 

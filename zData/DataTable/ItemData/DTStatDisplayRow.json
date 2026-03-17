@@ -58,10 +58,10 @@
   {
     "Name": "HealthRegen",
     "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Regen",
-    "DisplayName": "체력 재생",
+    "DisplayName": "체력 회복",
     "bUsePercent": false,
     "SortOrder": 7,
-    "Desc": "체력을 지속적으로 회복합니다."
+    "Desc": "체력을 회복합니다."
   },
   {
     "Name": "ManaMaxValue",
@@ -74,9 +74,9 @@
   {
     "Name": "ManaRegen",
     "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
-    "DisplayName": "마나 재생",
+    "DisplayName": "마나 회복",
     "bUsePercent": false,
     "SortOrder": 9,
-    "Desc": "마나를 지속적으로 회복합니다."
+    "Desc": "마나를 회복합니다."
   }
 ]

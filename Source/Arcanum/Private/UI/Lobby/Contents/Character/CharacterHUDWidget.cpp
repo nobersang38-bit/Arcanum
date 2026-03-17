@@ -4,8 +4,11 @@
 #include "UI/Lobby/Contents/Character/SquareSlotWidget.h"
 #include "UI/Lobby/Contents/Character/CharacterEquipWidget.h"
 #include "UI/Lobby/Contents/Inventory/InventoryHUDWidget.h"
+#include "UI/Lobby/Contents/ItemDetail/ItemDetailHelper.h"
+#include "UI/Lobby/Contents/ItemDetail/ItemStatPanelWidget.h"
 #include "UI/Lobby/LobbyHUD.h"
 #include "UI/Common/CommonDialog.h"
+#include "UI/Common/CommonBtnWidget.h"
 #include "Components/WrapBox.h"
 #include "Components/WrapBoxSlot.h"
 #include "Components/WidgetSwitcher.h"
@@ -72,6 +75,12 @@ void UCharacterHUDWidget::NativeConstruct()
 
 		CharacterEquipWidget->OnCharacterUnequipRequested.RemoveDynamic(this, &UCharacterHUDWidget::HandleCharacterUnequipRequested);
 		CharacterEquipWidget->OnCharacterUnequipRequested.AddDynamic(this, &UCharacterHUDWidget::HandleCharacterUnequipRequested);
+	}
+	
+	if (EquipOpenBtn)
+	{
+		EquipOpenBtn->OnClicked.RemoveDynamic(this, &UCharacterHUDWidget::HandleEquipOpenBtnClicked);
+		EquipOpenBtn->OnClicked.AddDynamic(this, &UCharacterHUDWidget::HandleEquipOpenBtnClicked);
 	}
 }
 
@@ -284,6 +293,7 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
 		}
 	}
 	InitEquipment(CharacterName);
+	RefreshArmorStatPanel();
 
 	/// 260311 변경 : 추가 (클릭 시 데이터 변경되게 info 관련은 변경해주세요.)
 	FGameplayTag TargetTag = FGameplayTag::RequestGameplayTag(FName("Arcanum.Unit.Ally"));
@@ -371,6 +381,7 @@ void UCharacterHUDWidget::UpdateSlotVisuals(const TMap<FGameplayTag, FGuid>& InE
 					if (targetSlot)
 					{
 						targetSlot->SetItemIconImage(icon);
+						targetSlot->SetWeaponGuid(itemGuid);
 						targetSlot->SetUpgradeLevel(foundEquip->CurrUpgradeLevel);
 
 					}
@@ -597,6 +608,7 @@ void UCharacterHUDWidget::InitEquipment(FName CharacterName)
 		if (WeaponsSlot)
 		{
 			WeaponsSlot->SetItemIconImage(nullptr);
+			WeaponsSlot->SetWeaponGuid(FGuid());
 			WeaponsSlot->ClearUpgradeLevel();
 		}
 	}
@@ -698,6 +710,7 @@ void UCharacterHUDWidget::HandleCharacterEquipRequested(const FGameplayTag& InEq
 		{
 			ParentLobby->RefreshAllLobbyUI();
 			InitEquipment(CurrentSelectedCharacterName);
+			RefreshArmorStatPanel();
 			CharacterEquipWidget->SetEquipSlotTag(InEquipSlotTag);
 		}
 	}
@@ -713,7 +726,48 @@ void UCharacterHUDWidget::HandleCharacterUnequipRequested(const FGameplayTag& In
 		{
 			ParentLobby->RefreshAllLobbyUI();
 			InitEquipment(CurrentSelectedCharacterName);
+			RefreshArmorStatPanel();
 			CharacterEquipWidget->SetEquipSlotTag(InEquipSlotTag);
+		}
+	}
+}
+
+void UCharacterHUDWidget::HandleEquipOpenBtnClicked()
+{
+	if (CharacterSwitcher)
+	{
+		if (UWidget* ActiveWidget = CharacterSwitcher->GetWidgetAtIndex(1))
+		{
+			CharacterSwitcher->SetActiveWidget(ActiveWidget);
+		}
+	}
+	if (CharacterEquipWidget)
+	{
+		CharacterEquipWidget->ShowEquipmentInventory();
+	}
+}
+
+void UCharacterHUDWidget::RefreshArmorStatPanel()
+{
+	FEquippedTotalStatViewData viewData;
+	if (FItemDetailHelper::BuildEquippedArmorStatsViewData(this, CurrentSelectedCharacterName, viewData))
+	{
+		if (CharacterEquipWidget)
+		{
+			if (UItemStatPanelWidget* armorStatPanelWidget = CharacterEquipWidget->GetArmorStatPanelWidget())
+			{
+				armorStatPanelWidget->SetStatLines(viewData.StatLines);
+			}
+		}
+	}
+	else
+	{
+		if (CharacterEquipWidget)
+		{
+			if (UItemStatPanelWidget* armorStatPanelWidget = CharacterEquipWidget->GetArmorStatPanelWidget())
+			{
+				armorStatPanelWidget->ClearStatLines();
+			}
 		}
 	}
 }
