@@ -11,6 +11,7 @@
 #include "DataInfo/BattleCharacter/BattleStats/DataTable/DTBattleStats.h"
 
 #include "DataInfo/StageData/FStageData.h"
+#include "DataInfo/ItemData/Data/FBattlePotionSlotData.h"
 
 #include "DataInfo/PlayerData/PlayerGacha/FPlayerGacha.h"
 #include "DataInfo/PlayerData/PlayerQuest/FPlayerQuest.h"
@@ -32,6 +33,9 @@ struct FPlayerData
      * ============================== */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
     FPlayerBattleData PlayerBattleData;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
+    TArray<FBattlePotionSlotData> BattlePotionSlots;
 
     /* ==============================
      *     플레이어 보유 캐릭터

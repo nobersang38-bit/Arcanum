@@ -8,6 +8,7 @@
 class UImage;
 class UBorder;
 class UTextBlock;
+class UItemTooltipWidget;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnWeaponSlotClicked,USquareSlotWidget*, ClickedSlot,int32, SlotIndex);
 /**
@@ -46,7 +47,7 @@ public:
 	void SetWeaponGuid(FGuid InGuid);
 	FText GetItemName() const { return EquipNameTxt; }
 	FGameplayTag GetWeaponTag() const { return WeaponTag; }
-	FGuid GetWeaponGuid() const { return WeaponGuid; }
+	FGuid GetWeaponGuid() const { return EquippedItemGuid; }
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UBorder> BackgroundColor;
@@ -63,7 +64,7 @@ protected:
 	UPROPERTY()
 	FText EquipNameTxt;
 	UPROPERTY()
-	FGuid WeaponGuid;
+	FGuid EquippedItemGuid;
 
 #pragma region 강화 수치 표시
 public:
@@ -78,4 +79,17 @@ protected:
 	TObjectPtr<UTextBlock> UpgradeLevelText;
 #pragma endregion
 
+#pragma region 장착 아이템 툴팁
+protected:
+	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
+
+	/* 툴팁 갱신 */
+	void RefreshTooltip();
+
+protected:
+	/* 아이템 툴팁 위젯 클래스 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tooltip")
+	TSubclassOf<UItemTooltipWidget> ItemTooltipWidgetClass;
+#pragma endregion
 };

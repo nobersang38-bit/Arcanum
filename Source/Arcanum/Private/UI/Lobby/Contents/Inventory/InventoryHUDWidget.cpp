@@ -421,8 +421,13 @@ bool UInventoryHUDWidget::IsMatchedEquipSlotFilter(const FGameplayTag& InItemTag
 	return false;
 }
 
-void UInventoryHUDWidget::RefreshStackInventory()
+void UInventoryHUDWidget::RefreshConsumableInventory()
 {
+	SetCategoryPanelVisible(false);
+
+	CurrentFilter = EInventoryCategoryFilter::Consumable;
+	CurrentEquipSlotFilter = EInventoryEquipSlotFilter::None;
+
 	if (!ParentLobby) return;
 
 	const FPlayerData& playerData = ParentLobby->GetCachedPlayerData();
@@ -509,7 +514,7 @@ void UInventoryHUDWidget::ApplyInventorySlots(const TArray<FInventoryViewSlot>& 
 void UInventoryHUDWidget::ClearSelection()
 {
 	SelectedSlotIndex = INDEX_NONE;
-	SelectedInventoryItemGuid.IsValid();
+	SelectedInventoryItemGuid.Invalidate();
 	SelectedStackItemTag = FGameplayTag();
 	SelectedStackItemCount = 0;
 
@@ -649,24 +654,24 @@ void UInventoryHUDWidget::RefreshCategoryButtonState()
 	{
 		AllCategoryBorder->SetBrushColor(
 			CurrentFilter == EInventoryCategoryFilter::All
-			? FLinearColor(1.f, 1.f, 1.f, 1.f)
-			: FLinearColor(0.3f, 0.3f, 0.3f, 1.f));
+			? FLinearColor(1.0f, 0.898f, 0.349f, 1.0f) // 노란색
+			: FLinearColor(1.f, 1.f, 1.f, 1.f));
 	}
 
 	if (EquipmentCategoryBorder)
 	{
 		EquipmentCategoryBorder->SetBrushColor(
 			CurrentFilter == EInventoryCategoryFilter::Equipment
-			? FLinearColor(1.f, 1.f, 1.f, 1.f)
-			: FLinearColor(0.3f, 0.3f, 0.3f, 1.f));
+			? FLinearColor(1.0f, 0.898f, 0.349f, 1.0f)
+			: FLinearColor(1.f, 1.f, 1.f, 1.f));
 	}
 
 	if (ConsumableCategoryBorder)
 	{
 		ConsumableCategoryBorder->SetBrushColor(
 			CurrentFilter == EInventoryCategoryFilter::Consumable
-			? FLinearColor(1.f, 1.f, 1.f, 1.f)
-			: FLinearColor(0.3f, 0.3f, 0.3f, 1.f));
+			? FLinearColor(1.0f, 0.898f, 0.349f, 1.0f)
+			: FLinearColor(1.f, 1.f, 1.f, 1.f));
 	}
 }
 

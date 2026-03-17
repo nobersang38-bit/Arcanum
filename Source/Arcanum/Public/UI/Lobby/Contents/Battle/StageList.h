@@ -9,6 +9,7 @@ class UBorder;
 class UTextBlock;
 class UImage;
 class UButton;
+class UWidgetAnimation;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStageClicked, UStageList*, StageWidget);
 
@@ -39,6 +40,7 @@ public:
 	TObjectPtr<UTexture2D> StageImg;
 
 	void SetSelected(bool bInSelected);
+	void SetStageImg(TObjectPtr<UTexture2D> StageImg);
 
 	void SetText(FString StageName, FString StageInfo);
 
@@ -48,6 +50,7 @@ protected:
 	UPROPERTY(meta = (BindWidget)) TObjectPtr<UImage> StageImage;
 	UPROPERTY(meta = (BindWidget)) TObjectPtr<UTextBlock> StageNameText;
 	UPROPERTY(meta = (BindWidget)) TObjectPtr<UTextBlock> StageInfoText;
+	UPROPERTY(meta = (BindWidgetAnim), Transient) TObjectPtr<UWidgetAnimation> BlinkAnim;
 	private:
 	bool bSelected = false;
 	FString DefaultStrName = TEXT("스테이지 0");
