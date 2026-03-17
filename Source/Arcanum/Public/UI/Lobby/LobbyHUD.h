@@ -60,6 +60,9 @@ public:
 	// 설정, 종료
 
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI Controls")
+	TArray<UCommonBtnWidget*> LobbyButtonArray;
+
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UCommonBtnWidget> BattleMenuBtn;
 
@@ -124,6 +127,8 @@ private:
 	UFUNCTION()
 	void ClickQuitBtn();
 
+	/* 메뉴버튼 UI 갱신 */
+	void UpdateButtonSelection(class UCommonBtnWidget* ClickedButton);
 #pragma endregion
 
 #pragma region 재화

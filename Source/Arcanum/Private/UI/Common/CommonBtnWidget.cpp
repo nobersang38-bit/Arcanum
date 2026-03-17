@@ -2,6 +2,7 @@
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
+#include "CommonButtonBase.h"
 
 void UCommonBtnWidget::NativePreConstruct()
 {
@@ -75,6 +76,15 @@ void UCommonBtnWidget::SetButtonText(FText InText)
     if (ButtonLabel) ButtonLabel->SetText(DisplayText);
 }
 
+void UCommonBtnWidget::SetSelectedState_Implementation(bool bIsSelected)
+{
+    bIsSelectedState = bIsSelected;
+
+    if (HQUI_Button)
+    {
+        HQUI_Button->SetIsSelected(bIsSelected);
+    }
+}
 
 void UCommonBtnWidget::HandleButtonClicked()
 {
