@@ -4,6 +4,7 @@
 #include "UObject/NoExportTypes.h"
 #include "DataInfo/SkillData/Data/FSkillInfo.h"
 #include "DataInfo/SkillData/DataTable/DTSkillsData.h"
+#include "DataInfo/BattleCharacter/Equipment/Data/FEquipmentData.h"
 #include "NativeGameplayTags.h"
 #include "SkillBase.generated.h"
 
@@ -18,18 +19,26 @@ class USkillBase : public UObject
 public:
     USkillBase();
 
-    virtual void Initialize(AActor* InOwner, const FSkillInfo* InSkillInfo, int32 InLevel, FGameplayTag InTargetFilterTag);
+    virtual void Initialize(
+        AActor* InOwner, 
+        const FSkillInfo* InSkillInfo,
+        int32 InLevel, 
+        FGameplayTag InTargetFilterTag, 
+        const FItemDefinition* InEquipmentData);
 
     virtual void ActivateSkill(AActor* Instigator);
     virtual void DeactivateSkill(AActor* Instigator);
 
     const FLevelModifierEntry* GetCurrentLevelEntry() const;
+    const FSkillInfo* GetSkillInfo() const { return SkillInfo; }
+    const FItemDefinition* GetEquipmentData() const { return EquipmentData; }
 
 protected:
 
     TWeakObjectPtr<AActor> OwnerActor;
 
     const FSkillInfo* SkillInfo;
+    const FItemDefinition* EquipmentData = nullptr;
 
     FSkillState SkillState;
 

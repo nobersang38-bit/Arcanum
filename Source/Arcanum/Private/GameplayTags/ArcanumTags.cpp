@@ -88,6 +88,8 @@ namespace Arcanum {
 	namespace Skills {
 		namespace SkillName {
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(None, "Arcanum.Skills.SkillName.None", "없음");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(BasicMeleeAttack, "Arcanum.Skills.SkillName.BasicMeleeAttack", "기본 근접 공격");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(BasicRangedAttack, "Arcanum.Skills.SkillName.BasicRangedAttack", "기본 원거리 공격");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Slash, "Arcanum.Skills.SkillName.Slash", "슬래시");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(ChainBolt, "Arcanum.Skills.SkillName.ChainBolt", "체인볼트");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(PiercingShot, "Arcanum.Skills.SkillName.PiercingShot", "피어싱샷");

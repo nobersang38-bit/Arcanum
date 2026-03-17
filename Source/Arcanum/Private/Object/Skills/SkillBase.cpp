@@ -5,7 +5,12 @@ USkillBase::USkillBase()
 {
 }
 
-void USkillBase::Initialize(AActor* InOwner, const FSkillInfo* InSkillInfo, int32 InLevel, FGameplayTag InTargetFilterTag)
+void USkillBase::Initialize(
+    AActor* InOwner, const 
+    FSkillInfo* InSkillInfo, 
+    int32 InLevel, 
+    FGameplayTag InTargetFilterTag, 
+    const FItemDefinition* InEquipmentData)
 {
     if (!InOwner || !InSkillInfo)
     {
@@ -16,6 +21,7 @@ void USkillBase::Initialize(AActor* InOwner, const FSkillInfo* InSkillInfo, int3
     SkillInfo = InSkillInfo;
     SkillState.Level = InLevel;
     TargetFilterTag = InTargetFilterTag;
+    EquipmentData = InEquipmentData;
 }
 
 const FLevelModifierEntry* USkillBase::GetCurrentLevelEntry() const

@@ -107,6 +107,7 @@ public:
 	static const bool AddCurrency(const UObject* WorldContextObject, FGameplayTag Tag, int64 Amount);
 	/** 플레이어 재화 변경할때*/
 	static const FPlayerCurrency UpdateCurrency(const UObject* WorldContextObject, const FPlayerData& PlayerData, FGameplayTag Tag, int64 Amount);
+
 private:
 	/** 치트 방지용*/
 	static bool VerifyCurrency(UARGameInstance* GI, FPlayerData CachedData);
@@ -125,6 +126,11 @@ private:
 	static bool SavePlayerData(UARGameInstance* GI);
 #pragma endregion
 
+#pragma region 데이터 조회
+public:
+	/* 현재 장착 장비에서 스킬 태그와 레벨을 가져옴 */
+	static bool GetEquippedSkillTag(const UObject* WorldContextObject, const FName& InCharacterName, FGameplayTag& OutSkillTag, int32& OutSkillLevel);
+#pragma endregion
 
 #pragma region Battle Widget 관련
 public:

@@ -223,6 +223,57 @@ bool FPlayerAccountService::SavePlayerData(UARGameInstance* GI)
 
 	return bFinalResult;
 }
+
+// ========================================================
+// 데이터 조회
+// ========================================================
+
+bool FPlayerAccountService::GetEquippedSkillTag(const UObject* WorldContextObject, const FName& InCharacterName, FGameplayTag& OutSkillTag, int32& OutSkillLevel)
+{
+	OutSkillTag = Arcanum::Skills::SkillName::None;
+	OutSkillLevel = 0;
+
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return false;
+	if (InCharacterName.IsNone()) return false;
+
+	FPlayerData& playerData = GI->GetPlayerData();
+	FBattleCharacterData* foundCharacter = FindOwnedCharacterByName(playerData, InCharacterName);
+	if (!foundCharacter) return false;
+
+	const TArray<FGameplayTag> weaponSlotTags = {
+		Arcanum::Items::ItemSlot::Weapon::Slot1, 
+		Arcanum::Items::ItemSlot::Weapon::Slot2,
+		Arcanum::Items::ItemSlot::Weapon::Legendary
+	};
+
+	for (const FGameplayTag& slotTag : weaponSlotTags)
+	{
+		TMap<FGameplayTag, FGuid>* slotMap = GetEquipmentSlotMapBySlotTag(*foundCharacter, slotTag);
+		if (!slotMap) continue;
+
+		const FGuid* equippedGuid = slotMap->Find(slotTag);
+		if (!equippedGuid || !equippedGuid->IsValid()) continue;
+
+		for (FEquipmentInfo& equip : playerData.Inventory)
+		{
+			if (equip.ItemGuid != *equippedGuid) continue;
+
+			for (const TPair<FGameplayTag, int32>& skillPair : equip.Equipment.Skills)
+			{
+				if (!skillPair.Key.IsValid()) continue;
+				if (skillPair.Key == Arcanum::Skills::SkillName::None) continue;
+				if (skillPair.Value <= 0) continue;
+
+				OutSkillTag = skillPair.Key;
+				OutSkillLevel = skillPair.Value;
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 // ========================================================
 // Battle Widget 관련
 // ========================================================
@@ -271,7 +322,7 @@ bool FPlayerAccountService::SetBattlePotionSlot(const UObject* WorldContextObjec
 	if (playerData.BattlePotionSlots.Num() < 2)
 	{
 		playerData.BattlePotionSlots.SetNum(2);
-	}	
+	}
 	if (!playerData.BattlePotionSlots.IsValidIndex(InSlotIndex)) return false;
 
 	const int32 ownedCount = playerData.StackCounts.FindRef(InPotionTag);

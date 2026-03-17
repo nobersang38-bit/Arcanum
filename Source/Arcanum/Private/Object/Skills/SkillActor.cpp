@@ -21,11 +21,16 @@ void ASkillActor::ActivateSkillActor(USkillBase* InSkill, AActor* InOwner, const
     SetActorRotation(SpawnRotation);
 
     // 0312 풀링 활성화함수 실행 추가
+    ActivateItem();
+
+    /*
     UPoolingSubsystem* PoolingSubsystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
     if (PoolingSubsystem)
     {
         PoolingSubsystem->ActivateItem(this);
+        UE_LOG(LogTemp, Warning, TEXT("After Pool Activate ActorCollision=%d"), GetActorEnableCollision());
     }
+    */
 
     // 0312 해당 위치에 있던 Activate로직 ActivateItem으로 옮김
 }
