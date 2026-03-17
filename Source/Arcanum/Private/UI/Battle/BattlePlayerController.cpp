@@ -18,7 +18,6 @@
 #include "UI/Battle/SubLayout/BattleAllyUnitSlotWidget.h"
 #include "UI/Battle/SubLayout/BattleBattleEndWidget.h"
 #include "Kismet/GameplayStatics.h"
-#include "Object/Actor/HologramVisualizer.h"
 #include "Components/CapsuleComponent.h"
 #include "Object/Actor/SpawnCheckDecal.h"
 
@@ -33,13 +32,6 @@ void ABattlePlayerController::BeginPlay()
 	UClass* LoadAllyUnit = StaticLoadClass(UObject::StaticClass(), nullptr, *AllyUnitClassPath);
 
 	UnitClass = LoadAllyUnit;*/
-	if (HologramActorClass)
-	{
-		FTransform Transform;
-		Transform.SetRotation(FVector::ForwardVector.Rotation().Quaternion());
-		Transform.SetLocation(FVector(0.0f, 0.0f, -9999.0f));
-		HologramActorInstance = GetWorld()->SpawnActor<AHologramVisualizer>(HologramActorClass, Transform);
-	}
 
 	if (HUDWidgetClass)
 	{

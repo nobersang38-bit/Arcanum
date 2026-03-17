@@ -222,12 +222,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
 	float PlayerLocationProgressUpdateInterval = 0.05f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
-	TSubclassOf<class AHologramVisualizer> HologramActorClass = nullptr;
-
-	UPROPERTY()
-	TObjectPtr<class AHologramVisualizer> HologramActorInstance = nullptr;
-
 protected:
 	UPROPERTY()
 	TWeakObjectPtr<AActor> AllyBasement = nullptr;
