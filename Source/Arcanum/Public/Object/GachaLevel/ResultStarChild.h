@@ -32,6 +32,8 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite) TObjectPtr<UStaticMeshComponent> LeftPart;
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite) TObjectPtr<UStaticMeshComponent> RightPart;
 
+    UFUNCTION() void ApplyGradeMaterial(UMaterialInterface* InMat);
+    
 protected:
     virtual void BeginPlay() override;
 

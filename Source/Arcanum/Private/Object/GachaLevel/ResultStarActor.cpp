@@ -29,18 +29,36 @@ void AResultStarActor::SetGachaResults(const TArray<FGachaItemResult>& InResults
     if (!StarClass) return;
 
     for (int32 i = 0; i < InResults.Num(); ++i) {
+        const FGachaItemResult& Result = InResults[i];
+
         FName PivotName = *FString::Printf(TEXT("OrbitPivot_%d"), i);
         USceneComponent* NewPivot = NewObject<USceneComponent>(this, PivotName);
 
         NewPivot->SetupAttachment(RootComponent);
         NewPivot->RegisterComponent();
+
         float StartYaw = (360.0f / InResults.Num()) * i;
         NewPivot->SetRelativeRotation(FRotator(0.f, StartYaw, 0.f));
         OrbitPivots.Add(NewPivot);
 
-        AResultStarChild* StarActor = GetWorld()->SpawnActor<AResultStarChild>(StarClass, GetActorLocation(), FRotator::ZeroRotator);
+        AResultStarChild* StarActor = GetWorld()->SpawnActor<AResultStarChild>(
+            StarClass,
+            GetActorLocation(),
+            FRotator::ZeroRotator
+        );
+
         if (!StarActor) continue;
-        StarActor->SetResultData(InResults[i]);
+
+        StarActor->SetResultData(Result);
+        for (auto& Pair : GradeMatMap) {
+            if (Result.GradeTag.MatchesTag(Pair.Key)) {
+                if (UMaterialInterface** Mat = Pair.Value.Materials.Find(Result.GradeTag)) {
+                    StarActor->ApplyGradeMaterial(*Mat);
+                    break;
+                }
+            }
+        }
+
         StarActor->AttachToComponent(NewPivot, FAttachmentTransformRules::KeepRelativeTransform);
         StarActor->SetActorRelativeLocation(FVector(OrbitRadius, 0.f, 0.f));
         StarActors.Add(StarActor);
@@ -92,6 +110,6 @@ void AResultStarActor::Tick(float DeltaTime)
 
     float RotationAmount = RotationSpeed * DeltaTime;
     for (USceneComponent* Pivot : OrbitPivots) {
-        if (Pivot) Pivot->AddRelativeRotation(FRotator(0.f, 0.f, RotationAmount));
+        if (Pivot) Pivot->AddRelativeRotation(FRotator(0.f, RotationAmount, 0.f));
     }
 }

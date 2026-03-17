@@ -14,6 +14,16 @@ class UStaticMeshComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnResultStarFinished, AResultStarActor*, FinishedActor);
 
+
+USTRUCT(BlueprintType)
+struct FGradeMaterialSet
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TMap<FGameplayTag, UMaterialInterface*> Materials;
+};
+
 UCLASS()
 class ARCANUM_API AResultStarActor : public AActor
 {
@@ -36,7 +46,7 @@ public:
 protected:
     virtual void BeginPlay() override;
     UPROPERTY(EditAnywhere, Category = "00-Global") TSoftClassPtr<AResultStarChild> ChildStarClass;
-
+    UPROPERTY(EditAnywhere) TMap<FGameplayTag, FGradeMaterialSet> GradeMatMap;
 private:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
     TObjectPtr<USceneComponent> SceneRoot;

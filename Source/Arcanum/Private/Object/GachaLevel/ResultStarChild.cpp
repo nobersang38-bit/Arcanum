@@ -13,9 +13,11 @@ AResultStarChild::AResultStarChild()
 
     LeftPart = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LeftPart"));
     LeftPart->SetupAttachment(RootComponent);
+    LeftPart->bForceDisableNanite = true;
 
     RightPart = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RightPart"));
     RightPart->SetupAttachment(RootComponent);
+    RightPart->bForceDisableNanite = true;
 
     NiagaraComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Niagara"));
     NiagaraComp->SetupAttachment(RootComponent);
@@ -27,6 +29,14 @@ void AResultStarChild::BeginPlay()
 
     OnClicked.RemoveDynamic(this, &AResultStarChild::OnNotifyClicked);
     OnClicked.AddDynamic(this, &AResultStarChild::OnNotifyClicked);
+}
+
+void AResultStarChild::ApplyGradeMaterial(UMaterialInterface* InMat)
+{
+    if (!LeftPart && !RightPart) return;
+
+    LeftPart->SetMaterial(0, InMat);
+    RightPart->SetMaterial(0, InMat);
 }
 
 void AResultStarChild::SetResultData(const FGachaItemResult& InData)
