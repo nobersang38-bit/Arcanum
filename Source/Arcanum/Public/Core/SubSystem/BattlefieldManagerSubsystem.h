@@ -24,6 +24,7 @@ public:
 	FStageDataInfo StageData;
 	FBattleStageInfo BattleStageInfo;
 	FGradeStatData PlayerBattleStat;
+	FPlayerBattleData PlayerBattleData; // 아군 기지 체력NonRegen, 고기Regen
 };
 
 
@@ -179,4 +180,6 @@ protected:
 	public:
 		const FGameplayTag AllyTeamTag = Arcanum::Unit::Faction::Ally::Root;
 		const FGameplayTag EnemyTeamTag = Arcanum::Unit::Faction::Enemy::Root;
+
+		const FGameplayTag AllyBaseStaminaTag = Arcanum::BattleStat::Player::NonRegen::CommandCenterStamina::Value;
 };

@@ -113,6 +113,12 @@ void UBattleAllyUnitSlotWidget::SetImage(UTexture2D* InImage)
 	CoolTimeProgressStyle.SetFillImage(CoolTimeProgressBrush);
 
 	CoolTimeProgress->SetWidgetStyle(CoolTimeProgressStyle);
+
+	// 비활성화 이미지 설정
+	FSlateBrush DisableImageBrush = DisabledImage->GetBrush();
+	DisableImageBrush.SetResourceObject(InImage);
+
+	DisabledImage->SetBrush(DisableImageBrush);
 }
 
 void UBattleAllyUnitSlotWidget::SetUnitTag(FGameplayTag InUnitTag)

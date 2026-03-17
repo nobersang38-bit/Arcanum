@@ -7,6 +7,7 @@
 #include "DataInfo/CommonData/Stats/FBattleStats.h"
 #include "Data/Types/UnitData.h"
 #include "Data/Types/MatchData.h"
+#include "GameplayTags/ArcanumTags.h"
 #include "BattlePlayerController.generated.h"
 
 class UInputMappingContext;
@@ -257,6 +258,15 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TWeakObjectPtr<ABaseUnitCharacter> SelectedUnit2 = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
+	TSubclassOf<class ASelectedArrow> SelectedArrowClass = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Setting")
+	TObjectPtr<class ASelectedArrow> SelectedArrowInstance = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
+	FGameplayTag MeatTag = Arcanum::BattleStat::Player::Regen::Meat::Root;
 
 private:
 	FTimerHandle PlayerLocationProgressTimeHandle;

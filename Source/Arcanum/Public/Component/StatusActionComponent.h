@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "NativeGameplayTags.h"
+#include "GameplayTags/ArcanumTags.h"
 #include "StatusActionComponent.generated.h"
 
 //김도현
@@ -35,6 +36,15 @@ public:
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TMap<FGameplayTag, TSubclassOf<UStatusAction>> ActionSet;
+
+#pragma region 스탯 추가용
+public:
+	FGameplayTag AttackPowerTag = Arcanum::BattleStat::Character::NonRegen::AttackPower::Root;
+	FGameplayTag EvasionTag = Arcanum::BattleStat::Character::NonRegen::Evasion::Root;
+	FGameplayTag CriticalTag = Arcanum::BattleStat::Character::NonRegen::CritChance::Root;
+	FGameplayTag DamageReductionTag = Arcanum::BattleStat::Character::NonRegen::DamageReduction::Root;
+#pragma endregion
+
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Runtime|Debug", meta = (AllowPrivateAccess = "true"))

@@ -20,6 +20,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
 #include "Object/Actor/SpawnCheckDecal.h"
+#include "Object/Actor/SelectedArrow.h"
 
 // ========================================================
 // 언리얼 기본 생성
@@ -32,6 +33,13 @@ void ABattlePlayerController::BeginPlay()
 	UClass* LoadAllyUnit = StaticLoadClass(UObject::StaticClass(), nullptr, *AllyUnitClassPath);
 
 	UnitClass = LoadAllyUnit;*/
+
+	if (!SelectedArrowInstance && SelectedArrowClass)
+	{
+		FTransform Transform;
+		Transform.SetLocation(FVector(0.0f, 0.0f, -9999.0f));
+		SelectedArrowInstance = GetWorld()->SpawnActor<ASelectedArrow>(SelectedArrowClass, Transform);
+	}
 
 	if (HUDWidgetClass)
 	{
@@ -49,9 +57,20 @@ void ABattlePlayerController::BeginPlay()
 	SetupMainHUDWidget();
 	SetupInputMode();
 
-	MeatValue.BaseMax = 1000000.0f;
-	MeatValue.Current = 1000000.0f;
-	MeatValue.BaseTick = 2.0f;
+	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>(); 
+	if (BattleSubsystem)
+	{
+		const TArray<FRegenStat>& PlayerBattleRegenStat = BattleSubsystem->GetInBattleData().PlayerBattleData.PlayerBattleRegenStat;
+		for (const auto& PlayerBattleRegenStatMeat : PlayerBattleRegenStat)
+		{
+			if (MeatTag == PlayerBattleRegenStatMeat.ParentTag)
+			{
+				MeatValue.AddFrom(PlayerBattleRegenStatMeat);
+				MeatValue.Current = PlayerBattleRegenStatMeat.BaseMax;
+				break;
+			}
+		}
+	}
 
 	ManaValue.BaseMax = 100.0f;
 	ManaValue.Current = 100.0f;
@@ -70,7 +89,6 @@ void ABattlePlayerController::BeginPlay()
 	GetWorld()->GetTimerManager().SetTimer(ManaTimer, ManaDelegate, ManaTickInterval, true);
 
 	UGameTimeSubsystem* TimeSubsystem = GetGameInstance()->GetSubsystem<UGameTimeSubsystem>();
-	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 
 	if (BattleSubsystem)
 	{
@@ -170,6 +188,7 @@ void ABattlePlayerController::Tick(float DeltaTime)
 					if (SelectedUnit2.IsValid())
 					{
 						SelectedUnit2->SetActorHiddenInGame(true);
+						SelectedArrowInstance->SetActive(false);
 					}
 				}
 				else
@@ -212,6 +231,9 @@ void ABattlePlayerController::Tick(float DeltaTime)
 						float Unit2Height = SelectedUnit2->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 0.5f;
 						FVector ResultUnit2Location = HitResult3.ImpactPoint + FVector::UpVector * Unit2Height;
 						SelectedUnit2->SetActorLocation(ResultUnit2Location);
+
+						SelectedArrowInstance->SetArrow(ResultLocation, ResultUnit2Location);
+						SelectedArrowInstance->SetActive(true);
 					}
 				}
 			}
@@ -445,6 +467,10 @@ void ABattlePlayerController::SlotSelectCancel()
 	SetSpawnDecalActive(false);
 	SelectedUnit = nullptr;
 	SelectedUnit2 = nullptr;
+	if (SelectedArrowInstance)
+	{
+		SelectedArrowInstance->SetActive(false);
+	}
 }
 
 void ABattlePlayerController::CommonButton()

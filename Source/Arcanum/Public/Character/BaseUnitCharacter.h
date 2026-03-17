@@ -87,6 +87,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HologramMaterial")
 	TObjectPtr<UMaterial> HologramMaterial = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
+	TSubclassOf<class AFloatingDamageText> TextFloatingClass = nullptr;
+
 private:
 	void AnimSetting();
 	float GetAttackPower();

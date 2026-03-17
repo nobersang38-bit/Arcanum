@@ -280,6 +280,7 @@ void UBattlefieldManagerSubsystem::DebugPlayerCharacterSet()
 void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerData, FInBattleData& OutInBattleData)
 {
 	OutInBattleData.PlayerData = InPlayerData;
+	OutInBattleData.PlayerBattleData = OutInBattleData.PlayerData.PlayerBattleData;
 
 	// 플레이어블 캐릭터 가져오기
 	for (int i = 0; i < InBattleData.PlayerData.OwnedCharacters.Num(); i++)
@@ -366,6 +367,14 @@ void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerDa
 					break;
 				}
 			}
+		}
+	}
+	for (const auto& PlayerNonRegen : OutInBattleData.PlayerBattleData.PlayerBattleNonRegenStat)
+	{
+		if (PlayerNonRegen.TagName == AllyBaseStaminaTag)
+		{
+			AllyBasementStat.CommandCenterHP = PlayerNonRegen;
+			break;
 		}
 	}
 	//for (int i = 0; i < OutInBattleData.PlayerData.OwnedCharacters.Num(); i++)

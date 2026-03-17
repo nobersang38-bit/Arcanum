@@ -25,6 +25,9 @@
 #include "Components/CapsuleComponent.h"
 #include "NiagaraComponent.h"
 #include "Component/StatusActionComponent.h"
+#include "UI/Battle/Common/FloatingDamageTextWidget.h"
+#include "Core/SubSystem/PoolingSubsystem.h"
+#include "Object/Actor/FloatingDamageText.h"
 
 // Sets default values
 ABaseUnitCharacter::ABaseUnitCharacter()
@@ -77,6 +80,7 @@ void ABaseUnitCharacter::BeginPlay()
 	{
 		MaterialBackup.Add(GetMesh()->GetMaterials()[i]);
 	}
+
 	DataInitialize();
 }
 
@@ -208,13 +212,49 @@ FUnitRuntimeData& ABaseUnitCharacter::GetUnitRuntimeData()
 
 void ABaseUnitCharacter::OnAttackNotifyTriggered()
 {
-	UnitCombatComponent->SendDamage(GetAttackPower());
+	float ResultAttackPower = GetAttackPower();
+	const FNonRegenStat* CriticalStat = CharacterBattleStatsComponent->FindNonRegenStat(StatusActionComponent->CriticalTag);
+	if (CriticalStat)
+	{
+		float CriticalPercent = CriticalStat->GetTotalValue();
+		bool bIsCriticalSuccess = (FMath::FRandRange(0.0f, 1.0f) <= CriticalPercent);
+
+		if (bIsCriticalSuccess)
+		{
+			ResultAttackPower *= 2.0f;
+		}
+	}
+
+	UnitCombatComponent->SendDamage(ResultAttackPower);
 }
 
 // 데미지 받기
 void ABaseUnitCharacter::RecievedDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
-	GetCharacterBattleStatsComponent()->ChangeStatValue(Arcanum::BattleStat::Character::Regen::Health::Root, -(FMath::Abs(Damage)), DamageCauser);
+	const FNonRegenStat* EvasionStat = CharacterBattleStatsComponent->FindNonRegenStat(StatusActionComponent->EvasionTag);
+	if (EvasionStat)
+	{
+		float EvasionPercent = EvasionStat->GetTotalValue();
+		bool bIsEvasionSuccess = (FMath::FRandRange(0.0f, 1.0f) <= EvasionPercent);
+		if (bIsEvasionSuccess)
+		{
+			UPoolingSubsystem* PoolingSystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
+			if (PoolingSystem && TextFloatingClass)
+			{
+				FTransform Transform;
+				Transform.SetLocation((GetActorLocation() + (GetActorUpVector() * 60.0f)) + (FMath::VRand() * 20.0f));
+				AActor* FloatingActor = PoolingSystem->SpawnFromPool(TextFloatingClass, Transform);
+				if (AFloatingDamageText* FloatingText = Cast<AFloatingDamageText>(FloatingActor))
+				{
+					FloatingText->SetText(FText::FromString(TEXT("회피")));
+				}
+			}
+			return;
+		}
+	}
+
+	float ResultDamage = -(FMath::Abs(Damage));
+	GetCharacterBattleStatsComponent()->ChangeStatValue(Arcanum::BattleStat::Character::Regen::Health::Root, ResultDamage, DamageCauser);
 	UnitCombatComponent->LightHitReaction(Damage);
 	OuntLineStart(OutLineCurve, OutLineTime, 0.005f, OutlineTimeHandle, OutlineDynamicMI, RefOutlineTime);
 }
