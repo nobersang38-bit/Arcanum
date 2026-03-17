@@ -21,6 +21,26 @@ void ULobbyHUD::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	if (MenuHorizontalBox)
+	{
+		LobbyButtonArray.Empty();
+
+		int32 ChildMenu = MenuHorizontalBox->GetChildrenCount();
+		for (int32 i = 0; i < ChildMenu; i++)
+		{
+			UWidget* Child = MenuHorizontalBox->GetChildAt(i);
+			if (UContentWidget* SizeBox = Cast<UContentWidget>(Child))
+			{
+				UCommonBtnWidget* Btn = Cast<UCommonBtnWidget>(SizeBox->GetContent());
+
+				if (Btn)
+				{
+					LobbyButtonArray.Add(Btn);
+				}
+			}
+		}
+	}
+
 	CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
 	TimeSubsystem = GetGameInstance()->GetSubsystem<UGameTimeSubsystem>();
 
@@ -97,6 +117,13 @@ void ULobbyHUD::NativeConstruct()
 
 	ClickCharacterMenuBtn();
 
+	GetWorld()->GetTimerManager().SetTimerForNextTick([this]()
+		{
+			if (CharacterMenuBtn)
+			{
+				UpdateButtonSelection(CharacterMenuBtn);
+			}
+		});
 	FPlayerAccountService::OnSaveCompleted.RemoveDynamic(this, &ULobbyHUD::HandleSaveCompleted);
 	FPlayerAccountService::OnSaveCompleted.AddDynamic(this, &ULobbyHUD::HandleSaveCompleted);
 }
@@ -137,6 +164,8 @@ void ULobbyHUD::RefreshAllLobbyUI()
 void ULobbyHUD::ClickBattleMenuBtn()
 {
 	/// TODO : 전투 위젯 띄우기
+	UpdateButtonSelection(BattleMenuBtn);
+
 	if (WidgetSwitcher)
 	{
 		WidgetSwitcher->SetActiveWidgetIndex(0);
@@ -147,6 +176,8 @@ void ULobbyHUD::ClickBattleMenuBtn()
 
 void ULobbyHUD::ClickCharacterMenuBtn()
 {
+	UpdateButtonSelection(CharacterMenuBtn);
+
 	if (UCharacterHUDWidget* CharacterWidget = Cast<UCharacterHUDWidget>(WidgetSwitcher->GetWidgetAtIndex(1))) {
 		CharacterWidget->SetParentLobby(this);
 		CharacterWidget->InitCharacterHUD();
@@ -158,6 +189,7 @@ void ULobbyHUD::ClickCharacterMenuBtn()
 
 void ULobbyHUD::ClickEnhancementMenuBtn()
 {
+	UpdateButtonSelection(EnhancementMenuBtn);
 	if (EnhancementHUDWidget)
 	{
 		EnhancementHUDWidget->RefreshEquipmentInventory();
@@ -172,6 +204,7 @@ void ULobbyHUD::ClickEnhancementMenuBtn()
 
 void ULobbyHUD::ClickShopMenuBtn()
 {
+	UpdateButtonSelection(ShopMenuBtn);
 	if (InventoryHUDWidget)
 	{
 		InventoryHUDWidget->SetCurrentFilter(EInventoryCategoryFilter::All);
@@ -188,6 +221,7 @@ void ULobbyHUD::ClickShopMenuBtn()
 
 void ULobbyHUD::ClickGachaMenuBtn()
 {
+	UpdateButtonSelection(GachaMenuBtn);
 	if (UGachaHUDWidget* GachaWidget = Cast<UGachaHUDWidget>(WidgetSwitcher->GetWidgetAtIndex(4))) {
 		GachaWidget->SetParentLobby(this);
 		WidgetSwitcher->SetActiveWidget(GachaWidget);
@@ -235,6 +269,20 @@ void ULobbyHUD::ClickQuitBtn()
 		if (CurrencyWidget)
 		{
 			CurrencyWidget->SetVisibility(ESlateVisibility::Hidden);
+		}
+	}
+}
+
+// ========================================================
+// 메뉴
+// ========================================================
+void ULobbyHUD::UpdateButtonSelection(UCommonBtnWidget* ClickedButton)
+{
+	for (UCommonBtnWidget* Btn : LobbyButtonArray)
+	{
+		if (Btn)
+		{
+			Btn->SetSelectedState(Btn == ClickedButton);
 		}
 	}
 }

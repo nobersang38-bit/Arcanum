@@ -277,7 +277,7 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
 			// 장착중인 캐릭터 - 노랑
 			if (TargetData.bSelection)
 			{
-				SlotColor = FLinearColor::Yellow;
+				SlotColor = FLinearColor(1.0f, 0.4706f, 0.1216f, 1.0f);
 			}
 			// 장착X, 클릭된 캐릭터 - 핑크
 			else if (bIsSelected)

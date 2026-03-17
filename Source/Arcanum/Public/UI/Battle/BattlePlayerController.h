@@ -121,13 +121,19 @@ protected:
 	void AutoManualModePC();
 
 	UFUNCTION()
-	void ReadySpawnUnit(FGameplayTag InTag);
+	void SlotSelectCancel();
 
 	UFUNCTION()
-	void SpawnUnit(FGameplayTag InTag);
+	void CommonButton();
 
 	UFUNCTION()
-	void Internal_SpawnUnit();
+	void ReadySpawnUnit(FGameplayTag InTag, UBattleAllyUnitSlotWidget* Slot);
+
+	UFUNCTION()
+	void SetSpawnDecalActive(bool bIsOn);
+
+	UFUNCTION()
+	ABaseUnitCharacter* Internal_SpawnUnit();
 
 	// 사용할 고기
 	UFUNCTION()
@@ -204,6 +210,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> IA_AutoManual = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_InputCancel = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_CommonButton = nullptr;
 #pragma endregion
 
 protected:
@@ -234,12 +246,17 @@ protected:
 	FTimerHandle MeatTimer;
 	FTimerHandle ManaTimer;
 	FTimerHandle CoolTimeTimer;
-	FTimerHandle SpawnUnitTimer;
 
 	FGameplayTag SpawnTag;
 
-	FVector SpawnLocationBackup = FVector::ZeroVector;
-	int32 TrySpawnUnit = 0;
+	UPROPERTY()
+	TWeakObjectPtr<UBattleAllyUnitSlotWidget> SelectedSlot = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TWeakObjectPtr<ABaseUnitCharacter> SelectedUnit = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TWeakObjectPtr<ABaseUnitCharacter> SelectedUnit2 = nullptr;
 
 private:
 	FTimerHandle PlayerLocationProgressTimeHandle;

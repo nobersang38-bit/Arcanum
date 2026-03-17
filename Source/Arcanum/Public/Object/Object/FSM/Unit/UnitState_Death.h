@@ -17,4 +17,6 @@ public:
 	virtual void OnEnter(class UUnitCombatComponent* UnitCombatComponent) override;
 	virtual void OnTick(float DeltaTime) override;
 	virtual void OnExit() override;
+	virtual void OnAbort() override;
+
 };
