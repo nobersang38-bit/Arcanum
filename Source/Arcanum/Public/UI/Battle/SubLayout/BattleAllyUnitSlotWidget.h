@@ -7,9 +7,9 @@
 #include "NativeGameplayTags.h"
 #include "BattleAllyUnitSlotWidget.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnClickUnitSlot, FGameplayTag, UnitTag);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPressUnitSlot, FGameplayTag, UnitTag);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReleasedUnitSlot, FGameplayTag, UnitTag);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnClickUnitSlot, FGameplayTag, UnitTag, UBattleAllyUnitSlotWidget*, SlotWidget);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPressUnitSlot, FGameplayTag, UnitTag, UBattleAllyUnitSlotWidget*, SlotWidget);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnReleasedUnitSlot, FGameplayTag, UnitTag, UBattleAllyUnitSlotWidget*, SlotWidget);
 
 /**
  * 김도현
@@ -18,6 +18,7 @@ class UTextBlock;
 class UButton;
 class UImage;
 class UProgressBar;
+class UBorder;
 UCLASS()
 class ARCANUM_API UBattleAllyUnitSlotWidget : public UUserWidget
 {
@@ -50,6 +51,9 @@ public:
 	void SetUnitTag(FGameplayTag InUnitTag);
 
 	UFUNCTION()
+	void SetSelectSlot(bool InIsSelected);
+
+	UFUNCTION()
 	FGameplayTag GetUnitTag() const { return UnitTag; }
 
 
@@ -77,6 +81,9 @@ protected:
 
 #pragma region 위젯 바인딩
 protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UBorder> SlotBorder = nullptr;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UButton> Button = nullptr;
 

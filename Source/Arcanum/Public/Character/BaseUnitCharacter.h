@@ -29,7 +29,7 @@ public:
 	ABaseUnitCharacter();
 
 public:
-	void SetUnit(FUnitInfoSetting InUnitData);
+	void SetUnit(FUnitInfoSetting InUnitData, bool bUseReadyHologram = false);
 
 	virtual FGameplayTag GetTeamTag() override;
 
@@ -53,6 +53,8 @@ protected:
 	void UnitDeactive();
 
 	void OuntLineStart(const UCurveFloat* CurveFloat, float InTime, float DeltaTime, FTimerHandle& InTimerHandle, UMaterialInstanceDynamic* MaterialInstance, float& RefTime);
+
+	void SetHologramType(bool bUseHologram);
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -82,12 +84,15 @@ protected:
 
 	float RefOutlineTime = 0.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HologramMaterial")
+	TObjectPtr<UMaterial> HologramMaterial = nullptr;
+
 private:
 	void AnimSetting();
 	float GetAttackPower();
 
 	UFUNCTION()
-	void DataInitialize();
+	void DataInitialize(bool bUseReadyHologram = false);
 
 	virtual FUnitRuntimeData& GetUnitRuntimeData() override;
 
@@ -111,4 +116,7 @@ private:
 	FTimerHandle OutlineTimeHandle;
 
 	FDelegateHandle SetPercentDelegateHandle;
+
+	UPROPERTY()
+	TArray<UMaterialInterface*> MaterialBackup;
 };

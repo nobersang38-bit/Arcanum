@@ -9,6 +9,7 @@
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Blueprint/DragDropOperation.h"
 #include "Object/Operation/UnitDragDropOperation.h"
+#include "Components/Border.h"
 
 // ========================================================
 // 언리얼 기본 생성
@@ -25,7 +26,7 @@ void UBattleAllyUnitSlotWidget::NativeConstruct()
 
 	Button->OnReleased.RemoveDynamic(this, &UBattleAllyUnitSlotWidget::ReleasedUnitSlot);
 	Button->OnReleased.AddDynamic(this, &UBattleAllyUnitSlotWidget::ReleasedUnitSlot);
-
+	SetSelectSlot(false);
 	/*Button->OnPressed.AddDynamic()
 	Button->OnPressed.AddDynamic()*/
 }
@@ -77,6 +78,7 @@ void UBattleAllyUnitSlotWidget::SetCost(int32 InCost)
 
 void UBattleAllyUnitSlotWidget::SetImage(UTexture2D* InImage)
 {
+	// 버튼 설정
 	FButtonStyle ButtonStyle = Button->GetStyle();
 
 	FSlateBrush NormaSlateBrush = ButtonStyle.Normal;
@@ -95,7 +97,22 @@ void UBattleAllyUnitSlotWidget::SetImage(UTexture2D* InImage)
 	ButtonStyle.SetHovered(HoveredSlateBrush);
 	ButtonStyle.SetPressed(PressedSlateBrush);
 	ButtonStyle.SetDisabled(DisabledSlateBrush);
+
 	Button->SetStyle(ButtonStyle);
+
+	// 보더 설정
+	FSlateBrush SlotBorderStyle = SlotBorder->Background;
+	SlotBorderStyle.SetResourceObject(InImage);
+
+	SlotBorder->SetBrush(SlotBorderStyle);
+
+	// 프로그래스 바 설정
+	FProgressBarStyle CoolTimeProgressStyle = CoolTimeProgress->WidgetStyle;
+	FSlateBrush CoolTimeProgressBrush = CoolTimeProgressStyle.FillImage;
+	CoolTimeProgressBrush.SetResourceObject(InImage);
+	CoolTimeProgressStyle.SetFillImage(CoolTimeProgressBrush);
+
+	CoolTimeProgress->SetWidgetStyle(CoolTimeProgressStyle);
 }
 
 void UBattleAllyUnitSlotWidget::SetUnitTag(FGameplayTag InUnitTag)
@@ -103,19 +120,31 @@ void UBattleAllyUnitSlotWidget::SetUnitTag(FGameplayTag InUnitTag)
 	UnitTag = InUnitTag;
 }
 
+void UBattleAllyUnitSlotWidget::SetSelectSlot(bool InIsSelected)
+{
+	if (InIsSelected)
+	{
+		SlotBorder->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	}
+	else
+	{
+		SlotBorder->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+
 void UBattleAllyUnitSlotWidget::ClickUnitSlot()
 {
-	OnClickUnitSlot.Broadcast(UnitTag);
+	OnClickUnitSlot.Broadcast(UnitTag, this);
 }
 
 void UBattleAllyUnitSlotWidget::PressUnitSlot()
 {
-	OnPressUnitSlot.Broadcast(UnitTag);
+	OnPressUnitSlot.Broadcast(UnitTag, this);
 }
 
 void UBattleAllyUnitSlotWidget::ReleasedUnitSlot()
 {
-	OnReleasedUnitSlot.Broadcast(UnitTag);
+	OnReleasedUnitSlot.Broadcast(UnitTag, this);
 }
 
 void UBattleAllyUnitSlotWidget::SetActivateCost(bool InIsDisable)

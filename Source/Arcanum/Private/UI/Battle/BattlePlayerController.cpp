@@ -18,6 +18,8 @@
 #include "UI/Battle/SubLayout/BattleAllyUnitSlotWidget.h"
 #include "UI/Battle/SubLayout/BattleBattleEndWidget.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/CapsuleComponent.h"
+#include "Object/Actor/SpawnCheckDecal.h"
 
 // ========================================================
 // 언리얼 기본 생성
@@ -126,6 +128,8 @@ void ABattlePlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(IA_Item2, ETriggerEvent::Completed, this, &ABattlePlayerController::Item2);
 		EnhancedInputComponent->BindAction(IA_WeaponSwap, ETriggerEvent::Completed, this, &ABattlePlayerController::WeaponSwap);
 		EnhancedInputComponent->BindAction(IA_AutoManual, ETriggerEvent::Completed, this, &ABattlePlayerController::AutoManualModePC);
+		EnhancedInputComponent->BindAction(IA_InputCancel, ETriggerEvent::Started, this, &ABattlePlayerController::SlotSelectCancel);
+		EnhancedInputComponent->BindAction(IA_CommonButton, ETriggerEvent::Started, this, &ABattlePlayerController::CommonButton);
 	}
 	else
 	{
@@ -136,6 +140,83 @@ void ABattlePlayerController::SetupInputComponent()
 void ABattlePlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (SelectedUnit.IsValid())
+	{
+		FHitResult HitResult;
+		GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, HitResult);
+		FVector ResultLocation = HitResult.ImpactPoint;
+		float CapsuleHeight = SelectedUnit->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 0.5f;
+		ResultLocation = ResultLocation + (FVector::UpVector * CapsuleHeight);
+		SelectedUnit->SetActorLocation(ResultLocation);
+
+		FVector Direction = FVector::RightVector;
+		SelectedUnit->SetActorRotation(Direction.Rotation());
+
+		UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+		if (BattleSubsystem)
+		{
+			if (BattleSubsystem->GetSpawnCheckDecal())
+			{
+				bool bIsInside = false;
+				FVector ResultLocation2 = BattleSubsystem->GetSpawnCheckDecal()->CalculateMinDistanceLocation(ResultLocation, bIsInside);
+				ResultLocation2 += FVector::UpVector * 100.0f;
+
+				//ResultLocation = 스폰되어야할 최종 위치
+				if (bIsInside)
+				{
+					// 마우스가 안에 있을때의 로직
+
+					if (SelectedUnit2.IsValid())
+					{
+						SelectedUnit2->SetActorHiddenInGame(true);
+					}
+				}
+				else
+				{
+					if (SelectedUnit2.IsValid())
+					{
+						SelectedUnit2->SetActorHiddenInGame(false);
+					}
+					else
+					{
+						// 내부에 액터가 없으면 생성
+						if (FUnitInfoSetting* UnitData = UsingAllyUnits.Find(SpawnTag))
+						{
+							UPoolingSubsystem* PoolingSubsystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
+							if (PoolingSubsystem)
+							{
+
+								FHitResult HitResult2;
+								GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, HitResult2);
+								FTransform Transform;
+								Transform.SetLocation(HitResult2.ImpactPoint);
+								Transform.SetRotation(Direction.Rotation().Quaternion());
+								// Todo KDH : 미리 로드해 놓아야함
+								AActor* EnemyUnitInstance = PoolingSubsystem->SpawnFromPool(UnitData->UnitClass.LoadSynchronous(), Transform);
+								ABaseUnitCharacter* EnemyUnitCharacter = Cast<ABaseUnitCharacter>(EnemyUnitInstance);
+								SetSpawnDecalActive(true);
+								if (EnemyUnitCharacter)
+								{
+									EnemyUnitCharacter->SetUnit(*UnitData, true);
+									SelectedUnit2 = EnemyUnitCharacter;
+								}
+							}
+						}
+					}
+
+					if (SelectedUnit2.IsValid())
+					{
+						FHitResult HitResult3;
+						GetWorld()->LineTraceSingleByChannel(HitResult3, ResultLocation2, ResultLocation2 + FVector::UpVector * -1000.0f, ECollisionChannel::ECC_WorldStatic);
+						float Unit2Height = SelectedUnit2->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 0.5f;
+						FVector ResultUnit2Location = HitResult3.ImpactPoint + FVector::UpVector * Unit2Height;
+						SelectedUnit2->SetActorLocation(ResultUnit2Location);
+					}
+				}
+			}
+		}
+	}
 }
 
 // ========================================================
@@ -217,8 +298,7 @@ void ABattlePlayerController::SetAllyUsingWidget()
 			UnitSlot->SetUnitInfo(UsingAllyUnit.Value.MeatCost, UsingAllyUnit.Value.Icon, UsingAllyUnit.Value.Tag);
 			UnitSlot->SetActivateCost(false);
 			UnitSlot->SetCoolTimeProgress(0.0f, 0.0f);
-			UnitSlot->OnPressUnitSlot.AddDynamic(this, &ABattlePlayerController::ReadySpawnUnit);
-			UnitSlot->OnReleasedUnitSlot.AddDynamic(this, &ABattlePlayerController::SpawnUnit);
+			UnitSlot->OnClickUnitSlot.AddDynamic(this, &ABattlePlayerController::ReadySpawnUnit);
 			UsingAllyUnitSlots.Add(UsingAllyUnit.Key, UnitSlot);
 		}
 	}
@@ -329,37 +409,61 @@ void ABattlePlayerController::AutoManualModePC()
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("AutoManualMode"));
 }
 
-void ABattlePlayerController::ReadySpawnUnit(FGameplayTag InTag)
+void ABattlePlayerController::SlotSelectCancel()
+{
+	if (SelectedSlot.IsValid())
+	{
+		SelectedSlot = nullptr;
+	}
+
+	if (SpawnTag.IsValid())
+	{
+		SpawnTag = FGameplayTag::EmptyTag;
+	}
+
+	for (auto& UsingAllyUnitSlot : UsingAllyUnitSlots)
+	{
+		UsingAllyUnitSlot.Value->SetSelectSlot(false);
+	}
+
+	if (SelectedUnit.IsValid())
+	{
+		UPoolingSubsystem* PoolingSystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
+		if (PoolingSystem)
+		{
+			PoolingSystem->DeactiveItem(SelectedUnit.Get());
+		}
+	}
+	if (SelectedUnit2.IsValid())
+	{
+		UPoolingSubsystem* PoolingSystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
+		if (PoolingSystem)
+		{
+			PoolingSystem->DeactiveItem(SelectedUnit2.Get());
+		}
+	}
+	SetSpawnDecalActive(false);
+	SelectedUnit = nullptr;
+	SelectedUnit2 = nullptr;
+}
+
+void ABattlePlayerController::CommonButton()
+{
+	Internal_SpawnUnit();
+}
+
+void ABattlePlayerController::ReadySpawnUnit(FGameplayTag InTag, UBattleAllyUnitSlotWidget* Slot)
 {
 	if (!IsUnitUsingEnable(InTag)) return;
 
-	//UE_LOG(LogTemp, Error, TEXT("눌렀다"));
-	SpawnTag = InTag;
+	SlotSelectCancel();
 
-	float X;
-	float Y;
-	GetMousePosition(X, Y);
-	SpawnLocationBackup = FVector(X, Y, 0);
-}
-
-void ABattlePlayerController::SpawnUnit(FGameplayTag InTag)
-{
-	TrySpawnUnit = 0;
-	GetWorld()->GetTimerManager().ClearTimer(SpawnUnitTimer);
-	GetWorld()->GetTimerManager().SetTimer(SpawnUnitTimer, this, &ABattlePlayerController::Internal_SpawnUnit, 0.01f, true, 0.0f);
-	SetupInputMode();
-}
-
-void ABattlePlayerController::Internal_SpawnUnit()
-{
-	//UE_LOG(LogTemp, Error, TEXT("땟다"));
-	TrySpawnUnit++;
-	if (TrySpawnUnit > 100)
+	if (Slot)
 	{
-		GetWorld()->GetTimerManager().ClearTimer(SpawnUnitTimer);
-		return;
+		SpawnTag = InTag;
+		Slot->SetSelectSlot(true);
+		SelectedSlot = Slot;
 	}
-
 	if (FUnitInfoSetting* UnitData = UsingAllyUnits.Find(SpawnTag))
 	{
 		UPoolingSubsystem* PoolingSubsystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
@@ -368,22 +472,68 @@ void ABattlePlayerController::Internal_SpawnUnit()
 
 			FHitResult HitResult;
 			GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, HitResult);
-
-			float X;
-			float Y;
-			GetMousePosition(X, Y);
-			FVector MouseBackUp = FVector(X, Y, 0);
-			if ((SpawnLocationBackup - MouseBackUp).SquaredLength() < 100.0f)
+			FTransform Transform;
+			Transform.SetLocation(HitResult.ImpactPoint);
+			// Todo KDH : 미리 로드해 놓아야함
+			AActor* EnemyUnitInstance = PoolingSubsystem->SpawnFromPool(UnitData->UnitClass.LoadSynchronous(), Transform);
+			ABaseUnitCharacter* EnemyUnitCharacter = Cast<ABaseUnitCharacter>(EnemyUnitInstance);
+			SetSpawnDecalActive(true);
+			if (EnemyUnitCharacter)
 			{
-				GetWorld()->GetTimerManager().ClearTimer(SpawnUnitTimer);
-				return;
+				EnemyUnitCharacter->SetUnit(*UnitData, true);
+				SelectedUnit = EnemyUnitCharacter;
 			}
-			
+		}
+	}
+}
+
+void ABattlePlayerController::SetSpawnDecalActive(bool bIsOn)
+{
+	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (BattleSubsystem)
+	{
+		if (ASpawnCheckDecal* SpawnCheckDecal = BattleSubsystem->GetSpawnCheckDecal())
+		{
+			SpawnCheckDecal->SetSpawnDecalActive(bIsOn);
+		}
+	}
+}
+
+ABaseUnitCharacter* ABattlePlayerController::Internal_SpawnUnit()
+{
+	if (FUnitInfoSetting* UnitData = UsingAllyUnits.Find(SpawnTag))
+	{
+		UPoolingSubsystem* PoolingSubsystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
+		if (PoolingSubsystem)
+		{
+
+			FHitResult HitResult;
+			GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, HitResult);
 			if (IsUnitUsingEnable(SpawnTag))
 			{
 				UsingUnitCost(SpawnTag);
+
+				GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, HitResult);
+				FVector ResultLocation = HitResult.ImpactPoint;
+				float CapsuleHeight = SelectedUnit->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 0.5f;
+
+				FVector Direction = FVector::RightVector;
+
+				UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+				if (BattleSubsystem)
+				{
+					if (BattleSubsystem->GetSpawnCheckDecal())
+					{
+						bool bIsInSide = false;
+						ResultLocation = BattleSubsystem->GetSpawnCheckDecal()->CalculateMinDistanceLocation(ResultLocation, bIsInSide);
+					}
+				}
+
+				ResultLocation = ResultLocation + (FVector::UpVector * CapsuleHeight);
+
 				FTransform Transform;
-				Transform.SetLocation(HitResult.ImpactPoint);
+				Transform.SetLocation(ResultLocation);
+				Transform.SetRotation(Direction.Rotation().Quaternion());
 				// Todo KDH : 미리 로드해 놓아야함
 				AActor* EnemyUnitInstance = PoolingSubsystem->SpawnFromPool(UnitData->UnitClass.LoadSynchronous(), Transform);
 				ABaseUnitCharacter* EnemyUnitCharacter = Cast<ABaseUnitCharacter>(EnemyUnitInstance);
@@ -391,13 +541,14 @@ void ABattlePlayerController::Internal_SpawnUnit()
 				if (EnemyUnitCharacter)
 				{
 					EnemyUnitCharacter->SetUnit(*UnitData);
-					GetWorld()->GetTimerManager().ClearTimer(SpawnUnitTimer);
-					//UE_LOG(LogTemp, Error, TEXT("ASDLocation : %.0f, %.0f, %.0f"), HitResult.ImpactPoint.X, HitResult.ImpactPoint.Y, HitResult.ImpactPoint.Z);
-					return;
+					SlotSelectCancel();
+					return EnemyUnitCharacter;
 				}
 			}
 		}
 	}
+
+	return nullptr;
 }
 
 bool ABattlePlayerController::UseMeatValue(float Value)

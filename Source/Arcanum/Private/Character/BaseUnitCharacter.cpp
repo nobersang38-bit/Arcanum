@@ -47,11 +47,12 @@ ABaseUnitCharacter::ABaseUnitCharacter()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
-void ABaseUnitCharacter::SetUnit(FUnitInfoSetting InUnitData)
+void ABaseUnitCharacter::SetUnit(FUnitInfoSetting InUnitData, bool bUseReadyHologram)
 {
 	UnitData.Info.InfoSetting = InUnitData;
 	IsSetupUnit = true;
-	DataInitialize();
+	DataInitialize(bUseReadyHologram);
+	SetActorHiddenInGame(false);
 }
 
 FGameplayTag ABaseUnitCharacter::GetTeamTag()
@@ -71,6 +72,11 @@ void ABaseUnitCharacter::BeginPlay()
 	Super::BeginPlay();
 	OutlineDynamicMI = UMaterialInstanceDynamic::Create(GetMesh()->GetOverlayMaterial(), this);
 	GetMesh()->SetOverlayMaterial(OutlineDynamicMI);
+	MaterialBackup.Empty();
+	for (int32 i = 0; i < GetMesh()->GetMaterials().Num(); i++)
+	{
+		MaterialBackup.Add(GetMesh()->GetMaterials()[i]);
+	}
 	DataInitialize();
 }
 
@@ -146,7 +152,7 @@ float ABaseUnitCharacter::GetAttackPower()
 	return AttackPower;
 }
 
-void ABaseUnitCharacter::DataInitialize()
+void ABaseUnitCharacter::DataInitialize(bool bUseReadyHologram)
 {
 	GetCharacterMovement()->SetRVOAvoidanceWeight((FMath::Rand32() % 11) * 0.1f);
 	CharacterBattleStatsComponent->InitComponent();
@@ -186,7 +192,7 @@ void ABaseUnitCharacter::DataInitialize()
 	}
 	OnTakeAnyDamage.RemoveDynamic(this, &ABaseUnitCharacter::RecievedDamage);
 	OnTakeAnyDamage.AddDynamic(this, &ABaseUnitCharacter::RecievedDamage);
-
+	SetHologramType(bUseReadyHologram);
 #pragma region Debug
 	if (RandomRvoWeight)
 	{
@@ -247,7 +253,7 @@ void ABaseUnitCharacter::UnitActivate()
 	DataInitialize();
 	if (UnitCombatComponent)
 	{
-		UnitCombatComponent->UnitActivate();
+		UnitCombatComponent->UnitActivate(false);
 	}
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
@@ -283,6 +289,38 @@ void ABaseUnitCharacter::OuntLineStart(const UCurveFloat* CurveFloat, float InTi
 
 	GetWorld()->GetTimerManager().ClearTimer(InTimerHandle);
 	GetWorld()->GetTimerManager().SetTimer(InTimerHandle, OutlineDelegate, DeltaTime, true);
+}
+
+void ABaseUnitCharacter::SetHologramType(bool bUseHologram)
+{
+	if (!bUseHologram)
+	{
+		if (!MaterialBackup.IsEmpty())
+		{
+			for (int32 i = 0; i < MaterialBackup.Num(); i++)
+			{
+				GetMesh()->SetMaterial(i, MaterialBackup[i]);
+			}
+		}
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		GetCharacterMovement()->Activate();
+		HealthBarComponent->GetWidget()->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		UnitCombatComponent->UnitActivate(false);
+	}
+	else
+	{
+		if (HologramMaterial)
+		{
+			for (int i = 0; i < MaterialBackup.Num(); i++)
+			{
+				GetMesh()->SetMaterial(i, HologramMaterial);
+			}
+		}
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetCharacterMovement()->Deactivate();
+		HealthBarComponent->GetWidget()->SetVisibility(ESlateVisibility::Hidden);
+		UnitCombatComponent->UnitActivate(true);
+	}
 }
 
 void ABaseUnitCharacter::ActivateItem()

@@ -60,13 +60,19 @@ void UUnitCombatComponent::SendDamage(float InDamage)
 	}
 }
 
-void UUnitCombatComponent::UnitActivate()
+void UUnitCombatComponent::UnitActivate(bool bIsHologram)
 {
+	bIsHologramMode = bIsHologram;
 	DeferredBeginPlay();
 
 	OwnerCharacter->GetMesh()->SetHiddenInGame(false);
-	OwnerCharacter->GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	OwnerCharacter->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	if (!bIsHologram)
+	{
+		OwnerCharacter->GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		OwnerCharacter->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		SetupStates();
+	}
+	//StateChange(EUnitState::Idle);
 }
 
 void UUnitCombatComponent::UnitDeactive()
@@ -77,7 +83,10 @@ void UUnitCombatComponent::UnitDeactive()
 
 	GetWorld()->GetTimerManager().ClearTimer(TickTimerHandle);
 	GetWorld()->GetTimerManager().ClearTimer(DeathTimerHandle);
+	CurrentUnitState = nullptr;
 	OwnerAIC->GetBrainComponent()->StopLogic(TEXT("비활성화!!"));
+	ClearStates();
+	//CurrentUnitState = nullptr;
 }
 
 
@@ -87,44 +96,50 @@ void UUnitCombatComponent::UnitDeactive()
 void UUnitCombatComponent::DeferredBeginPlay()
 {
 	bIsDead = false;
-
-	UCharacterBattleStatsComponent* StatComponent = nullptr;
-	// 스탯 바인딩
-	if (ABaseUnitCharacter* TempOwner = Cast<ABaseUnitCharacter>(GetOwner()))
+	if (!bIsHologramMode)
 	{
-		StatComponent = TempOwner->GetCharacterBattleStatsComponent();
-		if (DeathDelegateHandle.IsValid())
+		UCharacterBattleStatsComponent* StatComponent = nullptr;
+		// 스탯 바인딩
+		if (ABaseUnitCharacter* TempOwner = Cast<ABaseUnitCharacter>(GetOwner()))
 		{
-			StatComponent->OnCharacterRegenStatChanged.Remove(DeathDelegateHandle);
+			StatComponent = TempOwner->GetCharacterBattleStatsComponent();
+			if (DeathDelegateHandle.IsValid())
+			{
+				StatComponent->OnCharacterRegenStatChanged.Remove(DeathDelegateHandle);
+			}
+			DeathDelegateHandle = StatComponent->OnCharacterRegenStatChanged.AddUObject(this, &UUnitCombatComponent::Death);
 		}
-		DeathDelegateHandle = StatComponent->OnCharacterRegenStatChanged.AddUObject(this, &UUnitCombatComponent::Death);
-	}
 
-	if (ACharacter* TempOwnerCharacter = Cast<ACharacter>(GetOwner()))
-	{
-		OwnerCharacter = TempOwnerCharacter;
-		OwnerAIC = Cast<AAIController>(OwnerCharacter->GetController());
-		OwnerCapsuleComponent = OwnerCharacter->GetCapsuleComponent();
+		if (ACharacter* TempOwnerCharacter = Cast<ACharacter>(GetOwner()))
+		{
+			OwnerCharacter = TempOwnerCharacter;
+			OwnerAIC = Cast<AAIController>(OwnerCharacter->GetController());
+			OwnerCapsuleComponent = OwnerCharacter->GetCapsuleComponent();
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("부모가 ACharacter가 아닙니다"));
+			return;
+		}
+
+		// AI 세팅 가져오기
+		if (GetOwner()->GetClass()->ImplementsInterface(UUnitDataInterface::StaticClass()))
+		{
+			auto Interface = Cast<IUnitDataInterface>(GetOwner());
+			UnitData = Interface->GetUnitData();
+			AIInitialize();
+		}
+
+		SetupStates();
+		SetupTick();
+		if (StatComponent)
+		{
+			StatComponent->BroadcastAllStats();
+		}
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("부모가 ACharacter가 아닙니다"));
-		return;
-	}
-
-	// AI 세팅 가져오기
-	if (GetOwner()->GetClass()->ImplementsInterface(UUnitDataInterface::StaticClass()))
-	{
-		auto Interface = Cast<IUnitDataInterface>(GetOwner());
-		UnitData = Interface->GetUnitData();
-		AIInitialize();
-	}
-
-	SetupStates();
-	SetupTick();
-	if (StatComponent)
-	{
-		StatComponent->BroadcastAllStats();
+		ClearStates();
 	}
 }
 
@@ -231,6 +246,22 @@ void UUnitCombatComponent::SetupStates()
 	UnitStates.Add(EUnitState::Death, Cast<UUnitStateBase>(State_Death));
 
 	StateChange(EUnitState::Idle);
+}
+
+void UUnitCombatComponent::ClearStates()
+{
+	for (auto& UnitState : UnitStates)
+	{
+		if (UnitState.Value)
+		{
+			UnitState.Value->OnAbort();
+		}
+	}
+	UnitStates.Empty();
+	TargetActor = nullptr;
+	DetectedActors.Empty();
+	CurrentUnitState = nullptr;
+	MoveToTarget(nullptr);
 }
 
 

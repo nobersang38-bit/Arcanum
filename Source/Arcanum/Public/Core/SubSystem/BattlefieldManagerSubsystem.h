@@ -53,6 +53,12 @@ public:
 	UFUNCTION()
 	AActor* GetEnemyBasement() const;
 
+	UFUNCTION()
+	class ASpawnCheckDecal* GetSpawnCheckDecal() const;
+
+	UFUNCTION()
+	void SetSpawnCheckDecal(class ASpawnCheckDecal* InCheckDecal);
+
 	const FEnemyBasement& GetAllyBasementStat() const;
 	const FEnemyBasement& GetEnemyBasementStat() const;
 
@@ -141,6 +147,9 @@ protected:
 
 	UPROPERTY()
 	TWeakObjectPtr<AActor> EnemyBasement;
+
+	UPROPERTY()
+	TWeakObjectPtr<class ASpawnCheckDecal> CachedSpawnCheckDecal = nullptr;
 
 	UPROPERTY()
 	FEnemyBasement AllyBasementStat;

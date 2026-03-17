@@ -10,6 +10,7 @@
 #include "Core/SubSystem/GameTimeSubsystem.h"
 #include "DataInfo/BattleCharacter/BattleStats/DataTable/DTBattleStats.h"
 #include "GameFramework/GameMode.h"
+#include "Object/Actor/SpawnCheckDecal.h"
 
 #include "Core/ARPlayerAccountService.h"
 
@@ -49,6 +50,16 @@ AActor* UBattlefieldManagerSubsystem::GetAllyBasement() const
 AActor* UBattlefieldManagerSubsystem::GetEnemyBasement() const
 {
 	return EnemyBasement.Get();
+}
+
+ASpawnCheckDecal* UBattlefieldManagerSubsystem::GetSpawnCheckDecal() const
+{
+	return CachedSpawnCheckDecal.Get();
+}
+
+void UBattlefieldManagerSubsystem::SetSpawnCheckDecal(ASpawnCheckDecal* InCheckDecal)
+{
+	CachedSpawnCheckDecal = InCheckDecal;
 }
 
 const FEnemyBasement& UBattlefieldManagerSubsystem::GetAllyBasementStat() const

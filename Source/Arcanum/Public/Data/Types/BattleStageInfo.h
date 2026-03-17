@@ -33,4 +33,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float StageLimitTime = 100.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FVector2D SpawnPossibleSize = FVector2D(1500.0f, 900.0f);
 };

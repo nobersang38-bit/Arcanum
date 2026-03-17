@@ -17,6 +17,7 @@ public:
 	virtual void OnEnter(class UUnitCombatComponent* UnitCombatComponent) override;
 	virtual void OnTick(float DeltaTime) override;
 	virtual void OnExit() override;
+	virtual void OnAbort() override;
 
 protected:
 	UFUNCTION()
@@ -34,8 +35,8 @@ protected:
 
 	FTimerHandle AttackTimerHandle;
 	FTimerHandle FocusTargetActorTimerHandle;
-	float RotateInterval = 0.5f;
-	float RotateSpeed = 300.0f;
+	const float RotateInterval = 0.5f;
+	const float RotateSpeed = 300.0f;
 
 private:
 	float NextAttackCoolTime = 0.0f;

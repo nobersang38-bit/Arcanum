@@ -19,6 +19,7 @@ public:
 	virtual void OnEnter(class UUnitCombatComponent* UnitCombatComponent) {};
 	virtual void OnTick(float DeltaTime) {};
 	virtual void OnExit() {};
+	virtual void OnAbort() {};
 
 protected:
 	UPROPERTY()
