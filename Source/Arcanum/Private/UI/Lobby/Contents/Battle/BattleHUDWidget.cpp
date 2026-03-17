@@ -40,6 +40,9 @@ void UBattleHUDWidget::NativeConstruct()
 		ItemListSlot->OnSetItemBtnClicked.RemoveDynamic(this, &UBattleHUDWidget::HandleSetItemBtnClicked);
 		ItemListSlot->OnSetItemBtnClicked.AddDynamic(this, &UBattleHUDWidget::HandleSetItemBtnClicked);
 
+		ItemListSlot->OnRemoveItemBtnClicked.RemoveDynamic(this, &UBattleHUDWidget::HandleRemoveItemBtnClicked);
+		ItemListSlot->OnRemoveItemBtnClicked.AddDynamic(this, &UBattleHUDWidget::HandleRemoveItemBtnClicked);
+
 		if (UInventoryHUDWidget* battleInventoryWidget = ItemListSlot->GetBattleInventoryWidget())
 		{
 			battleInventoryWidget->SetParentLobby(ParentLobby);
@@ -219,8 +222,6 @@ void UBattleHUDWidget::HandleSetItemBtnClicked()
 		RefreshBattlePotionSlots();
 
 		SelectedInventorySlot = FInventoryViewSlot();
-		//SelectedPotionSlotIndex = INDEX_NONE;
-		//RefreshEquippedPotionSlotSelection();
 
 		if (ItemListSlot)
 		{

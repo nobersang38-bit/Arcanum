@@ -243,6 +243,7 @@ bool FPlayerAccountService::GetStageData(const UObject* WorldContextObject, TArr
 
 	return OutRows.Num() > 0;
 }
+
 void FPlayerAccountService::StopShopOnBattleStart(const UObject* WorldContextObject)
 {
 	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
