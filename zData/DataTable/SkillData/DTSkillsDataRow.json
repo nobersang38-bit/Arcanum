@@ -1,31 +1,5 @@
 [
   {
-    "Name": "BasicMeleeAttack",
-    "SkillData": {
-      "SkillNameTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
-      "DisplayName": "기본 근접 공격",
-      "SkillTypeTag": "Arcanum.Skills.SkillTypes.Active",
-      "TargetTypeTag": "Arcanum.Skills.TargetingType.Unit",
-      "TargetFilterTag": "Arcanum.Unit.Enemy",
-      "SkillVFXTag": [
-        "Arcanum.Skills.SkillVFX.None"
-      ],
-      "Icon": "",
-      "SkillClass": "/Game/Object/Skill/BP_BasicMeleeAttack.BP_BasicMeleeAttack_C",
-      "LevelModifiers": [
-        {
-          "Level": 1,
-          "CastTime": 0.15,
-          "Cooldown": 0.0,
-          "Cost": [],
-          "Effect": "",
-          "OtherCharacterModifiers": [],
-          "TargetEffect": ""
-        }
-      ]
-    }
-  },
-  {
     "Name": "Slash",
     "SkillData": {
       "SkillNameTag": "Arcanum.Skills.SkillName.Slash",

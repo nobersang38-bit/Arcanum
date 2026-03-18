@@ -11,15 +11,16 @@
 #include "Core/SubSystem/BattlefieldManagerSubsystem.h"
 #include "GameplayTags/ArcanumTags.h"
 #include "Core/SubSystem/GameTimeSubsystem.h"
+#include "Core/ARPlayerAccountService.h"
 #include "UI/Battle/SubLayout/BattleAllyUnitSlotWidget.h"
 #include "Character/BaseUnitCharacter.h"
 #include "Core/SubSystem/PoolingSubsystem.h"
 #include "Character/PlayerCharacter.h"
-#include "UI/Battle/SubLayout/BattleAllyUnitSlotWidget.h"
 #include "UI/Battle/SubLayout/BattleBattleEndWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
 #include "Object/Actor/SpawnCheckDecal.h"
+
 
 // ========================================================
 // 언리얼 기본 생성
@@ -75,7 +76,7 @@ void ABattlePlayerController::BeginPlay()
 	if (BattleSubsystem)
 	{
 		UsingAllyUnits.Empty();
-		for (auto Iter = BattleSubsystem->GetUsingAllyUnitData().begin(); Iter!= BattleSubsystem->GetUsingAllyUnitData().end(); ++Iter)
+		for (auto Iter = BattleSubsystem->GetUsingAllyUnitData().begin(); Iter != BattleSubsystem->GetUsingAllyUnitData().end(); ++Iter)
 		{
 			const FUnitInfoSetting& UnitDataE = Iter->Value;
 			UsingAllyUnits.Add(UnitDataE.Tag, UnitDataE);
@@ -261,6 +262,15 @@ void ABattlePlayerController::SetupMainHUDWidget()
 	HUDWidgetInstance->OnClickItem1.AddDynamic(this, &ABattlePlayerController::Item1);
 	HUDWidgetInstance->OnClickItem2.AddDynamic(this, &ABattlePlayerController::Item2);
 	HUDWidgetInstance->OnToggleAutoManualMode.AddDynamic(this, &ABattlePlayerController::AutoManualModeMobile);
+
+	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (battleSubsystem && HUDWidgetInstance)
+	{
+		HUDWidgetInstance->RefreshWeaponSkillIcons(
+			battleSubsystem->GetCurrentWeaponIcon(),
+			battleSubsystem->GetCurrentBasicSkillIcon(),
+			battleSubsystem->GetLegendaryWeaponIcon());
+	}
 }
 
 void ABattlePlayerController::UpdatePlayerLocationProgress()
@@ -356,6 +366,14 @@ void ABattlePlayerController::SetBossHealthProgress(float CurrentHealth, float M
 // ========================================================
 void ABattlePlayerController::BasicAttack()
 {
+	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
+	{
+		const FGameplayTag skillTag = battleSubsystem->GetCurrentBasicAttackSkillTag();
+		const int32 skillLevel = battleSubsystem->GetCurrentBasicAttackSkillLevel();
+
+		UE_LOG(LogTemp, Warning, TEXT("BasicAttack Tag=%s Level=%d"), *skillTag.ToString(), skillLevel);
+	}
+
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("BasicAttack"));
 	//Todo : 기본공격
 
@@ -367,20 +385,62 @@ void ABattlePlayerController::BasicAttack()
 	}
 }
 
-void ABattlePlayerController::UltimateSkill()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("UltimateSkill"));
-	//Todo : 궁극기
-}
-
 void ABattlePlayerController::BasicSkill()
 {
+	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
+	{
+		const FGameplayTag skillTag = battleSubsystem->GetCurrentBasicSkillTag();
+		const int32 skillLevel = battleSubsystem->GetCurrentBasicSkillLevel();
+
+		UE_LOG(LogTemp, Warning, TEXT("BasicSkill Tag=%s Level=%d"), *skillTag.ToString(), skillLevel);
+	}
+
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("BasicSkill"));
 	//Todo : 기본스킬
 }
 
+void ABattlePlayerController::UltimateSkill()
+{
+	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
+	{
+		const FGameplayTag skillTag = battleSubsystem->GetLegendaryUltimateSkillTag();
+		const int32 skillLevel = battleSubsystem->GetLegendaryUltimateSkillLevel();
+
+		UE_LOG(LogTemp, Warning, TEXT("UltimateSkill Tag=%s Level=%d"), *skillTag.ToString(), skillLevel);
+	}
+
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("UltimateSkill"));
+	//Todo : 궁극기
+}
+
+
 void ABattlePlayerController::WeaponSwap()
 {
+	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
+	{
+		const FGameplayTag currentSlotTag = battleSubsystem->GetCurrentWeaponSlotTag();
+
+		if (currentSlotTag == Arcanum::Items::ItemSlot::Weapon::Slot1)
+		{
+			battleSubsystem->SetCurrentWeaponSlotTag(Arcanum::Items::ItemSlot::Weapon::Slot2);
+		}
+		else if (currentSlotTag == Arcanum::Items::ItemSlot::Weapon::Slot2)
+		{
+			battleSubsystem->SetCurrentWeaponSlotTag(Arcanum::Items::ItemSlot::Weapon::Slot1);
+		}
+
+		UE_LOG(LogTemp, Warning, TEXT("WeaponSwap CurrentSlot=%s"), *battleSubsystem->GetCurrentWeaponSlotTag().ToString());
+	}
+
+	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (battleSubsystem && HUDWidgetInstance)
+	{
+		HUDWidgetInstance->RefreshWeaponSkillIcons(
+			battleSubsystem->GetCurrentWeaponIcon(), 
+			battleSubsystem->GetCurrentBasicSkillIcon(), 
+			battleSubsystem->GetLegendaryWeaponIcon());
+	}
+
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("WeaponSwap"));
 	//Todo : 무기스왑
 }
@@ -578,7 +638,7 @@ bool ABattlePlayerController::UseManaValue(float Value)
 bool ABattlePlayerController::UseCoolTime(FGameplayTag InTag)
 {
 	FUnitInfoSetting* UnitData = UsingAllyUnits.Find(InTag);
-	if(!UnitData) return false;
+	if (!UnitData) return false;
 
 	UnitData->CurrentCoolTime = UnitData->CoolTime;
 
@@ -653,12 +713,12 @@ bool ABattlePlayerController::IsUnitUsingEnable(FGameplayTag InTag)
 	FUnitInfoSetting UnitData = *UsingAllyUnits.Find(InTag);
 
 	//쿨타임 체크하고 고기 코스트 체크
-	if (UnitData.CurrentCoolTime <= 0.0f && 
+	if (UnitData.CurrentCoolTime <= 0.0f &&
 		UnitData.MeatCost <= MeatValue.Current)
 	{
 		return true;
 	}
-	
+
 	return false;
 }
 
@@ -744,3 +804,4 @@ void ABattlePlayerController::InputMove(const FInputActionValue& InputValue)
 		ControlledPawn->AddMovementInput(-RightDirection, MovementVector.X);   // 좌/우
 	}
 }
+

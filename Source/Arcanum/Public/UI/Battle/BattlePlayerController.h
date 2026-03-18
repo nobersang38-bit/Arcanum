@@ -7,12 +7,14 @@
 #include "DataInfo/CommonData/Stats/FBattleStats.h"
 #include "Data/Types/UnitData.h"
 #include "Data/Types/MatchData.h"
+#include "DataInfo/SkillData/Data/FBattleWeaponSkillData.h"
 #include "BattlePlayerController.generated.h"
 
 class UInputMappingContext;
 class UInputAction;
 class UInBattleHUDWidget;
 struct FInputActionValue;
+
 // 김도현
 UCLASS()
 class ARCANUM_API ABattlePlayerController : public APlayerController

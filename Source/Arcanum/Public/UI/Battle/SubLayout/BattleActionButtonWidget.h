@@ -41,7 +41,6 @@ public:
 	UFUNCTION()
 	void SetImage(UTexture2D* InImage);
 
-
 #pragma region 내부 함수
 protected:
 	UFUNCTION()

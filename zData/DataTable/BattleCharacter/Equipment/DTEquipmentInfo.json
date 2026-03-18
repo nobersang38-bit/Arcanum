@@ -40,8 +40,8 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.BasicMeleeAttack": 1,
           "Arcanum.Skills.SkillName.Slash": 1
         }
       },
@@ -76,8 +76,8 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.BasicMeleeAttack": 1,
           "Arcanum.Skills.SkillName.Slash": 1
         }
       },
@@ -112,8 +112,8 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.BasicMeleeAttack": 1,
           "Arcanum.Skills.SkillName.Slash": 1
         }
       },
@@ -148,8 +148,8 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.BasicMeleeAttack": 1,
           "Arcanum.Skills.SkillName.Slash": 1
         }
       },
@@ -184,8 +184,8 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.BasicMeleeAttack": 1,
           "Arcanum.Skills.SkillName.Slash": 1
         }
       },
@@ -220,8 +220,8 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.BasicMeleeAttack": 1,
           "Arcanum.Skills.SkillName.Slash": 1
         }
       }
@@ -268,8 +268,8 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.BasicRangedAttack": 1,
           "Arcanum.Skills.SkillName.ChainBolt": 1
         }
       },
@@ -304,8 +304,8 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.BasicRangedAttack": 1,
           "Arcanum.Skills.SkillName.ChainBolt": 1
         }
       },
@@ -340,8 +340,8 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.BasicRangedAttack": 1,
           "Arcanum.Skills.SkillName.ChainBolt": 1
         }
       },
@@ -376,8 +376,8 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.BasicRangedAttack": 1,
           "Arcanum.Skills.SkillName.ChainBolt": 1
         }
       },
@@ -412,8 +412,8 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.BasicRangedAttack": 1,
           "Arcanum.Skills.SkillName.ChainBolt": 1
         }
       },
@@ -448,8 +448,8 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.BasicRangedAttack": 1,
           "Arcanum.Skills.SkillName.ChainBolt": 1
         }
       }
@@ -496,8 +496,8 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.BasicRangedAttack": 1,
           "Arcanum.Skills.SkillName.PiercingShot": 1
         }
       },
@@ -532,8 +532,8 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.BasicRangedAttack": 1,
           "Arcanum.Skills.SkillName.PiercingShot": 1
         }
       },
@@ -568,8 +568,8 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.BasicRangedAttack": 1,
           "Arcanum.Skills.SkillName.PiercingShot": 1
         }
       },
@@ -604,8 +604,8 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.BasicRangedAttack": 1,
           "Arcanum.Skills.SkillName.PiercingShot": 1
         }
       },
@@ -640,8 +640,8 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.BasicRangedAttack": 1,
           "Arcanum.Skills.SkillName.PiercingShot": 1
         }
       },
@@ -676,8 +676,8 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.BasicRangedAttack": 1,
           "Arcanum.Skills.SkillName.PiercingShot": 1
         }
       }
@@ -724,8 +724,8 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.BasicMeleeAttack": 1,
           "Arcanum.Skills.SkillName.ShockWave": 1
         }
       },
@@ -760,8 +760,8 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.BasicMeleeAttack": 1,
           "Arcanum.Skills.SkillName.ShockWave": 1
         }
       },
@@ -796,8 +796,8 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.BasicMeleeAttack": 1,
           "Arcanum.Skills.SkillName.ShockWave": 1
         }
       },
@@ -832,8 +832,8 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.BasicMeleeAttack": 1,
           "Arcanum.Skills.SkillName.ShockWave": 1
         }
       },
@@ -868,8 +868,8 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.BasicMeleeAttack": 1,
           "Arcanum.Skills.SkillName.ShockWave": 1
         }
       },
@@ -904,8 +904,8 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.BasicMeleeAttack": 1,
           "Arcanum.Skills.SkillName.ShockWave": 1
         }
       }
@@ -949,6 +949,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -981,6 +982,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1013,6 +1015,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1045,6 +1048,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1077,6 +1081,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1109,6 +1114,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1153,6 +1159,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1185,6 +1192,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1217,6 +1225,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1249,6 +1258,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1281,6 +1291,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1313,6 +1324,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1357,6 +1369,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1389,6 +1402,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1421,6 +1435,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1453,6 +1468,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1485,6 +1501,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1517,6 +1534,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1561,6 +1579,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1593,6 +1612,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1625,6 +1645,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1657,6 +1678,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1689,6 +1711,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1721,6 +1744,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1765,6 +1789,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1797,6 +1822,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1829,6 +1855,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1861,6 +1888,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1893,6 +1921,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1925,6 +1954,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1969,6 +1999,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2001,6 +2032,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2033,6 +2065,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2065,6 +2098,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2097,6 +2131,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2129,6 +2164,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2173,6 +2209,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2205,6 +2242,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2237,6 +2275,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2269,6 +2308,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2301,6 +2341,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2333,6 +2374,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2377,6 +2419,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2409,6 +2452,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2441,6 +2485,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2473,6 +2518,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2505,6 +2551,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2537,6 +2584,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2581,6 +2629,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2613,6 +2662,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2645,6 +2695,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2677,6 +2728,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2709,6 +2761,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2741,6 +2794,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2785,6 +2839,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2817,6 +2872,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2849,6 +2905,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2881,6 +2938,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2913,6 +2971,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2945,6 +3004,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2989,6 +3049,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -3021,6 +3082,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -3053,6 +3115,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -3085,6 +3148,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -3117,6 +3181,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -3149,6 +3214,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -3193,6 +3259,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -3225,6 +3292,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -3257,6 +3325,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -3289,6 +3358,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -3321,6 +3391,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -3353,6 +3424,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -3400,8 +3472,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.SolarFlare": 1
         }
       },
       {
@@ -3435,8 +3508,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.SolarFlare": 1
         }
       },
       {
@@ -3470,8 +3544,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.SolarFlare": 1
         }
       },
       {
@@ -3505,8 +3580,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.SolarFlare": 1
         }
       },
       {
@@ -3540,8 +3616,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.SolarFlare": 1
         }
       },
       {
@@ -3575,8 +3652,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.SolarFlare": 1
         }
       }
     ]
@@ -3622,8 +3700,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.VoidEclipse": 1
         }
       },
       {
@@ -3657,8 +3736,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.VoidEclipse": 1
         }
       },
       {
@@ -3692,8 +3772,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.VoidEclipse": 1
         }
       },
       {
@@ -3727,8 +3808,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.VoidEclipse": 1
         }
       },
       {
@@ -3762,8 +3844,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.VoidEclipse": 1
         }
       },
       {
@@ -3797,8 +3880,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.VoidEclipse": 1
         }
       }
     ]

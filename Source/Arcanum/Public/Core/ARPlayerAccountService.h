@@ -126,12 +126,6 @@ private:
 	static bool SavePlayerData(UARGameInstance* GI);
 #pragma endregion
 
-#pragma region 데이터 조회
-public:
-	/* 현재 장착 장비에서 스킬 태그와 레벨을 가져옴 */
-	static bool GetEquippedSkillTag(const UObject* WorldContextObject, const FName& InCharacterName, FGameplayTag& OutSkillTag, int32& OutSkillLevel);
-#pragma endregion
-
 #pragma region Battle Widget 관련
 public:
 	static bool GetStageData(const UObject* WorldContextObject, TArray<FDTStageDataRow*>& OutRows);
@@ -242,7 +236,7 @@ private:
 	/* Guid 아이템을 카탈로그 정보로 인스턴스 생성해 인벤에 추가 */
 	static bool AddGuidByCatalog(const UObject* WorldContextObject, const FDTItemCatalogRow* InCatalogRow);
 
-	/* Equipment 전용: 카탈로그 DetailRowName으로 장비 인스턴스 생성 후 Inventory에 추가 */
+	/* Equipment 전용: 카탈로그 DetailRowName으로 장비 인스턴스 생성 후 Inventory에 추가 (랜덤) */
 	static bool AddGuidFromEquipment(const UObject* WorldContextObject, const FDTItemCatalogRow* InCatalogRow);
 
 	/* Guid 아이템 1개 추가 시 인벤 슬롯 여유가 있는지 확인 */

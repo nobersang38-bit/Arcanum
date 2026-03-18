@@ -31,6 +31,7 @@ protected:
 	virtual void NativeConstruct() override;
 	//// 드롭 이벤트 처리
 	//virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+
 #pragma endregion
 
 
@@ -109,6 +110,10 @@ public:
 #pragma region 바인딩
 protected:
 	void BindCallbacks();
+
+public:
+	/* 아이콘으로 전투 스킬 버튼 갱신 */
+	void RefreshWeaponSkillIcons(UTexture2D* InCurrentWeaponIcon, UTexture2D* InBasicSkillIcon, UTexture2D* InLegendaryWeaponIcon);
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))

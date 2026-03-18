@@ -143,4 +143,20 @@ void UInBattleHUDWidget::BindCallbacks()
 	AutoManualMode->OnToggle.AddDynamic(this, &UInBattleHUDWidget::ToggleAutoManualMode);
 }
 
+void UInBattleHUDWidget::RefreshWeaponSkillIcons(UTexture2D* InCurrentWeaponIcon, UTexture2D* InBasicSkillIcon, UTexture2D* InLegendaryWeaponIcon)
+{
+	if (BasicAttack)
+	{
+		BasicAttack->SetImage(InCurrentWeaponIcon);
+	}
 
+	if (BasicSkill)
+	{
+		BasicSkill->SetImage(InBasicSkillIcon);
+	}
+
+	if (UltimateSkill)
+	{
+		UltimateSkill->SetImage(InLegendaryWeaponIcon);
+	}
+}

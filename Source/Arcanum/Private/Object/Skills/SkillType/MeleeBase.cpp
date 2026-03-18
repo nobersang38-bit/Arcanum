@@ -112,7 +112,7 @@ void AMeleeBase::OnHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherAc
 
 	HitActors.Add(OtherActor);
 
-	float damage = -10.f; // 테스트
+	float damage = 0.f; // 테스트
 
 	if (const FItemDefinition* equipmentData = OwnerSkill->GetEquipmentData())
 	{
