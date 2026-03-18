@@ -427,3 +427,14 @@ namespace Arcanum
 		}
 	}
 }
+
+namespace Arcanum {
+	namespace UI {
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.UI", "UI 루트");
+		namespace Option {
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.UI.Option", "Option 루트");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Audio, "Arcanum.UI.Option.Audio", "오디오");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Video, "Arcanum.UI.Option.Video", "비디오");
+		}
+	}
+}

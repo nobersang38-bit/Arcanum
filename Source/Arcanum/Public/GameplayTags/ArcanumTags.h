@@ -440,3 +440,14 @@ namespace Arcanum {
 		}
 	}
 }
+
+namespace Arcanum {
+	namespace UI {
+		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+		namespace Option {
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Audio);
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Video);
+		}
+	}
+}
