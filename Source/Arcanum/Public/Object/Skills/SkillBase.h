@@ -23,21 +23,12 @@ public:
     virtual void ActivateSkill(AActor* Instigator);
     virtual void DeactivateSkill(AActor* Instigator);
 
-    void SetTarget(AActor* InTarget) { TargetActor = InTarget; }
-    void SetTargetLocation(const FVector& InTargetLocation) { TargetLocation = InTargetLocation; }
-
     const FLevelModifierEntry* GetCurrentLevelEntry() const;
-    AActor* GetTargetActor() const { return TargetActor.Get(); }
-    const FVector& GetTargetLocation() const { return TargetLocation; }
+    const FSkillInfo* GetSkillInfo() const;
 
 protected:
     UPROPERTY()
     TWeakObjectPtr<AActor> OwnerActor;
-
-    UPROPERTY()
-    TWeakObjectPtr<AActor> TargetActor;
-
-    FVector TargetLocation;
 
     const FSkillInfo* SkillInfo;
 

@@ -298,13 +298,14 @@ void ABattlePlayerController::DebugSkillActorTest()
 		{
 			FTransform Transform;
 			Transform.SetLocation(GetPawn()->GetActorLocation());
-			Transform.SetRotation(GetPawn()->GetActorRotation().Quaternion());
+			Transform.SetRotation(GetPawn()->GetActorForwardVector().Rotation().Quaternion());
 			AActor* SkillActor = PoolingSubsystem->SpawnFromPool(DebugSkillActorClass, Transform);
 			ASkillActor* SkillInstance = Cast<ASkillActor>(SkillActor);
 			if (SkillInstance)
 			{
 				FHitResult HitResult;
-				GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, HitResult);
+				GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, HitResult);
+				UE_LOG(LogTemp, Error, TEXT("%s"), *HitResult.GetActor()->GetName());
 				AActor* TargetActor = HitResult.GetActor()->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()) ? HitResult.GetActor() : nullptr;
 				SkillInstance->SetTargetActor(TargetActor);
 				SkillInstance->SetTargetLocation(HitResult.ImpactPoint);

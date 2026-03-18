@@ -16,8 +16,6 @@ void USkillBase::Initialize(AActor* InOwner, const FSkillInfo* InSkillInfo, int3
     SkillInfo = InSkillInfo;
     SkillState.Level = InLevel;
     TargetFilterTag = InTargetFilterTag;
-    TargetActor = InTargetActor;
-    TargetLocation = TargetLocation;
 }
 
 const FLevelModifierEntry* USkillBase::GetCurrentLevelEntry() const
@@ -36,6 +34,11 @@ const FLevelModifierEntry* USkillBase::GetCurrentLevelEntry() const
     }
 
     return nullptr;
+}
+
+const FSkillInfo* USkillBase::GetSkillInfo() const
+{
+    return SkillInfo;
 }
 
 void USkillBase::ActivateSkill(AActor* Instigator)
