@@ -618,20 +618,29 @@ void ABattlePlayerController::BattleEnd(const FMatchData& MatchData)
 		{
 			BattleEndWidget->SetVictoryText(MatchData.bIsVictory);
 			UE_LOG(LogTemp, Error, TEXT("MatchData.bIsVictory = %d"), MatchData.bIsVictory);
-			BattleEndWidget->SetClearTimeText(MatchData.EndTimeSecond);
 
 			UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 			if (BattleSubsystem)
 			{
+				float PlayingTime = static_cast<float>(BattleSubsystem->GetInBattleData().BattleStageInfo.StageLimitTime) - static_cast<float>(MatchData.EndTimeSecond);
 				float Result = static_cast<float>(MatchData.EndTimeSecond) / static_cast<float>(BattleSubsystem->GetInBattleData().BattleStageInfo.StageLimitTime);
 
-				Result *= 3.0f;
-				UE_LOG(LogTemp, Error, TEXT("Result : %f"), Result);
-				BattleEndWidget->SetStar(FMath::Clamp<int32>(FMath::RoundToInt(Result), 0, 3));
+				BattleEndWidget->SetClearTimeText(PlayingTime);
+
+				if (MatchData.bIsVictory)
+				{
+					Result *= 3.0f;
+					UE_LOG(LogTemp, Error, TEXT("Result : %f"), Result);
+					BattleEndWidget->SetStar(FMath::Clamp<int32>(FMath::RoundToInt(Result), 0, 3));
+				}
+				else
+				{
+					BattleEndWidget->SetStar(0);
+				}
 			}
 			else
 			{
-				BattleEndWidget->SetStar(3);
+				BattleEndWidget->SetStar(0);
 			}
 
 			BattleEndWidget->SetVisibility(ESlateVisibility::Visible);
