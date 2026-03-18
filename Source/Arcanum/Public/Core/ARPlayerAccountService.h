@@ -167,7 +167,7 @@ public:
 
 private:
 	/* 장비 랜덤 능력치 OwnerStats 생성 */
-	static void RollEquipmentStats(const FItemDefinition& InItemDefinition, TArray<FDerivedStatModifier>& OutOwnerStats);
+	static void RollEquipmentStats(const FItemDefinition& InItemDefinition, TArray<FDerivedStatModifier>& OutStats);
 #pragma endregion
 
 #pragma region Shop Widget 관련

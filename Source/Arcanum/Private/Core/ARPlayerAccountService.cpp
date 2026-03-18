@@ -573,11 +573,16 @@ bool FPlayerAccountService::EnhanceEquipment(const UObject* WorldContextObject, 
 
 	foundEquip->CurrUpgradeLevel = nextLevel;
 	foundEquip->Equipment = equipRow->BaseInfoSteps[nextLevel];
-	RollEquipmentStats(foundEquip->Equipment, foundEquip->Equipment.OwnerStats);
 
-	//foundEquip->CurrUpgradeLevel = nextLevel;
-	//foundEquip->Equipment.RandomStatRanges = equipRow->BaseInfoSteps[nextLevel].RandomStatRanges;
-	//RollEquipmentStats(equipRow->BaseInfoSteps[nextLevel], foundEquip->Equipment.OwnerStats);
+	if (foundEquip->ItemTag.MatchesTag(Arcanum::Items::Rarity::Common::Weapon::Root)
+		|| foundEquip->ItemTag.MatchesTag(Arcanum::Items::Rarity::Legendary::Weapon::Root))
+	{
+		RollEquipmentStats(foundEquip->Equipment, foundEquip->Equipment.OnHitTargetStats);
+	}
+	else
+	{
+		RollEquipmentStats(foundEquip->Equipment, foundEquip->Equipment.OwnerStats);
+	}
 
 	return SavePlayerData(GI);
 }
@@ -631,7 +636,15 @@ bool FPlayerAccountService::RerollEquipment(const UObject* WorldContextObject, c
 	UpdateCurrency(WorldContextObject, GI->GetPlayerDataCopy(), soulTag, -ruleRow->RerollSoulCost);
 
 	foundEquip->Equipment.RandomStatRanges = equipRow->BaseInfoSteps[currentLevel].RandomStatRanges;
-	RollEquipmentStats(equipRow->BaseInfoSteps[currentLevel], foundEquip->Equipment.OwnerStats);
+	if (foundEquip->ItemTag.MatchesTag(Arcanum::Items::Rarity::Common::Weapon::Root)
+		|| foundEquip->ItemTag.MatchesTag(Arcanum::Items::Rarity::Legendary::Weapon::Root))
+	{
+		RollEquipmentStats(equipRow->BaseInfoSteps[currentLevel], foundEquip->Equipment.OnHitTargetStats);
+	}
+	else
+	{
+		RollEquipmentStats(equipRow->BaseInfoSteps[currentLevel], foundEquip->Equipment.OwnerStats);
+	}
 
 	return SavePlayerData(GI);
 }
@@ -681,9 +694,9 @@ bool FPlayerAccountService::DisassembleEquipment(const UObject* WorldContextObje
 	return SavePlayerData(GI);
 }
 
-void FPlayerAccountService::RollEquipmentStats(const FItemDefinition& InItemDefinition, TArray<FDerivedStatModifier>& OutOwnerStats)
+void FPlayerAccountService::RollEquipmentStats(const FItemDefinition& InItemDefinition, TArray<FDerivedStatModifier>& OutStats)
 {
-	OutOwnerStats.Empty();
+	OutStats.Empty();
 
 	for (const FStatRangeDefinition& range : InItemDefinition.RandomStatRanges)
 	{
@@ -698,7 +711,7 @@ void FPlayerAccountService::RollEquipmentStats(const FItemDefinition& InItemDefi
 		const float maxM = FMath::Max(range.MinValue.Mul, range.MaxValue.Mul);
 		finalStat.Value.Mul = FMath::RandRange(minM, maxM);
 
-		OutOwnerStats.Add(finalStat);
+		OutStats.Add(finalStat);
 	}
 }
 
@@ -1123,16 +1136,40 @@ bool FPlayerAccountService::AddGuidFromEquipment(const UObject* WorldContextObje
 	newEquip.CurrUpgradeLevel = 0;
 	newEquip.Equipment = equipRow->BaseInfoSteps[0];
 
-	// 랜덤 능력치
-	RollEquipmentStats(newEquip.Equipment, newEquip.Equipment.OwnerStats);
-
-	for (const FDerivedStatModifier& stat : newEquip.Equipment.OwnerStats)
+	if (newEquip.ItemTag.MatchesTagExact(Arcanum::Items::Rarity::Common::Weapon::GreatSword)
+		|| newEquip.ItemTag.MatchesTagExact(Arcanum::Items::Rarity::Common::Weapon::Staff)
+		|| newEquip.ItemTag.MatchesTagExact(Arcanum::Items::Rarity::Common::Weapon::Bow)
+		|| newEquip.ItemTag.MatchesTagExact(Arcanum::Items::Rarity::Common::Weapon::Shield)
+		|| newEquip.ItemTag.MatchesTagExact(Arcanum::Items::Rarity::Legendary::Weapon::Scepter)
+		|| newEquip.ItemTag.MatchesTagExact(Arcanum::Items::Rarity::Legendary::Weapon::Scythe))
+		// 	if (newEquip.ItemTag.MatchesTag(Arcanum::Items::Rarity::Common::Weapon::Root)
+		// || newEquip.ItemTag.MatchesTag(Arcanum::Items::Rarity::Legendary::Weapon::Root))
 	{
-		UE_LOG(LogTemp, Log, TEXT("[Buy] Item=%s Stat=%s Flat=%.2f Mul=%.2f"),
-			*newEquip.ItemTag.ToString(),
-			*stat.StatTag.ToString(),
-			stat.Value.Flat,
-			stat.Value.Mul);
+		// 무기: RandomStatRanges -> OnHitTargetStats
+		RollEquipmentStats(newEquip.Equipment, newEquip.Equipment.OnHitTargetStats);
+
+		for (const FDerivedStatModifier& stat : newEquip.Equipment.OnHitTargetStats)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("[Buy Weapon] Item=%s Stat=%s Flat=%.2f Mul=%.2f"),
+				*newEquip.ItemTag.ToString(),
+				*stat.StatTag.ToString(),
+				stat.Value.Flat,
+				stat.Value.Mul);
+		}
+	}
+	else
+	{
+		// 방어구: RandomStatRanges -> OwnerStats
+		RollEquipmentStats(newEquip.Equipment, newEquip.Equipment.OwnerStats);
+
+		for (const FDerivedStatModifier& stat : newEquip.Equipment.OwnerStats)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("[Buy Armor] Item=%s Stat=%s Flat=%.2f Mul=%.2f"),
+				*newEquip.ItemTag.ToString(),
+				*stat.StatTag.ToString(),
+				stat.Value.Flat,
+				stat.Value.Mul);
+		}
 	}
 
 	playerData.Inventory.Add(MoveTemp(newEquip));

@@ -28,7 +28,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 1.0,
               "Mul": 1.0
@@ -64,7 +64,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 6.0,
               "Mul": 1.0
@@ -100,7 +100,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 11.0,
               "Mul": 1.0
@@ -136,7 +136,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 16.0,
               "Mul": 1.0
@@ -172,7 +172,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 21.0,
               "Mul": 1.0
@@ -208,7 +208,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 26.0,
               "Mul": 1.0
@@ -256,7 +256,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 1.0,
               "Mul": 1.0
@@ -292,7 +292,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 6.0,
               "Mul": 1.0
@@ -328,7 +328,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 11.0,
               "Mul": 1.0
@@ -364,7 +364,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 16.0,
               "Mul": 1.0
@@ -400,7 +400,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 21.0,
               "Mul": 1.0
@@ -436,7 +436,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 26.0,
               "Mul": 1.0
@@ -484,7 +484,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 1.0,
               "Mul": 1.0
@@ -520,7 +520,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 6.0,
               "Mul": 1.0
@@ -556,7 +556,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 11.0,
               "Mul": 1.0
@@ -592,7 +592,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 16.0,
               "Mul": 1.0
@@ -628,7 +628,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 21.0,
               "Mul": 1.0
@@ -664,7 +664,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 26.0,
               "Mul": 1.0
@@ -712,7 +712,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 1.0,
               "Mul": 1.0
@@ -748,7 +748,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 6.0,
               "Mul": 1.0
@@ -784,7 +784,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 11.0,
               "Mul": 1.0
@@ -820,7 +820,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 16.0,
               "Mul": 1.0
@@ -856,7 +856,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 21.0,
               "Mul": 1.0
@@ -892,7 +892,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 26.0,
               "Mul": 1.0
@@ -3460,13 +3460,13 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 1.0,
+              "Flat": 10.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 5.0,
+              "Flat": 15.0,
               "Mul": 1.0
             }
           }
@@ -3496,7 +3496,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 6.0,
               "Mul": 1.0
@@ -3532,7 +3532,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 11.0,
               "Mul": 1.0
@@ -3568,7 +3568,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 16.0,
               "Mul": 1.0
@@ -3604,7 +3604,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 21.0,
               "Mul": 1.0
@@ -3640,7 +3640,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 26.0,
               "Mul": 1.0
@@ -3688,13 +3688,13 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 1.0,
+              "Flat": 10.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 5.0,
+              "Flat": 15.0,
               "Mul": 1.0
             }
           }
@@ -3724,7 +3724,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 6.0,
               "Mul": 1.0
@@ -3760,7 +3760,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 11.0,
               "Mul": 1.0
@@ -3796,7 +3796,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 16.0,
               "Mul": 1.0
@@ -3832,7 +3832,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 21.0,
               "Mul": 1.0
@@ -3868,7 +3868,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 26.0,
               "Mul": 1.0
