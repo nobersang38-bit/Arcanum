@@ -7,6 +7,8 @@
 #include "GameplayTags/ArcanumTags.h"
 #include "Interface/TeamInterface.h"
 #include "DataInfo/BattleCharacter/BattleStats/Data/FGradeStatData.h"
+#include "Interface/StatModifierInterface.h"
+#include "Interface/StatInterface.h"
 #include "PlayerCharacter.generated.h"
 
 /*
@@ -14,7 +16,7 @@
 */
 
 UCLASS()
-class ARCANUM_API APlayerCharacter : public ACharacter, public ITeamInterface
+class ARCANUM_API APlayerCharacter : public ACharacter, public ITeamInterface, public IStatModifierInterface, public IStatInterface
 	//, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
@@ -89,5 +91,19 @@ protected:
 
 	//UPROPERTY()
 	//TMap<FGameplayTag, FNonRegenStat> NonRegenStats;
+
+
+	// IStatModifierInterface을(를) 통해 상속됨
+	void AddLevelModifierEntry(const FLevelModifierEntry& LevelModifierEntry) override;
+
+	void AddDerivedStatModifier(const FDerivedStatModifier& DerivedStatModifier) override;
+
+
+	// IStatModifierInterface을(를) 통해 상속됨
+	void ChangeStat(const FGameplayTag& InTag, float InValue) override;
+
+
+	// IStatInterface을(를) 통해 상속됨
+	const UCharacterBattleStatsComponent* GetStatComponent() const override;
 
 };

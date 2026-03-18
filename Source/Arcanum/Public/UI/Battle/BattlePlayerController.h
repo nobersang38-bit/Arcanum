@@ -43,12 +43,21 @@ protected:
 	UFUNCTION(Exec)
 	void DebugRemovePlayerInfoPanelSlot(int32 RemoveIDX);
 
+	UFUNCTION()
+	void DebugSkillActorTest();
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Debug|BattleActionButton")
 	bool bUseDebugBattleActionButton = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Debug|BattleActionButton")
 	float DebugBattleActionButtonCoolTime = 3.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Debug|Skill")
+	TSubclassOf<class ASkillActor> DebugSkillActorClass = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Debug|Skill")
+	TObjectPtr<class USkillBase> DebugSkillBaseInstance = nullptr;
 
 	TMap<FTimerHandle, TWeakObjectPtr<class UBattleActionButtonWidget>> ActionButtons;
 #pragma endregion

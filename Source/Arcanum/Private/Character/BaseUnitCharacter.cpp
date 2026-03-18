@@ -255,8 +255,8 @@ void ABaseUnitCharacter::RecievedDamage(AActor* DamagedActor, float Damage, cons
 
 	float ResultDamage = -(FMath::Abs(Damage));
 	GetCharacterBattleStatsComponent()->ChangeStatValue(Arcanum::BattleStat::Character::Regen::Health::Root, ResultDamage, DamageCauser);
-	UnitCombatComponent->LightHitReaction(Damage);
-	OuntLineStart(OutLineCurve, OutLineTime, 0.005f, OutlineTimeHandle, OutlineDynamicMI, RefOutlineTime);
+	//UnitCombatComponent->LightHitReaction(Damage);
+	//OuntLineStart(OutLineCurve, OutLineTime, 0.005f, OutlineTimeHandle, OutlineDynamicMI, RefOutlineTime);
 }
 
 void ABaseUnitCharacter::UpdateUnitData()
@@ -306,29 +306,29 @@ void ABaseUnitCharacter::UnitDeactive()
 	}
 }
 
-void ABaseUnitCharacter::OuntLineStart(const UCurveFloat* CurveFloat, float InTime, float DeltaTime, FTimerHandle& InTimerHandle, UMaterialInstanceDynamic* MaterialInstance, float& RefTime)
+void ABaseUnitCharacter::OuntLineStart(const UCurveFloat* CurveFloat, float InTime, float DeltaTime)
 {
-	RefTime = 0.0f;
+	RefOutlineTime = 0.0f;
 	FTimerDelegate OutlineDelegate;
-	OutlineDelegate.BindWeakLambda(this, [this, MaterialInstance, CurveFloat, InTime, DeltaTime, &InTimerHandle, &RefTime]()
+	OutlineDelegate.BindWeakLambda(this, [this, CurveFloat, InTime, DeltaTime]()
 		{
-			if (MaterialInstance)
+			if (OutlineDynamicMI)
 			{
-				float Time = FMath::Clamp(RefTime / InTime, 0.0f, 1.0f);
+				float Time = FMath::Clamp(RefOutlineTime / InTime, 0.0f, 1.0f);
 				float Value = CurveFloat->GetFloatValue(Time);
-				MaterialInstance->SetScalarParameterValue(FName("Weight0"), Value);
-				RefTime += DeltaTime;
+				OutlineDynamicMI->SetScalarParameterValue(FName("Weight0"), Value);
+				RefOutlineTime += DeltaTime;
 
 				if (Time >= 1.0f)
 				{
-					MaterialInstance->SetScalarParameterValue(FName("Weight0"), 0.0f);
-					GetWorld()->GetTimerManager().ClearTimer(InTimerHandle);
+					OutlineDynamicMI->SetScalarParameterValue(FName("Weight0"), 0.0f);
+					GetWorld()->GetTimerManager().ClearTimer(OutlineTimeHandle);
 				}
 			}
 		});
 
-	GetWorld()->GetTimerManager().ClearTimer(InTimerHandle);
-	GetWorld()->GetTimerManager().SetTimer(InTimerHandle, OutlineDelegate, DeltaTime, true);
+	GetWorld()->GetTimerManager().ClearTimer(OutlineTimeHandle);
+	GetWorld()->GetTimerManager().SetTimer(OutlineTimeHandle, OutlineDelegate, DeltaTime, true);
 }
 
 void ABaseUnitCharacter::SetHologramType(bool bUseHologram)
@@ -382,4 +382,25 @@ void ABaseUnitCharacter::DeactiveItem()
 	{
 		HealthBarComponent->SetHiddenInGame(true);
 	}
+}
+
+void ABaseUnitCharacter::AddLevelModifierEntry(const FLevelModifierEntry& LevelModifierEntry)
+{
+
+}
+
+void ABaseUnitCharacter::AddDerivedStatModifier(const FDerivedStatModifier& DerivedStatModifier)
+{
+	CharacterBattleStatsComponent->ApplyDurationModifier(DerivedStatModifier);
+	UE_LOG(LogTemp, Error, TEXT("애드모디파이어작동!!!!!"));
+}
+
+void ABaseUnitCharacter::ChangeStat(const FGameplayTag& InTag, float InValue)
+{
+	CharacterBattleStatsComponent->ChangeStatValue(InTag, InValue, nullptr);
+}
+
+const UCharacterBattleStatsComponent* ABaseUnitCharacter::GetStatComponent() const
+{
+	return CharacterBattleStatsComponent;
 }

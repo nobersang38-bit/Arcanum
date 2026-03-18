@@ -26,6 +26,9 @@ public:
     /** 스킬 종료 (히트 후, 지속시간 끝 등) */
     virtual void DeactivateSkillActor();
 
+    FORCEINLINE void SetTargetActor(AActor* InTargetActor) { TargetActor = InTargetActor; }
+    FORCEINLINE void SetTargetLocation(const FVector& InLocation) { TargetLocation = InLocation; }
+
 protected:
     virtual void BeginPlay() override;
 
@@ -36,6 +39,11 @@ protected:
     /** 시전자 */
     UPROPERTY()
     TWeakObjectPtr<AActor> InstigatorActor;
+
+    UPROPERTY()
+    TWeakObjectPtr<AActor> TargetActor = nullptr;
+
+    FVector TargetLocation;
 
     /** 현재 활성화 여부 (풀링용) */
     UPROPERTY(VisibleAnywhere)

@@ -233,3 +233,21 @@ void APlayerCharacter::AddCurrentStat(FGameplayTag InTag, float InValue)
 
 }
 
+void APlayerCharacter::AddLevelModifierEntry(const FLevelModifierEntry& LevelModifierEntry)
+{
+}
+
+void APlayerCharacter::AddDerivedStatModifier(const FDerivedStatModifier& DerivedStatModifier)
+{
+}
+
+void APlayerCharacter::ChangeStat(const FGameplayTag& InTag, float InValue)
+{
+	StatComponent->ChangeStatValue(InTag, InValue, nullptr);
+}
+
+const UCharacterBattleStatsComponent* APlayerCharacter::GetStatComponent() const
+{
+	return StatComponent;
+}
+

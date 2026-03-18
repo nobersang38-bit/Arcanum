@@ -18,10 +18,15 @@ class ARCANUM_API AProjectileBase : public ASkillActor
 
 protected:
     virtual void BeginPlay() override;
+    virtual void Tick(float Deltatime) override;
 
     /** 충돌 */
     UFUNCTION()
     virtual void OnHit(UPrimitiveComponent* HitComponent,AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+    /** 오버랩 */
+    UFUNCTION()
+    virtual void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 protected:
     /** 충돌용 콜리전 */
@@ -33,12 +38,18 @@ protected:
     TObjectPtr<UProjectileMovementComponent> MovementComponent;
 
     /** 기본 속도 */
-    UPROPERTY(EditDefaultsOnly, Category = "Projectile")
+    UPROPERTY(EditDefaultsOnly, Category = "ProjectiIe")
     float InitialSpeed = 1200.f;
 
     /** 수명 */
-    UPROPERTY(EditDefaultsOnly, Category = "Projectile")
+    UPROPERTY(EditDefaultsOnly, Category = "ProjectiIe")
     float LifeTime = 5.f;
+
+    UPROPERTY(EditDefaultsOnly, Category = "ProjectiIe|Horming")
+    bool bUseHorming = false;
+
+    UPROPERTY(EditDefaultsOnly, Category = "ProjectiIe|Horming")
+    float HormingSpeed = 50.0f;
 
     FTimerHandle LifeTimerHandle;
 };

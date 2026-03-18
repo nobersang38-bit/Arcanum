@@ -11,15 +11,19 @@
 #include "Interface/RuntimeUnitDataInterface.h"
 #include "Interface/CombatInterface.h"
 #include "Interface/PoolingInterface.h"
+#include "Interface/StatModifierInterface.h"
+#include "Interface/StatInterface.h"
 #include "BaseUnitCharacter.generated.h"
 
 
 // 김도현
 // 베이스 유닛 클래스
 UCLASS()
-class ARCANUM_API ABaseUnitCharacter : public ACharacter, public ITeamInterface, public IUnitDataInterface, public IRuntimeUnitDataInterface, public ICombatInterface, public IPoolingInterface
+class ARCANUM_API ABaseUnitCharacter : public ACharacter, 
+	public ITeamInterface, public IUnitDataInterface, public IRuntimeUnitDataInterface, public ICombatInterface, public IPoolingInterface, public IStatModifierInterface, public IStatInterface
 {
 	GENERATED_BODY()
+	friend class UStatusAction_UnitHealth;
 public:
 #pragma region Debug
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "00_Test")
@@ -38,6 +42,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	class UUnitCombatComponent* GetUnitCombatComponent() { return UnitCombatComponent; }
 
+	void OuntLineStart(const UCurveFloat* CurveFloat, float InTime, float DeltaTime);
 protected:
 	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
@@ -52,7 +57,6 @@ protected:
 	void UnitActivate();
 	void UnitDeactive();
 
-	void OuntLineStart(const UCurveFloat* CurveFloat, float InTime, float DeltaTime, FTimerHandle& InTimerHandle, UMaterialInstanceDynamic* MaterialInstance, float& RefTime);
 
 	void SetHologramType(bool bUseHologram);
 
@@ -122,4 +126,14 @@ private:
 
 	UPROPERTY()
 	TArray<UMaterialInterface*> MaterialBackup;
+
+	// IStatModifierInterface을(를) 통해 상속됨
+	void AddLevelModifierEntry(const FLevelModifierEntry& LevelModifierEntry) override;
+	void AddDerivedStatModifier(const FDerivedStatModifier& DerivedStatModifier) override;
+
+	// IStatModifierInterface을(를) 통해 상속됨
+	void ChangeStat(const FGameplayTag& InTag, float InValue) override;
+
+	// IStatInterface을(를) 통해 상속됨
+	const UCharacterBattleStatsComponent* GetStatComponent() const override;
 };

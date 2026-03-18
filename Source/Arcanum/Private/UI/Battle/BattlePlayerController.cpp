@@ -21,6 +21,9 @@
 #include "Components/CapsuleComponent.h"
 #include "Object/Actor/SpawnCheckDecal.h"
 #include "Object/Actor/SelectedArrow.h"
+#include "Object/Skills/SkillActor.h"
+#include "Object/Skills/SkillBase.h"
+#include "Core/SubSystem/GameDataSubsystem.h"
 
 // ========================================================
 // 언리얼 기본 생성
@@ -268,6 +271,48 @@ void ABattlePlayerController::DebugRemovePlayerInfoPanelSlot(int32 RemoveIDX)
 	bool Result = HUDWidgetInstance->GetPlayerInfoPanel()->RemoveUnitSlot(RemoveIDX);
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("DebugRemovePlayerInfoPanelSlot %d"), static_cast<int32>(Result));
 }
+void ABattlePlayerController::DebugSkillActorTest()
+{
+	if (!DebugSkillBaseInstance)
+	{
+		DebugSkillBaseInstance = NewObject<USkillBase>(this);
+		UGameDataSubsystem* DataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
+		if (DataSubsystem)
+		{
+			FDTSkillsDataRow* DTSkillsDataRow = DataSubsystem->GetRow<FDTSkillsDataRow>(Arcanum::DataTable::SkillData, FName("Slash"));
+			if (DTSkillsDataRow)
+			{
+				DebugSkillBaseInstance->Initialize(GetPawn(), &DTSkillsDataRow->SkillData, 1, Arcanum::Unit::Faction::Ally::Root);
+			}
+		}
+		/*FSkillInfo SkillInfo;
+		SkillInfo.
+		DebugSkillBaseInstance->Initialize(GetPawn(), FSkillInfo(), )*/
+	}
+
+
+	if (DebugSkillActorClass)
+	{
+		UPoolingSubsystem* PoolingSubsystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
+		if (PoolingSubsystem)
+		{
+			FTransform Transform;
+			Transform.SetLocation(GetPawn()->GetActorLocation());
+			Transform.SetRotation(GetPawn()->GetActorRotation().Quaternion());
+			AActor* SkillActor = PoolingSubsystem->SpawnFromPool(DebugSkillActorClass, Transform);
+			ASkillActor* SkillInstance = Cast<ASkillActor>(SkillActor);
+			if (SkillInstance)
+			{
+				FHitResult HitResult;
+				GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, HitResult);
+				AActor* TargetActor = HitResult.GetActor()->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()) ? HitResult.GetActor() : nullptr;
+				SkillInstance->SetTargetActor(TargetActor);
+				SkillInstance->SetTargetLocation(HitResult.ImpactPoint);
+				SkillInstance->ActivateSkillActor(DebugSkillBaseInstance, GetPawn(), Transform.GetLocation(), Transform.GetRotation().Rotator());
+			}
+		}
+	}
+}
 #pragma endregion
 
 
@@ -378,15 +423,20 @@ void ABattlePlayerController::SetBossHealthProgress(float CurrentHealth, float M
 // ========================================================
 void ABattlePlayerController::BasicAttack()
 {
+	/*UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (BattleSubsystem)
+	{
+		BattleSubsystem->GetInBattleData().PlayerData;
+	}*/
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("BasicAttack"));
 	//Todo : 기본공격
-
 	//디버그
-	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
+	DebugSkillActorTest();
+	/*APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
 	if (PlayerCharacter)
 	{
 		PlayerCharacter->PlayerBasicAttack();
-	}
+	}*/
 }
 
 void ABattlePlayerController::UltimateSkill()
