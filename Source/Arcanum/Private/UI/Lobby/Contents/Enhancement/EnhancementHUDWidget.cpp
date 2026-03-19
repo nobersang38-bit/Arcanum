@@ -326,6 +326,5 @@ void UEnhancementHUDWidget::RefreshDetailChanceText()
 	}
 
 	DetailChanceText->SetText(FText::FromString(chanceText));
-
 }
 

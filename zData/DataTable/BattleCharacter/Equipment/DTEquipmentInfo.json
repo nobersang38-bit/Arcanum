@@ -4,7 +4,7 @@
     "ItemTag": "Arcanum.Items.Rarity.Common.Weapon.GreatSword",
     "SlotTag": "Arcanum.Items.ItemSlot.Weapon.TwoHand",
     "Desc": "평범한 대검",
-    "SkeletalMesh": "",
+    "SkeletalMesh": "SkeletalMesh'/Game/Assets/Equipment/Weapon/SKM_Sword.SKM_Sword'",
     "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_Sword.Icon_Sword'",
     "BuyPrice": 200,
     "SellPrice": 50,
@@ -28,7 +28,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 1.0,
               "Mul": 1.0
@@ -40,8 +40,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.Slash": 1
         }
       },
       {
@@ -63,7 +64,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 6.0,
               "Mul": 1.0
@@ -75,8 +76,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.Slash": 1
         }
       },
       {
@@ -98,7 +100,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 11.0,
               "Mul": 1.0
@@ -110,8 +112,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.Slash": 1
         }
       },
       {
@@ -133,7 +136,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 16.0,
               "Mul": 1.0
@@ -145,8 +148,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.Slash": 1
         }
       },
       {
@@ -168,7 +172,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 21.0,
               "Mul": 1.0
@@ -180,8 +184,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.Slash": 1
         }
       },
       {
@@ -203,7 +208,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 26.0,
               "Mul": 1.0
@@ -215,8 +220,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.Slash": 1
         }
       }
     ]
@@ -226,7 +232,7 @@
     "ItemTag": "Arcanum.Items.Rarity.Common.Weapon.Staff",
     "SlotTag": "Arcanum.Items.ItemSlot.Weapon.TwoHand",
     "Desc": "평범한 지팡이",
-    "SkeletalMesh": "",
+    "SkeletalMesh": "SkeletalMesh'/Game/Assets/Equipment/Weapon/SKM_Staff.SKM_Staff'",
     "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_Staff.Icon_Staff'",
     "BuyPrice": 200,
     "SellPrice": 50,
@@ -250,7 +256,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 1.0,
               "Mul": 1.0
@@ -262,8 +268,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.ChainBolt": 1
         }
       },
       {
@@ -285,7 +292,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 6.0,
               "Mul": 1.0
@@ -297,8 +304,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.ChainBolt": 1
         }
       },
       {
@@ -320,7 +328,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 11.0,
               "Mul": 1.0
@@ -332,8 +340,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.ChainBolt": 1
         }
       },
       {
@@ -355,7 +364,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 16.0,
               "Mul": 1.0
@@ -367,8 +376,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.ChainBolt": 1
         }
       },
       {
@@ -390,7 +400,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 21.0,
               "Mul": 1.0
@@ -402,8 +412,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.ChainBolt": 1
         }
       },
       {
@@ -425,7 +436,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 26.0,
               "Mul": 1.0
@@ -437,8 +448,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.ChainBolt": 1
         }
       }
     ]
@@ -472,7 +484,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 1.0,
               "Mul": 1.0
@@ -484,8 +496,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.PiercingShot": 1
         }
       },
       {
@@ -507,7 +520,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 6.0,
               "Mul": 1.0
@@ -519,8 +532,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.PiercingShot": 1
         }
       },
       {
@@ -542,7 +556,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 11.0,
               "Mul": 1.0
@@ -554,8 +568,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.PiercingShot": 1
         }
       },
       {
@@ -577,7 +592,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 16.0,
               "Mul": 1.0
@@ -589,8 +604,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.PiercingShot": 1
         }
       },
       {
@@ -612,7 +628,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 21.0,
               "Mul": 1.0
@@ -624,8 +640,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.PiercingShot": 1
         }
       },
       {
@@ -647,7 +664,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 26.0,
               "Mul": 1.0
@@ -659,8 +676,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.PiercingShot": 1
         }
       }
     ]
@@ -694,7 +712,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 1.0,
               "Mul": 1.0
@@ -706,8 +724,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.ShockWave": 1
         }
       },
       {
@@ -729,7 +748,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 6.0,
               "Mul": 1.0
@@ -741,8 +760,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.ShockWave": 1
         }
       },
       {
@@ -764,7 +784,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 11.0,
               "Mul": 1.0
@@ -776,8 +796,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.ShockWave": 1
         }
       },
       {
@@ -799,7 +820,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 16.0,
               "Mul": 1.0
@@ -811,8 +832,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.ShockWave": 1
         }
       },
       {
@@ -834,7 +856,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 21.0,
               "Mul": 1.0
@@ -846,8 +868,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.ShockWave": 1
         }
       },
       {
@@ -869,7 +892,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 26.0,
               "Mul": 1.0
@@ -881,8 +904,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.ShockWave": 1
         }
       }
     ]
@@ -925,6 +949,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -957,6 +982,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -989,6 +1015,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1021,6 +1048,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1053,6 +1081,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1085,6 +1114,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1129,6 +1159,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1161,6 +1192,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1193,6 +1225,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1225,6 +1258,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1257,6 +1291,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1289,6 +1324,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1333,6 +1369,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1365,6 +1402,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1397,6 +1435,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1429,6 +1468,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1461,6 +1501,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1493,6 +1534,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1537,6 +1579,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1569,6 +1612,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1601,6 +1645,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1633,6 +1678,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1665,6 +1711,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1697,6 +1744,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1741,6 +1789,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1773,6 +1822,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1805,6 +1855,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1837,6 +1888,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1869,6 +1921,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1901,6 +1954,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1945,6 +1999,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -1977,6 +2032,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2009,6 +2065,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2041,6 +2098,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2073,6 +2131,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2105,6 +2164,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2149,6 +2209,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2181,6 +2242,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2213,6 +2275,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2245,6 +2308,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2277,6 +2341,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2309,6 +2374,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2353,6 +2419,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2385,6 +2452,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2417,6 +2485,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2449,6 +2518,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2481,6 +2551,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2513,6 +2584,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2557,6 +2629,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2589,6 +2662,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2621,6 +2695,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2653,6 +2728,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2685,6 +2761,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2717,6 +2794,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2761,6 +2839,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2793,6 +2872,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2825,6 +2905,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2857,6 +2938,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2889,6 +2971,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2921,6 +3004,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2965,6 +3049,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -2997,6 +3082,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -3029,6 +3115,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -3061,6 +3148,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -3093,6 +3181,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -3125,6 +3214,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -3169,6 +3259,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -3201,6 +3292,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -3233,6 +3325,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -3265,6 +3358,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -3297,6 +3391,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -3329,6 +3424,7 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
           "Arcanum.Skills.SkillName.None": 0
         }
@@ -3340,7 +3436,7 @@
     "ItemTag": "Arcanum.Items.Rarity.Legendary.Weapon.Scepter",
     "SlotTag": "Arcanum.Items.ItemSlot.Weapon.TwoHand",
     "Desc": "강력한 마력이 깃든 전설 셉터",
-    "SkeletalMesh": "",
+    "SkeletalMesh": "SkeletalMesh'/Game/Assets/Equipment/Weapon/SKM_Scepter.SKM_Scepter'",
     "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_Scepter.Icon_Scepter'",
     "BuyPrice": 5000,
     "SellPrice": 1000,
@@ -3364,20 +3460,21 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 1.0,
+              "Flat": 10.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 5.0,
+              "Flat": 15.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.SolarFlare": 1
         }
       },
       {
@@ -3399,7 +3496,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 6.0,
               "Mul": 1.0
@@ -3411,8 +3508,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.SolarFlare": 1
         }
       },
       {
@@ -3434,7 +3532,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 11.0,
               "Mul": 1.0
@@ -3446,8 +3544,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.SolarFlare": 1
         }
       },
       {
@@ -3469,7 +3568,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 16.0,
               "Mul": 1.0
@@ -3481,8 +3580,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.SolarFlare": 1
         }
       },
       {
@@ -3504,7 +3604,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 21.0,
               "Mul": 1.0
@@ -3516,8 +3616,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.SolarFlare": 1
         }
       },
       {
@@ -3539,7 +3640,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 26.0,
               "Mul": 1.0
@@ -3551,8 +3652,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.SolarFlare": 1
         }
       }
     ]
@@ -3586,20 +3688,21 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 1.0,
+              "Flat": 10.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 5.0,
+              "Flat": 15.0,
               "Mul": 1.0
             }
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.VoidEclipse": 1
         }
       },
       {
@@ -3621,7 +3724,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 6.0,
               "Mul": 1.0
@@ -3633,8 +3736,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.VoidEclipse": 1
         }
       },
       {
@@ -3656,7 +3760,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 11.0,
               "Mul": 1.0
@@ -3668,8 +3772,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.VoidEclipse": 1
         }
       },
       {
@@ -3691,7 +3796,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 16.0,
               "Mul": 1.0
@@ -3703,8 +3808,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.VoidEclipse": 1
         }
       },
       {
@@ -3726,7 +3832,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 21.0,
               "Mul": 1.0
@@ -3738,8 +3844,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.VoidEclipse": 1
         }
       },
       {
@@ -3761,7 +3868,7 @@
         ],
         "RandomStatRanges": [
           {
-            "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue",
+            "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
               "Flat": 26.0,
               "Mul": 1.0
@@ -3773,8 +3880,9 @@
           }
         ],
         "MaxUpgradeLevel": 5,
+        "BasicAttackSkillTag": "Arcanum.Skills.SkillName.None",
         "Skills": {
-          "Arcanum.Skills.SkillName.None": 0
+          "Arcanum.Skills.SkillName.VoidEclipse": 1
         }
       }
     ]

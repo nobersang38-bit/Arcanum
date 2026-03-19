@@ -7,9 +7,6 @@
 #include "GameplayTags/ArcanumTags.h"
 #include "Interface/TeamInterface.h"
 #include "DataInfo/BattleCharacter/BattleStats/Data/FGradeStatData.h"
-#include "Interface/StatModifierInterface.h"
-#include "Interface/StatInterface.h"
-#include "Data/Types/BTPlayerStruct.h"
 #include "PlayerCharacter.generated.h"
 
 /*
@@ -17,7 +14,7 @@
 */
 
 UCLASS()
-class ARCANUM_API APlayerCharacter : public ACharacter, public ITeamInterface, public IStatModifierInterface, public IStatInterface
+class ARCANUM_API APlayerCharacter : public ACharacter, public ITeamInterface
 	//, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
@@ -26,7 +23,6 @@ public:
 	// Sets default values for this character's properties
 	APlayerCharacter();
 
-	void SetAutoMode(class ABattlePlayerController* MainController, bool bIsAuto);
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
@@ -74,27 +70,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "StatusAction")
 	TObjectPtr<class UStatusActionComponent> StatusActionComponent = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting|AI")
-	TObjectPtr<class UBehaviorTree> BehaviorTree = nullptr;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting|AI")
-	FName BlackboardBasicAttackName = FName("BasicAttack");
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting|AI")
-	FName BlackboardBasicSkillName = FName("BasicSkill");
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting|AI")
-	FName BlackboardUltimateSkillName = FName("UltimateSkill");
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting|AI")
-	FName BlackboardItem01Name = FName("Item01");
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting|AI")
-	FName BlackboardItem02Name = FName("Item02");
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting|AI")
-	FName BlackboardSwapName = FName("Swap");
-
 	// 캐릭터 태그
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tags")
 	FGameplayTagContainer GameplayTags;
@@ -115,22 +90,45 @@ protected:
 	//UPROPERTY()
 	//TMap<FGameplayTag, FNonRegenStat> NonRegenStats;
 
-
-	// IStatModifierInterface을(를) 통해 상속됨
-	void AddLevelModifierEntry(const FLevelModifierEntry& LevelModifierEntry) override;
-
-	void AddDerivedStatModifier(const FDerivedStatModifier& DerivedStatModifier) override;
-
-
-	// IStatModifierInterface을(를) 통해 상속됨
-	void ChangeStat(const FGameplayTag& InTag, float InValue) override;
-
-
-	// IStatInterface을(를) 통해 상속됨
-	const UCharacterBattleStatsComponent* GetStatComponent() const override;
+#pragma region 무기 교체
+public:
+	/* 현재 장착 무기로 메시 교체 */
+	void UpdateEquippedWeaponMesh();
 
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<class AAIController> CachedAIC = nullptr;
+	/* 무기 메시를 손 소켓에 부착 */
+	void AttachWeaponMesh(class USkeletalMesh* InWeaponMesh);
 
+	/* 무기 메시 초기화 */
+	void ClearWeaponMesh();
+
+	/* 손에 부착해서 교체 표시할 무기 메시 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
+	TObjectPtr<class USkeletalMeshComponent> WeaponMeshComponent = nullptr;
+
+	/* 무기 부착 소켓 이름 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapon")
+	FName WeaponAttachSocketName = TEXT("Weapon_R");
+#pragma endregion
+
+#pragma region 궁극기 가시화
+public:
+	/* 궁극기 조준 데칼 표시 */
+	void ShowUltimatePreview();
+
+	/* 궁극기 조준 데칼 숨김 */
+	void HideUltimatePreview();
+
+	/* 궁극기 조준 데칼 위치 갱신 */
+	void UpdateUltimatePreviewLocation(const FVector& InWorldLocation);
+
+protected:
+	/* 궁극기 조준용 바닥 데칼 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ultimate")
+	TObjectPtr<class UDecalComponent> UltimatePreviewDecalComponent = nullptr;
+
+	/* 궁극기 조준 데칼 크기 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate")
+	FVector UltimatePreviewDecalSize = FVector(120.0f, 200.0f, 200.0f);
+#pragma endregion
 };

@@ -13,9 +13,7 @@
 #include "Core/SubSystem/BattlefieldManagerSubsystem.h"
 #include "Component/Stats/CharacterBattleStatsComponent.h"
 #include "Component/StatusActionComponent.h"
-#include "AIController.h"
-#include "BehaviorTree/BlackboardComponent.h"
-#include "BehaviorTree/Blackboard/BlackboardKeyType_Struct.h"
+#include "Components/DecalComponent.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -46,66 +44,26 @@ APlayerCharacter::APlayerCharacter()
 
 	StatusActionComponent = CreateDefaultSubobject<UStatusActionComponent>(TEXT("StatusActionComponent"));
 
+	WeaponMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMeshComponent"));
+	WeaponMeshComponent->SetupAttachment(GetMesh(), WeaponAttachSocketName);
+	WeaponMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	UltimatePreviewDecalComponent = CreateDefaultSubobject<UDecalComponent>(TEXT("UltimatePreviewDecalComponent"));
+	UltimatePreviewDecalComponent->SetupAttachment(RootComponent);
+	UltimatePreviewDecalComponent->DecalSize = UltimatePreviewDecalSize;
+	UltimatePreviewDecalComponent->SetVisibility(false);
+	UltimatePreviewDecalComponent->SetHiddenInGame(true);
+
+
+
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
-}
-
-void APlayerCharacter::SetAutoMode(ABattlePlayerController* MainController, bool bIsAuto)
-{
-	if (bIsAuto)
-	{
-		if (CachedAIC)
-		{
-			UnPossessed();
-			PossessedBy(CachedAIC);
-			CachedAIC->RunBehaviorTree(BehaviorTree);
-
-			if (UBlackboardComponent* BBComp = CachedAIC->GetBlackboardComponent())
-			{
-				//// 기본공격
-				//FBlackboard::FKey KeyID = BBComp->GetKeyID(BlackboardBasicAttackName);
-				//FBTPlayerStruct& TempStruct = BBComp->GetValue<UBlackboardKeyType_Struct>(KeyID);
-				//TempStruct.PlayerController = MainController;
-
-				//// 기본스킬
-				//KeyID = BBComp->GetKeyID(BlackboardBasicSkillName);
-				//TempStruct = BBComp->GetValue<UBlackboardKeyType_Struct>(KeyID);
-				//TempStruct.PlayerController = MainController;
-
-				//// 궁극기
-				//KeyID = BBComp->GetKeyID(BlackboardUltimateSkillName);
-				//TempStruct = BBComp->GetValue<UBlackboardKeyType_Struct>(KeyID);
-				//TempStruct.PlayerController = MainController;
-
-				//// 아이템1
-				//KeyID = BBComp->GetKeyID(BlackboardItem01Name);
-				//TempStruct = BBComp->GetValue<UBlackboardKeyType_Struct>(KeyID);
-				//TempStruct.PlayerController = MainController;
-
-				//// 아이템2
-				//KeyID = BBComp->GetKeyID(BlackboardItem02Name);
-				//TempStruct = BBComp->GetValue<UBlackboardKeyType_Struct>(KeyID);
-				//TempStruct.PlayerController = MainController;
-
-				//// 무기스왑
-				//KeyID = BBComp->GetKeyID(BlackboardSwapName);
-				//TempStruct = BBComp->GetValue<UBlackboardKeyType_Struct>(KeyID);
-				//TempStruct.PlayerController = MainController;
-			}
-		}
-	}
-	else
-	{
-		UnPossessed();
-	}
 }
 
 // Called when the game starts or when spawned
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	CachedAIC = GetWorld()->SpawnActor<AAIController>(AIControllerClass);
 
 	// 기본 캐릭터 ID 태그
 	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
@@ -130,6 +88,8 @@ void APlayerCharacter::BeginPlay()
 			OwnerPC->SetPlayerHealthProgress(RegenStat->Current, RegenStat->GetBaseMax());
 		}
 	}
+
+	UpdateEquippedWeaponMesh();
 }
 
 // Called every frame
@@ -177,7 +137,7 @@ void APlayerCharacter::RecievedDamage(AActor* DamagedActor, float Damage, const 
 			}
 		}
 	}
-	
+
 }
 
 void APlayerCharacter::SetIDTag(FGameplayTag NewIDTag)
@@ -288,21 +248,101 @@ void APlayerCharacter::AddCurrentStat(FGameplayTag InTag, float InValue)
 
 }
 
-void APlayerCharacter::AddLevelModifierEntry(const FLevelModifierEntry& LevelModifierEntry)
+void APlayerCharacter::UpdateEquippedWeaponMesh()
 {
+
+	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (!battleSubsystem)
+	{
+		ClearWeaponMesh();
+		return;
+	}
+
+	USkeletalMesh* weaponMesh = battleSubsystem->GetCurrentWeaponMesh();
+	if (!weaponMesh)
+	{
+		ClearWeaponMesh();
+		return;
+	}
+
+	const FGameplayTag slotTypeTag = battleSubsystem->GetCurrentWeaponSlotTypeTag();
+	if (!slotTypeTag.IsValid())
+	{
+		ClearWeaponMesh();
+		return;
+	}
+
+	FName attachSocketName;
+
+	if (slotTypeTag.MatchesTagExact(Arcanum::Items::ItemSlot::Weapon::RightHand))
+	{
+		attachSocketName = TEXT("Weapon_R");
+	}
+	else if (slotTypeTag.MatchesTagExact(Arcanum::Items::ItemSlot::Weapon::LeftHand))
+	{
+		attachSocketName = TEXT("Weapon_L");
+	}
+	else if (slotTypeTag.MatchesTagExact(Arcanum::Items::ItemSlot::Weapon::TwoHand))
+	{
+		attachSocketName = TEXT("Weapon_R");
+	}
+	else
+	{
+		ClearWeaponMesh();
+		return;
+	}
+
+	WeaponAttachSocketName = attachSocketName;
+	AttachWeaponMesh(weaponMesh);
 }
 
-void APlayerCharacter::AddDerivedStatModifier(const FDerivedStatModifier& DerivedStatModifier)
+void APlayerCharacter::AttachWeaponMesh(USkeletalMesh* InWeaponMesh)
 {
+	if (WeaponMeshComponent)
+	{
+		WeaponMeshComponent->SetSkeletalMesh(InWeaponMesh);
+		WeaponMeshComponent->AttachToComponent(
+			GetMesh(),
+			FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+			WeaponAttachSocketName);
+	}
 }
 
-void APlayerCharacter::ChangeStat(const FGameplayTag& InTag, float InValue)
+void APlayerCharacter::ClearWeaponMesh()
 {
-	StatComponent->ChangeStatValue(InTag, InValue, nullptr);
+	if (WeaponMeshComponent)
+	{
+		WeaponMeshComponent->SetSkeletalMesh(nullptr);
+	}
 }
 
-const UCharacterBattleStatsComponent* APlayerCharacter::GetStatComponent() const
+void APlayerCharacter::ShowUltimatePreview()
 {
-	return StatComponent;
+	if (UltimatePreviewDecalComponent)
+	{
+		UltimatePreviewDecalComponent->SetVisibility(true);
+		UltimatePreviewDecalComponent->SetHiddenInGame(false);
+	}
+}
+
+void APlayerCharacter::HideUltimatePreview()
+{
+	if (UltimatePreviewDecalComponent)
+	{
+		UltimatePreviewDecalComponent->SetVisibility(false);
+		UltimatePreviewDecalComponent->SetHiddenInGame(true);
+	}
+}
+
+void APlayerCharacter::UpdateUltimatePreviewLocation(const FVector& InWorldLocation)
+{
+	if (UltimatePreviewDecalComponent)
+	{
+		FVector decalLocation = InWorldLocation;
+		decalLocation.Z += 5.0f;
+
+		UltimatePreviewDecalComponent->SetWorldLocation(decalLocation);
+		UltimatePreviewDecalComponent->SetWorldRotation(FRotator(-90.0f, 0.0f, 0.0f));
+	}
 }
 

@@ -17,6 +17,7 @@ public:
     ASkillActor();
 
     /** 풀에서 꺼냈을 때 초기화 */
+    UFUNCTION(BlueprintCallable)
     virtual void ActivateSkillActor(
         USkillBase* InSkill,
         AActor* InOwner,

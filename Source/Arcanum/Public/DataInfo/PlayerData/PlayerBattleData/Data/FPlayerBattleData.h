@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "DataInfo/CommonData/Stats/FBattleStats.h"
+#include "DataInfo/SkillData/Data/FBattleWeaponSkillData.h"
 #include "FPlayerBattleData.generated.h"
 
 USTRUCT(BlueprintType)

@@ -107,6 +107,7 @@ public:
 	static const bool AddCurrency(const UObject* WorldContextObject, FGameplayTag Tag, int64 Amount);
 	/** 플레이어 재화 변경할때*/
 	static const FPlayerCurrency UpdateCurrency(const UObject* WorldContextObject, const FPlayerData& PlayerData, FGameplayTag Tag, int64 Amount);
+
 private:
 	/** 치트 방지용*/
 	static bool VerifyCurrency(UARGameInstance* GI, FPlayerData CachedData);
@@ -124,7 +125,6 @@ public:
 private:
 	static bool SavePlayerData(UARGameInstance* GI);
 #pragma endregion
-
 
 #pragma region Battle Widget 관련
 public:
@@ -167,7 +167,7 @@ public:
 
 private:
 	/* 장비 랜덤 능력치 OwnerStats 생성 */
-	static void RollEquipmentStats(const FItemDefinition& InItemDefinition, TArray<FDerivedStatModifier>& OutOwnerStats);
+	static void RollEquipmentStats(const FItemDefinition& InItemDefinition, TArray<FDerivedStatModifier>& OutStats);
 #pragma endregion
 
 #pragma region Shop Widget 관련
@@ -236,7 +236,7 @@ private:
 	/* Guid 아이템을 카탈로그 정보로 인스턴스 생성해 인벤에 추가 */
 	static bool AddGuidByCatalog(const UObject* WorldContextObject, const FDTItemCatalogRow* InCatalogRow);
 
-	/* Equipment 전용: 카탈로그 DetailRowName으로 장비 인스턴스 생성 후 Inventory에 추가 */
+	/* Equipment 전용: 카탈로그 DetailRowName으로 장비 인스턴스 생성 후 Inventory에 추가 (랜덤) */
 	static bool AddGuidFromEquipment(const UObject* WorldContextObject, const FDTItemCatalogRow* InCatalogRow);
 
 	/* Guid 아이템 1개 추가 시 인벤 슬롯 여유가 있는지 확인 */

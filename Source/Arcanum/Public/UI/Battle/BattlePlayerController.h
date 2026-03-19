@@ -7,20 +7,19 @@
 #include "DataInfo/CommonData/Stats/FBattleStats.h"
 #include "Data/Types/UnitData.h"
 #include "Data/Types/MatchData.h"
-#include "GameplayTags/ArcanumTags.h"
+#include "DataInfo/SkillData/Data/FBattleWeaponSkillData.h"
 #include "BattlePlayerController.generated.h"
 
 class UInputMappingContext;
 class UInputAction;
 class UInBattleHUDWidget;
 struct FInputActionValue;
+
 // 김도현
 UCLASS()
 class ARCANUM_API ABattlePlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	friend struct FBTPlayerStruct;
-
 #pragma region 언리얼 기본생성
 protected:
 	virtual void BeginPlay() override;
@@ -103,9 +102,6 @@ protected:
 	void BasicAttack();
 
 	UFUNCTION()
-	void UltimateSkill();
-
-	UFUNCTION()
 	void BasicSkill();
 
 	UFUNCTION()
@@ -116,12 +112,6 @@ protected:
 
 	UFUNCTION()
 	void Item2();
-
-	UFUNCTION()
-	bool SkillStarter(FGameplayTag InSkillTag, int32 InLevel);
-
-	UFUNCTION()
-	bool SkillCostChecker(FGameplayTag InSkillTag, int32 InLevel);
 
 	UFUNCTION()
 	void AutoManualModeMobile(bool bIsChecked);
@@ -152,13 +142,9 @@ protected:
 	UFUNCTION()
 	bool UseManaValue(float Value);
 
-	// 유닛 쿨타임
+	// 쿨타임
 	UFUNCTION()
-	bool UseUnitCoolTime(FGameplayTag InTag);
-
-	// 스킬 쿨타임
-	UFUNCTION()
-	bool UseSkillCost(FGameplayTag InTag);
+	bool UseCoolTime(FGameplayTag InTag);
 #pragma endregion
 
 #pragma region 전투 종료
@@ -180,10 +166,7 @@ protected:
 
 	// 쿨타임을 계속 줄임
 	UFUNCTION()
-	void Internal_CoolTimeTick(float DeltaTime);
-
-	UFUNCTION()
-	void Internal_AITick(float DeltaTime);
+	void Internal_UnitsCoolTimeTick(float DeltaTime);
 
 #pragma endregion
 
@@ -274,28 +257,46 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TWeakObjectPtr<ABaseUnitCharacter> SelectedUnit2 = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
-	TSubclassOf<class ASelectedArrow> SelectedArrowClass = nullptr;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Setting")
-	TObjectPtr<class ASelectedArrow> SelectedArrowInstance = nullptr;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
-	FGameplayTag MeatTag = Arcanum::BattleStat::Player::Regen::Meat::Root;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
-	FGameplayTag ManaTag = Arcanum::BattleStat::Character::Regen::Mana::Value;
-
 private:
 	FTimerHandle PlayerLocationProgressTimeHandle;
-	FTimerHandle PlayerAITickTimerHandle;
-
 	bool bIsAutoManual = false;
 	float StageTimeSecond = 0.0f;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TMap<FGameplayTag, float> SkillCoolTimes;
+#pragma region 궁극기 처리
+protected:
+	/* 궁극기 종료 처리 */
+	void UltimateSkillEnd();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TMap<FGameplayTag, class USkillBase*> SkillBaseInstances;
+	/* 궁극기 조준 시작 */
+	UFUNCTION()
+	void UltimateSkillPressed();
+
+	/* 궁극기 조준 해제 */
+	UFUNCTION()
+	void UltimateSkillReleased();
+
+	/* 궁극기 자동 발사 */
+	void ExecuteUltimateSkill();
+
+	/* 궁극기 조준 위치 갱신 */
+	void UpdateUltimatePreview();
+
+protected:
+	/* 궁극기 조준 중 여부 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ultimate")
+	bool bIsUltimateAiming = false;
+
+	/* 마지막 이동 입력 방향 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ultimate")
+	FVector LastMoveInputDirection = FVector::ZeroVector;
+
+	/* 궁극기 프리뷰 거리 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate")
+	float UltimatePreviewDistance = 300.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate")
+	TObjectPtr<class APostProcessVolume> UltimatePostProcessVolume = nullptr;
+
+	FTimerHandle UltimateSkillTimerHandle;
+#pragma endregion
 };
