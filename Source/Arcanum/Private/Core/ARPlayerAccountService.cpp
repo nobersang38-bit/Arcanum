@@ -1136,14 +1136,9 @@ bool FPlayerAccountService::AddGuidFromEquipment(const UObject* WorldContextObje
 	newEquip.CurrUpgradeLevel = 0;
 	newEquip.Equipment = equipRow->BaseInfoSteps[0];
 
-	if (newEquip.ItemTag.MatchesTagExact(Arcanum::Items::Rarity::Common::Weapon::GreatSword)
-		|| newEquip.ItemTag.MatchesTagExact(Arcanum::Items::Rarity::Common::Weapon::Staff)
-		|| newEquip.ItemTag.MatchesTagExact(Arcanum::Items::Rarity::Common::Weapon::Bow)
-		|| newEquip.ItemTag.MatchesTagExact(Arcanum::Items::Rarity::Common::Weapon::Shield)
-		|| newEquip.ItemTag.MatchesTagExact(Arcanum::Items::Rarity::Legendary::Weapon::Scepter)
-		|| newEquip.ItemTag.MatchesTagExact(Arcanum::Items::Rarity::Legendary::Weapon::Scythe))
-		// 	if (newEquip.ItemTag.MatchesTag(Arcanum::Items::Rarity::Common::Weapon::Root)
-		// || newEquip.ItemTag.MatchesTag(Arcanum::Items::Rarity::Legendary::Weapon::Root))
+
+	if (newEquip.ItemTag.MatchesTag(Arcanum::Items::Rarity::Common::Weapon::Root) ||
+		newEquip.ItemTag.MatchesTag(Arcanum::Items::Rarity::Legendary::Weapon::Root))
 	{
 		// 무기: RandomStatRanges -> OnHitTargetStats
 		RollEquipmentStats(newEquip.Equipment, newEquip.Equipment.OnHitTargetStats);

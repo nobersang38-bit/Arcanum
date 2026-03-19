@@ -218,7 +218,7 @@ public:
 
 	/* 현재 선택 캐릭터의 4세트 발동 스킬 태그 반환 */
 	UFUNCTION()
-	FGameplayTag GetEquippedSetSkillTag() const;
+	FGameplayTag GetEquippedSetBonusTag() const;
 
 	/* 현재 활성 무기 슬롯 태그 (스왑) */
 	void SetCurrentWeaponSlotTag(const FGameplayTag& InWeaponSlotTag);

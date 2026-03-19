@@ -651,10 +651,10 @@ UTexture2D* UBattlefieldManagerSubsystem::GetCurrentWeaponIcon() const
 	const FBattleCharacterData* selectedCharacter = GetSelectedCharacterData();
 	if (!selectedCharacter) return nullptr;
 
-	const FGameplayTag currnetWeaponSlotTag = InBattleData.BattleWeaponSkill.CurrentWeaponSlotTag;
-	if (!currnetWeaponSlotTag.IsValid()) return nullptr;
+	const FGameplayTag currentWeaponSlotTag = InBattleData.BattleWeaponSkill.CurrentWeaponSlotTag;
+	if (!currentWeaponSlotTag.IsValid()) return nullptr;
 
-	const FGuid* weaponGuid = selectedCharacter->WeaponSlots.Find(currnetWeaponSlotTag);
+	const FGuid* weaponGuid = selectedCharacter->WeaponSlots.Find(currentWeaponSlotTag);
 	if (!weaponGuid || !weaponGuid->IsValid()) return nullptr;
 
 	const FEquipmentInfo* foundEquip = FindEquipmentByGuid(InBattleData.PlayerData, *weaponGuid);
@@ -697,7 +697,7 @@ UTexture2D* UBattlefieldManagerSubsystem::GetCurrentBasicSkillIcon() const
 	return skillRow->SkillData.Icon.LoadSynchronous();
 }
 
-FGameplayTag UBattlefieldManagerSubsystem::GetEquippedSetSkillTag() const
+FGameplayTag UBattlefieldManagerSubsystem::GetEquippedSetBonusTag() const
 {
 	if (HasEquippedFullSet(Arcanum::Items::Rarity::SetItem::Talasha::Armor::Root))
 	{
@@ -833,20 +833,8 @@ bool UBattlefieldManagerSubsystem::HasEquippedFullSet(const FGameplayTag& InSetR
 {
 	if (!InSetRootTag.IsValid()) return false;
 
-	const UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
-	if (!battleSubsystem) return false;
-
-	const FPlayerData& playerData = battleSubsystem->GetInBattleData().PlayerData;
-
-	const FBattleCharacterData* selectedCharacter = nullptr;
-	for (const FBattleCharacterData& characterData : playerData.OwnedCharacters)
-	{
-		if (characterData.bSelection)
-		{
-			selectedCharacter = &characterData;
-			break;
-		}
-	}
+	const FPlayerData& playerData = InBattleData.PlayerData;
+	const FBattleCharacterData* selectedCharacter = GetSelectedCharacterData();
 	if (!selectedCharacter) return false;
 
 	int32 matchCount = 0;

@@ -47,14 +47,14 @@ APlayerCharacter::APlayerCharacter()
 	WeaponMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMeshComponent"));
 	WeaponMeshComponent->SetupAttachment(GetMesh(), WeaponAttachSocketName);
 	WeaponMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	WeaponMeshComponent->SetReceivesDecals(false);
 
 	UltimatePreviewDecalComponent = CreateDefaultSubobject<UDecalComponent>(TEXT("UltimatePreviewDecalComponent"));
 	UltimatePreviewDecalComponent->SetupAttachment(RootComponent);
 	UltimatePreviewDecalComponent->DecalSize = UltimatePreviewDecalSize;
 	UltimatePreviewDecalComponent->SetVisibility(false);
 	UltimatePreviewDecalComponent->SetHiddenInGame(true);
-
-
+	UltimatePreviewDecalComponent->SetUsingAbsoluteRotation(true);
 
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
@@ -338,11 +338,19 @@ void APlayerCharacter::UpdateUltimatePreviewLocation(const FVector& InWorldLocat
 {
 	if (UltimatePreviewDecalComponent)
 	{
-		FVector decalLocation = InWorldLocation;
-		decalLocation.Z += 5.0f;
+		FVector traceStart = InWorldLocation + FVector(0.f, 0.f, 500.f);
+		FVector traceEnd = InWorldLocation - FVector(0.f, 0.f, 1000.f);
 
-		UltimatePreviewDecalComponent->SetWorldLocation(decalLocation);
-		UltimatePreviewDecalComponent->SetWorldRotation(FRotator(-90.0f, 0.0f, 0.0f));
+		FHitResult hitResult;
+		FCollisionQueryParams params;
+		params.AddIgnoredActor(this);
+
+		if (GetWorld()->LineTraceSingleByChannel(hitResult, traceStart, traceEnd, ECC_WorldStatic, params))
+		{
+			FVector decalLocation = hitResult.ImpactPoint + (hitResult.ImpactNormal * 2.0f);
+			UltimatePreviewDecalComponent->SetWorldLocation(decalLocation);
+			UltimatePreviewDecalComponent->SetWorldRotation(FRotator(-90.0f, 0.0f, 0.0f));
+		}
 	}
 }
 

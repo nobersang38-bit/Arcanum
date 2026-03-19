@@ -129,6 +129,6 @@ protected:
 
 	/* 궁극기 조준 데칼 크기 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate")
-	FVector UltimatePreviewDecalSize = FVector(120.0f, 200.0f, 200.0f);
+	FVector UltimatePreviewDecalSize = FVector(40.0f, 200.0f, 200.0f);
 #pragma endregion
 };
