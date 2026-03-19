@@ -34,7 +34,6 @@ void UBattleToggleWidget::OnChangeToggle(bool IsChecked)
 		{
 			if (!IsAnimationPlaying(GlowAnimation))
 			{
-				UE_LOG(LogTemp, Warning, TEXT("애니메이션 재생 시작!"));
 				PlayAnimation(GlowAnimation, 0.f, 0);
 			}
 		}
@@ -48,7 +47,6 @@ void UBattleToggleWidget::OnChangeToggle(bool IsChecked)
 			if (IsAnimationPlaying(GlowAnimation))
 			{
 				StopAnimation(GlowAnimation);
-				UE_LOG(LogTemp, Warning, TEXT("애니메이션 종료."));
 			}
 		}
 	}

@@ -59,5 +59,6 @@ protected:
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	TObjectPtr<UWidgetAnimation> GlowAnimation = nullptr;
 
+
 #pragma endregion
 };

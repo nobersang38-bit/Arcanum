@@ -60,12 +60,8 @@ void UBattleBattleEndWidget::SetStar(int32 StarNum)
 		else
 		{
 			Stars[i]->SetVisibility(ESlateVisibility::Hidden);
+			StarBackgrounds[i]->SetVisibility(ESlateVisibility::Hidden);
 		}
-	}
-
-	if (StarAnim)
-	{
-		PlayAnimation(StarAnim, 0.f, 1);
 	}
 }
 
@@ -75,6 +71,10 @@ void UBattleBattleEndWidget::SetVictoryText(bool IsVictory)
 	{
 		BattleEndResultText->SetText(FText::FromString(TEXT("승리")));
 		GetClearReward();
+		if (StarAnim)
+		{
+			PlayAnimation(StarAnim, 0.f, 1);
+		}
 	}
 	else
 	{
