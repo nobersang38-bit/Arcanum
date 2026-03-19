@@ -7,6 +7,7 @@
 #include "Data/DataAssets/EnemyWaveData.h"
 #include "GameplayTags/ArcanumTags.h"
 #include "Data/Types/UnitData.h"
+#include "DataInfo/StageData/EnemyData/Data/FEnemyData.h"
 #include "EnemyUnitSpawnComponent.generated.h"
 
 UENUM()
@@ -108,6 +109,15 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Data")
 	FEnemyWaveDataInfo EnemyWaveData;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting|Stat")
+	TArray<FGameplayTag> MultipleStatTags = { Arcanum::BattleStat::Character::Regen::Health::Root, Arcanum::BattleStat::Character::NonRegen::AttackPower::Root };
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting|Stat")
+	FGameplayTag RegenTag = Arcanum::BattleStat::Character::Regen::Root;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting|Stat")
+	FGameplayTag NonRegenTag = Arcanum::BattleStat::Character::NonRegen::Root;
+
 private:
 	FTimerHandle WaveTimer;
 
@@ -119,4 +129,7 @@ private:
 	// 유닛 태그, 유닛 스폰 계산 타입, 지난시간
 	UPROPERTY()
 	TMap<FGameplayTag, FUnitSpawnCalcData> UnitTimes;
+
+	UPROPERTY()
+	TMap<FGameplayTag, FEnemySpawnInfo> EnemyMultiers;
 };

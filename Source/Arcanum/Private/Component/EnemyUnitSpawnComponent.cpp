@@ -11,6 +11,7 @@
 #include "Character/BaseUnitCharacter.h"
 #include "Core/SubSystem/PoolingSubsystem.h"
 #include "NavigationSystem.h"
+#include "Component/Stats/CharacterBattleStatsComponent.h"
 
 // Sets default values for this component's properties
 UEnemyUnitSpawnComponent::UEnemyUnitSpawnComponent()
@@ -117,6 +118,12 @@ void UEnemyUnitSpawnComponent::BeginPlay()
 				}
 			}
 		}
+
+		EnemyMultiers.Empty();
+		for (int i = 0; i < BattleSubsystem->GetStageData().SpawnInfos.Num(); i++)
+		{
+			EnemyMultiers.Add(BattleSubsystem->GetStageData().SpawnInfos[i].EnemyTag, BattleSubsystem->GetStageData().SpawnInfos[i]);
+		}
 	}
 
 	/*UnitSpawnTypes.Empty();
@@ -177,6 +184,51 @@ void UEnemyUnitSpawnComponent::WaveStart()
 			if (EnemyUnitCharacter)
 			{
 				EnemyUnitCharacter->SetUnit(UnitInfoSetting);
+
+				if (EnemyMultiers.Contains(UnitInfoSetting.Tag))
+				{
+					FEnemySpawnInfo* EnemySpawnInfo = EnemyMultiers.Find(UnitInfoSetting.Tag);
+					
+					TArray<FRegenStat> RegenStats;
+					TArray<FNonRegenStat> NonRegenStats;
+					for (int i = 0; i < MultipleStatTags.Num(); i++)
+					{
+						if (MultipleStatTags[i].MatchesTag(RegenTag))
+						{
+							const FRegenStat* RegenStat = EnemyUnitCharacter->GetCharacterBattleStatsComponent()->FindRegenStat(MultipleStatTags[i]);
+							if (RegenStat)
+							{
+								FRegenStat Regen = *RegenStat;
+								Regen.BaseMax *= (EnemySpawnInfo->SpawnMultiplier - 1.0f);
+								Regen.Current *= Regen.BaseMax;
+								RegenStats.Add(Regen);
+							}
+						}
+						else if (MultipleStatTags[i].MatchesTag(NonRegenTag))
+						{
+							const FNonRegenStat* NonRegenStat = EnemyUnitCharacter->GetCharacterBattleStatsComponent()->FindNonRegenStat(MultipleStatTags[i]);
+							if (NonRegenStat)
+							{
+								FNonRegenStat NonRegen = *NonRegenStat;
+								NonRegen.BaseValue *= (EnemySpawnInfo->SpawnMultiplier - 1.0f);
+								NonRegenStats.Add(NonRegen);
+							}
+						}
+					}
+					EnemyUnitCharacter->GetCharacterBattleStatsComponent()->AddRegenBonus(RegenStats);
+					EnemyUnitCharacter->GetCharacterBattleStatsComponent()->AddNonRegenBonus(NonRegenStats);
+
+					for (const auto& RegenStat : RegenStats)
+					{
+						EnemyUnitCharacter->GetCharacterBattleStatsComponent()->ChangeStatValue(RegenStat.ParentTag, RegenStat.BaseMax, nullptr);
+					}
+
+					/*for (const auto& NonRegenStat : NonRegenStats)
+					{
+						EnemyUnitCharacter->GetCharacterBattleStatsComponent()->ChangeStatValue(NonRegenStat.TagName, NonRegenStat.);
+					}*/
+
+				}
 			}
 		}
 	}

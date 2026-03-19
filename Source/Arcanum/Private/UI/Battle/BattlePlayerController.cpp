@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "UI/Battle/BattlePlayerController.h"
 #include "Blueprint/UserWidget.h"
 #include "UI/Battle/Contents/InBattleHUDWidget.h"
@@ -11,15 +8,17 @@
 #include "Core/SubSystem/BattlefieldManagerSubsystem.h"
 #include "GameplayTags/ArcanumTags.h"
 #include "Core/SubSystem/GameTimeSubsystem.h"
+#include "Core/ARPlayerAccountService.h"
 #include "UI/Battle/SubLayout/BattleAllyUnitSlotWidget.h"
 #include "Character/BaseUnitCharacter.h"
 #include "Core/SubSystem/PoolingSubsystem.h"
 #include "Character/PlayerCharacter.h"
-#include "UI/Battle/SubLayout/BattleAllyUnitSlotWidget.h"
 #include "UI/Battle/SubLayout/BattleBattleEndWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
 #include "Object/Actor/SpawnCheckDecal.h"
+#include "DataInfo/SkillData/Data/FSkillInfo.h"
+
 
 // ========================================================
 // 언리얼 기본 생성
@@ -75,7 +74,7 @@ void ABattlePlayerController::BeginPlay()
 	if (BattleSubsystem)
 	{
 		UsingAllyUnits.Empty();
-		for (auto Iter = BattleSubsystem->GetUsingAllyUnitData().begin(); Iter!= BattleSubsystem->GetUsingAllyUnitData().end(); ++Iter)
+		for (auto Iter = BattleSubsystem->GetUsingAllyUnitData().begin(); Iter != BattleSubsystem->GetUsingAllyUnitData().end(); ++Iter)
 		{
 			const FUnitInfoSetting& UnitDataE = Iter->Value;
 			UsingAllyUnits.Add(UnitDataE.Tag, UnitDataE);
@@ -123,7 +122,8 @@ void ABattlePlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(IA_Move, ETriggerEvent::Triggered, this, &ABattlePlayerController::InputMove);
 		EnhancedInputComponent->BindAction(IA_BasicAttack, ETriggerEvent::Completed, this, &ABattlePlayerController::BasicAttack);
 		EnhancedInputComponent->BindAction(IA_BasicSkill, ETriggerEvent::Completed, this, &ABattlePlayerController::BasicSkill);
-		EnhancedInputComponent->BindAction(IA_UltimateSkill, ETriggerEvent::Completed, this, &ABattlePlayerController::UltimateSkill);
+		EnhancedInputComponent->BindAction(IA_UltimateSkill, ETriggerEvent::Started, this, &ABattlePlayerController::UltimateSkillPressed);
+		EnhancedInputComponent->BindAction(IA_UltimateSkill, ETriggerEvent::Completed, this, &ABattlePlayerController::UltimateSkillReleased);
 		EnhancedInputComponent->BindAction(IA_Item1, ETriggerEvent::Completed, this, &ABattlePlayerController::Item1);
 		EnhancedInputComponent->BindAction(IA_Item2, ETriggerEvent::Completed, this, &ABattlePlayerController::Item2);
 		EnhancedInputComponent->BindAction(IA_WeaponSwap, ETriggerEvent::Completed, this, &ABattlePlayerController::WeaponSwap);
@@ -255,12 +255,22 @@ void ABattlePlayerController::DebugRemovePlayerInfoPanelSlot(int32 RemoveIDX)
 void ABattlePlayerController::SetupMainHUDWidget()
 {
 	HUDWidgetInstance->OnClickBasicAttack.AddDynamic(this, &ABattlePlayerController::BasicAttack);
-	HUDWidgetInstance->OnClickUltimateSkill.AddDynamic(this, &ABattlePlayerController::UltimateSkill);
+	HUDWidgetInstance->OnPressedUltimateSkill.AddDynamic(this, &ABattlePlayerController::UltimateSkillPressed);
+	HUDWidgetInstance->OnReleasedUltimateSkill.AddDynamic(this, &ABattlePlayerController::UltimateSkillReleased);
 	HUDWidgetInstance->OnClickBasicSkill.AddDynamic(this, &ABattlePlayerController::BasicSkill);
 	HUDWidgetInstance->OnClickWeaponSwap.AddDynamic(this, &ABattlePlayerController::WeaponSwap);
 	HUDWidgetInstance->OnClickItem1.AddDynamic(this, &ABattlePlayerController::Item1);
 	HUDWidgetInstance->OnClickItem2.AddDynamic(this, &ABattlePlayerController::Item2);
 	HUDWidgetInstance->OnToggleAutoManualMode.AddDynamic(this, &ABattlePlayerController::AutoManualModeMobile);
+
+	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (battleSubsystem && HUDWidgetInstance)
+	{
+		HUDWidgetInstance->RefreshWeaponSkillIcons(
+			battleSubsystem->GetCurrentWeaponIcon(),
+			battleSubsystem->GetCurrentBasicSkillIcon(),
+			battleSubsystem->GetLegendaryWeaponIcon());
+	}
 }
 
 void ABattlePlayerController::UpdatePlayerLocationProgress()
@@ -356,6 +366,14 @@ void ABattlePlayerController::SetBossHealthProgress(float CurrentHealth, float M
 // ========================================================
 void ABattlePlayerController::BasicAttack()
 {
+	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
+	{
+		const FGameplayTag skillTag = battleSubsystem->GetCurrentBasicAttackSkillTag();
+		const int32 skillLevel = battleSubsystem->GetCurrentBasicAttackSkillLevel();
+
+		UE_LOG(LogTemp, Warning, TEXT("BasicAttack Tag=%s Level=%d"), *skillTag.ToString(), skillLevel);
+	}
+
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("BasicAttack"));
 	//Todo : 기본공격
 
@@ -367,20 +385,67 @@ void ABattlePlayerController::BasicAttack()
 	}
 }
 
-void ABattlePlayerController::UltimateSkill()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("UltimateSkill"));
-	//Todo : 궁극기
-}
-
 void ABattlePlayerController::BasicSkill()
 {
+	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
+	{
+		const FGameplayTag skillTag = battleSubsystem->GetCurrentBasicSkillTag();
+		const int32 skillLevel = battleSubsystem->GetCurrentBasicSkillLevel();
+
+		UE_LOG(LogTemp, Warning, TEXT("BasicSkill Tag=%s Level=%d"), *skillTag.ToString(), skillLevel);
+	}
+
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("BasicSkill"));
 	//Todo : 기본스킬
 }
 
+//void ABattlePlayerController::UltimateSkill()
+//{
+//	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
+//	{
+//		const FGameplayTag skillTag = battleSubsystem->GetLegendaryUltimateSkillTag();
+//		const int32 skillLevel = battleSubsystem->GetLegendaryUltimateSkillLevel();
+//
+//		UE_LOG(LogTemp, Warning, TEXT("UltimateSkill Tag=%s Level=%d"), *skillTag.ToString(), skillLevel);
+//	}
+//
+//	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("UltimateSkill"));
+//	//Todo : 궁극기
+//}
+
 void ABattlePlayerController::WeaponSwap()
 {
+	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
+	{
+		const FGameplayTag currentSlotTag = battleSubsystem->GetCurrentWeaponSlotTag();
+
+		if (currentSlotTag == Arcanum::Items::ItemSlot::Weapon::Slot1)
+		{
+			battleSubsystem->SetCurrentWeaponSlotTag(Arcanum::Items::ItemSlot::Weapon::Slot2);
+		}
+		else if (currentSlotTag == Arcanum::Items::ItemSlot::Weapon::Slot2)
+		{
+			battleSubsystem->SetCurrentWeaponSlotTag(Arcanum::Items::ItemSlot::Weapon::Slot1);
+		}
+
+		UE_LOG(LogTemp, Warning, TEXT("WeaponSwap CurrentSlot=%s"), *battleSubsystem->GetCurrentWeaponSlotTag().ToString());
+
+		APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
+		if (playerCharacter)
+		{
+			playerCharacter->UpdateEquippedWeaponMesh();
+		}
+	}
+
+	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (battleSubsystem && HUDWidgetInstance)
+	{
+		HUDWidgetInstance->RefreshWeaponSkillIcons(
+			battleSubsystem->GetCurrentWeaponIcon(),
+			battleSubsystem->GetCurrentBasicSkillIcon(),
+			battleSubsystem->GetLegendaryWeaponIcon());
+	}
+
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("WeaponSwap"));
 	//Todo : 무기스왑
 }
@@ -578,7 +643,7 @@ bool ABattlePlayerController::UseManaValue(float Value)
 bool ABattlePlayerController::UseCoolTime(FGameplayTag InTag)
 {
 	FUnitInfoSetting* UnitData = UsingAllyUnits.Find(InTag);
-	if(!UnitData) return false;
+	if (!UnitData) return false;
 
 	UnitData->CurrentCoolTime = UnitData->CoolTime;
 
@@ -653,12 +718,12 @@ bool ABattlePlayerController::IsUnitUsingEnable(FGameplayTag InTag)
 	FUnitInfoSetting UnitData = *UsingAllyUnits.Find(InTag);
 
 	//쿨타임 체크하고 고기 코스트 체크
-	if (UnitData.CurrentCoolTime <= 0.0f && 
+	if (UnitData.CurrentCoolTime <= 0.0f &&
 		UnitData.MeatCost <= MeatValue.Current)
 	{
 		return true;
 	}
-	
+
 	return false;
 }
 
@@ -739,8 +804,147 @@ void ABattlePlayerController::InputMove(const FInputActionValue& InputValue)
 		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
-		// 4. Pawn에 이동 입력 반영
-		ControlledPawn->AddMovementInput(-ForwardDirection, MovementVector.Y); // 앞/뒤
-		ControlledPawn->AddMovementInput(-RightDirection, MovementVector.X);   // 좌/우
+		// 4. 현재 이동 입력 방향 저장
+		FVector moveDirection = (-ForwardDirection * MovementVector.Y) + (-RightDirection * MovementVector.X);
+		moveDirection.Z = 0.0f;
+
+		if (!moveDirection.IsNearlyZero())
+		{
+			moveDirection.Normalize();
+			LastMoveInputDirection = moveDirection;
+		}
+
+		// 5. 궁극기 조준 중이면 프리뷰만 갱신
+		if (bIsUltimateAiming)
+		{
+			UpdateUltimatePreview();
+		}
+		else
+		{
+			// 6. 평소에는 Pawn 이동 입력 반영
+			ControlledPawn->AddMovementInput(-ForwardDirection, MovementVector.Y); // 앞/뒤
+			ControlledPawn->AddMovementInput(-RightDirection, MovementVector.X);   // 좌/우
+		}
 	}
+}
+
+// ========================================================
+// 궁극기
+// ========================================================
+void ABattlePlayerController::UltimateSkillEnd()
+{
+	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (!battleSubsystem) return;
+
+	battleSubsystem->EndLegendaryWeaponMode();
+
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
+	if (playerCharacter)
+	{
+		playerCharacter->UpdateEquippedWeaponMesh();
+	}
+
+	if (UltimatePostProcessVolume)
+	{
+		UltimatePostProcessVolume->bUnbound = false;
+	}
+}
+
+void ABattlePlayerController::UltimateSkillPressed()
+{
+	if (bIsUltimateAiming) return;
+
+	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (!battleSubsystem) return;
+
+	const FGameplayTag skillTag = battleSubsystem->GetLegendaryUltimateSkillTag();
+	if (!skillTag.IsValid()) return;
+
+	const float castTime = battleSubsystem->GetInBattleData().BattleWeaponSkill.LegendaryUltimateSkill.CastTime;
+
+	bIsUltimateAiming = true;
+
+	battleSubsystem->BeginLegendaryWeaponMode();
+
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
+	if (playerCharacter)
+	{
+		playerCharacter->UpdateEquippedWeaponMesh();
+		playerCharacter->ShowUltimatePreview();
+	}
+
+	UpdateUltimatePreview();
+
+	GetWorldTimerManager().ClearTimer(UltimateSkillTimerHandle);
+
+	if (castTime > 0.0f)
+	{
+		GetWorldTimerManager().SetTimer(
+			UltimateSkillTimerHandle,
+			this,
+			&ABattlePlayerController::ExecuteUltimateSkill,
+			castTime,
+			false
+		);
+	}
+}
+
+void ABattlePlayerController::UltimateSkillReleased()
+{
+	if (bIsUltimateAiming)
+	{
+		ExecuteUltimateSkill();
+	}
+}
+
+void ABattlePlayerController::ExecuteUltimateSkill()
+{
+	if (bIsUltimateAiming)
+	{
+		bIsUltimateAiming = false;
+
+		GetWorldTimerManager().ClearTimer(UltimateSkillTimerHandle);
+
+		APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
+		if (playerCharacter)
+		{
+			playerCharacter->HideUltimatePreview();
+		}
+
+		UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+		if (battleSubsystem)
+		{
+			const FGameplayTag skillTag = battleSubsystem->GetLegendaryUltimateSkillTag();
+			const int32 skillLevel = battleSubsystem->GetLegendaryUltimateSkillLevel();
+
+			UE_LOG(LogTemp, Warning, TEXT("UltimateSkill Tag=%s Level=%d"), *skillTag.ToString(), skillLevel);
+
+		}
+
+		// Todo : 현재 조준 위치로 궁극기 실제 발사
+
+		UltimateSkillEnd();
+	}
+}
+
+void ABattlePlayerController::UpdateUltimatePreview()
+{
+	if (!bIsUltimateAiming)	return;
+
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
+	if (!playerCharacter) return;
+
+	FVector actorLocation = playerCharacter->GetActorLocation();
+
+	FVector aimDirection = LastMoveInputDirection;
+	if (aimDirection.IsNearlyZero())
+	{
+		aimDirection = playerCharacter->GetActorForwardVector();
+	}
+
+	aimDirection.Z = 0.0f;
+	aimDirection.Normalize();
+
+	FVector previewLocation = actorLocation + (aimDirection * UltimatePreviewDistance);
+	playerCharacter->UpdateUltimatePreviewLocation(previewLocation);
 }

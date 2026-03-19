@@ -201,5 +201,7 @@ private:
     bool AddTestSoul();
     UFUNCTION(BlueprintCallable)
     bool AddTestShard();
+    UFUNCTION(BlueprintCallable)
+    bool AddTestEquipmentSet();
 #pragma endregion
 };

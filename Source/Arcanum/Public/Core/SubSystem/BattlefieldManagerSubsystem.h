@@ -13,6 +13,7 @@
 #include "Data/Types/UnitData.h"
 #include "Data/Types/BattleStageInfo.h"
 #include "DataInfo/StageData/StageInfo/Data/FStageDataInfo.h"
+#include "DataInfo/SkillData/Data/FBattleWeaponSkillData.h"
 #include "BattlefieldManagerSubsystem.generated.h"
 
 USTRUCT(BlueprintType)
@@ -24,6 +25,7 @@ public:
 	FStageDataInfo StageData;
 	FBattleStageInfo BattleStageInfo;
 	FGradeStatData PlayerBattleStat;
+	FBattleWeaponSkillData BattleWeaponSkill;
 };
 
 
@@ -120,7 +122,7 @@ public:
 	*/
 #pragma endregion
 
-	
+
 
 protected:
 	UFUNCTION()
@@ -176,7 +178,91 @@ protected:
 	void DebugPlayerCharacterSet();
 #pragma endregion
 
-	public:
-		const FGameplayTag AllyTeamTag = Arcanum::Unit::Faction::Ally::Root;
-		const FGameplayTag EnemyTeamTag = Arcanum::Unit::Faction::Enemy::Root;
+public:
+	const FGameplayTag AllyTeamTag = Arcanum::Unit::Faction::Ally::Root;
+	const FGameplayTag EnemyTeamTag = Arcanum::Unit::Faction::Enemy::Root;
+
+#pragma region 스킬 장비 캐시
+public:
+	/* 현재 무기 슬롯 태그 */
+	FGameplayTag GetCurrentWeaponSlotTag() const;
+
+	/* 현재 무기 기본 공격 스킬 태그 */
+	FGameplayTag GetCurrentBasicAttackSkillTag() const;
+
+	/* 현재 무기 기본 공격 스킬 레벨 */
+	int32 GetCurrentBasicAttackSkillLevel() const;
+
+	/* 현재 무기 기본 스킬 태그 */
+	FGameplayTag GetCurrentBasicSkillTag() const;
+
+	/* 현재 무기 기본 스킬 레벨 */
+	int32 GetCurrentBasicSkillLevel() const;
+
+	/* 전설 무기 궁극기 스킬 태그 */
+	FGameplayTag GetLegendaryUltimateSkillTag() const;
+
+	/* 전설 무기 궁극기 스킬 레벨 */
+	int32 GetLegendaryUltimateSkillLevel() const;
+
+	/* 현재 활성 무기 아이콘 */
+	UTexture2D* GetCurrentWeaponIcon() const;
+
+	/* 전설 무기 아이콘 */
+	UTexture2D* GetLegendaryWeaponIcon() const;
+
+	/* 현재 일반 스킬 아이콘 */
+	UTexture2D* GetCurrentBasicSkillIcon() const;
+
+	/* 현재 선택 캐릭터의 4세트 발동 스킬 태그 반환 */
+	UFUNCTION()
+	FGameplayTag GetEquippedSetSkillTag() const;
+
+	/* 현재 활성 무기 슬롯 태그 (스왑) */
+	void SetCurrentWeaponSlotTag(const FGameplayTag& InWeaponSlotTag);
+
+	/* 궁극기 사용 시작 */
+	void BeginLegendaryWeaponMode();
+
+	/* 궁극기 종료 후 이전 무기로 복귀 */
+	void EndLegendaryWeaponMode();
+
+	/* 현재 활성 무기 스켈레탈 메시 */
+	USkeletalMesh* GetCurrentWeaponMesh() const;
+
+	/* 전설 무기 스켈레탈 메시 */
+	USkeletalMesh* GetLegendaryWeaponMesh() const;
+
+	/* 현재 활성 무기의 장착 타입 태그 */
+	FGameplayTag GetCurrentWeaponSlotTypeTag() const;
+
+protected:
+	/* 스킬 캐스트타임 반환 */
+	float FindSkillCastTime(const FGameplayTag& InSkillTag, int32 InSkillLevel) const;
+
+	/* 스킬 쿨타임 반환 */
+	float FindSkillCooldown(const FGameplayTag& InSkillTag, int32 InSkillLevel) const;
+
+	/* 전투 시작 시 무기 스킬 캐시 생성 */
+	void BuildBattleWeaponSkillCache(FInBattleData& OutInBattleData);
+
+	/* Guid로 인벤토리에서 장비 찾기 */
+	const FEquipmentInfo* FindEquipmentByGuid(const FPlayerData& InPlayerData, const FGuid& InItemGuid) const;
+
+	/* 현재 선택된 플레이어 캐릭터 반환 */
+	const FBattleCharacterData* GetSelectedCharacterData() const;
+
+	/* 현재 선택 캐릭터가 지정한 세트 루트 태그를 4개 장착했는지 확인 */
+	UFUNCTION()
+	bool HasEquippedFullSet(const FGameplayTag& InSetRootTag) const;
+
+protected:
+	/* 궁극기 사용 이전 무기 슬롯 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Battle|SkillCache")
+	FGameplayTag PreviousWeaponSlotTag;
+
+	/* 현재 궁극기 사용 중 여부 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Battle|SkillCache")
+	bool bUsingLegendaryWeapon = false;
+#pragma endregion
 };

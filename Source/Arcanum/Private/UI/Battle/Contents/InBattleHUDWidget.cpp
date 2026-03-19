@@ -99,9 +99,14 @@ void UInBattleHUDWidget::ClickBasicAttack()
 	OnClickBasicAttack.Broadcast();
 }
 
-void UInBattleHUDWidget::ClickUltimateSkill()
+void UInBattleHUDWidget::PressedUltimateSkill()
 {
-	OnClickUltimateSkill.Broadcast();
+	OnPressedUltimateSkill.Broadcast();
+}
+
+void UInBattleHUDWidget::ReleasedUltimateSkill()
+{
+	OnReleasedUltimateSkill.Broadcast();
 }
 
 void UInBattleHUDWidget::ClickBasicSkill()
@@ -135,7 +140,8 @@ void UInBattleHUDWidget::ToggleAutoManualMode(bool bIsChecked)
 void UInBattleHUDWidget::BindCallbacks()
 {
 	BasicAttack->OnButtonClick.AddDynamic(this, &UInBattleHUDWidget::ClickBasicAttack);
-	UltimateSkill->OnButtonClick.AddDynamic(this, &UInBattleHUDWidget::ClickUltimateSkill);
+	UltimateSkill->OnButtonPressed.AddDynamic(this, &UInBattleHUDWidget::PressedUltimateSkill);
+	UltimateSkill->OnButtonReleased.AddDynamic(this, &UInBattleHUDWidget::ReleasedUltimateSkill);
 	BasicSkill->OnButtonClick.AddDynamic(this, &UInBattleHUDWidget::ClickBasicSkill);
 	WeaponSwap->OnButtonClick.AddDynamic(this, &UInBattleHUDWidget::ClickWeaponSwap);
 	Item1->OnButtonClick.AddDynamic(this, &UInBattleHUDWidget::ClickItem1);
@@ -143,4 +149,20 @@ void UInBattleHUDWidget::BindCallbacks()
 	AutoManualMode->OnToggle.AddDynamic(this, &UInBattleHUDWidget::ToggleAutoManualMode);
 }
 
+void UInBattleHUDWidget::RefreshWeaponSkillIcons(UTexture2D* InCurrentWeaponIcon, UTexture2D* InBasicSkillIcon, UTexture2D* InLegendaryWeaponIcon)
+{
+	if (BasicAttack)
+	{
+		BasicAttack->SetImage(InCurrentWeaponIcon);
+	}
 
+	if (BasicSkill)
+	{
+		BasicSkill->SetImage(InBasicSkillIcon);
+	}
+
+	if (UltimateSkill)
+	{
+		UltimateSkill->SetImage(InLegendaryWeaponIcon);
+	}
+}

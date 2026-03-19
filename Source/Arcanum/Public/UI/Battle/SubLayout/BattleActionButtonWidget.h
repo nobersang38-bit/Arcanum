@@ -8,6 +8,10 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnButtonClick);
 
+/* 궁극기 */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnButtonPressed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnButtonReleased);
+
 /**
  * 김도현
  */
@@ -31,6 +35,8 @@ protected:
 
 public:
 	FOnButtonClick OnButtonClick;
+	FOnButtonPressed OnButtonPressed;
+	FOnButtonReleased OnButtonReleased;
 
 	UFUNCTION()
 	void SetActivateCost(bool InIsDisable);
@@ -41,11 +47,14 @@ public:
 	UFUNCTION()
 	void SetImage(UTexture2D* InImage);
 
-
 #pragma region 내부 함수
 protected:
 	UFUNCTION()
 	void OnActionButtonClick();
+	UFUNCTION()
+	void OnActionButtonPressed();
+	UFUNCTION()
+	void OnActionButtonReleased();
 
 	UFUNCTION()
 	void SetProgressesVisible(bool IsVisible);

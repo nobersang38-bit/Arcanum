@@ -5,7 +5,7 @@ USkillBase::USkillBase()
 {
 }
 
-void USkillBase::Initialize(AActor* InOwner, const FSkillInfo* InSkillInfo, int32 InLevel, FGameplayTag InTargetFilterTag)
+void USkillBase::Initialize(AActor* InOwner, const FSkillInfo* InSkillInfo, int32 InLevel, FGameplayTag InTargetFilterTag, AActor* InTargetActor, const FVector InTargetLocation)
 {
     if (!InOwner || !InSkillInfo)
     {
@@ -34,6 +34,11 @@ const FLevelModifierEntry* USkillBase::GetCurrentLevelEntry() const
     }
 
     return nullptr;
+}
+
+const FSkillInfo* USkillBase::GetSkillInfo() const
+{
+    return SkillInfo;
 }
 
 void USkillBase::ActivateSkill(AActor* Instigator)

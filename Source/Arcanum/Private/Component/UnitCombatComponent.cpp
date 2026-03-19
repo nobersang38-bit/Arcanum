@@ -68,7 +68,7 @@ void UUnitCombatComponent::UnitActivate(bool bIsHologram)
 	OwnerCharacter->GetMesh()->SetHiddenInGame(false);
 	if (!bIsHologram)
 	{
-		OwnerCharacter->GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		//OwnerCharacter->GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 		OwnerCharacter->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		SetupStates();
 	}
@@ -78,7 +78,7 @@ void UUnitCombatComponent::UnitActivate(bool bIsHologram)
 void UUnitCombatComponent::UnitDeactive()
 {
 	OwnerCharacter->GetMesh()->SetHiddenInGame(true);
-	OwnerCharacter->GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	//OwnerCharacter->GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	OwnerCharacter->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	GetWorld()->GetTimerManager().ClearTimer(TickTimerHandle);
