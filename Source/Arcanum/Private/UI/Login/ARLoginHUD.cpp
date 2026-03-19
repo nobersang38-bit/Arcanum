@@ -7,6 +7,7 @@
 #include "UI/Login/SubLayout/LoginPanelWidget.h"
 #include "UI/Common/CommonBtnWidget.h"
 #include "UI/Common/CommonDialog.h"
+#include "UI/Common/CommonOptionWindow.h"
 
 #include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
@@ -168,7 +169,12 @@ void UARLoginHUD::HandleAnnouncementClose()
 // ========================================================
 void UARLoginHUD::ClickSettingBtn()
 {
-
+	if (SettingHUDClass) {
+		SettingHUD = CreateWidget<UCommonOptionWindow>(this, SettingHUDClass);
+		if (SettingHUD) {
+			SettingHUD->AddToViewport();
+		}
+	}
 }
 // ========================================================
 // 플레이

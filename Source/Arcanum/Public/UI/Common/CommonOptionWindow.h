@@ -6,6 +6,7 @@
 
 class UButton;
 class UCommonTabList;
+class UCommonBtnWidget;
 
 UCLASS()
 class ARCANUM_API UCommonOptionWindow : public UUserWidget
@@ -16,8 +17,8 @@ protected:
     virtual void NativeConstruct() override;
 
     UPROPERTY(meta = (BindWidget)) TObjectPtr<UCommonTabList> TabNavigation;
-    UPROPERTY(meta = (BindWidget)) TObjectPtr<UButton> CloseBtn;
-    UPROPERTY(meta = (BindWidget)) TObjectPtr<UButton> SaveBtn;
+    UPROPERTY(meta = (BindWidget)) TObjectPtr<UCommonBtnWidget> CloseBtn;
+    UPROPERTY(meta = (BindWidget)) TObjectPtr<UCommonBtnWidget> SaveBtn;
 
 private:
     UFUNCTION() void OnCloseButtonClicked();

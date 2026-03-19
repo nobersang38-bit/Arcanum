@@ -31,15 +31,22 @@ void UAudioTabWidget::RefreshOptions()
 
     ContentBox->ClearChildren();
 
-    AddOption(FName("OverallVolume"), FText::FromString(TEXT("전체 볼륨")), 1.f);
+    UGameOptionSettings* Settings = UGameOptionSettings::Get();
+    if (!Settings) return;
+
+    AddOption(FName("OverallVolume"), FText::FromString(TEXT("전체 볼륨")), Settings->GetOverallVolume());
     AddSpacer();
-    AddOption(FName("MusicVolume"), FText::FromString(TEXT("배경음")), 1.f);
+
+    AddOption(FName("MusicVolume"), FText::FromString(TEXT("배경음")), Settings->GetMusicVolume());
     AddSpacer();
-    AddOption(FName("SoundFXVolume"), FText::FromString(TEXT("효과음")), 1.f);
+
+    AddOption(FName("SoundFXVolume"), FText::FromString(TEXT("효과음")), Settings->GetSoundFXVolume());
     AddSpacer();
-    AddOption(FName("AllowBackgroundAudio"), FText::FromString(TEXT("백그라운드 재생")), false);
+
+    AddOption(FName("AllowBackgroundAudio"), FText::FromString(TEXT("백그라운드 재생")), Settings->GetAllowBackgroundAudio());
     AddSpacer();
-    AddOption(FName("UseHDRAudioMode"), FText::FromString(TEXT("HDR 오디오")), false);
+
+    AddOption(FName("UseHDRAudioMode"), FText::FromString(TEXT("HDR 오디오")), Settings->GetUseHDRAudioMode());
 }
 void UAudioTabWidget::AddOption(FName ID, FText Name, float Default)
 {

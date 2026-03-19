@@ -8,6 +8,7 @@
 #include "UI/Options/Data/OptionDataDiscrete.h"
 
 #include "Components/Spacer.h"
+#include "Components/ScrollBox.h"
 #include "Components/VerticalBox.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -26,65 +27,67 @@ void UVideoTabWidget::SynchronizeProperties()
 void UVideoTabWidget::RefreshOptions()
 {
     if (!ContentBox) return;
-
     ContentBox->ClearChildren();
+    if (MainScrollBox) MainScrollBox->ScrollToStart();
+
+    UGameOptionSettings* Settings = UGameOptionSettings::Get();
+    if (!Settings) return;
 
     // ==========================================
     // 1. Display Category (디스플레이)
     // ==========================================
-    TArray<FText> WindowOptions = {
-        FText::FromString(TEXT("전체 화면")),
-        FText::FromString(TEXT("전체 창 모드")),
-        FText::FromString(TEXT("창 모드"))
-    };
-    AddOption(FName("WindowMode"), FText::FromString(TEXT("화면 모드")), 1, WindowOptions);
+    TArray<FText> WindowOptions = { FText::FromString(TEXT("전체 화면")), FText::FromString(TEXT("전체 창 모드")), FText::FromString(TEXT("창 모드")) };
+    AddOption(FName("WindowMode"), FText::FromString(TEXT("화면 모드")), (float)Settings->GetFullscreenMode(), WindowOptions);
     AddSpacer();
+
     TArray<FText> ResOptions = { FText::FromString(TEXT("1920 x 1080")), FText::FromString(TEXT("2560 x 1440")) };
-    AddOption(FName("ScreenResolution"), FText::FromString(TEXT("해상도")), 0, ResOptions);
+    int32 ResIndex = (Settings->GetScreenResolution().X == 2560) ? 1 : 0;
+    AddOption(FName("ScreenResolution"), FText::FromString(TEXT("해상도")), (float)ResIndex, ResOptions);
     AddSpacer();
     AddSpacer();
 
     // ==========================================
     // 2. Graphics Category (그래픽 품질)
     // ==========================================
-    AddOption(FName("DisplayGamma"), FText::FromString(TEXT("밝기")), 0.5f);
+    AddOption(FName("DisplayGamma"), FText::FromString(TEXT("밝기")), Settings->GetCurrentDisplayGamma());
     AddSpacer();
-    TArray<FText> QualityLevels = {
-        FText::FromString(TEXT("낮음")), FText::FromString(TEXT("보통")),
-        FText::FromString(TEXT("높음")), FText::FromString(TEXT("에픽")), FText::FromString(TEXT("시네마틱"))
-    };
-    AddOption(FName("OverallQuality"), FText::FromString(TEXT("전체 품질")), 2, QualityLevels);
+
+    TArray<FText> QualityLevels = { FText::FromString(TEXT("낮음")), FText::FromString(TEXT("보통")), FText::FromString(TEXT("높음")), FText::FromString(TEXT("에픽")), FText::FromString(TEXT("시네마틱")) };
+    AddOption(FName("OverallQuality"), FText::FromString(TEXT("전체 품질")), (float)Settings->GetOverallScalabilityLevel(), QualityLevels);
     AddSpacer();
-    AddOption(FName("ResolutionScale"), FText::FromString(TEXT("3D 해상도")), 1.0f);
+    AddOption(FName("ResolutionScale"), FText::FromString(TEXT("3D 해상도")), Settings->GetResolutionScaleNormalized());
     AddSpacer();
-    AddOption(FName("GlobalIlluminationQuality"), FText::FromString(TEXT("글로벌 일루미네이션")), 2, QualityLevels);
+    AddOption(FName("GlobalIlluminationQuality"), FText::FromString(TEXT("G Illumi")), (float)Settings->GetGlobalIlluminationQuality(), QualityLevels);
     AddSpacer();
-    AddOption(FName("ShadowQuality"), FText::FromString(TEXT("그림자 품질")), 2, QualityLevels);
+    AddOption(FName("ShadowQuality"), FText::FromString(TEXT("그림자 품질")), (float)Settings->GetShadowQuality(), QualityLevels);
     AddSpacer();
-    AddOption(FName("AntiAliasingQuality"), FText::FromString(TEXT("안티 에일리어싱")), 2, QualityLevels);
+    AddOption(FName("AntiAliasingQuality"), FText::FromString(TEXT("AA")), (float)Settings->GetAntiAliasingQuality(), QualityLevels);
     AddSpacer();
-    AddOption(FName("ViewDistanceQuality"), FText::FromString(TEXT("시야 거리")), 2, QualityLevels);
+    AddOption(FName("ViewDistanceQuality"), FText::FromString(TEXT("시야 거리")), (float)Settings->GetViewDistanceQuality(), QualityLevels);
     AddSpacer();
-    AddOption(FName("TextureQuality"), FText::FromString(TEXT("텍스처 품질")), 2, QualityLevels);
+    AddOption(FName("TextureQuality"), FText::FromString(TEXT("텍스처 품질")), (float)Settings->GetTextureQuality(), QualityLevels);
     AddSpacer();
-    AddOption(FName("VisualEffectQuality"), FText::FromString(TEXT("이펙트 품질")), 2, QualityLevels);
+    AddOption(FName("VisualEffectQuality"), FText::FromString(TEXT("이펙트 품질")), (float)Settings->GetVisualEffectQuality(), QualityLevels);
     AddSpacer();
-    AddOption(FName("ReflectionQuality"), FText::FromString(TEXT("반사 품질")), 2, QualityLevels);
+    AddOption(FName("ReflectionQuality"), FText::FromString(TEXT("반사 품질")), (float)Settings->GetReflectionQuality(), QualityLevels);
     AddSpacer();
-    AddOption(FName("PostProcessingQuality"), FText::FromString(TEXT("포스트 프로세싱")), 2, QualityLevels);
+    AddOption(FName("PostProcessingQuality"), FText::FromString(TEXT("PP")), (float)Settings->GetPostProcessingQuality(), QualityLevels);
     AddSpacer();
     AddSpacer();
 
     // ==========================================
     // 3. Advanced Graphics (고급 설정)
     // ==========================================
-    AddOption(FName("VerticalSync"), FText::FromString(TEXT("수직 동기화")), false);
+    AddOption(FName("VerticalSync"), FText::FromString(TEXT("수직 동기화")), Settings->IsVSyncEnabled());
     AddSpacer();
-    TArray<FText> FrameOptions = {
-        FText::FromString(TEXT("30 FPS")), FText::FromString(TEXT("60 FPS")),
-        FText::FromString(TEXT("120 FPS")), FText::FromString(TEXT("제한 없음"))
-    };
-    AddOption(FName("FrameRateLimit"), FText::FromString(TEXT("프레임 제한")), 3, FrameOptions);
+    TArray<FText> FrameOptions = { FText::FromString(TEXT("30 FPS")), FText::FromString(TEXT("60 FPS")), FText::FromString(TEXT("120 FPS")), FText::FromString(TEXT("제한 없음")) };
+    float FrameLimit = Settings->GetFrameRateLimit();
+    int32 FrameIndex = 3;
+    if (FrameLimit == 30.f) FrameIndex = 0;
+    else if (FrameLimit == 60.f) FrameIndex = 1;
+    else if (FrameLimit == 120.f) FrameIndex = 2;
+
+    AddOption(FName("FrameRateLimit"), FText::FromString(TEXT("프레임 제한")), (float)FrameIndex, FrameOptions);
 }
 void UVideoTabWidget::AddOption(FName ID, FText Name, float Default)
 {
@@ -155,7 +158,7 @@ void UVideoTabWidget::CreateAndAddWidget(UOptionDataObject* Data)
 }
 void UVideoTabWidget::ApplyVideoSetting(FName ID, float NewValue)
 {
-    UGameUserSettings* Settings = GEngine->GetGameUserSettings();
+    UGameOptionSettings* Settings = UGameOptionSettings::Get();
     if (!Settings) return;
 
     // =========================
@@ -209,6 +212,6 @@ void UVideoTabWidget::ApplyVideoSetting(FName ID, float NewValue)
     // 적용
     // =========================
 
-    Settings->ApplySettings(false);
+    Settings->ApplySettings(true);
     Settings->SaveSettings();
 }

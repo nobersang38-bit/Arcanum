@@ -28,6 +28,8 @@ class UInventoryHUDWidget;
 class UEnhancementHUDWidget;
 class UGameTimeSubsystem;
 class UBattleHUDWidget;
+class UCommonOptionWindow;
+
 struct FDTItemCatalogRow;
 
 
@@ -195,7 +197,10 @@ protected:
 #pragma endregion
 
 #pragma region 설정
-
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UCommonOptionWindow> SettingHUDClass;
+	UPROPERTY()
+	TObjectPtr<UCommonOptionWindow> SettingHUD;
 #pragma endregion
 
 #pragma region 종료

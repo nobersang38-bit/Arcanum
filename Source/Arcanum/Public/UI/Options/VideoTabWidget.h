@@ -20,6 +20,7 @@ protected:
     void RefreshOptions();
 
     UPROPERTY(meta = (BindWidget)) TObjectPtr<class UVerticalBox> ContentBox;
+    UPROPERTY(meta = (BindWidget)) TObjectPtr<class UScrollBox> MainScrollBox;
     UPROPERTY(EditAnywhere) TSubclassOf<UOptionItemWidget> ScalarWidgetClass;
     UPROPERTY(EditAnywhere, BlueprintReadWrite)  float Height = 20.f;
 
