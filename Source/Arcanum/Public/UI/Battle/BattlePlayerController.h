@@ -20,6 +20,7 @@ UCLASS()
 class ARCANUM_API ABattlePlayerController : public APlayerController
 {
 	GENERATED_BODY()
+	friend struct FBTPlayerStruct;
 #pragma region 언리얼 기본생성
 protected:
 	virtual void BeginPlay() override;

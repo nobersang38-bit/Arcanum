@@ -26,6 +26,7 @@ public:
 	FBattleStageInfo BattleStageInfo;
 	FGradeStatData PlayerBattleStat;
 	FBattleWeaponSkillData BattleWeaponSkill;
+	FPlayerBattleData PlayerBattleData;
 };
 
 
@@ -181,6 +182,7 @@ protected:
 public:
 	const FGameplayTag AllyTeamTag = Arcanum::Unit::Faction::Ally::Root;
 	const FGameplayTag EnemyTeamTag = Arcanum::Unit::Faction::Enemy::Root;
+	const FGameplayTag AllyBaseStaminaTag = Arcanum::BattleStat::Player::NonRegen::CommandCenterStamina::Value;
 
 #pragma region 스킬 장비 캐시
 public:

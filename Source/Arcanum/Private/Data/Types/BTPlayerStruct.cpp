@@ -28,7 +28,7 @@ void FBTPlayerStruct::UseSkill()
 			PlayerController->BasicSkill();
 			break;
 		case EBSkillType::UltimateSkill:
-			PlayerController->UltimateSkill();
+			//PlayerController->UltimateSkill();
 			break;
 		case EBSkillType::Item01:
 			PlayerController->Item1();
