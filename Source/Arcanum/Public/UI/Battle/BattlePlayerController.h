@@ -19,6 +19,8 @@ UCLASS()
 class ARCANUM_API ABattlePlayerController : public APlayerController
 {
 	GENERATED_BODY()
+	friend struct FBTPlayerStruct;
+
 #pragma region 언리얼 기본생성
 protected:
 	virtual void BeginPlay() override;
@@ -43,21 +45,12 @@ protected:
 	UFUNCTION(Exec)
 	void DebugRemovePlayerInfoPanelSlot(int32 RemoveIDX);
 
-	UFUNCTION()
-	void DebugSkillActorTest();
-
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Debug|BattleActionButton")
 	bool bUseDebugBattleActionButton = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Debug|BattleActionButton")
 	float DebugBattleActionButtonCoolTime = 3.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Debug|Skill")
-	TSubclassOf<class ASkillActor> DebugSkillActorClass = nullptr;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Debug|Skill")
-	TObjectPtr<class USkillBase> DebugSkillBaseInstance = nullptr;
 
 	TMap<FTimerHandle, TWeakObjectPtr<class UBattleActionButtonWidget>> ActionButtons;
 #pragma endregion
@@ -125,6 +118,12 @@ protected:
 	void Item2();
 
 	UFUNCTION()
+	bool SkillStarter(FGameplayTag InSkillTag, int32 InLevel);
+
+	UFUNCTION()
+	bool SkillCostChecker(FGameplayTag InSkillTag, int32 InLevel);
+
+	UFUNCTION()
 	void AutoManualModeMobile(bool bIsChecked);
 
 	UFUNCTION()
@@ -153,9 +152,13 @@ protected:
 	UFUNCTION()
 	bool UseManaValue(float Value);
 
-	// 쿨타임
+	// 유닛 쿨타임
 	UFUNCTION()
-	bool UseCoolTime(FGameplayTag InTag);
+	bool UseUnitCoolTime(FGameplayTag InTag);
+
+	// 스킬 쿨타임
+	UFUNCTION()
+	bool UseSkillCost(FGameplayTag InTag);
 #pragma endregion
 
 #pragma region 전투 종료
@@ -177,7 +180,10 @@ protected:
 
 	// 쿨타임을 계속 줄임
 	UFUNCTION()
-	void Internal_UnitsCoolTimeTick(float DeltaTime);
+	void Internal_CoolTimeTick(float DeltaTime);
+
+	UFUNCTION()
+	void Internal_AITick(float DeltaTime);
 
 #pragma endregion
 
@@ -277,8 +283,19 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
 	FGameplayTag MeatTag = Arcanum::BattleStat::Player::Regen::Meat::Root;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
+	FGameplayTag ManaTag = Arcanum::BattleStat::Character::Regen::Mana::Value;
+
 private:
 	FTimerHandle PlayerLocationProgressTimeHandle;
+	FTimerHandle PlayerAITickTimerHandle;
+
 	bool bIsAutoManual = false;
 	float StageTimeSecond = 0.0f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TMap<FGameplayTag, float> SkillCoolTimes;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TMap<FGameplayTag, class USkillBase*> SkillBaseInstances;
 };

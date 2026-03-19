@@ -13,6 +13,9 @@
 #include "Core/SubSystem/BattlefieldManagerSubsystem.h"
 #include "Component/Stats/CharacterBattleStatsComponent.h"
 #include "Component/StatusActionComponent.h"
+#include "AIController.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "BehaviorTree/Blackboard/BlackboardKeyType_Struct.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -47,11 +50,63 @@ APlayerCharacter::APlayerCharacter()
 	PrimaryActorTick.bStartWithTickEnabled = true;
 }
 
+void APlayerCharacter::SetAutoMode(ABattlePlayerController* MainController, bool bIsAuto)
+{
+	if (bIsAuto)
+	{
+		if (CachedAIC)
+		{
+			UnPossessed();
+			PossessedBy(CachedAIC);
+			CachedAIC->RunBehaviorTree(BehaviorTree);
+
+			if (UBlackboardComponent* BBComp = CachedAIC->GetBlackboardComponent())
+			{
+				//// 기본공격
+				//FBlackboard::FKey KeyID = BBComp->GetKeyID(BlackboardBasicAttackName);
+				//FBTPlayerStruct& TempStruct = BBComp->GetValue<UBlackboardKeyType_Struct>(KeyID);
+				//TempStruct.PlayerController = MainController;
+
+				//// 기본스킬
+				//KeyID = BBComp->GetKeyID(BlackboardBasicSkillName);
+				//TempStruct = BBComp->GetValue<UBlackboardKeyType_Struct>(KeyID);
+				//TempStruct.PlayerController = MainController;
+
+				//// 궁극기
+				//KeyID = BBComp->GetKeyID(BlackboardUltimateSkillName);
+				//TempStruct = BBComp->GetValue<UBlackboardKeyType_Struct>(KeyID);
+				//TempStruct.PlayerController = MainController;
+
+				//// 아이템1
+				//KeyID = BBComp->GetKeyID(BlackboardItem01Name);
+				//TempStruct = BBComp->GetValue<UBlackboardKeyType_Struct>(KeyID);
+				//TempStruct.PlayerController = MainController;
+
+				//// 아이템2
+				//KeyID = BBComp->GetKeyID(BlackboardItem02Name);
+				//TempStruct = BBComp->GetValue<UBlackboardKeyType_Struct>(KeyID);
+				//TempStruct.PlayerController = MainController;
+
+				//// 무기스왑
+				//KeyID = BBComp->GetKeyID(BlackboardSwapName);
+				//TempStruct = BBComp->GetValue<UBlackboardKeyType_Struct>(KeyID);
+				//TempStruct.PlayerController = MainController;
+			}
+		}
+	}
+	else
+	{
+		UnPossessed();
+	}
+}
+
 // Called when the game starts or when spawned
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	CachedAIC = GetWorld()->SpawnActor<AAIController>(AIControllerClass);
+
 	// 기본 캐릭터 ID 태그
 	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 	if (BattleSubsystem)

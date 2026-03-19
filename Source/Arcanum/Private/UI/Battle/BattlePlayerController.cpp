@@ -23,6 +23,7 @@
 #include "Object/Actor/SelectedArrow.h"
 #include "Object/Skills/SkillActor.h"
 #include "Object/Skills/SkillBase.h"
+#include "AIController.h"
 #include "Core/SubSystem/GameDataSubsystem.h"
 
 // ========================================================
@@ -32,10 +33,11 @@ void ABattlePlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	/*FString AllyUnitClassPath = TEXT("/Game/Test/Battle/Unit/BP_AllyUnit.BP_AllyUnit_C");
-	UClass* LoadAllyUnit = StaticLoadClass(UObject::StaticClass(), nullptr, *AllyUnitClassPath);
+	FTimerDelegate AITickDelegate;
+	float AITick = 0.5f;
+	AITickDelegate.BindUObject(this, &ABattlePlayerController::Internal_AITick, AITick);
 
-	UnitClass = LoadAllyUnit;*/
+	GetWorld()->GetTimerManager().SetTimer(PlayerAITickTimerHandle, AITickDelegate, AITick, true);
 
 	if (!SelectedArrowInstance && SelectedArrowClass)
 	{
@@ -120,7 +122,7 @@ void ABattlePlayerController::BeginPlay()
 
 	float CoolTImeTickInterval = 0.05f;
 	FTimerDelegate CoolTimeDelegate;
-	CoolTimeDelegate.BindUObject(this, &ABattlePlayerController::Internal_UnitsCoolTimeTick, CoolTImeTickInterval);
+	CoolTimeDelegate.BindUObject(this, &ABattlePlayerController::Internal_CoolTimeTick, CoolTImeTickInterval);
 	GetWorld()->GetTimerManager().ClearTimer(CoolTimeTimer);
 	GetWorld()->GetTimerManager().SetTimer(CoolTimeTimer, CoolTimeDelegate, CoolTImeTickInterval, true);
 
@@ -271,27 +273,63 @@ void ABattlePlayerController::DebugRemovePlayerInfoPanelSlot(int32 RemoveIDX)
 	bool Result = HUDWidgetInstance->GetPlayerInfoPanel()->RemoveUnitSlot(RemoveIDX);
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("DebugRemovePlayerInfoPanelSlot %d"), static_cast<int32>(Result));
 }
-void ABattlePlayerController::DebugSkillActorTest()
+
+bool ABattlePlayerController::SkillStarter(FGameplayTag InSkillTag, int32 InLevel)
 {
-	if (!DebugSkillBaseInstance)
+	TSubclassOf<class ASkillActor> SkillActorClass;
+	FString SkillName;
+	USkillBase* SkillBaseBack = nullptr;
+
+	if (!SkillBaseInstances.Contains(InSkillTag))
 	{
-		DebugSkillBaseInstance = NewObject<USkillBase>(this);
+		SkillBaseBack = NewObject<USkillBase>(this);
+		SkillBaseInstances.Add(InSkillTag, SkillBaseBack);
 		UGameDataSubsystem* DataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
 		if (DataSubsystem)
 		{
-			FDTSkillsDataRow* DTSkillsDataRow = DataSubsystem->GetRow<FDTSkillsDataRow>(Arcanum::DataTable::SkillData, FName("Slash"));
+			SkillName = InSkillTag.ToString();
+			int32 LastDot;
+			if (SkillName.FindLastChar('.', LastDot))
+			{
+				// 찾은 인덱스 다음(+1)부터 끝까지 남기고 앞은 다 자릅니다.
+				SkillName = SkillName.RightChop(LastDot + 1);
+			}
+
+			FDTSkillsDataRow* DTSkillsDataRow = DataSubsystem->GetRow<FDTSkillsDataRow>(Arcanum::DataTable::SkillData, FName(SkillName));
+
 			if (DTSkillsDataRow)
 			{
-				DebugSkillBaseInstance->Initialize(GetPawn(), &DTSkillsDataRow->SkillData, 1, Arcanum::Unit::Faction::Ally::Root);
+				SkillBaseBack->Initialize(GetPawn(), &DTSkillsDataRow->SkillData, InLevel, Arcanum::Unit::Faction::Ally::Root);
 			}
+			else return false;
 		}
-		/*FSkillInfo SkillInfo;
-		SkillInfo.
-		DebugSkillBaseInstance->Initialize(GetPawn(), FSkillInfo(), )*/
+	}
+	else
+	{
+		SkillBaseBack = *SkillBaseInstances.Find(InSkillTag);
+
+		SkillName = InSkillTag.ToString();
+		int32 LastDot;
+		if (SkillName.FindLastChar('.', LastDot))
+		{
+			// 찾은 인덱스 다음(+1)부터 끝까지 남기고 앞은 다 자릅니다.
+			SkillName = SkillName.RightChop(LastDot + 1);
+		}
 	}
 
+	UGameDataSubsystem* DataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
+	if (DataSubsystem)
+	{
+		FDTSkillsDataRow* DTSkillsDataRow = DataSubsystem->GetRow<FDTSkillsDataRow>(Arcanum::DataTable::SkillData, FName(SkillName));
+		if (DTSkillsDataRow)
+		{
+			SkillActorClass = DTSkillsDataRow->SkillData.SkillClass.LoadSynchronous();
+		}
+	}
 
-	if (DebugSkillActorClass)
+	if (!UseSkillCost(InSkillTag)) return false;
+
+	if (SkillActorClass)
 	{
 		UPoolingSubsystem* PoolingSubsystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
 		if (PoolingSubsystem)
@@ -299,7 +337,7 @@ void ABattlePlayerController::DebugSkillActorTest()
 			FTransform Transform;
 			Transform.SetLocation(GetPawn()->GetActorLocation());
 			Transform.SetRotation(GetPawn()->GetActorForwardVector().Rotation().Quaternion());
-			AActor* SkillActor = PoolingSubsystem->SpawnFromPool(DebugSkillActorClass, Transform);
+			AActor* SkillActor = PoolingSubsystem->SpawnFromPool(SkillActorClass, Transform);
 			ASkillActor* SkillInstance = Cast<ASkillActor>(SkillActor);
 			if (SkillInstance)
 			{
@@ -309,10 +347,64 @@ void ABattlePlayerController::DebugSkillActorTest()
 				AActor* TargetActor = HitResult.GetActor()->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()) ? HitResult.GetActor() : nullptr;
 				SkillInstance->SetTargetActor(TargetActor);
 				SkillInstance->SetTargetLocation(HitResult.ImpactPoint);
-				SkillInstance->ActivateSkillActor(DebugSkillBaseInstance, GetPawn(), Transform.GetLocation(), Transform.GetRotation().Rotator());
+				SkillInstance->ActivateSkillActor(SkillBaseBack, GetPawn(), Transform.GetLocation(), Transform.GetRotation().Rotator());
+
+				return true;
 			}
 		}
 	}
+	return false;
+}
+bool ABattlePlayerController::SkillCostChecker(FGameplayTag InSkillTag, int32 InLevel)
+{
+	TSubclassOf<class ASkillActor> SkillActorClass;
+	FString SkillName;
+	USkillBase* SkillBaseBack = nullptr;
+
+	if (!SkillBaseInstances.Contains(InSkillTag))
+	{
+		SkillBaseBack = NewObject<USkillBase>(this);
+		SkillBaseInstances.Add(InSkillTag, SkillBaseBack);
+		UGameDataSubsystem* DataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
+		if (DataSubsystem)
+		{
+			SkillName = InSkillTag.ToString();
+			int32 LastDot;
+			if (SkillName.FindLastChar('.', LastDot))
+			{
+				// 찾은 인덱스 다음(+1)부터 끝까지 남기고 앞은 다 자릅니다.
+				SkillName = SkillName.RightChop(LastDot + 1);
+			}
+
+			FDTSkillsDataRow* DTSkillsDataRow = DataSubsystem->GetRow<FDTSkillsDataRow>(Arcanum::DataTable::SkillData, FName(SkillName));
+
+			if (DTSkillsDataRow)
+			{
+				SkillBaseBack->Initialize(GetPawn(), &DTSkillsDataRow->SkillData, InLevel, Arcanum::Unit::Faction::Ally::Root);
+			}
+			else return false;
+		}
+	}
+	else
+	{
+		SkillBaseBack = *SkillBaseInstances.Find(InSkillTag);
+
+		SkillName = InSkillTag.ToString();
+		int32 LastDot;
+		if (SkillName.FindLastChar('.', LastDot))
+		{
+			// 찾은 인덱스 다음(+1)부터 끝까지 남기고 앞은 다 자릅니다.
+			SkillName = SkillName.RightChop(LastDot + 1);
+		}
+	}
+
+	if (SkillBaseBack && SkillBaseBack->GetCurrentLevelEntry())
+	{
+		SkillBaseBack->GetCurrentLevelEntry()->Cooldown;//////////////////
+		SkillBaseBack->GetCurrentLevelEntry()->Cost;//////////////////
+	}
+
+	return false;
 }
 #pragma endregion
 
@@ -424,20 +516,9 @@ void ABattlePlayerController::SetBossHealthProgress(float CurrentHealth, float M
 // ========================================================
 void ABattlePlayerController::BasicAttack()
 {
-	/*UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
-	if (BattleSubsystem)
-	{
-		BattleSubsystem->GetInBattleData().PlayerData;
-	}*/
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("BasicAttack"));
-	//Todo : 기본공격
-	//디버그
-	DebugSkillActorTest();
-	/*APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
-	if (PlayerCharacter)
-	{
-		PlayerCharacter->PlayerBasicAttack();
-	}*/
+
+	SkillStarter(Arcanum::Skills::SkillName::Slash, 1);
 }
 
 void ABattlePlayerController::UltimateSkill()
@@ -474,6 +555,12 @@ void ABattlePlayerController::AutoManualModeMobile(bool bIsChecked)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("AutoManualMode"));
 	bIsAutoManual = bIsChecked;
+
+	/*if (bIsAutoManual)
+	{
+		CachedAIControllerClass;
+		UnPossess();
+	}*/
 	//Todo : 수동,자동 전투
 }
 
@@ -652,38 +739,59 @@ bool ABattlePlayerController::UseManaValue(float Value)
 	return false;
 }
 
-bool ABattlePlayerController::UseCoolTime(FGameplayTag InTag)
+bool ABattlePlayerController::UseUnitCoolTime(FGameplayTag InTag)
 {
 	FUnitInfoSetting* UnitData = UsingAllyUnits.Find(InTag);
 	if(!UnitData) return false;
 
 	UnitData->CurrentCoolTime = UnitData->CoolTime;
-
-	/*FTimerDelegate CoolTimeDelegate;
-	float TickInterval = 0.01f;
-	CoolTimeDelegate.BindUObject(this, &ABattlePlayerController::Internal_UnitCoolTimeTick, UnitData->Tag, TickInterval);
-
-	FTimerHandle* CoolTimeHandle = nullptr;
-	if (FTimerHandle* InternalCoolTimeHandle = CoolTimeHandles.Find(InTag))
-	{
-		CoolTimeHandle = InternalCoolTimeHandle;
-	}
-	else
-	{
-		CoolTimeHandle = &CoolTimeHandles.Add(InTag, FTimerHandle());
-	}
-
-	if (CoolTimeHandle)
-	{
-		GetWorld()->GetTimerManager().ClearTimer(*CoolTimeHandle);
-		GetWorld()->GetTimerManager().SetTimer(*CoolTimeHandle, CoolTimeDelegate, TickInterval, true);
-		return true;
-	}
-	else
-	{
-		return false;
-	}*/
 	return true;
+}
+
+bool ABattlePlayerController::UseSkillCost(FGameplayTag InTag)
+{
+	float MaxCoolTime = 0.0f;
+
+	float ManaCost = 0.0f;
+	float MeatCost = 0.0f;
+	if (USkillBase** SkillBaseBack = SkillBaseInstances.Find(InTag))
+	{
+		if (const FLevelModifierEntry* LevelModifier = (*SkillBaseBack)->GetCurrentLevelEntry())
+		{
+			MaxCoolTime = LevelModifier->Cooldown;
+			float* CurrentCoolTime = SkillCoolTimes.Find(InTag);
+			if (!CurrentCoolTime)
+			{
+				CurrentCoolTime = &SkillCoolTimes.Add(InTag);
+				*CurrentCoolTime = 0.0f;
+			}
+
+			if (CurrentCoolTime)
+			{
+				for (const auto& Cost : LevelModifier->Cost) // 코스트 체크
+				{
+					if (Cost.StatTag == ManaTag)
+					{
+						ManaCost += Cost.Value.Flat;
+					}
+					else if (Cost.StatTag == MeatTag)
+					{
+						MeatCost += Cost.Value.Flat;
+					}
+				}
+
+				if (*CurrentCoolTime <= 0.0f && ManaValue.Current >= ManaCost && MeatValue.Current >= MeatCost)
+				{
+					*CurrentCoolTime = MaxCoolTime;
+					ManaValue.Current += ManaCost;
+					MeatValue.Current += MeatCost;
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
 }
 
 void ABattlePlayerController::BattleEnd(const FMatchData& MatchData)
@@ -748,12 +856,12 @@ bool ABattlePlayerController::UsingUnitCost(FGameplayTag InTag)
 	UseMeatValue(UnitData->MeatCost);
 
 	// 쿨타임 돌기
-	UseCoolTime(InTag);
+	UseUnitCoolTime(InTag);
 
 	return true;
 }
 
-void ABattlePlayerController::Internal_UnitsCoolTimeTick(float DeltaTime)
+void ABattlePlayerController::Internal_CoolTimeTick(float DeltaTime)
 {
 	for (auto& UsingAllyUnit : UsingAllyUnits)
 	{
@@ -770,6 +878,16 @@ void ABattlePlayerController::Internal_UnitsCoolTimeTick(float DeltaTime)
 			}
 		}
 	}
+
+	for (auto& SkillCoolTime : SkillCoolTimes)
+	{
+		SkillCoolTime.Value -= DeltaTime;
+	}
+}
+
+void ABattlePlayerController::Internal_AITick(float DeltaTime)
+{
+
 }
 
 // ========================================================

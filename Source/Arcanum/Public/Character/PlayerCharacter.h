@@ -9,6 +9,7 @@
 #include "DataInfo/BattleCharacter/BattleStats/Data/FGradeStatData.h"
 #include "Interface/StatModifierInterface.h"
 #include "Interface/StatInterface.h"
+#include "Data/Types/BTPlayerStruct.h"
 #include "PlayerCharacter.generated.h"
 
 /*
@@ -25,6 +26,7 @@ public:
 	// Sets default values for this character's properties
 	APlayerCharacter();
 
+	void SetAutoMode(class ABattlePlayerController* MainController, bool bIsAuto);
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
@@ -72,6 +74,27 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "StatusAction")
 	TObjectPtr<class UStatusActionComponent> StatusActionComponent = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting|AI")
+	TObjectPtr<class UBehaviorTree> BehaviorTree = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting|AI")
+	FName BlackboardBasicAttackName = FName("BasicAttack");
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting|AI")
+	FName BlackboardBasicSkillName = FName("BasicSkill");
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting|AI")
+	FName BlackboardUltimateSkillName = FName("UltimateSkill");
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting|AI")
+	FName BlackboardItem01Name = FName("Item01");
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting|AI")
+	FName BlackboardItem02Name = FName("Item02");
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting|AI")
+	FName BlackboardSwapName = FName("Swap");
+
 	// 캐릭터 태그
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tags")
 	FGameplayTagContainer GameplayTags;
@@ -105,5 +128,9 @@ protected:
 
 	// IStatInterface을(를) 통해 상속됨
 	const UCharacterBattleStatsComponent* GetStatComponent() const override;
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<class AAIController> CachedAIC = nullptr;
 
 };
