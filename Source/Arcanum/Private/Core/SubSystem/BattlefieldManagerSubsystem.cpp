@@ -688,6 +688,21 @@ UTexture2D* UBattlefieldManagerSubsystem::GetCurrentBasicSkillIcon() const
 	return skillInfo->Icon.LoadSynchronous();
 }
 
+FGameplayTag UBattlefieldManagerSubsystem::GetEquippedSetSkillTag() const
+{
+	if (HasEquippedFullSet(Arcanum::Items::Rarity::SetItem::Talasha::Armor::Root))
+	{
+		return Arcanum::Items::SetBonus::Surge;
+	}
+
+	if (HasEquippedFullSet(Arcanum::Items::Rarity::SetItem::Sigon::Armor::Root))
+	{
+		return Arcanum::Items::SetBonus::Avarice;
+	}
+
+	return Arcanum::Skills::SkillName::None;
+}
+
 void UBattlefieldManagerSubsystem::SetCurrentWeaponSlotTag(const FGameplayTag& InWeaponSlotTag)
 {
 	InBattleData.BattleWeaponSkill.CurrentWeaponSlotTag = InWeaponSlotTag;
@@ -704,4 +719,106 @@ void UBattlefieldManagerSubsystem::EndLegendaryWeaponMode()
 {
 	InBattleData.BattleWeaponSkill.CurrentWeaponSlotTag = PreviousWeaponSlotTag;
 	bUsingLegendaryWeapon = false;
+}
+
+USkeletalMesh* UBattlefieldManagerSubsystem::GetCurrentWeaponMesh() const
+{
+	const FBattleCharacterData* selectedCharacter = GetSelectedCharacterData();
+	if (!selectedCharacter) return nullptr;
+
+	const FGameplayTag currentWeaponSlotTag = InBattleData.BattleWeaponSkill.CurrentWeaponSlotTag;
+	if (!currentWeaponSlotTag.IsValid()) return nullptr;
+
+	const FGuid* weaponGuid = selectedCharacter->WeaponSlots.Find(currentWeaponSlotTag);
+	if (!weaponGuid || !weaponGuid->IsValid()) return nullptr;
+
+	const FEquipmentInfo* foundEquip = FindEquipmentByGuid(InBattleData.PlayerData, *weaponGuid);
+	if (!foundEquip) return nullptr;
+
+	const FDTItemCatalogRow* catalogRow = FPlayerAccountService::FindItemCatalogRowByTag(this, foundEquip->ItemTag);
+	if (!catalogRow) return nullptr;
+	if (catalogRow->DetailRowName.IsNone()) return nullptr;
+
+	UGameDataSubsystem* gameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
+	if (!gameDataSubsystem) return nullptr;
+
+	const FDTEquipmentInfoRow* equipRow = gameDataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, catalogRow->DetailRowName);
+	if (!equipRow) return nullptr;
+
+	return equipRow->SkeletalMesh.LoadSynchronous();
+}
+
+USkeletalMesh* UBattlefieldManagerSubsystem::GetLegendaryWeaponMesh() const
+{
+	const FBattleCharacterData* selectedCharacter = GetSelectedCharacterData();
+	if (!selectedCharacter) return nullptr;
+
+	const FGuid* weaponGuid = selectedCharacter->LegendaryWeaponSlots.Find(Arcanum::Items::ItemSlot::Weapon::Legendary);
+	if (!weaponGuid || !weaponGuid->IsValid()) return nullptr;
+
+	const FEquipmentInfo* foundEquip = FindEquipmentByGuid(InBattleData.PlayerData, *weaponGuid);
+	if (!foundEquip) return nullptr;
+
+	const FDTItemCatalogRow* catalogRow = FPlayerAccountService::FindItemCatalogRowByTag(this, foundEquip->ItemTag);
+	if (!catalogRow) return nullptr;
+
+	if (catalogRow->DetailRowName.IsNone()) return nullptr;
+
+	UGameDataSubsystem* gameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
+	if (!gameDataSubsystem) return nullptr;
+
+	const FDTEquipmentInfoRow* equipRow = gameDataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, catalogRow->DetailRowName);
+	if (!equipRow) return nullptr;
+
+	return equipRow->SkeletalMesh.LoadSynchronous();
+}
+
+bool UBattlefieldManagerSubsystem::HasEquippedFullSet(const FGameplayTag& InSetRootTag) const
+{
+	if (!InSetRootTag.IsValid()) return false;
+
+	const UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (!battleSubsystem) return false;
+
+	const FPlayerData& playerData = battleSubsystem->GetInBattleData().PlayerData;
+
+	const FBattleCharacterData* selectedCharacter = nullptr;
+	for (const FBattleCharacterData& characterData : playerData.OwnedCharacters)
+	{
+		if (characterData.bSelection)
+		{
+			selectedCharacter = &characterData;
+			break;
+		}
+	}
+	if (!selectedCharacter) return false;
+
+	int32 matchCount = 0;
+
+	for (const TPair<FGameplayTag, FGuid>& armorPair : selectedCharacter->ArmorSlots)
+	{
+		const FGuid& itemGuid = armorPair.Value;
+		if (itemGuid.IsValid())
+		{
+			const FEquipmentInfo* foundEquip = nullptr;
+			for (const FEquipmentInfo& equip : playerData.Inventory)
+			{
+				if (equip.ItemGuid == itemGuid)
+				{
+					foundEquip = &equip;
+					break;
+				}
+			}
+
+			if (foundEquip)
+			{
+				if (foundEquip->ItemTag.MatchesTag(InSetRootTag))
+				{
+					matchCount++;
+				}
+			}
+		}
+	}
+
+	return matchCount >= 4;
 }

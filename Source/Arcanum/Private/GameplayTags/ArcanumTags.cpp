@@ -213,10 +213,10 @@ namespace Arcanum {
 					}
 				}
 			}
-			namespace SetBonus {
-				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Surge, "Arcanum.Items.SetBonus.Surge", "역류");
-				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Avarice, "Arcanum.Items.SetBonus.Avarice", "탐욕");
-			}
+		}
+		namespace SetBonus {
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Surge, "Arcanum.Items.SetBonus.Surge", "역류");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Avarice, "Arcanum.Items.SetBonus.Avarice", "탐욕");
 		}
 		namespace Type
 		{

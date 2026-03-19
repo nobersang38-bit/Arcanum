@@ -1150,8 +1150,10 @@ bool FPlayerAccountService::AddGuidFromEquipment(const UObject* WorldContextObje
 
 		for (const FDerivedStatModifier& stat : newEquip.Equipment.OnHitTargetStats)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("[Buy Weapon] Item=%s Stat=%s Flat=%.2f Mul=%.2f"),
+			UE_LOG(LogTemp, Warning, TEXT("[Buy] Item=%s | OwnerStats Num=%d | OnHitTargetStats Num=%d | Stat=%s | Flat=%.2f | Mul=%.2f"),
 				*newEquip.ItemTag.ToString(),
+				newEquip.Equipment.OwnerStats.Num(),
+				newEquip.Equipment.OnHitTargetStats.Num(),
 				*stat.StatTag.ToString(),
 				stat.Value.Flat,
 				stat.Value.Mul);
@@ -1164,8 +1166,10 @@ bool FPlayerAccountService::AddGuidFromEquipment(const UObject* WorldContextObje
 
 		for (const FDerivedStatModifier& stat : newEquip.Equipment.OwnerStats)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("[Buy Armor] Item=%s Stat=%s Flat=%.2f Mul=%.2f"),
+			UE_LOG(LogTemp, Warning, TEXT("[Buy] Item=%s | OwnerStats Num=%d | OnHitTargetStats Num=%d | Stat=%s | Flat=%.2f | Mul=%.2f"),
 				*newEquip.ItemTag.ToString(),
+				newEquip.Equipment.OwnerStats.Num(),
+				newEquip.Equipment.OnHitTargetStats.Num(),
 				*stat.StatTag.ToString(),
 				stat.Value.Flat,
 				stat.Value.Mul);

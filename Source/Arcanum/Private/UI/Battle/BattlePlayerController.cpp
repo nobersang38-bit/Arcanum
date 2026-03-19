@@ -430,6 +430,12 @@ void ABattlePlayerController::WeaponSwap()
 		}
 
 		UE_LOG(LogTemp, Warning, TEXT("WeaponSwap CurrentSlot=%s"), *battleSubsystem->GetCurrentWeaponSlotTag().ToString());
+
+		APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
+		if (playerCharacter)
+		{
+			playerCharacter->UpdateEquippedWeaponMesh();
+		}
 	}
 
 	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();

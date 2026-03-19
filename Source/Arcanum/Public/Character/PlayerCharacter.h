@@ -90,4 +90,26 @@ protected:
 	//UPROPERTY()
 	//TMap<FGameplayTag, FNonRegenStat> NonRegenStats;
 
+#pragma region 무기 교체
+public:
+	/* 현재 장착 무기로 메시 교체 */
+	void UpdateEquippedWeaponMesh();
+
+protected:
+	/* 무기 메시를 손 소켓에 부착 */
+	void AttachWeaponMesh(class USkeletalMesh* InWeaponMesh);
+
+	/* 무기 메시 초기화 */
+	void ClearWeaponMesh();
+
+	/* 손에 부착해서 교체 표시할 무기 메시 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
+	TObjectPtr<class USkeletalMeshComponent> WeaponMeshComponent = nullptr;
+
+	/* 무기 부착 소켓 이름 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapon")
+	FName WeaponAttachSocketName = TEXT("Weapon_R");
+#pragma endregion
+
+
 };

@@ -182,7 +182,7 @@ public:
 	const FGameplayTag AllyTeamTag = Arcanum::Unit::Faction::Ally::Root;
 	const FGameplayTag EnemyTeamTag = Arcanum::Unit::Faction::Enemy::Root;
 
-#pragma region 스킬 캐시
+#pragma region 스킬 장비 캐시
 public:
 	/* 현재 무기 슬롯 태그 */
 	FGameplayTag GetCurrentWeaponSlotTag() const;
@@ -214,6 +214,10 @@ public:
 	/* 현재 일반 스킬 아이콘 */
 	UTexture2D* GetCurrentBasicSkillIcon() const;
 
+	/* 현재 선택 캐릭터의 4세트 발동 스킬 태그 반환 */
+	UFUNCTION()
+	FGameplayTag GetEquippedSetSkillTag() const;
+
 	/* 현재 활성 무기 슬롯 태그 (스왑) */
 	void SetCurrentWeaponSlotTag(const FGameplayTag& InWeaponSlotTag);
 
@@ -222,6 +226,12 @@ public:
 
 	/* 궁극기 종료 후 이전 무기로 복귀 */
 	void EndLegendaryWeaponMode();
+
+	/* 현재 활성 무기 스켈레탈 메시 */
+	USkeletalMesh* GetCurrentWeaponMesh() const;
+
+	/* 전설 무기 스켈레탈 메시 */
+	USkeletalMesh* GetLegendaryWeaponMesh() const;
 
 protected:
 	/* 전투 시작 시 무기 스킬 캐시 생성 */
@@ -232,6 +242,10 @@ protected:
 
 	/* 현재 선택된 플레이어 캐릭터 반환 */
 	const FBattleCharacterData* GetSelectedCharacterData() const;
+
+	/* 현재 선택 캐릭터가 지정한 세트 루트 태그를 4개 장착했는지 확인 */
+	UFUNCTION()
+	bool HasEquippedFullSet(const FGameplayTag& InSetRootTag) const;
 
 protected:
 	/* 궁극기 사용 이전 무기 슬롯 */
