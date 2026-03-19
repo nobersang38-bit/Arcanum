@@ -884,3 +884,25 @@ float UBattlefieldManagerSubsystem::FindSkillCastTime(const FGameplayTag& InSkil
 	return 0.0f;
 }
 
+float UBattlefieldManagerSubsystem::FindSkillCooldown(const FGameplayTag& InSkillTag, int32 InSkillLevel) const
+{
+	if (!InSkillTag.IsValid()) return 0.0f;
+
+	UGameDataSubsystem* gameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
+	if (!gameDataSubsystem) return 0.0f;
+
+	const FDTSkillsDataRow* skillRow = gameDataSubsystem->GetRow<FDTSkillsDataRow>(Arcanum::DataTable::SkillData, GetLeafNameFromTag(InSkillTag));
+	if (!skillRow) return 0.0f;
+
+	const FSkillInfo& skillInfo = skillRow->SkillData;
+
+	for (const FLevelModifierEntry& levelModifier : skillInfo.LevelModifiers)
+	{
+		if (levelModifier.Level == InSkillLevel)
+		{
+			return levelModifier.Cooldown;
+		}
+	}
+
+	return 0.0f;
+}
