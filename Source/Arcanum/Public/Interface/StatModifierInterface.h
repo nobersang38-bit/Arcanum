@@ -15,7 +15,7 @@ class UStatModifierInterface : public UInterface
 };
 
 /**
- * 
+ * 김도현
  */
 class ARCANUM_API IStatModifierInterface
 {

@@ -7,7 +7,7 @@
 #include "StatusAction_UnitHealth.generated.h"
 
 /**
- * 
+ * 김도현
  */
 UCLASS()
 class ARCANUM_API UStatusAction_UnitHealth : public UStatusAction

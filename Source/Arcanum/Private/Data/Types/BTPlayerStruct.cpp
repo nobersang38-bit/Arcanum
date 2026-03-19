@@ -4,7 +4,7 @@
 #include "Data/Types/BTPlayerStruct.h"
 #include "UI/Battle/BattlePlayerController.h"
 
-bool FBTPlayerStruct::CostCheck()
+bool UBTPlayerDataObject::CostCheck()
 {
 	if (PlayerController.IsValid())
 	{
@@ -13,7 +13,7 @@ bool FBTPlayerStruct::CostCheck()
 	return false;
 }
 
-void FBTPlayerStruct::UseSkill()
+void UBTPlayerDataObject::UseSkill()
 {
 	if (PlayerController.IsValid())
 	{

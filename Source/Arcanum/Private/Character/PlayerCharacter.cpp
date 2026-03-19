@@ -14,6 +14,13 @@
 #include "Component/Stats/CharacterBattleStatsComponent.h"
 #include "Component/StatusActionComponent.h"
 #include "Components/DecalComponent.h"
+#include "AIController.h"
+#include "BehaviorTree/BehaviorTree.h"
+#include "Data/Types/BTPlayerStruct.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "BehaviorTree/Blackboard/BlackboardKeyType_Struct.h"
+#include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
+#include "Perception/AIPerceptionComponent.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -65,6 +72,11 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (AIControllerClass)
+	{
+		CachedAIC = GetWorld()->SpawnActor<AAIController>(AIControllerClass);
+	}
+
 	// 기본 캐릭터 ID 태그
 	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 	if (BattleSubsystem)
@@ -92,6 +104,94 @@ void APlayerCharacter::BeginPlay()
 	UpdateEquippedWeaponMesh();
 }
 
+void APlayerCharacter::SetAutoMode(ABattlePlayerController* MainController, bool bIsAuto)
+{
+	if (bIsAuto)
+	{
+		if (CachedAIC)
+		{
+			UnPossessed();
+			CachedAIC->Possess(this);
+
+			if (UAIPerceptionComponent* PercComp = CachedAIC->GetPerceptionComponent())
+			{
+				// 현재 월드에 있는 모든 Stimuli들을 다시 확인하도록 강제 업데이트
+				PercComp->RequestStimuliListenerUpdate();
+			}
+
+			CachedAIC->RunBehaviorTree(BehaviorTree);
+
+			if (UBlackboardComponent* BBComp = CachedAIC->GetBlackboardComponent())
+			{
+				// 기본공격
+				if (!AIBasicAttack)
+				{
+					AIBasicAttack = NewObject<UBTPlayerDataObject>(this);
+					AIBasicAttack->SkillType = EBSkillType::BasicAttack;
+					BBComp->SetValueAsObject(BlackboardBasicAttackName, AIBasicAttack);
+				}
+				UBTPlayerDataObject* TempPlayerDataObject = Cast<UBTPlayerDataObject>(BBComp->GetValueAsObject(BlackboardBasicAttackName));
+				TempPlayerDataObject->PlayerController = MainController;
+
+				// 기본스킬
+				if (!AIBasicSkill)
+				{
+					AIBasicSkill = NewObject<UBTPlayerDataObject>(this);
+					AIBasicSkill->SkillType = EBSkillType::BasicSkill;
+					BBComp->SetValueAsObject(BlackboardBasicSkillName, AIBasicSkill);
+				}
+				TempPlayerDataObject = Cast<UBTPlayerDataObject>(BBComp->GetValueAsObject(BlackboardBasicSkillName));
+				TempPlayerDataObject->PlayerController = MainController;
+
+				// 궁극기
+				if (!AIUltimateSkill)
+				{
+					AIUltimateSkill = NewObject<UBTPlayerDataObject>(this);
+					AIUltimateSkill->SkillType = EBSkillType::UltimateSkill;
+					BBComp->SetValueAsObject(BlackboardUltimateSkillName, AIUltimateSkill);
+				}
+				TempPlayerDataObject = Cast<UBTPlayerDataObject>(BBComp->GetValueAsObject(BlackboardUltimateSkillName));
+				TempPlayerDataObject->PlayerController = MainController;
+
+				// 아이템1
+				if (!AIItem01)
+				{
+					AIItem01 = NewObject<UBTPlayerDataObject>(this);
+					AIItem01->SkillType = EBSkillType::Item01;
+					BBComp->SetValueAsObject(BlackboardItem01Name, AIItem01);
+				}
+				TempPlayerDataObject = Cast<UBTPlayerDataObject>(BBComp->GetValueAsObject(BlackboardItem01Name));
+				TempPlayerDataObject->PlayerController = MainController;
+
+				// 아이템2
+				if (!AIItem02)
+				{
+					AIItem02 = NewObject<UBTPlayerDataObject>(this);
+					AIItem02->SkillType = EBSkillType::Item02;
+					BBComp->SetValueAsObject(BlackboardItem02Name, AIItem02);
+				}
+				TempPlayerDataObject = Cast<UBTPlayerDataObject>(BBComp->GetValueAsObject(BlackboardItem02Name));
+				TempPlayerDataObject->PlayerController = MainController;
+
+				// 무기스왑
+				if (!AISwap)
+				{
+					AISwap = NewObject<UBTPlayerDataObject>(this);
+					AISwap->SkillType = EBSkillType::Swap;
+					BBComp->SetValueAsObject(BlackboardSwapName, AISwap);
+				}
+				TempPlayerDataObject = Cast<UBTPlayerDataObject>(BBComp->GetValueAsObject(BlackboardSwapName));
+				TempPlayerDataObject->PlayerController = MainController;
+			}
+		}
+	}
+	else
+	{
+		CachedAIC->UnPossess();
+		MainController->Possess(this);
+	}
+}
+
 // Called every frame
 void APlayerCharacter::Tick(float DeltaTime)
 {
@@ -106,7 +206,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 }
 
-FGameplayTag APlayerCharacter::GetTeamTag()
+FGameplayTag APlayerCharacter::GetTeamTag() const
 {
 	return TeamTag;
 }
@@ -344,5 +444,19 @@ void APlayerCharacter::UpdateUltimatePreviewLocation(const FVector& InWorldLocat
 		UltimatePreviewDecalComponent->SetWorldLocation(decalLocation);
 		UltimatePreviewDecalComponent->SetWorldRotation(FRotator(-90.0f, 0.0f, 0.0f));
 	}
+}
+
+void APlayerCharacter::AddLevelModifierEntry(const FLevelModifierEntry& LevelModifierEntry)
+{
+}
+
+void APlayerCharacter::AddDerivedStatModifier(const FDerivedStatModifier& DerivedStatModifier)
+{
+	StatComponent->ApplyDurationModifier(DerivedStatModifier);
+}
+
+void APlayerCharacter::ChangeStat(const FGameplayTag& InTag, float InValue)
+{
+	StatComponent->ChangeStatValue(InTag, InValue, nullptr);
 }
 

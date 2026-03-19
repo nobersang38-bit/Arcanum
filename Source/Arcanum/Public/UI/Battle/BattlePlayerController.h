@@ -8,6 +8,7 @@
 #include "Data/Types/UnitData.h"
 #include "Data/Types/MatchData.h"
 #include "DataInfo/SkillData/Data/FBattleWeaponSkillData.h"
+#include "GameplayTags/ArcanumTags.h"
 #include "BattlePlayerController.generated.h"
 
 class UInputMappingContext;
@@ -20,7 +21,7 @@ UCLASS()
 class ARCANUM_API ABattlePlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	friend struct FBTPlayerStruct;
+	friend class UBTPlayerDataObject;
 #pragma region 언리얼 기본생성
 protected:
 	virtual void BeginPlay() override;
@@ -115,6 +116,12 @@ protected:
 	void Item2();
 
 	UFUNCTION()
+	bool SkillStarter(FGameplayTag InSkillTag, int32 InLevel);
+
+	UFUNCTION()
+	bool SkillCostChecker(FGameplayTag InSkillTag, int32 InLevel);
+
+	UFUNCTION()
 	void AutoManualModeMobile(bool bIsChecked);
 
 	UFUNCTION()
@@ -146,6 +153,10 @@ protected:
 	// 쿨타임
 	UFUNCTION()
 	bool UseCoolTime(FGameplayTag InTag);
+
+	// 스킬 쿨타임
+	UFUNCTION()
+	bool UseSkillCost(FGameplayTag InTag);
 #pragma endregion
 
 #pragma region 전투 종료
@@ -258,10 +269,32 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TWeakObjectPtr<ABaseUnitCharacter> SelectedUnit2 = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
+	TSubclassOf<class ASelectedArrow> SelectedArrowClass = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Setting")
+	TObjectPtr<class ASelectedArrow> SelectedArrowInstance = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
+	FGameplayTag MeatTag = Arcanum::BattleStat::Player::Regen::Meat::Root;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
+	FGameplayTag ManaTag = Arcanum::BattleStat::Character::Regen::Mana::Value;
+
+
 private:
 	FTimerHandle PlayerLocationProgressTimeHandle;
 	bool bIsAutoManual = false;
 	float StageTimeSecond = 0.0f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TMap<FGameplayTag, float> SkillCoolTimes;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TMap<FGameplayTag, class USkillBase*> SkillBaseInstances;
+
+	UPROPERTY()
+	TWeakObjectPtr<class APlayerCharacter> CachedPlayerCharacter = nullptr;
 
 #pragma region 궁극기 처리
 protected:

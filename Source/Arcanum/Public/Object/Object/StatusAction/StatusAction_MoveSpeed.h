@@ -7,7 +7,7 @@
 #include "StatusAction_MoveSpeed.generated.h"
 
 /**
- * 
+ * 김도현
  */
 UCLASS()
 class ARCANUM_API UStatusAction_MoveSpeed : public UStatusAction

@@ -7,7 +7,7 @@
 #include "BTDecorator_PlayerSkillCostCheck.generated.h"
 
 /**
- * 
+ * 김도현
  */
 UCLASS()
 class ARCANUM_API UBTDecorator_PlayerSkillCostCheck : public UBTDecorator_BlackboardBase

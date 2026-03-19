@@ -61,7 +61,7 @@ void ABasement::BeginPlay()
 	}
 }
 
-FGameplayTag ABasement::GetTeamTag()
+FGameplayTag ABasement::GetTeamTag() const
 {
 
 	return TeamTag;

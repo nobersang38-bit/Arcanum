@@ -7,7 +7,7 @@
 #include "AnimNotify_Attack.generated.h"
 
 /**
- * 
+ * 김도현
  */
 UCLASS()
 class ARCANUM_API UAnimNotify_Attack : public UAnimNotify

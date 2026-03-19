@@ -41,7 +41,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	// ITeamInterface을(를) 통해 상속됨
-	FGameplayTag GetTeamTag() override;
+	FGameplayTag GetTeamTag() const override;
 //
 //	/** True면 내 기지, false면 적 기지*/
 //	UPROPERTY(EditAnywhere, Category = "Basement")

@@ -7,7 +7,7 @@
 #include "StatusAction_UnitAttackSpeed.generated.h"
 
 /**
- * 
+ * 김도현
  */
 UCLASS()
 class ARCANUM_API UStatusAction_UnitAttackSpeed : public UStatusAction

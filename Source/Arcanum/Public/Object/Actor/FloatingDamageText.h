@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Interface/PoolingInterface.h"
 #include "FloatingDamageText.generated.h"
-
+//김도현
 UCLASS()
 class ARCANUM_API AFloatingDamageText : public AActor, public IPoolingInterface
 {

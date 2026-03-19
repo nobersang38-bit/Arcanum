@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "NativeGameplayTags.h"
 #include "SpawnCheckDecal.generated.h"
-
+//김도현
 UCLASS()
 class ARCANUM_API ASpawnCheckDecal : public AActor
 {
