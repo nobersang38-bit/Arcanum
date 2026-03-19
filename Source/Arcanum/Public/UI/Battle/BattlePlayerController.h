@@ -102,9 +102,6 @@ protected:
 	void BasicAttack();
 
 	UFUNCTION()
-	void UltimateSkill();
-
-	UFUNCTION()
 	void BasicSkill();
 
 	UFUNCTION()
@@ -264,4 +261,42 @@ private:
 	FTimerHandle PlayerLocationProgressTimeHandle;
 	bool bIsAutoManual = false;
 	float StageTimeSecond = 0.0f;
+
+#pragma region 궁극기 처리
+protected:
+	/* 궁극기 종료 처리 */
+	void UltimateSkillEnd();
+
+	/* 궁극기 조준 시작 */
+	UFUNCTION()
+	void UltimateSkillPressed();
+
+	/* 궁극기 조준 해제 */
+	UFUNCTION()
+	void UltimateSkillReleased();
+
+	/* 궁극기 자동 발사 */
+	void ExecuteUltimateSkill();
+
+	/* 궁극기 조준 위치 갱신 */
+	void UpdateUltimatePreview();
+
+protected:
+	/* 궁극기 조준 중 여부 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ultimate")
+	bool bIsUltimateAiming = false;
+
+	/* 마지막 이동 입력 방향 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ultimate")
+	FVector LastMoveInputDirection = FVector::ZeroVector;
+
+	/* 궁극기 프리뷰 거리 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate")
+	float UltimatePreviewDistance = 300.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate")
+	TObjectPtr<class APostProcessVolume> UltimatePostProcessVolume = nullptr;
+
+	FTimerHandle UltimateSkillTimerHandle;
+#pragma endregion
 };

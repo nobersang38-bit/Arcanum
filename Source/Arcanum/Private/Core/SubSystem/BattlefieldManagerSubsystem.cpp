@@ -10,9 +10,9 @@
 #include "Core/SubSystem/GameTimeSubsystem.h"
 #include "DataInfo/BattleCharacter/BattleStats/DataTable/DTBattleStats.h"
 #include "DataInfo/SkillData/Data/FSkillInfo.h"
+#include "DataInfo/SkillData/DataTable/DTSkillsData.h"
 #include "GameFramework/GameMode.h"
 #include "Object/Actor/SpawnCheckDecal.h"
-
 #include "Core/ARPlayerAccountService.h"
 
 void UBattlefieldManagerSubsystem::OnWorldBeginPlay(UWorld& InWorld)
@@ -406,7 +406,6 @@ void UBattlefieldManagerSubsystem::MatchEnded(const FMatchData& MatchData)
 }
 
 
-
 // ========================================================
 // 스킬 캐시
 // ========================================================
@@ -462,7 +461,7 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 		};
 
 	// 전설 무기 궁극기 스킬 캐시
-	auto cacheLegendaryWeaponSkill = [](const FEquipmentInfo* InEquipInfo, FBattleSkillData& OutUltimateSkill)
+	auto cacheLegendaryWeaponSkill = [this](const FEquipmentInfo* InEquipInfo, FBattleSkillData& OutUltimateSkill)
 		{
 			if (InEquipInfo)
 			{
@@ -474,6 +473,7 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 
 					OutUltimateSkill.SkillTag = skillPair.Key;
 					OutUltimateSkill.SkillLevel = InEquipInfo->CurrUpgradeLevel;
+					OutUltimateSkill.CastTime = FindSkillCastTime(OutUltimateSkill.SkillTag, OutUltimateSkill.SkillLevel);
 					//OutUltimateSkill.SkillLevel = skillPair.Value;
 					break;
 				}
@@ -682,10 +682,10 @@ UTexture2D* UBattlefieldManagerSubsystem::GetCurrentBasicSkillIcon() const
 	UGameDataSubsystem* gameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
 	if (!gameDataSubsystem) return nullptr;
 
-	const FSkillInfo* skillInfo = gameDataSubsystem->GetRow<FSkillInfo>(Arcanum::DataTable::SkillData, GetLeafNameFromTag(skillTag));
-	if (!skillInfo) return nullptr;
+	const FDTSkillsDataRow* skillRow = gameDataSubsystem->GetRow<FDTSkillsDataRow>(Arcanum::DataTable::SkillData, GetLeafNameFromTag(skillTag));
+	if (!skillRow) return nullptr;
 
-	return skillInfo->Icon.LoadSynchronous();
+	return skillRow->SkillData.Icon.LoadSynchronous();
 }
 
 FGameplayTag UBattlefieldManagerSubsystem::GetEquippedSetSkillTag() const
@@ -710,7 +710,11 @@ void UBattlefieldManagerSubsystem::SetCurrentWeaponSlotTag(const FGameplayTag& I
 
 void UBattlefieldManagerSubsystem::BeginLegendaryWeaponMode()
 {
-	PreviousWeaponSlotTag = InBattleData.BattleWeaponSkill.CurrentWeaponSlotTag;
+	if (!bUsingLegendaryWeapon)
+	{
+		PreviousWeaponSlotTag = InBattleData.BattleWeaponSkill.CurrentWeaponSlotTag;
+	}
+
 	InBattleData.BattleWeaponSkill.CurrentWeaponSlotTag = Arcanum::Items::ItemSlot::Weapon::Legendary;
 	bUsingLegendaryWeapon = true;
 }
@@ -729,7 +733,15 @@ USkeletalMesh* UBattlefieldManagerSubsystem::GetCurrentWeaponMesh() const
 	const FGameplayTag currentWeaponSlotTag = InBattleData.BattleWeaponSkill.CurrentWeaponSlotTag;
 	if (!currentWeaponSlotTag.IsValid()) return nullptr;
 
-	const FGuid* weaponGuid = selectedCharacter->WeaponSlots.Find(currentWeaponSlotTag);
+	const FGuid* weaponGuid = nullptr;
+	if (currentWeaponSlotTag == Arcanum::Items::ItemSlot::Weapon::Legendary)
+	{
+		weaponGuid = selectedCharacter->LegendaryWeaponSlots.Find(Arcanum::Items::ItemSlot::Weapon::Legendary);
+	}
+	else
+	{
+		weaponGuid = selectedCharacter->WeaponSlots.Find(currentWeaponSlotTag);
+	}
 	if (!weaponGuid || !weaponGuid->IsValid()) return nullptr;
 
 	const FEquipmentInfo* foundEquip = FindEquipmentByGuid(InBattleData.PlayerData, *weaponGuid);
@@ -773,6 +785,41 @@ USkeletalMesh* UBattlefieldManagerSubsystem::GetLegendaryWeaponMesh() const
 	return equipRow->SkeletalMesh.LoadSynchronous();
 }
 
+FGameplayTag UBattlefieldManagerSubsystem::GetCurrentWeaponSlotTypeTag() const
+{
+	const FBattleCharacterData* selectedCharacter = GetSelectedCharacterData();
+	if (!selectedCharacter) return FGameplayTag();
+
+	const FGameplayTag currentWeaponSlotTag = InBattleData.BattleWeaponSkill.CurrentWeaponSlotTag;
+	if (!currentWeaponSlotTag.IsValid()) return FGameplayTag();
+
+	const FGuid* weaponGuid = nullptr;
+	if (currentWeaponSlotTag == Arcanum::Items::ItemSlot::Weapon::Legendary)
+	{
+		weaponGuid = selectedCharacter->LegendaryWeaponSlots.Find(Arcanum::Items::ItemSlot::Weapon::Legendary);
+	}
+	else
+	{
+		weaponGuid = selectedCharacter->WeaponSlots.Find(currentWeaponSlotTag);
+	}
+	if (!weaponGuid || !weaponGuid->IsValid()) return FGameplayTag();
+
+	const FEquipmentInfo* foundEquip = FindEquipmentByGuid(InBattleData.PlayerData, *weaponGuid);
+	if (!foundEquip) return FGameplayTag();
+
+	const FDTItemCatalogRow* catalogRow = FPlayerAccountService::FindItemCatalogRowByTag(this, foundEquip->ItemTag);
+	if (!catalogRow) return FGameplayTag();
+	if (catalogRow->DetailRowName.IsNone())	return FGameplayTag();
+
+	UGameDataSubsystem* gameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
+	if (!gameDataSubsystem) return FGameplayTag();
+
+	const FDTEquipmentInfoRow* equipRow = gameDataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, catalogRow->DetailRowName);
+	if (!equipRow) return FGameplayTag();
+
+	return equipRow->SlotTag;
+}
+
 bool UBattlefieldManagerSubsystem::HasEquippedFullSet(const FGameplayTag& InSetRootTag) const
 {
 	if (!InSetRootTag.IsValid()) return false;
@@ -800,16 +847,7 @@ bool UBattlefieldManagerSubsystem::HasEquippedFullSet(const FGameplayTag& InSetR
 		const FGuid& itemGuid = armorPair.Value;
 		if (itemGuid.IsValid())
 		{
-			const FEquipmentInfo* foundEquip = nullptr;
-			for (const FEquipmentInfo& equip : playerData.Inventory)
-			{
-				if (equip.ItemGuid == itemGuid)
-				{
-					foundEquip = &equip;
-					break;
-				}
-			}
-
+			const FEquipmentInfo* foundEquip = FindEquipmentByGuid(playerData, itemGuid);
 			if (foundEquip)
 			{
 				if (foundEquip->ItemTag.MatchesTag(InSetRootTag))
@@ -822,3 +860,27 @@ bool UBattlefieldManagerSubsystem::HasEquippedFullSet(const FGameplayTag& InSetR
 
 	return matchCount >= 4;
 }
+
+float UBattlefieldManagerSubsystem::FindSkillCastTime(const FGameplayTag& InSkillTag, int32 InSkillLevel) const
+{
+	if (!InSkillTag.IsValid()) return 0.0f;
+
+	UGameDataSubsystem* gameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
+	if (!gameDataSubsystem) return 0.0f;
+
+	const FDTSkillsDataRow* skillRow = gameDataSubsystem->GetRow<FDTSkillsDataRow>(Arcanum::DataTable::SkillData, GetLeafNameFromTag(InSkillTag));
+	if (!skillRow) return 0.0f;
+
+	const FSkillInfo& skillInfo = skillRow->SkillData;
+
+	for (const FLevelModifierEntry& levelModifier : skillInfo.LevelModifiers)
+	{
+		if (levelModifier.Level == InSkillLevel)
+		{
+			return levelModifier.CastTime;
+		}
+	}
+
+	return 0.0f;
+}
+

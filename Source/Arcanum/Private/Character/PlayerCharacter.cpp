@@ -13,6 +13,7 @@
 #include "Core/SubSystem/BattlefieldManagerSubsystem.h"
 #include "Component/Stats/CharacterBattleStatsComponent.h"
 #include "Component/StatusActionComponent.h"
+#include "Components/DecalComponent.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -46,6 +47,13 @@ APlayerCharacter::APlayerCharacter()
 	WeaponMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMeshComponent"));
 	WeaponMeshComponent->SetupAttachment(GetMesh(), WeaponAttachSocketName);
 	WeaponMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	UltimatePreviewDecalComponent = CreateDefaultSubobject<UDecalComponent>(TEXT("UltimatePreviewDecalComponent"));
+	UltimatePreviewDecalComponent->SetupAttachment(RootComponent);
+	UltimatePreviewDecalComponent->DecalSize = UltimatePreviewDecalSize;
+	UltimatePreviewDecalComponent->SetVisibility(false);
+	UltimatePreviewDecalComponent->SetHiddenInGame(true);
+
 
 
 	PrimaryActorTick.bCanEverTick = true;
@@ -242,6 +250,7 @@ void APlayerCharacter::AddCurrentStat(FGameplayTag InTag, float InValue)
 
 void APlayerCharacter::UpdateEquippedWeaponMesh()
 {
+
 	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 	if (!battleSubsystem)
 	{
@@ -256,6 +265,34 @@ void APlayerCharacter::UpdateEquippedWeaponMesh()
 		return;
 	}
 
+	const FGameplayTag slotTypeTag = battleSubsystem->GetCurrentWeaponSlotTypeTag();
+	if (!slotTypeTag.IsValid())
+	{
+		ClearWeaponMesh();
+		return;
+	}
+
+	FName attachSocketName;
+
+	if (slotTypeTag.MatchesTagExact(Arcanum::Items::ItemSlot::Weapon::RightHand))
+	{
+		attachSocketName = TEXT("Weapon_R");
+	}
+	else if (slotTypeTag.MatchesTagExact(Arcanum::Items::ItemSlot::Weapon::LeftHand))
+	{
+		attachSocketName = TEXT("Weapon_L");
+	}
+	else if (slotTypeTag.MatchesTagExact(Arcanum::Items::ItemSlot::Weapon::TwoHand))
+	{
+		attachSocketName = TEXT("Weapon_R");
+	}
+	else
+	{
+		ClearWeaponMesh();
+		return;
+	}
+
+	WeaponAttachSocketName = attachSocketName;
 	AttachWeaponMesh(weaponMesh);
 }
 
@@ -276,6 +313,36 @@ void APlayerCharacter::ClearWeaponMesh()
 	if (WeaponMeshComponent)
 	{
 		WeaponMeshComponent->SetSkeletalMesh(nullptr);
+	}
+}
+
+void APlayerCharacter::ShowUltimatePreview()
+{
+	if (UltimatePreviewDecalComponent)
+	{
+		UltimatePreviewDecalComponent->SetVisibility(true);
+		UltimatePreviewDecalComponent->SetHiddenInGame(false);
+	}
+}
+
+void APlayerCharacter::HideUltimatePreview()
+{
+	if (UltimatePreviewDecalComponent)
+	{
+		UltimatePreviewDecalComponent->SetVisibility(false);
+		UltimatePreviewDecalComponent->SetHiddenInGame(true);
+	}
+}
+
+void APlayerCharacter::UpdateUltimatePreviewLocation(const FVector& InWorldLocation)
+{
+	if (UltimatePreviewDecalComponent)
+	{
+		FVector decalLocation = InWorldLocation;
+		decalLocation.Z += 5.0f;
+
+		UltimatePreviewDecalComponent->SetWorldLocation(decalLocation);
+		UltimatePreviewDecalComponent->SetWorldRotation(FRotator(-90.0f, 0.0f, 0.0f));
 	}
 }
 

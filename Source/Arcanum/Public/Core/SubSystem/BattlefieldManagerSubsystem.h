@@ -233,7 +233,13 @@ public:
 	/* 전설 무기 스켈레탈 메시 */
 	USkeletalMesh* GetLegendaryWeaponMesh() const;
 
+	/* 현재 활성 무기의 장착 타입 태그 */
+	FGameplayTag GetCurrentWeaponSlotTypeTag() const;
+
 protected:
+	/* 스킬 캐스트타임 반환 */
+	float FindSkillCastTime(const FGameplayTag& InSkillTag, int32 InSkillLevel) const;
+
 	/* 전투 시작 시 무기 스킬 캐시 생성 */
 	void BuildBattleWeaponSkillCache(FInBattleData& OutInBattleData);
 
@@ -248,6 +254,7 @@ protected:
 	bool HasEquippedFullSet(const FGameplayTag& InSetRootTag) const;
 
 protected:
+
 	/* 궁극기 사용 이전 무기 슬롯 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Battle|SkillCache")
 	FGameplayTag PreviousWeaponSlotTag;

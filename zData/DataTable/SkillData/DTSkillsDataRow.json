@@ -869,7 +869,7 @@
       "LevelModifiers": [
         {
           "Level": 0,
-          "CastTime": 1.5,
+          "CastTime": 2.0,
           "Cooldown": 20.0,
           "Cost": [
             {
@@ -916,7 +916,7 @@
         },
         {
           "Level": 1,
-          "CastTime": 1.5,
+          "CastTime": 2.0,
           "Cooldown": 20.0,
           "Cost": [
             {
@@ -963,7 +963,7 @@
         },
         {
           "Level": 2,
-          "CastTime": 1.5,
+          "CastTime": 2.0,
           "Cooldown": 20.0,
           "Cost": [
             {
@@ -1010,7 +1010,7 @@
         },
         {
           "Level": 3,
-          "CastTime": 1.5,
+          "CastTime": 2.0,
           "Cooldown": 20.0,
           "Cost": [
             {
@@ -1057,7 +1057,7 @@
         },
         {
           "Level": 4,
-          "CastTime": 1.5,
+          "CastTime": 2.0,
           "Cooldown": 20.0,
           "Cost": [
             {
@@ -1104,7 +1104,7 @@
         },
         {
           "Level": 5,
-          "CastTime": 1.5,
+          "CastTime": 2.0,
           "Cooldown": 20.0,
           "Cost": [
             {

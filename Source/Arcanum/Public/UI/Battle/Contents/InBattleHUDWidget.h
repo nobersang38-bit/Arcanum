@@ -63,7 +63,8 @@ public:
 #pragma region 전투 관련 버튼들
 public:
 	FOnClickActionButton OnClickBasicAttack;
-	FOnClickActionButton OnClickUltimateSkill;
+	FOnClickActionButton OnPressedUltimateSkill;
+	FOnClickActionButton OnReleasedUltimateSkill;
 	FOnClickActionButton OnClickBasicSkill;
 	FOnClickActionButton OnClickWeaponSwap;
 	FOnClickActionButton OnClickItem1;
@@ -75,7 +76,9 @@ protected:
 	void ClickBasicAttack();
 
 	UFUNCTION()
-	void ClickUltimateSkill();
+	void PressedUltimateSkill();
+	UFUNCTION()
+	void ReleasedUltimateSkill();
 
 	UFUNCTION()
 	void ClickBasicSkill();

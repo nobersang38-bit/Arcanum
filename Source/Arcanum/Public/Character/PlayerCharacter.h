@@ -111,5 +111,24 @@ protected:
 	FName WeaponAttachSocketName = TEXT("Weapon_R");
 #pragma endregion
 
+#pragma region 궁극기 가시화
+public:
+	/* 궁극기 조준 데칼 표시 */
+	void ShowUltimatePreview();
 
+	/* 궁극기 조준 데칼 숨김 */
+	void HideUltimatePreview();
+
+	/* 궁극기 조준 데칼 위치 갱신 */
+	void UpdateUltimatePreviewLocation(const FVector& InWorldLocation);
+
+protected:
+	/* 궁극기 조준용 바닥 데칼 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ultimate")
+	TObjectPtr<class UDecalComponent> UltimatePreviewDecalComponent = nullptr;
+
+	/* 궁극기 조준 데칼 크기 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate")
+	FVector UltimatePreviewDecalSize = FVector(120.0f, 200.0f, 200.0f);
+#pragma endregion
 };
