@@ -4,6 +4,7 @@
 #include "UI/Battle/SubLayout/BattleToggleWidget.h"
 #include "Components/CheckBox.h"
 #include "Components/WidgetSwitcher.h"
+#include "Components/Image.h"
 
 // ========================================================
 // 언리얼 기본 생성
@@ -25,4 +26,30 @@ void UBattleToggleWidget::OnChangeToggle(bool IsChecked)
 {
 	OnToggle.Broadcast(IsChecked);
 	TextSwitcher->SetActiveWidgetIndex(static_cast<int32>(IsChecked));
+	if (IsChecked)
+	{
+		OnIcon->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		Glow->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		if (Glow && GlowAnimation)
+		{
+			if (!IsAnimationPlaying(GlowAnimation))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("애니메이션 재생 시작!"));
+				PlayAnimation(GlowAnimation, 0.f, 0);
+			}
+		}
+	}
+	else
+	{
+		OnIcon->SetVisibility(ESlateVisibility::Collapsed);
+		Glow->SetVisibility(ESlateVisibility::Collapsed);
+		if (GlowAnimation)
+		{
+			if (IsAnimationPlaying(GlowAnimation))
+			{
+				StopAnimation(GlowAnimation);
+				UE_LOG(LogTemp, Warning, TEXT("애니메이션 종료."));
+			}
+		}
+	}
 }

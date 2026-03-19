@@ -13,6 +13,9 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnToggle, bool, bIsChecked);
  */
 class UCheckBox;
 class UWidgetSwitcher;
+class UImage;
+class UWidgetAnimation;
+
 UCLASS()
 class ARCANUM_API UBattleToggleWidget : public UUserWidget
 {
@@ -44,5 +47,17 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UWidgetSwitcher> TextSwitcher = nullptr;
+	
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UImage> OffIcon = nullptr;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UImage> OnIcon = nullptr;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UImage> Glow = nullptr;
+
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	TObjectPtr<UWidgetAnimation> GlowAnimation = nullptr;
+
 #pragma endregion
 };
