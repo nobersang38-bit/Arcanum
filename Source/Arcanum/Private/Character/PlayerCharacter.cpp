@@ -71,6 +71,8 @@ void APlayerCharacter::BeginPlay()
 	{
 		TeamTag = BattleSubsystem->AllyTeamTag;
 		StatComponent->SetData(BattleSubsystem->GetInBattleData().PlayerBattleStat);
+		StatComponent->OnCharacterRegenStatChanged.AddUObject(this, &APlayerCharacter::OnPlayerRegenStatChanged);
+		StatusActionComponent->SetupAction();
 	}
 	FGameplayTag PlayerID = FGameplayTag::RequestGameplayTag(TEXT("Arcanum.Player.ID.Elara"));
 	GameplayTags.AddTag(PlayerID);
@@ -350,6 +352,19 @@ void APlayerCharacter::UpdateUltimatePreviewLocation(const FVector& InWorldLocat
 			FVector decalLocation = hitResult.ImpactPoint + (hitResult.ImpactNormal * 2.0f);
 			UltimatePreviewDecalComponent->SetWorldLocation(decalLocation);
 			UltimatePreviewDecalComponent->SetWorldRotation(FRotator(-90.0f, 0.0f, 0.0f));
+		}
+	}
+}
+
+void APlayerCharacter::OnPlayerRegenStatChanged(const FRegenStat& InRegenStat)
+{
+	if (InRegenStat.ParentTag == Arcanum::BattleStat::Character::Regen::Health::Root)
+	{
+		ABattlePlayerController* ownerPC = GetController<ABattlePlayerController>();
+		if (ownerPC)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Current Health = %.2f / %.2f"), InRegenStat.Current, InRegenStat.GetTotalMax());
+			ownerPC->SetPlayerHealthProgress(InRegenStat.Current, InRegenStat.GetTotalMax());
 		}
 	}
 }

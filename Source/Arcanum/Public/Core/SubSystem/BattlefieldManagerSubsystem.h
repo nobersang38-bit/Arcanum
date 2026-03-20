@@ -48,6 +48,14 @@ public:
 	// 전투 스테이지가 종료되면 호출, 결과 정보 = FMatchResultData
 	FOnMatchEnded OnMatchEnded;
 
+	//if (시스템디버그) 
+	//{
+	//	스피어나오게 
+	//}
+	//else
+	//{
+	//}
+
 public:
 #pragma region 스테이지 기본설정
 	UFUNCTION()
@@ -213,8 +221,11 @@ public:
 	/* 전설 무기 아이콘 */
 	UTexture2D* GetLegendaryWeaponIcon() const;
 
-	/* 현재 일반 스킬 아이콘 */
+	/* 일반 스킬 아이콘 */
 	UTexture2D* GetCurrentBasicSkillIcon() const;
+
+	/* 전설 스킬 아이콘 */
+	UTexture2D* GetLegendaryUltimateSkillIcon() const;
 
 	/* 현재 선택 캐릭터의 4세트 발동 스킬 태그 반환 */
 	UFUNCTION()
@@ -239,11 +250,14 @@ public:
 	FGameplayTag GetCurrentWeaponSlotTypeTag() const;
 
 protected:
-	/* 스킬 캐스트타임 반환 */
+	/* 스킬 캐스트타임 */
 	float FindSkillCastTime(const FGameplayTag& InSkillTag, int32 InSkillLevel) const;
 
-	/* 스킬 쿨타임 반환 */
+	/* 스킬 쿨타임 */
 	float FindSkillCooldown(const FGameplayTag& InSkillTag, int32 InSkillLevel) const;
+
+	/* 스킬 아이콘 */
+	UTexture2D* FindSkillIcon(const FGameplayTag& InSkillTag) const;
 
 	/* 전투 시작 시 무기 스킬 캐시 생성 */
 	void BuildBattleWeaponSkillCache(FInBattleData& OutInBattleData);

@@ -458,6 +458,32 @@ bool FPlayerAccountService::EquipItemToCharacter(const UObject* WorldContextObje
 	}
 
 	slotMap->FindOrAdd(InEquipSlotTag) = InItemGuid;
+
+	int32 talashaCount = 0;
+
+	for (const TPair<FGameplayTag, FGuid>& pair : foundCharacter->ArmorSlots)
+	{
+		const FGuid& itemGuid = pair.Value;
+		if (itemGuid.IsValid())
+		{
+			for (const FEquipmentInfo& equip : playerData.Inventory)
+			{
+				if (equip.ItemGuid == itemGuid)
+				{
+					if (equip.ItemTag.MatchesTag(Arcanum::Items::Rarity::SetItem::Talasha::Armor::Root))
+					{
+						talashaCount++;
+					}
+					break;
+				}
+			}
+		}
+	}
+	if (talashaCount >= 4)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Set"));
+	}
+
 	return SavePlayerData(GI);
 }
 

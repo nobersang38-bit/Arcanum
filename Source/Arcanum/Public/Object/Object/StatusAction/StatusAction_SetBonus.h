@@ -11,7 +11,7 @@ class UNiagaraComponent;
 /**
  * 추영호
  * 장비 세트 효과 탈라샤
- * - 체력 일정수치 이하면 마나 회복 증가
+ * - 체력 일정수치 이하면 체력 지속 회복
  */
 
 UCLASS()
@@ -23,7 +23,6 @@ public:
 	UStatusAction_SetBonus();
 
     virtual void StartAction_Implementation(const FRegenStat& RegenStat, const FNonRegenStat& NonRegenStat) override;
-	virtual void StopAction_Implementation(const FRegenStat& RegenStat, const FNonRegenStat& NonRegenStat) override;
 
 protected:
 	virtual void InitializeAction_Implementation(const FRegenStat& RegenStat, const FNonRegenStat& NonRegenStat) override;
@@ -42,12 +41,17 @@ protected:
 	TObjectPtr<UNiagaraSystem> SetBonusNiagara = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SetBonus")
-	FName AttachSocketName = TEXT("spine_03");
+	FName AttachSocketName = TEXT("Chest");
 
 	UPROPERTY(Transient)
 	TObjectPtr<UNiagaraComponent> ActiveNiagaraComponent = nullptr;
 
+#pragma region 세트 보너스 지속시간
+protected:
+	void StartBonusTimer();
+	void EndBonus();
 
+protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SetBonus")
 	float BonusDuration = 10.0f;
 
@@ -55,4 +59,20 @@ protected:
 	bool bIsBonusActive = false;
 
 	FTimerHandle BonusTimerHandle;
+#pragma endregion
+
+#pragma region 세트 보너스 쿨타임
+protected:
+	void StartCooldown();
+	void EndCooldown();
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SetBonus")
+	float CooldownDuration = 30.0f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SetBonus")
+	bool bIsCooldown = false;
+
+	FTimerHandle CooldownTimerHandle;
+#pragma endregion
 };

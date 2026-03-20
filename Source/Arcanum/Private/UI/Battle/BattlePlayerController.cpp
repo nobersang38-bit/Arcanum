@@ -862,10 +862,13 @@ void ABattlePlayerController::UltimateSkillEnd()
 	{
 		playerCharacter->UpdateEquippedWeaponMesh();
 	}
-
 	if (UltimatePostProcessVolume)
 	{
 		UltimatePostProcessVolume->bUnbound = false;
+	}
+	if (HUDWidgetInstance)
+	{
+		HUDWidgetInstance->SetLegendaryButtonIcon(battleSubsystem->GetLegendaryWeaponIcon());
 	}
 }
 
@@ -897,6 +900,10 @@ void ABattlePlayerController::UltimateSkillPressed()
 		playerCharacter->UpdateEquippedWeaponMesh();
 		playerCharacter->ShowUltimatePreview();
 		playerCharacter->UpdateUltimatePreviewLocation(CurrentUltimatePreviewLocation);
+		if (HUDWidgetInstance)
+		{
+			HUDWidgetInstance->SetLegendaryButtonIcon(battleSubsystem->GetLegendaryUltimateSkillIcon());
+		}
 	}
 
 	GetWorldTimerManager().ClearTimer(UltimateSkillTimerHandle);

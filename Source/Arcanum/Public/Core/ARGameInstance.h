@@ -71,6 +71,9 @@ class ARCANUM_API UARGameInstance : public UGameInstance
 {
     GENERATED_BODY()
 
+public:
+    //디버그 true;
+
     #pragma region 블루플린트에서 변경 가능한 애들
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "00-Global Setting")

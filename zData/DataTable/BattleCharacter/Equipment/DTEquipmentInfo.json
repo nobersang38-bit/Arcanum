@@ -42,7 +42,7 @@
         "MaxUpgradeLevel": 5,
         "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.Slash": 1
+          "Arcanum.Skills.SkillName.ShockWave": 1
         }
       },
       {
@@ -78,7 +78,7 @@
         "MaxUpgradeLevel": 5,
         "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.Slash": 1
+          "Arcanum.Skills.SkillName.ShockWave": 1
         }
       },
       {
@@ -114,7 +114,7 @@
         "MaxUpgradeLevel": 5,
         "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.Slash": 1
+          "Arcanum.Skills.SkillName.ShockWave": 1
         }
       },
       {
@@ -150,7 +150,7 @@
         "MaxUpgradeLevel": 5,
         "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.Slash": 1
+          "Arcanum.Skills.SkillName.ShockWave": 1
         }
       },
       {
@@ -186,7 +186,7 @@
         "MaxUpgradeLevel": 5,
         "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.Slash": 1
+          "Arcanum.Skills.SkillName.ShockWave": 1
         }
       },
       {
@@ -222,7 +222,7 @@
         "MaxUpgradeLevel": 5,
         "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.Slash": 1
+          "Arcanum.Skills.SkillName.ShockWave": 1
         }
       }
     ]
@@ -726,7 +726,7 @@
         "MaxUpgradeLevel": 5,
         "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.ShockWave": 1
+          "Arcanum.Skills.SkillName.Slash": 1
         }
       },
       {
@@ -762,7 +762,7 @@
         "MaxUpgradeLevel": 5,
         "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.ShockWave": 1
+          "Arcanum.Skills.SkillName.Slash": 1
         }
       },
       {
@@ -798,7 +798,7 @@
         "MaxUpgradeLevel": 5,
         "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.ShockWave": 1
+          "Arcanum.Skills.SkillName.Slash": 1
         }
       },
       {
@@ -834,7 +834,7 @@
         "MaxUpgradeLevel": 5,
         "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.ShockWave": 1
+          "Arcanum.Skills.SkillName.Slash": 1
         }
       },
       {
@@ -870,7 +870,7 @@
         "MaxUpgradeLevel": 5,
         "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.ShockWave": 1
+          "Arcanum.Skills.SkillName.Slash": 1
         }
       },
       {
@@ -906,7 +906,7 @@
         "MaxUpgradeLevel": 5,
         "BasicAttackSkillTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
         "Skills": {
-          "Arcanum.Skills.SkillName.ShockWave": 1
+          "Arcanum.Skills.SkillName.Slash": 1
         }
       }
     ]
