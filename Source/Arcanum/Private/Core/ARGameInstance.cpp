@@ -269,6 +269,28 @@ bool UARGameInstance::GenerateResults(const FDTGachaBannerDataRow* BannerData, i
 
 	//return Results.Num() > 0;
 }
+bool UARGameInstance::GenerateResultsTest(const FDTGachaBannerDataRow* BannerData, int32 PullCount)
+{
+	GachaItemResult.Empty();
+	TArray<FGachaItemResult> Results;
+	Results.Reserve(PullCount);
+
+	FGachaBannerState& BannerState = PlayerData.GachaState.BannerStates.FindOrAdd(BannerData->BannerTag);
+	for (int32 i = 0; i < PullCount; ++i) {
+		FGameplayTag Grade = FGameplayTag::RequestGameplayTag(FName("Arcanum.Player.Grade.Epic.2"));
+		ApplyHardPity(BannerData, BannerState, Grade);
+
+		const FGachaGradePool* Pool = BannerData->GradePools.FindByPredicate([&](const FGachaGradePool& P) { return P.GradeTag == Grade; });
+		if (Pool) {
+			FGachaItemResult Result = ResolvePickup(BannerData, *Pool, BannerState, Grade);
+			Results.Add(Result);
+
+		}
+	}
+
+	GachaItemResult = Results;
+	return GachaItemResult.Num() > 0;
+}
 FGameplayTag UARGameInstance::DetermineGrade(const FDTGachaBannerDataRow* BannerData)
 {
 	float Rand = FMath::FRand();
@@ -316,6 +338,7 @@ FGachaItemResult UARGameInstance::ResolvePickup(const FDTGachaBannerDataRow* Ban
 {
 	FGachaItemResult Result;
 	Result.GradeTag = Pool.GradeTag;
+	Result.SourceTable = Pool.CommonPoolTable;
 	if (Pool.PickupCharacters.Num() == 0) {
 		Result.ItemTag = GetRandomFromGrade(Pool, GachaIndex);
 		return Result;

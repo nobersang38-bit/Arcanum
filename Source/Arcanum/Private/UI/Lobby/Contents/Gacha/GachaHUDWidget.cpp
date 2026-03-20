@@ -68,6 +68,10 @@ void UGachaHUDWidget::InitBannerList()
         MultiPullButton->OnPullClicked.AddUObject(this, &UGachaHUDWidget::RequestGacha);
     }
 
+    if (EpicButton) {
+        EpicButton->OnPullClicked.RemoveAll(this);
+        EpicButton->OnPullClicked.AddUObject(this, &UGachaHUDWidget::RequestGachaTest);
+    }
     if (ProbabilityInfoButton) {
         ProbabilityInfoButton->OnClicked.RemoveDynamic(this, &UGachaHUDWidget::HandleProbabilityButtonClicked);
         ProbabilityInfoButton->OnClicked.AddDynamic(this, &UGachaHUDWidget::HandleProbabilityButtonClicked);
@@ -145,7 +149,7 @@ void UGachaHUDWidget::RequestGacha(int32 InPullCount)
     FGameplayTag SelectedTag = CurrentSelectedButton->BannerTag;
     bool bSuccess = FPlayerAccountService::ExecuteGacha(this, ParentLobby->CachedPlayerData, SelectedTag, CurrencyCost, InPullCount);
      
-    /// Test : 나중에 주석 풀기
+    /// Test : 가챠 연출 출력 부분
     if (bSuccess) {
         UE_LOG(LogTemp, Log, TEXT("Gacha Request Success: %d Times"), InPullCount);
         FPlayerAccountService::SetHUDIndex(this, EHUDIndex::GachaMenu);
@@ -154,6 +158,34 @@ void UGachaHUDWidget::RequestGacha(int32 InPullCount)
     else UE_LOG(LogTemp, Error, TEXT("Gacha Request Failed (Insufficient Currency?)"));
 
 }
+// ========================================================
+// 픽업 선택 버튼 관련 (테스트용 : Epic 확정)
+// ========================================================
+void UGachaHUDWidget::RequestGachaTest(int32 InPullCount)
+{
+    if (ParentLobby->CachedPlayerData.Mailbox.Num() >= ParentLobby->CachedPlayerData.MailboxCapacity) {
+        return;
+    }
+    FPlayerAccountService::UpdateCurrency(this, ParentLobby->CachedPlayerData, Arcanum::PlayerData::Currencies::NonRegen::Soul::Value, 10000);
+    ParentLobby->CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
+    FPlayerAccountService::UpdateCurrency(this, ParentLobby->CachedPlayerData, Arcanum::PlayerData::Currencies::NonRegen::Gold::Value, 10000);
+    ParentLobby->CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
+
+    if (!CurrentSelectedButton) {
+        return;
+    }
+
+    FGameplayTag SelectedTag = CurrentSelectedButton->BannerTag;
+    bool bSuccess = FPlayerAccountService::ExecuteGachaTest(this, ParentLobby->CachedPlayerData, SelectedTag, CurrencyCost, InPullCount);
+
+    if (bSuccess) {
+        FPlayerAccountService::SetHUDIndex(this, EHUDIndex::GachaMenu);
+        if (GachaMap.IsNull() == false) UGameplayStatics::OpenLevelBySoftObjectPtr(this, GachaMap);
+    }
+
+}
+
+
 // ========================================================
 // 확률 버튼
 // ========================================================
