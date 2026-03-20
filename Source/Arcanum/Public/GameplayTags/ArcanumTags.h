@@ -114,6 +114,8 @@ namespace Arcanum {
 	namespace Skills {
 		namespace SkillName {
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(None);
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(BasicMeleeAttack);
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(BasicRangedAttack);
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Slash);			// 무기 스킬: 베기(했음)
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(ChainBolt);		// 무기 스킬: 체인 볼트(했음)
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(PiercingShot);	// 무기 스킬: 관통 사격(했음)

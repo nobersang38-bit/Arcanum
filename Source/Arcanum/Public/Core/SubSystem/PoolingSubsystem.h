@@ -40,6 +40,7 @@ public:
 	// 풀링 초기설정
 	void SetPoolSet(const FPoolingSet& SetData);
 
+#pragma region 액터 전용
 	// 비활성화인 액터가 있다면 활성화 시키고, 비활성화인 액터가 없다면 스폰 (세팅에 설정되어 있어야 사용가능)
 	AActor* SpawnFromPool(const FGameplayTag& SpawnTag, const FTransform& InTransform);
 	// 풀링에 해당 오브젝트 추가하는 설정도 포함 (세팅에 설정 안되어 있어도 사용 가능)
@@ -55,7 +56,7 @@ public:
 
 	// 아이템 삭제
 	void DestroyItem(AActor* InActor);
-
+#pragma endregion
 
 protected:
 	void Internal_ActivateItem(AActor* InActor, const FTransform& InTransform);

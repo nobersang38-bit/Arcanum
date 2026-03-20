@@ -50,6 +50,14 @@ void AFloatingDamageText::SetText(float InValue)
 	}
 }
 
+void AFloatingDamageText::SetText(FText InText)
+{
+	if (CashedFloatingDamageTextWidget.IsValid())
+	{
+		CashedFloatingDamageTextWidget->SetText(InText);
+	}
+}
+
 void AFloatingDamageText::ActivateItem()
 {
 	if (CashedFloatingDamageTextWidget.IsValid() && CashedFloatingDamageTextWidget->HideAnim)

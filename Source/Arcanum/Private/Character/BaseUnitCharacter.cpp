@@ -25,12 +25,17 @@
 #include "Components/CapsuleComponent.h"
 #include "NiagaraComponent.h"
 #include "Component/StatusActionComponent.h"
+#include "UI/Battle/Common/FloatingDamageTextWidget.h"
+#include "Core/SubSystem/PoolingSubsystem.h"
+#include "Object/Actor/FloatingDamageText.h"
 
 // Sets default values
 ABaseUnitCharacter::ABaseUnitCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
+
+	
 
 	UnitCombatComponent = CreateDefaultSubobject<UUnitCombatComponent>(TEXT("UnitCombatComponent"));
 	CharacterBattleStatsComponent = CreateDefaultSubobject<UCharacterBattleStatsComponent>(TEXT("CharacterBattleStatsComponent"));
@@ -77,6 +82,7 @@ void ABaseUnitCharacter::BeginPlay()
 	{
 		MaterialBackup.Add(GetMesh()->GetMaterials()[i]);
 	}
+
 	DataInitialize();
 }
 
@@ -208,15 +214,51 @@ FUnitRuntimeData& ABaseUnitCharacter::GetUnitRuntimeData()
 
 void ABaseUnitCharacter::OnAttackNotifyTriggered()
 {
-	UnitCombatComponent->SendDamage(GetAttackPower());
+	float ResultAttackPower = GetAttackPower();
+	const FNonRegenStat* CriticalStat = CharacterBattleStatsComponent->FindNonRegenStat(StatusActionComponent->CriticalTag);
+	if (CriticalStat)
+	{
+		float CriticalPercent = CriticalStat->GetTotalValue();
+		bool bIsCriticalSuccess = (FMath::FRandRange(0.0f, 1.0f) <= CriticalPercent);
+
+		if (bIsCriticalSuccess)
+		{
+			ResultAttackPower *= 2.0f;
+		}
+	}
+
+	UnitCombatComponent->SendDamage(ResultAttackPower);
 }
 
 // 데미지 받기
 void ABaseUnitCharacter::RecievedDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
-	GetCharacterBattleStatsComponent()->ChangeStatValue(Arcanum::BattleStat::Character::Regen::Health::Root, -(FMath::Abs(Damage)), DamageCauser);
-	UnitCombatComponent->LightHitReaction(Damage);
-	OuntLineStart(OutLineCurve, OutLineTime, 0.005f, OutlineTimeHandle, OutlineDynamicMI, RefOutlineTime);
+	const FNonRegenStat* EvasionStat = CharacterBattleStatsComponent->FindNonRegenStat(StatusActionComponent->EvasionTag);
+	if (EvasionStat)
+	{
+		float EvasionPercent = EvasionStat->GetTotalValue();
+		bool bIsEvasionSuccess = (FMath::FRandRange(0.0f, 1.0f) <= EvasionPercent);
+		if (bIsEvasionSuccess)
+		{
+			UPoolingSubsystem* PoolingSystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
+			if (PoolingSystem && TextFloatingClass)
+			{
+				FTransform Transform;
+				Transform.SetLocation((GetActorLocation() + (GetActorUpVector() * 60.0f)) + (FMath::VRand() * 20.0f));
+				AActor* FloatingActor = PoolingSystem->SpawnFromPool(TextFloatingClass, Transform);
+				if (AFloatingDamageText* FloatingText = Cast<AFloatingDamageText>(FloatingActor))
+				{
+					FloatingText->SetText(FText::FromString(TEXT("회피")));
+				}
+			}
+			return;
+		}
+	}
+
+	float ResultDamage = -(FMath::Abs(Damage));
+	GetCharacterBattleStatsComponent()->ChangeStatValue(Arcanum::BattleStat::Character::Regen::Health::Root, ResultDamage, DamageCauser);
+	//UnitCombatComponent->LightHitReaction(Damage);
+	//OuntLineStart(OutLineCurve, OutLineTime, 0.005f, OutlineTimeHandle, OutlineDynamicMI, RefOutlineTime);
 }
 
 void ABaseUnitCharacter::UpdateUnitData()
@@ -266,29 +308,29 @@ void ABaseUnitCharacter::UnitDeactive()
 	}
 }
 
-void ABaseUnitCharacter::OuntLineStart(const UCurveFloat* CurveFloat, float InTime, float DeltaTime, FTimerHandle& InTimerHandle, UMaterialInstanceDynamic* MaterialInstance, float& RefTime)
+void ABaseUnitCharacter::OuntLineStart(const UCurveFloat* CurveFloat, float InTime, float DeltaTime)
 {
-	RefTime = 0.0f;
+	RefOutlineTime = 0.0f;
 	FTimerDelegate OutlineDelegate;
-	OutlineDelegate.BindWeakLambda(this, [this, MaterialInstance, CurveFloat, InTime, DeltaTime, &InTimerHandle, &RefTime]()
+	OutlineDelegate.BindWeakLambda(this, [this, CurveFloat, InTime, DeltaTime]()
 		{
-			if (MaterialInstance)
+			if (OutlineDynamicMI)
 			{
-				float Time = FMath::Clamp(RefTime / InTime, 0.0f, 1.0f);
+				float Time = FMath::Clamp(RefOutlineTime / InTime, 0.0f, 1.0f);
 				float Value = CurveFloat->GetFloatValue(Time);
-				MaterialInstance->SetScalarParameterValue(FName("Weight0"), Value);
-				RefTime += DeltaTime;
+				OutlineDynamicMI->SetScalarParameterValue(FName("Weight0"), Value);
+				RefOutlineTime += DeltaTime;
 
 				if (Time >= 1.0f)
 				{
-					MaterialInstance->SetScalarParameterValue(FName("Weight0"), 0.0f);
-					GetWorld()->GetTimerManager().ClearTimer(InTimerHandle);
+					OutlineDynamicMI->SetScalarParameterValue(FName("Weight0"), 0.0f);
+					GetWorld()->GetTimerManager().ClearTimer(OutlineTimeHandle);
 				}
 			}
 		});
 
-	GetWorld()->GetTimerManager().ClearTimer(InTimerHandle);
-	GetWorld()->GetTimerManager().SetTimer(InTimerHandle, OutlineDelegate, DeltaTime, true);
+	GetWorld()->GetTimerManager().ClearTimer(OutlineTimeHandle);
+	GetWorld()->GetTimerManager().SetTimer(OutlineTimeHandle, OutlineDelegate, DeltaTime, true);
 }
 
 void ABaseUnitCharacter::SetHologramType(bool bUseHologram)
@@ -342,4 +384,25 @@ void ABaseUnitCharacter::DeactiveItem()
 	{
 		HealthBarComponent->SetHiddenInGame(true);
 	}
+}
+
+void ABaseUnitCharacter::AddLevelModifierEntry(const FLevelModifierEntry& LevelModifierEntry)
+{
+
+}
+
+void ABaseUnitCharacter::AddDerivedStatModifier(const FDerivedStatModifier& DerivedStatModifier)
+{
+	CharacterBattleStatsComponent->ApplyDurationModifier(DerivedStatModifier);
+	UE_LOG(LogTemp, Error, TEXT("애드모디파이어작동!!!!!"));
+}
+
+void ABaseUnitCharacter::ChangeStat(const FGameplayTag& InTag, float InValue)
+{
+	CharacterBattleStatsComponent->ChangeStatValue(InTag, InValue, nullptr);
+}
+
+const UCharacterBattleStatsComponent* ABaseUnitCharacter::GetStatComponent() const
+{
+	return CharacterBattleStatsComponent;
 }

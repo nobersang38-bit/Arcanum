@@ -28,6 +28,8 @@ public:
 public:
 	void SetText(float InValue);
 
+	void SetText(FText InText);
+
 protected:
 	void ActivateItem() override;
 

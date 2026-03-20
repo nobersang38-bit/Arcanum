@@ -90,4 +90,45 @@ protected:
 	//UPROPERTY()
 	//TMap<FGameplayTag, FNonRegenStat> NonRegenStats;
 
+#pragma region 무기 교체
+public:
+	/* 현재 장착 무기로 메시 교체 */
+	void UpdateEquippedWeaponMesh();
+
+protected:
+	/* 무기 메시를 손 소켓에 부착 */
+	void AttachWeaponMesh(class USkeletalMesh* InWeaponMesh);
+
+	/* 무기 메시 초기화 */
+	void ClearWeaponMesh();
+
+	/* 손에 부착해서 교체 표시할 무기 메시 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
+	TObjectPtr<class USkeletalMeshComponent> WeaponMeshComponent = nullptr;
+
+	/* 무기 부착 소켓 이름 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapon")
+	FName WeaponAttachSocketName = TEXT("Weapon_R");
+#pragma endregion
+
+#pragma region 궁극기 가시화
+public:
+	/* 궁극기 조준 데칼 표시 */
+	void ShowUltimatePreview();
+
+	/* 궁극기 조준 데칼 숨김 */
+	void HideUltimatePreview();
+
+	/* 궁극기 조준 데칼 위치 갱신 */
+	void UpdateUltimatePreviewLocation(const FVector& InWorldLocation);
+
+protected:
+	/* 궁극기 조준용 바닥 데칼 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ultimate")
+	TObjectPtr<class UDecalComponent> UltimatePreviewDecalComponent = nullptr;
+
+	/* 궁극기 조준 데칼 크기 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate")
+	FVector UltimatePreviewDecalSize = FVector(120.0f, 200.0f, 200.0f);
+#pragma endregion
 };

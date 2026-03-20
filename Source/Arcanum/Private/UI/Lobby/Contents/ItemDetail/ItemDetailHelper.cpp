@@ -39,7 +39,19 @@ bool FItemDetailHelper::BuildEquipmentDisplayViewData(const UObject* WorldContex
 	OutViewData.EquippedCharacterText = BuildEquippedCharacterText(WorldContextObject, InItemGuid);
 	OutViewData.bShowEquippedCharacter = !OutViewData.EquippedCharacterText.IsEmpty();
 
-	for (const FDerivedStatModifier& stat : equipInfo.Equipment.OwnerStats)
+	const TArray<FDerivedStatModifier>* statsToShow = nullptr;
+
+	if (equipInfo.ItemTag.MatchesTag(Arcanum::Items::Rarity::Common::Weapon::Root)
+		|| equipInfo.ItemTag.MatchesTag(Arcanum::Items::Rarity::Legendary::Weapon::Root))
+	{
+		statsToShow = &equipInfo.Equipment.OnHitTargetStats;
+	}
+	else
+	{
+		statsToShow = &equipInfo.Equipment.OwnerStats;
+	}
+
+	for (const FDerivedStatModifier& stat : *statsToShow)
 	{
 		FItemStatLineViewData line;
 		line.StatNameText = BuildStatNameText(dataSubsystem, stat.StatTag);
@@ -373,11 +385,24 @@ FText FItemDetailHelper::BuildCurrentStatValueText(const FDerivedStatModifier& I
 {
 	if (bInUsePercent)
 	{
-		const float percentValue = InStat.Value.Mul * 100.0f;
+		float percentValue = InStat.Value.Mul * 100.0f;
+
+		if (InStat.StatTag.MatchesTagExact(Arcanum::BattleStat::Character::Regen::Health::Value))
+		{
+			percentValue = FMath::Abs(percentValue);
+		}
+
 		return FText::FromString(FString::Printf(TEXT("+%.0f%%"), percentValue));
 	}
 
-	return FText::FromString(FString::Printf(TEXT("+%.0f"), InStat.Value.Flat));
+	float flatValue = InStat.Value.Flat;
+
+	if (InStat.StatTag.MatchesTagExact(Arcanum::BattleStat::Character::Regen::Health::Value))
+	{
+		flatValue = FMath::Abs(flatValue);
+	}
+
+	return FText::FromString(FString::Printf(TEXT("+%.0f"), flatValue));
 }
 
 FText FItemDetailHelper::BuildNextStatValueText(const FStatRangeDefinition& InRange, bool bInUsePercent)

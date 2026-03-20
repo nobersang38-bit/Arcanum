@@ -18,15 +18,16 @@ class USkillBase : public UObject
 public:
     USkillBase();
 
-    virtual void Initialize(AActor* InOwner, const FSkillInfo* InSkillInfo, int32 InLevel, FGameplayTag InTargetFilterTag);
+    virtual void Initialize(AActor* InOwner, const FSkillInfo* InSkillInfo, int32 InLevel, FGameplayTag InTargetFilterTag, AActor* InTargetActor = nullptr, const FVector InTargetLocation = FVector::ZeroVector);
 
     virtual void ActivateSkill(AActor* Instigator);
     virtual void DeactivateSkill(AActor* Instigator);
 
     const FLevelModifierEntry* GetCurrentLevelEntry() const;
+    const FSkillInfo* GetSkillInfo() const;
 
 protected:
-
+    UPROPERTY()
     TWeakObjectPtr<AActor> OwnerActor;
 
     const FSkillInfo* SkillInfo;

@@ -16,6 +16,9 @@ void UBattleActionButtonWidget::NativeConstruct()
 	if (ActionButton)
 	{
 		ActionButton->OnClicked.AddDynamic(this, &UBattleActionButtonWidget::OnActionButtonClick);
+
+		ActionButton->OnPressed.AddDynamic(this, &UBattleActionButtonWidget::OnActionButtonPressed);
+		ActionButton->OnReleased.AddDynamic(this, &UBattleActionButtonWidget::OnActionButtonReleased);
 	}
 	if (ActionText)
 	{
@@ -135,4 +138,14 @@ void UBattleActionButtonWidget::SetProgressesVisible(bool IsVisible)
 void UBattleActionButtonWidget::OnActionButtonClick()
 {
 	OnButtonClick.Broadcast();
+}
+
+void UBattleActionButtonWidget::OnActionButtonPressed()
+{
+	OnButtonPressed.Broadcast();
+}
+
+void UBattleActionButtonWidget::OnActionButtonReleased()
+{
+	OnButtonReleased.Broadcast();
 }
