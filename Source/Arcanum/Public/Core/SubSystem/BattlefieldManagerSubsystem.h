@@ -48,14 +48,6 @@ public:
 	// 전투 스테이지가 종료되면 호출, 결과 정보 = FMatchResultData
 	FOnMatchEnded OnMatchEnded;
 
-	//if (시스템디버그) 
-	//{
-	//	스피어나오게 
-	//}
-	//else
-	//{
-	//}
-
 public:
 #pragma region 스테이지 기본설정
 	UFUNCTION()
