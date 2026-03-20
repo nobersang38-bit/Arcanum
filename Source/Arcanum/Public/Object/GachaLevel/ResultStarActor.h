@@ -9,10 +9,20 @@ class AASplinePathActor;
 class AResultStarChild;
 class USceneComponent;
 class USphereComponent;
-class UNiagaraComponent;
-class UStaticMeshComponent;
+class USplineComponent;
+
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnResultStarFinished, AResultStarActor*, FinishedActor);
+
+
+USTRUCT(BlueprintType)
+struct FGradeMaterialSet
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TMap<FGameplayTag, UMaterialInterface*> Materials;
+};
 
 UCLASS()
 class ARCANUM_API AResultStarActor : public AActor
@@ -20,49 +30,96 @@ class ARCANUM_API AResultStarActor : public AActor
     GENERATED_BODY()
 
 public:
-    UPROPERTY(BlueprintAssignable) FOnResultStarFinished OnResultStarFinished;
-    
     AResultStarActor();
 
+    // ========================================================
+    // Delegate
+    // ========================================================
+public:
+    UPROPERTY(BlueprintAssignable)
+    FOnResultStarFinished OnResultStarFinished;
+
+    // ========================================================
+    // 외부 인터페이스
+    // ========================================================
+public:
     void SetGachaResults(const TArray<FGachaItemResult>& InResults);
 
-    void SetSplineActor(AASplinePathActor* InSpline) { SplineActor = InSpline; }
+    void SetSplineActor(AASplinePathActor* InSpline);
+
+    /** 정상 연출 시작 */
     void StartResultSequence(float InDelay = 0.0f);
 
-    UFUNCTION() void OnChildStarClicked(AResultStarChild* ClickedStar);
+    /** 스킵용 */
+    void SpawnAllAtEnd();
+
+    /** Skip 강제 종료 */
+    void ForceFinish();
+
+    UFUNCTION()
+    void OnChildStarClicked(AResultStarChild* ClickedStar);
 
     virtual void Tick(float DeltaTime) override;
 
 protected:
     virtual void BeginPlay() override;
-    UPROPERTY(EditAnywhere, Category = "00-Global") TSoftClassPtr<AResultStarChild> ChildStarClass;
 
-private:
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-    TObjectPtr<USceneComponent> SceneRoot;
-    UPROPERTY(VisibleAnywhere) TObjectPtr<USphereComponent> Collision;
-    
-    /** 스플라인 경로 액터 */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-    TObjectPtr<AASplinePathActor> SplineActor;
+    // ========================================================
+    // 설정
+    // ========================================================
+protected:
+    UPROPERTY(EditAnywhere, Category = "Gacha|Class")
+    TSoftClassPtr<AResultStarChild> ChildStarClass;
 
-    /** 자식 별들의 회전 피벗들을 관리하는 배열 */
-    UPROPERTY()
-    TArray<TObjectPtr<USceneComponent>> OrbitPivots;
-
-    /** 생성된 자식 별동별 액터들을 직접 관리하는 배열 (부모가 쳐 넣기 위해 필요) */
-    UPROPERTY()
-    TArray<TObjectPtr<AResultStarChild>> StarActors;
+    UPROPERTY(EditAnywhere, Category = "Gacha|Material")
+    TMap<FGameplayTag, FGradeMaterialSet> GradeMatMap;
 
     UPROPERTY(EditAnywhere, Category = "Gacha|Movement")
     float MoveSpeed = 3500.f;
 
     UPROPERTY(EditAnywhere, Category = "Gacha|Movement")
-    float RotationSpeed = 360.0f; // 초당 회전 각도
+    float RotationSpeed = 360.0f;
 
     UPROPERTY(EditAnywhere, Category = "Gacha|Movement")
-    float OrbitRadius = 150.0f; // 스플라인 중심으로부터의 거리
+    float OrbitRadius = 150.0f;
 
+    // ========================================================
+    // 컴포넌트
+    // ========================================================
+private:
+    UPROPERTY(VisibleAnywhere)
+    TObjectPtr<USceneComponent> SceneRoot;
+
+    UPROPERTY(VisibleAnywhere)
+    TObjectPtr<USphereComponent> Collision;
+
+    // ========================================================
+    // 스플라인
+    // ========================================================
+private:
+    UPROPERTY()
+    TObjectPtr<AASplinePathActor> SplineActor;
+
+    UPROPERTY()
+    TObjectPtr<USplineComponent> Spline;
+
+    // ========================================================
+    // 자식 관리
+    // ========================================================
+private:
+    UPROPERTY()
+    TArray<TObjectPtr<USceneComponent>> OrbitPivots;
+
+    UPROPERTY()
+    TArray<TObjectPtr<AResultStarChild>> StarActors;
+
+    // ========================================================
+    // 런타임 상태
+    // ========================================================
+private:
     float CurrentDistance = 0.f;
     bool bIsMoving = false;
+
+    // Delay Timer (스킵 안정성)
+    FTimerHandle DelayTimerHandle;
 };

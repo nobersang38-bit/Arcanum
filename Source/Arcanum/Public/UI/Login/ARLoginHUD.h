@@ -15,6 +15,7 @@ class UAnnouncetUserWidget;
 class ULoginPanelWidget;
 class UCommonBtnWidget;
 class UCommonDialog;
+class UCommonOptionWindow;
 
 class UVerticalBox;
 class ALoginCharacter;
@@ -83,6 +84,13 @@ public:
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UCommonBtnWidget> SettingBtn;
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UCommonOptionWindow> SettingHUDClass;
+	UPROPERTY()
+	TObjectPtr<UCommonOptionWindow> SettingHUD;
+	
+
+	
 #pragma endregion
 
 #pragma region 플레이

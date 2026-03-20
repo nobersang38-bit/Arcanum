@@ -7,6 +7,8 @@
 #include "UI/Lobby/Contents/Enhancement/EnhancementHUDWidget.h"
 #include "UI/Lobby/Contents/Battle/BattleHUDWidget.h"
 #include "UI/Lobby/Contents/Gacha/GachaHUDWidget.h"
+#include "UI/Common/CommonOptionWindow.h"
+
 //#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/HorizontalBox.h"
@@ -233,6 +235,12 @@ void ULobbyHUD::ClickGachaMenuBtn()
 void ULobbyHUD::ClickSettingBtn()
 {
 	/// TODO : 설정 위젯 띄우기
+	if (SettingHUDClass) {
+		SettingHUD = CreateWidget<UCommonOptionWindow>(this, SettingHUDClass);
+		if (SettingHUD) {
+			SettingHUD->AddToViewport();
+		}
+	}
 }
 
 

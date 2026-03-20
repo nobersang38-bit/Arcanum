@@ -61,8 +61,10 @@ private:
 protected:
     UPROPERTY(meta = (BindWidget)) TObjectPtr<UGachaPullButtonWidget> SinglePullButton;
     UPROPERTY(meta = (BindWidget)) TObjectPtr<UGachaPullButtonWidget> MultiPullButton;
+    UPROPERTY(meta = (BindWidget)) TObjectPtr<UGachaPullButtonWidget> EpicButton;
     private:
     void RequestGacha(int32 InPullCount);
+    void RequestGachaTest(int32 InPullCount);
 #pragma endregion
 
 #pragma region 확률 버튼
