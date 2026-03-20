@@ -23,16 +23,21 @@ void UCommonTabList::NativeConstruct()
 
 void UCommonTabList::InitializeTabs()
 {
-    if (!TabSwitcher) return;
+    if (!Container) return;
 
-    for (const FGameplayTag& Tag : TabOrder) {
-        if (TSubclassOf<UUserWidget>* WidgetClassPtr = TabClasses.Find(Tag)) {
-            UUserWidget* Widget = CreateWidget<UUserWidget>(GetOwningPlayer(), *WidgetClassPtr);
-            if (Widget) {
-                TabSwitcher->AddChild(Widget);
-                Widget->SetVisibility(ESlateVisibility::Collapsed);
-                TabInstances.Add(Tag, Widget);
-            }
+    for (const auto& Pair : TabClasses) {
+        const FGameplayTag& Tag = Pair.Key;
+        TSubclassOf<UUserWidget> WidgetClass = Pair.Value;
+
+        if (!WidgetClass) continue;
+
+        UUserWidget* Widget = CreateWidget<UUserWidget>(GetOwningPlayer(), WidgetClass);
+
+        if (Widget) {
+            Container->AddChild(Widget);
+            Widget->SetVisibility(ESlateVisibility::Hidden);
+
+            TabInstances.Add(Tag, Widget);
         }
     }
 

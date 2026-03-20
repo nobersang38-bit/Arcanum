@@ -29,6 +29,17 @@ void UCommonOptionWindow::OnSaveButtonClicked()
     UGameOptionSettings* Settings = UGameOptionSettings::Get();
     if (!Settings) return;
 
+    // 1. 현재 메모리에 로드된 각 탭 위젯으로부터 데이터 수집
+// (각 탭 위젯에 GetSettingsData() 같은 함수가 있다고 가정하거나 
+// TabNavigation을 통해 직접 접근)
+
+/* 예시:
+if (UCommonTabList* TabList = TabNavigation)
+{
+    // 오디오 탭을 찾아서 값 가져오기
+    // Settings->SetOverallVolume(AudioTab->GetSliderValue());
+}
+*/
     Settings->ApplySettings(true);
     Settings->SaveSettings();
 

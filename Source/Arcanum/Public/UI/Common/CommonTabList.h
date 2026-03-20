@@ -26,7 +26,8 @@ protected:
 	TMap<FGameplayTag, UUserWidget*> TabInstances;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "00-Global") TMap<FGameplayTag, TSubclassOf<UUserWidget>> TabClasses;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "00-Global") TArray<FGameplayTag> TabOrder;
-	
+	UPROPERTY(meta = (BindWidget)) TObjectPtr<UPanelWidget> Container;
+
 	UPROPERTY(meta = (BindWidget)) TObjectPtr<class UButton> PrevBtn;
 	UPROPERTY(meta = (BindWidget)) TObjectPtr<class UButton> NextBtn;
 	UPROPERTY(meta = (BindWidget)) TObjectPtr<class UTextBlock> TabNameText;

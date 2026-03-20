@@ -118,6 +118,7 @@ private:
 #pragma region 가챠 관련
 private:
     bool GenerateResults(const FDTGachaBannerDataRow* BannerData, int32 PullCount);
+    bool GenerateResultsTest(const FDTGachaBannerDataRow* BannerData, int32 PullCount);
     FGameplayTag DetermineGrade(const FDTGachaBannerDataRow* BannerData);
     bool ApplyHardPity(const FDTGachaBannerDataRow* BannerData, FGachaBannerState& BannerState, FGameplayTag& InOutGrade);
     FGameplayTag GetHighestGrade(const FDTGachaBannerDataRow* BannerData);

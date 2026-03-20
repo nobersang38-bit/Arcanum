@@ -1,13 +1,22 @@
 #include "UI/Gacha/ARGachaController.h"
 #include "UI/Gacha/GachaLevelHUD.h"
+#include "UI/Gacha/ARGachaGameModeBase.h"
+#include "UI/Gacha/GachaHighgradeActor.h"
+#include "UI/Gacha/GachaHighgradeWidget.h"
+#include "Core/ARGameInstance.h"
+
+#include "Camera/CameraActor.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Components/WidgetComponent.h"
 
 void AARGachaController::BeginPlay()
 {
 	Super::BeginPlay();
+	CachedGameMode = Cast<AARGachaGameModeBase>(UGameplayStatics::GetGameMode(this));
 
 	if (GachaHUDClass) {
 		GachaHUD = CreateWidget<UGachaLevelHUD>(this, GachaHUDClass);
-
 		if (GachaHUD) {
 			GachaHUD->AddToViewport();
 
@@ -16,6 +25,9 @@ void AARGachaController::BeginPlay()
 			InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 			SetInputMode(InputMode);
 		}
+	}
+	if (!GachaCamera && GachaCameraClass) {
+		GachaCamera = GetWorld()->SpawnActor<ACameraActor>(GachaCameraClass);
 	}
 
 #if PLATFORM_WINDOWS
@@ -34,4 +46,47 @@ void AARGachaController::BeginPlay()
 void AARGachaController::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
+}
+
+void AARGachaController::RequestSkipGacha()
+{
+	AARGachaGameModeBase* GM = Cast<AARGachaGameModeBase>(GetWorld()->GetAuthGameMode());
+	if (GM) GM->SkipGacha();
+}
+void AARGachaController::HandleSilhouetteStart()
+{
+	StartCameraSequence();
+}
+void AARGachaController::ShowGachaHighgradeUI(const FGachaItemResult& ItemData, const FText& Dialog)
+{
+	if (!HighgradeActorClass) return;
+	if (SpawnedGachaActor) {
+		SpawnedGachaActor->Destroy();
+		SpawnedGachaActor = nullptr;
+	}
+
+	FActorSpawnParameters Params;
+	Params.Owner = this;
+	FVector GachaLocation = FVector(-3000.f, -10000.f, 0.f);
+	SpawnedGachaActor = GetWorld()->SpawnActor<AGachaHighgradeActor>(HighgradeActorClass, GachaLocation, FRotator::ZeroRotator, Params);
+
+	if (GachaCamera && SpawnedGachaActor) {
+		FVector CameraLocation = FVector(-2120.f, -9940.f, 10.f);
+		FRotator LookAtRot = FRotator(0.f, -180.f, 0.f);
+		GachaCamera->SetActorLocation(CameraLocation);
+		GachaCamera->SetActorRotation(LookAtRot);
+		SetViewTargetWithBlend(GachaCamera, 0.5f);
+	}
+
+	if (SpawnedGachaActor) {
+		SpawnedGachaActor->OnSilhouetteStart.AddDynamic(this, &AARGachaController::HandleSilhouetteStart);
+		SpawnedGachaActor->InitializeWidget(ItemData, Dialog);
+	}
+}
+void AARGachaController::EndCameraSequence()
+{
+	if (SpawnedGachaActor) {
+		if (UGachaHighgradeWidget* Widget = SpawnedGachaActor->GetWidget())
+			Widget->OnSilhouetteCameraMovingFinished();
+	}
 }

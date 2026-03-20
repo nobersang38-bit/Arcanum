@@ -1378,6 +1378,31 @@ bool FPlayerAccountService::ExecuteGacha(const UObject* WorldContextObject, cons
 
 	return res;
 }
+
+bool FPlayerAccountService::ExecuteGachaTest(const UObject* WorldContextObject, const FPlayerData& PlayerData, FGameplayTag BannerTag, FCurrencyCost Cost, int32 PullCount)
+{
+	bool res = false;
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	if (!World) return res;
+
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return res;
+
+	int64 SpendAmount = (PullCount == 1) ? (int64)Cost.SinglePullCost : (int64)Cost.MultiPullCost;
+	FPlayerCurrency PlayerCurrency = GetPlayerCurrency(WorldContextObject);
+	FCurrencyData* TargetData = PlayerCurrency.CurrencyDatas.Find(Cost.ConsumptionCurrencyTag);
+
+	if (!TargetData || TargetData->CurrAmount < SpendAmount) return res;
+	const FDTGachaBannerDataRow* BannerData = GetGachaBannerData(WorldContextObject, BannerTag);
+	if (!BannerData) return res;
+
+	if (GI->GenerateResultsTest(BannerData, PullCount)) {
+		UpdateCurrency(WorldContextObject, PlayerData, Cost.ConsumptionCurrencyTag, -SpendAmount);
+		res = true;
+	}
+
+	return res;
+}
 // ========================================================
 // Transient 관련
 // ========================================================
