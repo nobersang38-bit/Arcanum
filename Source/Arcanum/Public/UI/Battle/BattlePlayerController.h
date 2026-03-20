@@ -20,6 +20,7 @@ UCLASS()
 class ARCANUM_API ABattlePlayerController : public APlayerController
 {
 	GENERATED_BODY()
+	friend struct FBTPlayerStruct;
 #pragma region 언리얼 기본생성
 protected:
 	virtual void BeginPlay() override;
@@ -278,13 +279,13 @@ protected:
 	/* 궁극기 자동 발사 */
 	void ExecuteUltimateSkill();
 
-	/* 궁극기 조준 위치 갱신 */
-	void UpdateUltimatePreview();
-
 protected:
 	/* 궁극기 조준 중 여부 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ultimate")
 	bool bIsUltimateAiming = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate")
+	TObjectPtr<class APostProcessVolume> UltimatePostProcessVolume = nullptr;
 
 	/* 마지막 이동 입력 방향 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ultimate")
@@ -294,8 +295,17 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate")
 	float UltimatePreviewDistance = 300.0f;
 
+	/* 궁극기 프리뷰 위치 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ultimate")
+	FVector CurrentUltimatePreviewLocation = FVector::ZeroVector;
+
+	/* 궁극기 프리뷰 이동 속도 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate")
-	TObjectPtr<class APostProcessVolume> UltimatePostProcessVolume = nullptr;
+	float UltimatePreviewMoveSpeed = 1000.0f;
+
+	/* 궁극기 프리뷰 최대 거리 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate")
+	float UltimatePreviewMaxDistance = 1200.0f;
 
 	FTimerHandle UltimateSkillTimerHandle;
 #pragma endregion

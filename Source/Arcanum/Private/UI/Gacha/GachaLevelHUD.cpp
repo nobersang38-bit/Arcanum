@@ -1,4 +1,5 @@
 #include "UI/Gacha/GachaLevelHUD.h"
+#include "UI/Gacha/ARGachaController.h"
 
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
@@ -12,9 +13,8 @@ void UGachaLevelHUD::NativeConstruct()
 		SkipButton->OnClicked.AddDynamic(this, &UGachaLevelHUD::OnSkipClicked);
 	}
 }
-
 void UGachaLevelHUD::OnSkipClicked()
 {
-	UE_LOG(LogTemp, Log, TEXT("Gacha Skip Button Clicked"));
-
+	AARGachaController* PC = Cast<AARGachaController>(GetOwningPlayer());
+	if (PC) PC->RequestSkipGacha();
 }

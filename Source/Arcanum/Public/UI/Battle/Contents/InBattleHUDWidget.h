@@ -97,10 +97,10 @@ protected:
 
 public:
 	UFUNCTION()
-	const FGameplayTag& GetSelectUnitTag() const {return SelectedUnitTag;}
+	const FGameplayTag& GetSelectUnitTag() const { return SelectedUnitTag; }
 
 	UFUNCTION()
-	const FVector& GetSelectUnitDropLocation() const {return SelectedUnitDropLocation;}
+	const FVector& GetSelectUnitDropLocation() const { return SelectedUnitDropLocation; }
 #pragma endregion
 
 #pragma region 플레이어 유닛, 코스트 패널
@@ -159,4 +159,8 @@ protected:
 private:
 	FGameplayTag SelectedUnitTag;
 	FVector SelectedUnitDropLocation;
+
+public:
+	/* 전설무기(궁극기) 버튼 아이콘만 변경 */
+	void SetLegendaryButtonIcon(UTexture2D* InIcon);
 };

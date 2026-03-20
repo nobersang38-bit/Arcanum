@@ -458,6 +458,32 @@ bool FPlayerAccountService::EquipItemToCharacter(const UObject* WorldContextObje
 	}
 
 	slotMap->FindOrAdd(InEquipSlotTag) = InItemGuid;
+
+	int32 talashaCount = 0;
+
+	for (const TPair<FGameplayTag, FGuid>& pair : foundCharacter->ArmorSlots)
+	{
+		const FGuid& itemGuid = pair.Value;
+		if (itemGuid.IsValid())
+		{
+			for (const FEquipmentInfo& equip : playerData.Inventory)
+			{
+				if (equip.ItemGuid == itemGuid)
+				{
+					if (equip.ItemTag.MatchesTag(Arcanum::Items::Rarity::SetItem::Talasha::Armor::Root))
+					{
+						talashaCount++;
+					}
+					break;
+				}
+			}
+		}
+	}
+	if (talashaCount >= 4)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Set"));
+	}
+
 	return SavePlayerData(GI);
 }
 
@@ -1136,14 +1162,9 @@ bool FPlayerAccountService::AddGuidFromEquipment(const UObject* WorldContextObje
 	newEquip.CurrUpgradeLevel = 0;
 	newEquip.Equipment = equipRow->BaseInfoSteps[0];
 
-	if (newEquip.ItemTag.MatchesTagExact(Arcanum::Items::Rarity::Common::Weapon::GreatSword)
-		|| newEquip.ItemTag.MatchesTagExact(Arcanum::Items::Rarity::Common::Weapon::Staff)
-		|| newEquip.ItemTag.MatchesTagExact(Arcanum::Items::Rarity::Common::Weapon::Bow)
-		|| newEquip.ItemTag.MatchesTagExact(Arcanum::Items::Rarity::Common::Weapon::Shield)
-		|| newEquip.ItemTag.MatchesTagExact(Arcanum::Items::Rarity::Legendary::Weapon::Scepter)
-		|| newEquip.ItemTag.MatchesTagExact(Arcanum::Items::Rarity::Legendary::Weapon::Scythe))
-		// 	if (newEquip.ItemTag.MatchesTag(Arcanum::Items::Rarity::Common::Weapon::Root)
-		// || newEquip.ItemTag.MatchesTag(Arcanum::Items::Rarity::Legendary::Weapon::Root))
+
+	if (newEquip.ItemTag.MatchesTag(Arcanum::Items::Rarity::Common::Weapon::Root) ||
+		newEquip.ItemTag.MatchesTag(Arcanum::Items::Rarity::Legendary::Weapon::Root))
 	{
 		// 무기: RandomStatRanges -> OnHitTargetStats
 		RollEquipmentStats(newEquip.Equipment, newEquip.Equipment.OnHitTargetStats);
@@ -1417,6 +1438,31 @@ bool FPlayerAccountService::ExecuteGacha(const UObject* WorldContextObject, cons
 	if (!BannerData) return res;
 
 	if (GI->GenerateResults(BannerData, PullCount)) {
+		UpdateCurrency(WorldContextObject, PlayerData, Cost.ConsumptionCurrencyTag, -SpendAmount);
+		res = true;
+	}
+
+	return res;
+}
+
+bool FPlayerAccountService::ExecuteGachaTest(const UObject* WorldContextObject, const FPlayerData& PlayerData, FGameplayTag BannerTag, FCurrencyCost Cost, int32 PullCount)
+{
+	bool res = false;
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	if (!World) return res;
+
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return res;
+
+	int64 SpendAmount = (PullCount == 1) ? (int64)Cost.SinglePullCost : (int64)Cost.MultiPullCost;
+	FPlayerCurrency PlayerCurrency = GetPlayerCurrency(WorldContextObject);
+	FCurrencyData* TargetData = PlayerCurrency.CurrencyDatas.Find(Cost.ConsumptionCurrencyTag);
+
+	if (!TargetData || TargetData->CurrAmount < SpendAmount) return res;
+	const FDTGachaBannerDataRow* BannerData = GetGachaBannerData(WorldContextObject, BannerTag);
+	if (!BannerData) return res;
+
+	if (GI->GenerateResultsTest(BannerData, PullCount)) {
 		UpdateCurrency(WorldContextObject, PlayerData, Cost.ConsumptionCurrencyTag, -SpendAmount);
 		res = true;
 	}

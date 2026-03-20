@@ -11,55 +11,115 @@ class AGachaCamera;
 struct FGachaItemResult;
 enum class ESplinePathType : uint8;
 
+UENUM(BlueprintType)
+enum class EGachaSequenceState : uint8
+{
+	None,
+	Intro,
+	Result,
+	Finished
+};
+
 UCLASS()
 class ARCANUM_API AARGachaGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
-	
-#pragma region 가챠 결과 데이터
+
+
 public:
 	AARGachaGameModeBase();
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gacha")
-	TArray<FGachaItemResult> GachaItemResult;
+
 protected:
 	virtual void BeginPlay() override;
-	FName GetSplinePathTypeName(ESplinePathType InType);
+
+	// ========================================================
+	// 가챠 데이터
+	// ========================================================
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gacha")
+	TArray<FGachaItemResult> GachaItemResult;
+
+	// ========================================================
+	// 상태 관리
+	// ========================================================
 private:
-	int32 ActiveResultStars;
-#pragma endregion
+	UPROPERTY()
+	EGachaSequenceState CurrentState = EGachaSequenceState::None;
 
+	void EnterIntroState();
+	void EnterResultState();
+	void EnterFinishedState();
 
-#pragma region 가챠 연출 시작
+	// ========================================================
+	// 연출 시작
+	// ========================================================
 public:
-	void SetupGachaCamera(AActor* Target);
+	UFUNCTION()
+	void StartGachaSequence();
 
-	UFUNCTION() void StartGachaSequence();
-	UFUNCTION(BlueprintImplementableEvent) void PlayGachaSequence();
-	
+	UFUNCTION() void SkipGacha();
+	UFUNCTION() void SkipToFinal();
+
+private:
+	UFUNCTION() void OnShootingStarShrink();
 	UFUNCTION() void OnShootingStarImpact();
-	UFUNCTION() void OnSingleResultFinished(AResultStarActor* FinishedActor);
-protected:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "00-Intro") TSubclassOf<AShootingStarActor> ShootingStarClass;	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "00-Intro") TSubclassOf<AResultStarActor> ResultStarClass;	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "00-Intro") TSoftClassPtr<AGachaCamera> GachaCameraClass;
+
+	UFUNCTION()
+	void OnSingleResultFinished(AResultStarActor* FinishedActor);
+
+	// ========================================================
+	// Spawn / 관리
+	// ========================================================
 private:
-	UPROPERTY() TMap<ESplinePathType, AASplinePathActor*> SplineMap;
+	UPROPERTY() TObjectPtr<AShootingStarActor> ActiveShootingStar;
+	UPROPERTY() TObjectPtr<AResultStarActor> ActiveResultStar;
 	UPROPERTY() TObjectPtr<AGachaCamera> ActiveGachaCamera;
-#pragma endregion
 
+	AShootingStarActor* SpawnShootingStar();
+	AResultStarActor* SpawnResultActor();
 
-#pragma region 별 낙하 이후 결과 표시
+	void CleanupAllActors();
+
+	// ========================================================
+	// 즉시 결과 (Skip용)
+	// ========================================================
+private:
+	void SpawnFinalResultInstant();
+
+	// ========================================================
+	// 카메라
+	// ========================================================
 public:
-	UFUNCTION() void ShowResult();
-	UFUNCTION(BlueprintImplementableEvent) void StartResultSequence();
+	void SetupGachaCamera(AActor* Target, float DistanceScale = 1.0f);
+
+	void SetupStaticSplineCamera(AASplinePathActor* SplineActor);
+
 protected:
+	UPROPERTY(EditAnywhere, Category = "Gacha|Class")
+	TSubclassOf<AShootingStarActor> ShootingStarClass;
 
-#pragma endregion
+	UPROPERTY(EditAnywhere, Category = "Gacha|Class")
+	TSubclassOf<AResultStarActor> ResultStarClass;
 
-#pragma region 로비 복귀
+	UPROPERTY(EditAnywhere, Category = "Gacha|Class")
+	TSoftClassPtr<AGachaCamera> GachaCameraClass;
+
+	// ========================================================
+	// 스플라인
+	// ========================================================
+private:
+	UPROPERTY()
+	TMap<ESplinePathType, AASplinePathActor*> SplineMap;
+
+	AASplinePathActor* GetSpline(ESplinePathType Type);
+
+	// ========================================================
+	// 로비 복귀
+	// ========================================================
 public:
-	UFUNCTION() void ReturnLobby();
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "00-Map")
+	UFUNCTION()
+	void ReturnLobby();
+
+	UPROPERTY(EditAnywhere, Category = "Map")
 	TSoftObjectPtr<UWorld> LobbyMap;
-#pragma endregion
 };

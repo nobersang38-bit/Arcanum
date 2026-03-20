@@ -72,7 +72,7 @@ namespace Arcanum {
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
 		namespace ID {
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Elara); 
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Elara);
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Iris);	// Iris : 빠른 공격 속도와 회피 능력을 강조하는 캐릭터.
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Celestia);   // Celestia : 강력한 공격력과 방어 능력을 갖춘 캐릭터, 지속적인 회복.
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Lynette);   // Lynette : 빠르고 치명적인 크리티컬, 높은 이동 속도와 공격 속도.
@@ -198,6 +198,7 @@ namespace Arcanum {
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Legendary);
 		}
 		namespace Rarity {
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
 			namespace Common {
 				namespace Weapon {
 					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
@@ -214,6 +215,7 @@ namespace Arcanum {
 				}
 			}
 			namespace Legendary {
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
 				namespace Weapon {
 					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
 					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Scepter);    // 셉터
@@ -439,6 +441,17 @@ namespace Arcanum {
 					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
 				}
 			}
+		}
+	}
+}
+
+namespace Arcanum {
+	namespace UI {
+		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+		namespace Option {
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Audio);
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Video);
 		}
 	}
 }

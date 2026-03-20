@@ -6,12 +6,12 @@
 // ========================================================
 void UCharacterBattleStatsComponent::NotifyRegenStatChanged(const FRegenStat& Stat)
 {
-	OnCharacterRegenStatChanged.Broadcast(Stat);
+    OnCharacterRegenStatChanged.Broadcast(Stat);
     NotifyStatChanged(Stat, FNonRegenStat());
 }
 void UCharacterBattleStatsComponent::NotifyNonRegenStatChanged(const FNonRegenStat& Stat)
 {
-	OnCharacterNonRegenStatChanged.Broadcast(Stat);
+    OnCharacterNonRegenStatChanged.Broadcast(Stat);
     NotifyStatChanged(FRegenStat(), Stat);
 }
 void UCharacterBattleStatsComponent::NotifyStatChanged(const FRegenStat& RegenStat, const FNonRegenStat& NonRegenStat)
@@ -23,11 +23,11 @@ void UCharacterBattleStatsComponent::NotifyStatChanged(const FRegenStat& RegenSt
 // ========================================================
 UCharacterBattleStatsComponent::UCharacterBattleStatsComponent()
 {
-	PrimaryComponentTick.bCanEverTick = false;
+    PrimaryComponentTick.bCanEverTick = false;
 }
 void UCharacterBattleStatsComponent::BeginPlay()
 {
-	Super::BeginPlay();
+    Super::BeginPlay();
 
     if (DTBattleStatsRow.DataTable && !DTBattleStatsRow.RowName.IsNone()) {
         const FDTBattleStatsContainerRow* Row = DTBattleStatsRow.DataTable->FindRow<FDTBattleStatsContainerRow>(DTBattleStatsRow.RowName, TEXT("Editor StatsRegen Load"));
@@ -38,7 +38,7 @@ void UCharacterBattleStatsComponent::BeginPlay()
         }
     }
 
-	if (GetWorld()) GetWorld()->GetTimerManager().SetTimer(RegenTimerHandle, this, &UCharacterBattleStatsComponent::ProcessRegen, TimerTick, true);
+    if (GetWorld()) GetWorld()->GetTimerManager().SetTimer(RegenTimerHandle, this, &UCharacterBattleStatsComponent::ProcessRegen, TimerTick, true);
 }
 void UCharacterBattleStatsComponent::ProcessRegen()
 {
@@ -278,9 +278,9 @@ void UCharacterBattleStatsComponent::UpdateFinalStatValue(FGameplayTag Tag)
         float B_Flat = 0.f, B_Mul = 0.f;
         float C_Flat = 0.f, C_Mul = 0.f;
         for (const auto& Mod : ActiveModifiers) {
-            if (Mod.StatTag == Tag) { 
-                B_Flat += Mod.Value.Flat; 
-                B_Mul += Mod.Value.Mul; 
+            if (Mod.StatTag == Tag) {
+                B_Flat += Mod.Value.Flat;
+                B_Mul += Mod.Value.Mul;
             }
         }
 
@@ -290,7 +290,9 @@ void UCharacterBattleStatsComponent::UpdateFinalStatValue(FGameplayTag Tag)
             RStat->Current = FMath::Clamp(RStat->Current, 0.f, RStat->GetTotalMax());
         }
         else if (Tag == RStat->Child_Tick) {
-            RStat->ModifierTick = C_Flat;
+            // TODD: Regen Tick Modifier에서 Mul 값이 반영되지 않아 ModifierTick 계산식 수정
+            // RStat->ModifierTick = C_Flat;
+            RStat->ModifierTick = B_Flat + (RStat->BaseTick * B_Mul);
         }
 
         NotifyRegenStatChanged(*RStat);

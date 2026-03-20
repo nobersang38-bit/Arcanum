@@ -26,6 +26,7 @@ public:
 	FBattleStageInfo BattleStageInfo;
 	FGradeStatData PlayerBattleStat;
 	FBattleWeaponSkillData BattleWeaponSkill;
+	FPlayerBattleData PlayerBattleData;
 };
 
 
@@ -181,6 +182,7 @@ protected:
 public:
 	const FGameplayTag AllyTeamTag = Arcanum::Unit::Faction::Ally::Root;
 	const FGameplayTag EnemyTeamTag = Arcanum::Unit::Faction::Enemy::Root;
+	const FGameplayTag AllyBaseStaminaTag = Arcanum::BattleStat::Player::NonRegen::CommandCenterStamina::Value;
 
 #pragma region 스킬 장비 캐시
 public:
@@ -211,12 +213,15 @@ public:
 	/* 전설 무기 아이콘 */
 	UTexture2D* GetLegendaryWeaponIcon() const;
 
-	/* 현재 일반 스킬 아이콘 */
+	/* 일반 스킬 아이콘 */
 	UTexture2D* GetCurrentBasicSkillIcon() const;
+
+	/* 전설 스킬 아이콘 */
+	UTexture2D* GetLegendaryUltimateSkillIcon() const;
 
 	/* 현재 선택 캐릭터의 4세트 발동 스킬 태그 반환 */
 	UFUNCTION()
-	FGameplayTag GetEquippedSetSkillTag() const;
+	FGameplayTag GetEquippedSetBonusTag() const;
 
 	/* 현재 활성 무기 슬롯 태그 (스왑) */
 	void SetCurrentWeaponSlotTag(const FGameplayTag& InWeaponSlotTag);
@@ -237,11 +242,14 @@ public:
 	FGameplayTag GetCurrentWeaponSlotTypeTag() const;
 
 protected:
-	/* 스킬 캐스트타임 반환 */
+	/* 스킬 캐스트타임 */
 	float FindSkillCastTime(const FGameplayTag& InSkillTag, int32 InSkillLevel) const;
 
-	/* 스킬 쿨타임 반환 */
+	/* 스킬 쿨타임 */
 	float FindSkillCooldown(const FGameplayTag& InSkillTag, int32 InSkillLevel) const;
+
+	/* 스킬 아이콘 */
+	UTexture2D* FindSkillIcon(const FGameplayTag& InSkillTag) const;
 
 	/* 전투 시작 시 무기 스킬 캐시 생성 */
 	void BuildBattleWeaponSkillCache(FInBattleData& OutInBattleData);

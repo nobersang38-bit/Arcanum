@@ -129,6 +129,12 @@ protected:
 
 	/* 궁극기 조준 데칼 크기 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate")
-	FVector UltimatePreviewDecalSize = FVector(120.0f, 200.0f, 200.0f);
+	FVector UltimatePreviewDecalSize = FVector(40.0f, 200.0f, 200.0f);
+#pragma endregion
+
+#pragma region 갱신
+private:
+	/* 체력 리젠 변경 시 체력바 갱신 */
+	void OnPlayerRegenStatChanged(const FRegenStat& InRegenStat);
 #pragma endregion
 };
