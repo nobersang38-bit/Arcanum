@@ -813,26 +813,45 @@ void ABattlePlayerController::InputMove(const FInputActionValue& InputValue)
 		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
-		// 4. 현재 이동 입력 방향 저장
-		FVector moveDirection = (-ForwardDirection * MovementVector.Y) + (-RightDirection * MovementVector.X);
-		moveDirection.Z = 0.0f;
-
-		if (!moveDirection.IsNearlyZero())
-		{
-			moveDirection.Normalize();
-			LastMoveInputDirection = moveDirection;
-		}
-
-		// 5. 궁극기 조준 중이면 프리뷰만 갱신
+		// 4. 궁극기 조준 중이면 캐릭터는 멈추고 프리뷰만 이동
 		if (bIsUltimateAiming)
 		{
-			UpdateUltimatePreview();
+			APlayerCharacter* PC = Cast<APlayerCharacter>(ControlledPawn);
+			if (PC && !MovementVector.IsNearlyZero())
+			{
+				// 입력 방향을 월드 기준으로 변환 및 이동
+				FVector MoveDir = FVector(MovementVector.Y, MovementVector.X, 0.0f).GetSafeNormal();
+				LastMoveInputDirection = MoveDir;
+				CurrentUltimatePreviewLocation += MoveDir * UltimatePreviewMoveSpeed * GetWorld()->GetDeltaSeconds();
+
+				// 캐릭터로부터의 상대 좌표 계산
+				const FVector ActorLoc = PC->GetActorLocation();
+				FVector RelativePos = CurrentUltimatePreviewLocation - ActorLoc;
+				RelativePos.Z = 0.0f;
+
+				// 전방 180도
+				const FVector Forward = PC->GetActorForwardVector().GetSafeNormal2D();
+				const FVector DirToPreview = RelativePos.GetSafeNormal2D();
+				if (FVector::DotProduct(Forward, DirToPreview) < 0.f)
+				{
+					const FVector Right = PC->GetActorRightVector().GetSafeNormal2D();
+					float ProjectionDist = FVector::DotProduct(RelativePos, Right);
+					RelativePos = Right * ProjectionDist;
+				}
+
+				// 최대 거리 제한
+				RelativePos = RelativePos.GetClampedToMaxSize(UltimatePreviewMaxDistance);
+
+				// 최종 위치 확정 및 업데이트
+				CurrentUltimatePreviewLocation = ActorLoc + RelativePos;
+				PC->UpdateUltimatePreviewLocation(CurrentUltimatePreviewLocation);
+			}
 		}
 		else
 		{
-			// 6. 평소에는 Pawn 이동 입력 반영
-			ControlledPawn->AddMovementInput(-ForwardDirection, MovementVector.Y); // 앞/뒤
-			ControlledPawn->AddMovementInput(-RightDirection, MovementVector.X);   // 좌/우
+			// 5. 평소에는 Pawn에 이동 입력 반영
+			ControlledPawn->AddMovementInput(-ForwardDirection, MovementVector.Y);
+			ControlledPawn->AddMovementInput(-RightDirection, MovementVector.X);
 		}
 	}
 }
@@ -852,10 +871,13 @@ void ABattlePlayerController::UltimateSkillEnd()
 	{
 		playerCharacter->UpdateEquippedWeaponMesh();
 	}
-
 	if (UltimatePostProcessVolume)
 	{
 		UltimatePostProcessVolume->bUnbound = false;
+	}
+	if (HUDWidgetInstance)
+	{
+		HUDWidgetInstance->SetLegendaryButtonIcon(battleSubsystem->GetLegendaryWeaponIcon());
 	}
 }
 
@@ -878,14 +900,22 @@ void ABattlePlayerController::UltimateSkillPressed()
 	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
 	if (playerCharacter)
 	{
+		const FVector actorLocation = playerCharacter->GetActorLocation();
+		const FVector forwardDirection = playerCharacter->GetActorForwardVector();
+
+		CurrentUltimatePreviewLocation = actorLocation + (forwardDirection * UltimatePreviewDistance);
+		CurrentUltimatePreviewLocation.Z = actorLocation.Z;
+
 		playerCharacter->UpdateEquippedWeaponMesh();
 		playerCharacter->ShowUltimatePreview();
+		playerCharacter->UpdateUltimatePreviewLocation(CurrentUltimatePreviewLocation);
+		if (HUDWidgetInstance)
+		{
+			HUDWidgetInstance->SetLegendaryButtonIcon(battleSubsystem->GetLegendaryUltimateSkillIcon());
+		}
 	}
 
-	UpdateUltimatePreview();
-
 	GetWorldTimerManager().ClearTimer(UltimateSkillTimerHandle);
-
 	if (castTime > 0.0f)
 	{
 		GetWorldTimerManager().SetTimer(
@@ -934,26 +964,4 @@ void ABattlePlayerController::ExecuteUltimateSkill()
 
 		UltimateSkillEnd();
 	}
-}
-
-void ABattlePlayerController::UpdateUltimatePreview()
-{
-	if (!bIsUltimateAiming)	return;
-
-	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
-	if (!playerCharacter) return;
-
-	FVector actorLocation = playerCharacter->GetActorLocation();
-
-	FVector aimDirection = LastMoveInputDirection;
-	if (aimDirection.IsNearlyZero())
-	{
-		aimDirection = playerCharacter->GetActorForwardVector();
-	}
-
-	aimDirection.Z = 0.0f;
-	aimDirection.Normalize();
-
-	FVector previewLocation = actorLocation + (aimDirection * UltimatePreviewDistance);
-	playerCharacter->UpdateUltimatePreviewLocation(previewLocation);
 }

@@ -440,20 +440,13 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 	}
 
 	// 일반 무기 기본공격/기본스킬 캐시
-	auto cacheNormalWeaponSkill = [](const FEquipmentInfo* InEquipInfo, FBattleSkillData& OutBasicAttackSkill, FBattleSkillData& OutBasicSkill)
+	auto cacheNormalWeaponSkill = [this](const FEquipmentInfo* InEquipInfo, FBattleSkillData& OutBasicAttackSkill, FBattleSkillData& OutBasicSkill)
 		{
 			if (InEquipInfo)
 			{
-				for (const FDerivedStatModifier& stat : InEquipInfo->Equipment.OwnerStats)
-				{
-					UE_LOG(LogTemp, Warning, TEXT("OwnerStat Tag=%s Flat=%.2f Mul=%.2f"),
-						*stat.StatTag.ToString(),
-						stat.Value.Flat,
-						stat.Value.Mul);
-				}
-
 				OutBasicAttackSkill.SkillTag = InEquipInfo->Equipment.BasicAttackSkillTag;
 				OutBasicAttackSkill.SkillLevel = InEquipInfo->CurrUpgradeLevel;
+				OutBasicAttackSkill.SkillIcon = FindSkillIcon(OutBasicAttackSkill.SkillTag);
 
 				for (const TPair<FGameplayTag, int32>& skillPair : InEquipInfo->Equipment.Skills)
 				{
@@ -463,7 +456,8 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 
 					OutBasicSkill.SkillTag = skillPair.Key;
 					OutBasicSkill.SkillLevel = InEquipInfo->CurrUpgradeLevel;
-					//OutUltimateSkill.SkillLevel = skillPair.Value;
+					OutBasicSkill.CastTime = FindSkillCastTime(OutBasicSkill.SkillTag, OutBasicSkill.SkillLevel);
+					OutBasicSkill.SkillIcon = FindSkillIcon(OutBasicSkill.SkillTag);
 					break;
 				}
 			}
@@ -483,7 +477,7 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 					OutUltimateSkill.SkillTag = skillPair.Key;
 					OutUltimateSkill.SkillLevel = InEquipInfo->CurrUpgradeLevel;
 					OutUltimateSkill.CastTime = FindSkillCastTime(OutUltimateSkill.SkillTag, OutUltimateSkill.SkillLevel);
-					//OutUltimateSkill.SkillLevel = skillPair.Value;
+					OutUltimateSkill.SkillIcon = FindSkillIcon(OutUltimateSkill.SkillTag);
 					break;
 				}
 			}
@@ -651,10 +645,10 @@ UTexture2D* UBattlefieldManagerSubsystem::GetCurrentWeaponIcon() const
 	const FBattleCharacterData* selectedCharacter = GetSelectedCharacterData();
 	if (!selectedCharacter) return nullptr;
 
-	const FGameplayTag currnetWeaponSlotTag = InBattleData.BattleWeaponSkill.CurrentWeaponSlotTag;
-	if (!currnetWeaponSlotTag.IsValid()) return nullptr;
+	const FGameplayTag currentWeaponSlotTag = InBattleData.BattleWeaponSkill.CurrentWeaponSlotTag;
+	if (!currentWeaponSlotTag.IsValid()) return nullptr;
 
-	const FGuid* weaponGuid = selectedCharacter->WeaponSlots.Find(currnetWeaponSlotTag);
+	const FGuid* weaponGuid = selectedCharacter->WeaponSlots.Find(currentWeaponSlotTag);
 	if (!weaponGuid || !weaponGuid->IsValid()) return nullptr;
 
 	const FEquipmentInfo* foundEquip = FindEquipmentByGuid(InBattleData.PlayerData, *weaponGuid);
@@ -685,19 +679,26 @@ UTexture2D* UBattlefieldManagerSubsystem::GetLegendaryWeaponIcon() const
 
 UTexture2D* UBattlefieldManagerSubsystem::GetCurrentBasicSkillIcon() const
 {
-	const FGameplayTag skillTag = GetCurrentBasicSkillTag();
-	if (!skillTag.IsValid()) return nullptr;
+	const FBattleWeaponSkillData& battleWeaponSkill = InBattleData.BattleWeaponSkill;
 
-	UGameDataSubsystem* gameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
-	if (!gameDataSubsystem) return nullptr;
+	if (battleWeaponSkill.CurrentWeaponSlotTag == Arcanum::Items::ItemSlot::Weapon::Slot1)
+	{
+		return battleWeaponSkill.WeaponSlot1BasicSkill.SkillIcon;
+	}
+	if (battleWeaponSkill.CurrentWeaponSlotTag == Arcanum::Items::ItemSlot::Weapon::Slot2)
+	{
+		return battleWeaponSkill.WeaponSlot2BasicSkill.SkillIcon;
+	}
 
-	const FDTSkillsDataRow* skillRow = gameDataSubsystem->GetRow<FDTSkillsDataRow>(Arcanum::DataTable::SkillData, GetLeafNameFromTag(skillTag));
-	if (!skillRow) return nullptr;
-
-	return skillRow->SkillData.Icon.LoadSynchronous();
+	return nullptr;
 }
 
-FGameplayTag UBattlefieldManagerSubsystem::GetEquippedSetSkillTag() const
+UTexture2D* UBattlefieldManagerSubsystem::GetLegendaryUltimateSkillIcon() const
+{
+	return InBattleData.BattleWeaponSkill.LegendaryUltimateSkill.SkillIcon;
+}
+
+FGameplayTag UBattlefieldManagerSubsystem::GetEquippedSetBonusTag() const
 {
 	if (HasEquippedFullSet(Arcanum::Items::Rarity::SetItem::Talasha::Armor::Root))
 	{
@@ -833,20 +834,8 @@ bool UBattlefieldManagerSubsystem::HasEquippedFullSet(const FGameplayTag& InSetR
 {
 	if (!InSetRootTag.IsValid()) return false;
 
-	const UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
-	if (!battleSubsystem) return false;
-
-	const FPlayerData& playerData = battleSubsystem->GetInBattleData().PlayerData;
-
-	const FBattleCharacterData* selectedCharacter = nullptr;
-	for (const FBattleCharacterData& characterData : playerData.OwnedCharacters)
-	{
-		if (characterData.bSelection)
-		{
-			selectedCharacter = &characterData;
-			break;
-		}
-	}
+	const FPlayerData& playerData = InBattleData.PlayerData;
+	const FBattleCharacterData* selectedCharacter = GetSelectedCharacterData();
 	if (!selectedCharacter) return false;
 
 	int32 matchCount = 0;
@@ -914,4 +903,21 @@ float UBattlefieldManagerSubsystem::FindSkillCooldown(const FGameplayTag& InSkil
 	}
 
 	return 0.0f;
+}
+
+UTexture2D* UBattlefieldManagerSubsystem::FindSkillIcon(const FGameplayTag& InSkillTag) const
+{
+	if (!InSkillTag.IsValid()) return nullptr;
+
+	UGameDataSubsystem* gameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
+	if (!gameDataSubsystem) return nullptr;
+
+	if (const FDTSkillsDataRow* skillRow = gameDataSubsystem->GetRow<FDTSkillsDataRow>(
+		Arcanum::DataTable::SkillData,
+		GetLeafNameFromTag(InSkillTag)))
+	{
+		return skillRow->SkillData.Icon.LoadSynchronous();
+	}
+
+	return nullptr;
 }

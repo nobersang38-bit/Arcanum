@@ -166,3 +166,11 @@ void UInBattleHUDWidget::RefreshWeaponSkillIcons(UTexture2D* InCurrentWeaponIcon
 		UltimateSkill->SetImage(InLegendaryWeaponIcon);
 	}
 }
+
+void UInBattleHUDWidget::SetLegendaryButtonIcon(UTexture2D* InIcon)
+{
+	if (UltimateSkill)
+	{
+		UltimateSkill->SetImage(InIcon);
+	}
+}
