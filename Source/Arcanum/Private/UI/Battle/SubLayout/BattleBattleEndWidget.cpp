@@ -25,6 +25,10 @@ void UBattleBattleEndWidget::NativeConstruct()
 		}
 	}
 
+	if (FadeIn)
+	{
+		PlayAnimation(FadeIn, 0.f, 1);
+	}
 	if (LobbyButton)
 	{
 		LobbyButton->OnClicked.RemoveDynamic(this, &UBattleBattleEndWidget::OnLobbyButtonClick);

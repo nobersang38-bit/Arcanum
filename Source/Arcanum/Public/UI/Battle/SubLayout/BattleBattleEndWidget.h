@@ -73,6 +73,9 @@ protected:
 	TObjectPtr<UImage> Defeat = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UImage> BlackBackground = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UTextBlock> BattleEndResultText = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
@@ -96,6 +99,8 @@ protected:
 
 	UPROPERTY(meta = (BindWidgetAnim), Transient) 
 	TObjectPtr<UWidgetAnimation> StarAnim = nullptr;
+	UPROPERTY(meta = (BindWidgetAnim), Transient) 
+	TObjectPtr<UWidgetAnimation> FadeIn = nullptr;
 
 	UPROPERTY()
 	TArray<UBorder*> StarBackgrounds;
