@@ -3,6 +3,7 @@
 #include "UI/Lobby/Contents/Character/CharacterInfo.h"
 #include "UI/Lobby/Contents/Character/SquareSlotWidget.h"
 #include "UI/Lobby/Contents/Character/CharacterEquipWidget.h"
+#include "UI/Lobby/Contents/Character/SetEffectPanelWidget.h"
 #include "UI/Lobby/Contents/Inventory/InventoryHUDWidget.h"
 #include "UI/Lobby/Contents/ItemDetail/ItemDetailHelper.h"
 #include "UI/Lobby/Contents/ItemDetail/ItemStatPanelWidget.h"
@@ -294,6 +295,7 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
 	}
 	InitEquipment(CharacterName);
 	RefreshArmorStatPanel();
+	RefreshSetEffectPanel();
 
 	/// 260311 변경 : 추가 (클릭 시 데이터 변경되게 info 관련은 변경해주세요.)
 	FGameplayTag TargetTag = FGameplayTag::RequestGameplayTag(FName("Arcanum.Unit.Ally"));
@@ -711,6 +713,7 @@ void UCharacterHUDWidget::HandleCharacterEquipRequested(const FGameplayTag& InEq
 			ParentLobby->RefreshAllLobbyUI();
 			InitEquipment(CurrentSelectedCharacterName);
 			RefreshArmorStatPanel();
+			RefreshSetEffectPanel();
 			CharacterEquipWidget->SetEquipSlotTag(InEquipSlotTag);
 		}
 	}
@@ -727,6 +730,7 @@ void UCharacterHUDWidget::HandleCharacterUnequipRequested(const FGameplayTag& In
 			ParentLobby->RefreshAllLobbyUI();
 			InitEquipment(CurrentSelectedCharacterName);
 			RefreshArmorStatPanel();
+			RefreshSetEffectPanel();
 			CharacterEquipWidget->SetEquipSlotTag(InEquipSlotTag);
 		}
 	}
@@ -770,4 +774,73 @@ void UCharacterHUDWidget::RefreshArmorStatPanel()
 			}
 		}
 	}
+}
+
+void UCharacterHUDWidget::RefreshSetEffectPanel()
+{
+	if (!CharacterEquipWidget || !ParentLobby) return;
+
+	USetEffectPanelWidget* setEffectPanelWidget = CharacterEquipWidget->GetSetEffectPanelWidget();
+	if (!setEffectPanelWidget) return;
+
+	int32 talashaCount = 0;
+
+	for (const FBattleCharacterData& characterData : ParentLobby->CachedPlayerData.OwnedCharacters)
+	{
+		const FName characterName = GetLeafNameFromTag(characterData.CharacterInfo.BattleCharacterInitData.CharacterTag);
+
+		if (characterName == CurrentSelectedCharacterName)
+		{
+			for (const TPair<FGameplayTag, FGuid>& pair : characterData.ArmorSlots)
+			{
+				const FGuid& itemGuid = pair.Value;
+
+				if (itemGuid.IsValid())
+				{
+					const FEquipmentInfo* foundEquip = nullptr;
+
+					for (const FEquipmentInfo& equip : ParentLobby->CachedPlayerData.Inventory)
+					{
+						if (equip.ItemGuid == itemGuid)
+						{
+							foundEquip = &equip;
+
+							break;
+						}
+					}
+					if (foundEquip)
+					{
+						if (foundEquip->ItemTag.MatchesTag(Arcanum::Items::Rarity::SetItem::Talasha::Armor::Root))
+						{
+							talashaCount++;
+						}
+					}
+				}
+			}
+
+			break;
+		}
+	}
+
+	if (talashaCount <= 0)
+	{
+		setEffectPanelWidget->ClearEffectText();
+		return;
+	}
+
+	FSetEffectViewData viewData;
+	viewData.bVisible = true;
+	viewData.bActivated = talashaCount >= 4;
+	viewData.SetNameText = FText::FromString(FString::Printf(TEXT("탈라샤 세트 (%d/4)"), talashaCount));
+
+	if (viewData.bActivated)
+	{
+		viewData.SetDescText = FText::FromString(TEXT("세트효과 발동: 체력 30% 이하일 때 10초 동안 체력 회복 속도 증가 (쿨타임: 30초)"));
+	}
+	else
+	{
+		viewData.SetDescText = FText::FromString(TEXT("4세트 효과: 체력 30% 이하일 때 체력 회복 속도 증가"));
+	}
+
+	setEffectPanelWidget->SetEffectText(viewData);
 }

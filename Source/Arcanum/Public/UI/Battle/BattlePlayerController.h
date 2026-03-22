@@ -324,15 +324,15 @@ public:
 
 	/* 일반스킬 실제 실행 */
 	UFUNCTION()
-	void TriggerCommonSkill();
+	void TriggerSkill();
 
 protected:
 	/* 기본공격 입력 */
 	UFUNCTION()
 	void InputBasicAttack();
 
-	/* 일반스킬 입력 */
+	/* 스킬 입력 */
 	UFUNCTION()
-	void InputCommonSkill();
+	void InputSkill();
 #pragma endregion
 };

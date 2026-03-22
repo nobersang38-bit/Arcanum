@@ -18,7 +18,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Object/Actor/SpawnCheckDecal.h"
 #include "DataInfo/SkillData/Data/FSkillInfo.h"
-
+#include "Object/Skills/SkillBase.h"
 
 // ========================================================
 // 언리얼 기본 생성
@@ -123,7 +123,7 @@ void ABattlePlayerController::SetupInputComponent()
 		//EnhancedInputComponent->BindAction(IA_BasicAttack, ETriggerEvent::Completed, this, &ABattlePlayerController::BasicAttack);
 		//EnhancedInputComponent->BindAction(IA_BasicSkill, ETriggerEvent::Completed, this, &ABattlePlayerController::BasicSkill);
 		EnhancedInputComponent->BindAction(IA_BasicAttackSkill, ETriggerEvent::Completed, this, &ABattlePlayerController::InputBasicAttack);
-		EnhancedInputComponent->BindAction(IA_CommonSkill, ETriggerEvent::Completed, this, &ABattlePlayerController::InputCommonSkill);
+		EnhancedInputComponent->BindAction(IA_CommonSkill, ETriggerEvent::Completed, this, &ABattlePlayerController::InputSkill);
 		EnhancedInputComponent->BindAction(IA_UltimateSkill, ETriggerEvent::Started, this, &ABattlePlayerController::UltimateSkillPressed);
 		EnhancedInputComponent->BindAction(IA_UltimateSkill, ETriggerEvent::Completed, this, &ABattlePlayerController::UltimateSkillReleased);
 		EnhancedInputComponent->BindAction(IA_Item1, ETriggerEvent::Completed, this, &ABattlePlayerController::Item1);
@@ -259,7 +259,7 @@ void ABattlePlayerController::SetupMainHUDWidget()
 	//HUDWidgetInstance->OnClickBasicAttack.AddDynamic(this, &ABattlePlayerController::BasicAttack);
 	//HUDWidgetInstance->OnClickBasicSkill.AddDynamic(this, &ABattlePlayerController::BasicSkill);
 	HUDWidgetInstance->OnClickBasicAttack.AddDynamic(this, &ABattlePlayerController::InputBasicAttack);
-	HUDWidgetInstance->OnClickBasicSkill.AddDynamic(this, &ABattlePlayerController::InputCommonSkill);
+	HUDWidgetInstance->OnClickBasicSkill.AddDynamic(this, &ABattlePlayerController::InputSkill);
 	HUDWidgetInstance->OnPressedUltimateSkill.AddDynamic(this, &ABattlePlayerController::UltimateSkillPressed);
 	HUDWidgetInstance->OnReleasedUltimateSkill.AddDynamic(this, &ABattlePlayerController::UltimateSkillReleased);
 	HUDWidgetInstance->OnClickWeaponSwap.AddDynamic(this, &ABattlePlayerController::WeaponSwap);
@@ -961,7 +961,7 @@ void ABattlePlayerController::InputBasicAttack()
 	}
 }
 
-void ABattlePlayerController::InputCommonSkill()
+void ABattlePlayerController::InputSkill()
 {
 	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
 	if (playerCharacter)
@@ -972,30 +972,95 @@ void ABattlePlayerController::InputCommonSkill()
 
 void ABattlePlayerController::TriggerBasicAttackHit()
 {
-	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
-	{
-		const FGameplayTag skillTag = battleSubsystem->GetCurrentBasicAttackSkillTag();
-		const int32 skillLevel = battleSubsystem->GetCurrentBasicAttackSkillLevel();
+	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (!battleSubsystem) return;
+	const FBattleSkillData* basicAttackSkillData = battleSubsystem->GetCurrentBasicAttackSkillData();
+	if (!basicAttackSkillData) return;
+	const FSkillInfo* skillInfo = battleSubsystem->GetCurrentBasicAttackSkillInfo();
+	if (!skillInfo) return;
+	if (!basicAttackSkillData->SkillClass) return;
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
+	if (!playerCharacter) return;
+	UPoolingSubsystem* poolingSubsystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
+	if (!poolingSubsystem) return;
+	USkillBase* skillObject = NewObject<USkillBase>(this);
+	if (!skillObject) return;
+	UClass* skillActorClass = basicAttackSkillData->SkillClass.Get();
+	if (!skillActorClass) return;
 
-		UE_LOG(LogTemp, Warning, TEXT("BasicAttack Tag=%s Level=%d"), *skillTag.ToString(), skillLevel);
-	}
+	UE_LOG(LogTemp, Warning, TEXT("BasicAttack SkillTag=%s SkillLevel=%d"),
+		*basicAttackSkillData->SkillTag.ToString(),
+		basicAttackSkillData->SkillLevel);
 
-	// TODO : 기본 공격 스킬 실행 로직 연결
-	if (APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn()))
-	{
-		playerCharacter->PlayerBasicAttack();
-	}
+	skillObject->Initialize(playerCharacter, skillInfo, basicAttackSkillData->SkillLevel, skillInfo->TargetFilterTag);
+	
+	const FVector spawnLocation = playerCharacter->GetActorLocation() + (playerCharacter->GetActorForwardVector() * 100.0f);
+	const FRotator spawnRotation = playerCharacter->GetActorForwardVector().Rotation();
+
+	FTransform spawnTransform;
+	spawnTransform.SetLocation(spawnLocation);
+	spawnTransform.SetRotation(spawnRotation.Quaternion());
+
+	AActor* spawnedActor = poolingSubsystem->SpawnFromPool(skillActorClass, spawnTransform);
+	ASkillActor* skillActor = Cast<ASkillActor>(spawnedActor);
+	if (!skillActor) return;
+
+	skillActor->ActivateSkillActor(skillObject, playerCharacter, spawnLocation, spawnRotation);
+
+    //if (APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn()))
+    //{
+    //	playerCharacter->PlayerBasicAttack();
+    //}
 }
 
-void ABattlePlayerController::TriggerCommonSkill()
+void ABattlePlayerController::TriggerSkill()
 {
-	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
-	{
-		const FGameplayTag skillTag = battleSubsystem->GetCurrentBasicSkillTag();
-		const int32 skillLevel = battleSubsystem->GetCurrentBasicSkillLevel();
+	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (!battleSubsystem) return;
 
-		UE_LOG(LogTemp, Warning, TEXT("TriggerBasicSkill Tag=%s Level=%d"), *skillTag.ToString(), skillLevel);
+	const FBattleSkillData* skillData = nullptr;
+	const FSkillInfo* skillInfo = nullptr;
+
+	if (bIsUltimateAiming)
+	{
+		skillData = battleSubsystem->GetCurrentLegendarySkillData();
+		skillInfo = battleSubsystem->FindSkillInfoByTag(battleSubsystem->GetLegendaryUltimateSkillTag());
+	}
+	else
+	{
+		skillData = battleSubsystem->GetCurrentBasicSkillData();
+		skillInfo = battleSubsystem->GetCurrentBasicSkillInfo();
 	}
 
-	// TODO: 일반 스킬 실행 로직 연결
+	if (!skillData) return;
+	if (!skillInfo) return;
+	if (!skillData->SkillClass) return;
+
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
+	if (!playerCharacter) return;
+	UPoolingSubsystem* poolingSubsystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
+	if (!poolingSubsystem) return;
+	USkillBase* skillObject = NewObject<USkillBase>(this);
+	if (!skillObject) return;
+	UClass* skillActorClass = skillData->SkillClass.Get();
+	if (!skillActorClass) return;
+
+	UE_LOG(LogTemp, Warning, TEXT("Skill SkillTag=%s SkillLevel=%d"),
+		*skillData->SkillTag.ToString(),
+		skillData->SkillLevel);
+
+	skillObject->Initialize(playerCharacter, skillInfo, skillData->SkillLevel, skillInfo->TargetFilterTag);
+
+	const FVector spawnLocation = playerCharacter->GetActorLocation() + (playerCharacter->GetActorForwardVector() * 100.0f);
+	const FRotator spawnRotation = playerCharacter->GetActorForwardVector().Rotation();
+
+	FTransform spawnTransform;
+	spawnTransform.SetLocation(spawnLocation);
+	spawnTransform.SetRotation(spawnRotation.Quaternion());
+
+	AActor* spawnedActor = poolingSubsystem->SpawnFromPool(skillActorClass, spawnTransform);
+	ASkillActor* skillActor = Cast<ASkillActor>(spawnedActor);
+	if (!skillActor) return;
+
+	skillActor->ActivateSkillActor(skillObject, playerCharacter, spawnLocation, spawnRotation);
 }

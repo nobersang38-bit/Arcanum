@@ -143,9 +143,10 @@ public:
 	/* 기본공격 입력 */
 	void HandleBasicAttackInput();
 
-	/* 기본공격 몽타주 종료 */
+	/* 몽타주 종료 */
 	UFUNCTION()
 	void OnBasicAttackMontageEnded(UAnimMontage* InMontage, bool bInterrupted);
+	void OnCommonSkillMontageEnded(UAnimMontage* InMontage, bool bInterrupted);
 
 	/* 다음 콤보 입력 가능 시작 */
 	UFUNCTION()
@@ -172,5 +173,6 @@ private:
 	bool bCanNextComboInput = false;
 	bool bHasNextComboInput = false;
 	bool bIsBasicAttackMontagePlaying = false;
+	bool bIsCommonSkillMontagePlaying = false;
 #pragma endregion
 };

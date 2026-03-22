@@ -27,7 +27,7 @@ void FBTPlayerStruct::UseSkill()
           	break;
 		case EBSkillType::BasicSkill:
 			//PlayerController->BasicSkill();
-			PlayerController->TriggerCommonSkill();
+			PlayerController->TriggerSkill();
 			break;
 		case EBSkillType::UltimateSkill:
 			//PlayerController->UltimateSkill();

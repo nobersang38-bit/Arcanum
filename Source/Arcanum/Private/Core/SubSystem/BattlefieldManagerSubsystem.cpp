@@ -455,6 +455,7 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 					for (const TSoftObjectPtr<UAnimMontage>& comboMontage : basicAttackSkillInfo->ComboMontages)
 					{
 						OutBasicAttackSkill.ComboMontages.Add(comboMontage.LoadSynchronous());
+						OutBasicAttackSkill.SkillClass = basicAttackSkillInfo->SkillClass.LoadSynchronous();
 					}
 				}
 
@@ -472,6 +473,7 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 					if (const FSkillInfo* basicSkillInfo = FindSkillInfoByTag(OutBasicSkill.SkillTag))
 					{
 						OutBasicSkill.CastMontage = basicSkillInfo->CastMontage.LoadSynchronous();
+						OutBasicSkill.SkillClass = basicSkillInfo->SkillClass.LoadSynchronous();
 					}
 
 					break;
@@ -498,6 +500,7 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 					if (const FSkillInfo* ultimateSkillInfo = FindSkillInfoByTag(OutUltimateSkill.SkillTag))
 					{
 						OutUltimateSkill.CastMontage = ultimateSkillInfo->CastMontage.LoadSynchronous();
+						OutUltimateSkill.SkillClass = ultimateSkillInfo->SkillClass.LoadSynchronous();
 					}
 
 					break;

@@ -426,6 +426,11 @@ void APlayerCharacter::OnBasicAttackMontageEnded(UAnimMontage* InMontage, bool b
 	ProceedBasicAttackCombo();
 }
 
+void APlayerCharacter::OnCommonSkillMontageEnded(UAnimMontage* InMontage, bool bInterrupted)
+{
+	bIsCommonSkillMontagePlaying = false;
+}
+
 void APlayerCharacter::EnableNextComboInput()
 {
 	bCanNextComboInput = true;
@@ -461,6 +466,7 @@ void APlayerCharacter::ResetBasicAttackCombo()
 
 void APlayerCharacter::HandleCommonSkillInput()
 {
+	if (bIsCommonSkillMontagePlaying) return;
 	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 	if (!battleSubsystem) return;
 	const FBattleSkillData* currentBasicSkill = battleSubsystem->GetCurrentBasicSkillData();
@@ -472,6 +478,12 @@ void APlayerCharacter::HandleCommonSkillInput()
 	UAnimMontage* montage = currentBasicSkill->CastMontage;
 	if (!montage) return;
 
+	bIsCommonSkillMontagePlaying = true;
+
+	FOnMontageEnded montageEndedDelegate;
+	montageEndedDelegate.BindUObject(this, &APlayerCharacter::OnCommonSkillMontageEnded);
+
 	animInstance->Montage_Play(montage);
+	animInstance->Montage_SetEndDelegate(montageEndedDelegate, montage);
 }
 
