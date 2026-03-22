@@ -33,7 +33,7 @@ protected:
 
 	UFUNCTION()
 	void RecievedDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
-	
+
 public:
 	// ID 태그 바꾸는 함수
 	UFUNCTION(BlueprintCallable, Category = "Tags")
@@ -42,7 +42,7 @@ public:
 	// 태그 출력하는 함수
 	UFUNCTION(BlueprintCallable, Category = "Tags")
 	void PrintIDTag();
-	
+
 #pragma region 디버그
 	void PlayerBasicAttack();
 #pragma endregion
@@ -136,5 +136,41 @@ protected:
 private:
 	/* 체력 리젠 변경 시 체력바 갱신 */
 	void OnPlayerRegenStatChanged(const FRegenStat& InRegenStat);
+#pragma endregion
+
+#pragma region 기본공격 콤보
+public:
+	/* 기본공격 입력 */
+	void HandleBasicAttackInput();
+
+	/* 기본공격 몽타주 종료 */
+	UFUNCTION()
+	void OnBasicAttackMontageEnded(UAnimMontage* InMontage, bool bInterrupted);
+
+	/* 다음 콤보 입력 가능 시작 */
+	UFUNCTION()
+	void EnableNextComboInput();
+
+	/* 다음 콤보 입력 가능 종료 */
+	UFUNCTION()
+	void DisableNextComboInput();
+
+	/* 일반스킬 입력 처리 */
+	void HandleCommonSkillInput();
+
+protected:
+	/* 다음 콤보 진행 또는 콤보 종료 */
+	UFUNCTION()
+	void ProceedBasicAttackCombo();
+
+	/* 기본공격 콤보 상태 초기화 */
+	UFUNCTION()
+	void ResetBasicAttackCombo();
+
+private:
+	int32 BasicAttackComboIndex = 0;
+	bool bCanNextComboInput = false;
+	bool bHasNextComboInput = false;
+	bool bIsBasicAttackMontagePlaying = false;
 #pragma endregion
 };

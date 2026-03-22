@@ -59,6 +59,10 @@ struct FSkillInfo {
     TArray<FGameplayTag> SkillVFXTag;
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     TSoftObjectPtr<UTexture2D> Icon;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TArray<TSoftObjectPtr<UAnimMontage>> ComboMontages;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TSoftObjectPtr<UAnimMontage> CastMontage;
 
     /** 실행용 스킬 클래스 (BP) */
     UPROPERTY(EditAnywhere, BlueprintReadOnly)

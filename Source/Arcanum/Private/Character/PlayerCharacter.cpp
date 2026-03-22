@@ -369,3 +369,109 @@ void APlayerCharacter::OnPlayerRegenStatChanged(const FRegenStat& InRegenStat)
 	}
 }
 
+void APlayerCharacter::HandleBasicAttackInput()
+{
+	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (!battleSubsystem) return;
+	const FBattleSkillData* currentBasicAttackSkill = battleSubsystem->GetCurrentBasicAttackSkillData();
+	if (!currentBasicAttackSkill) return;
+	USkeletalMeshComponent* meshComp = GetMesh();
+	if (!meshComp) return;
+	UAnimInstance* animInstance = meshComp->GetAnimInstance();
+	if (!animInstance) return;
+
+	if (bIsBasicAttackMontagePlaying)
+	{
+		if (bCanNextComboInput)
+		{
+			bHasNextComboInput = true;
+		}
+		return;
+	}
+
+	if (!currentBasicAttackSkill->ComboMontages.IsValidIndex(BasicAttackComboIndex))
+	{
+		ResetBasicAttackCombo();
+		return;
+	}
+
+	UAnimMontage* montage = currentBasicAttackSkill->ComboMontages[BasicAttackComboIndex];
+	if (!montage)
+	{
+		ResetBasicAttackCombo();
+		return;
+	}
+
+	bCanNextComboInput = false;
+	bHasNextComboInput = false;
+	bIsBasicAttackMontagePlaying = true;
+
+	FOnMontageEnded montageEndedDelegate;
+	montageEndedDelegate.BindUObject(this, &APlayerCharacter::OnBasicAttackMontageEnded);
+
+	animInstance->Montage_Play(montage);
+	animInstance->Montage_SetEndDelegate(montageEndedDelegate, montage);
+}
+
+void APlayerCharacter::OnBasicAttackMontageEnded(UAnimMontage* InMontage, bool bInterrupted)
+{
+	bIsBasicAttackMontagePlaying = false;
+
+	if (bInterrupted)
+	{
+		ResetBasicAttackCombo();
+		return;
+	}
+
+	ProceedBasicAttackCombo();
+}
+
+void APlayerCharacter::EnableNextComboInput()
+{
+	bCanNextComboInput = true;
+}
+void APlayerCharacter::DisableNextComboInput()
+{
+	bCanNextComboInput = false;
+}
+
+void APlayerCharacter::ProceedBasicAttackCombo()
+{
+	if (bHasNextComboInput)
+	{
+		bHasNextComboInput = false;
+		bCanNextComboInput = false;
+		BasicAttackComboIndex++;
+
+		HandleBasicAttackInput();
+
+	}
+	else
+	{
+		ResetBasicAttackCombo();
+	}
+}
+void APlayerCharacter::ResetBasicAttackCombo()
+{
+	BasicAttackComboIndex = 0;
+	bCanNextComboInput = false;
+	bHasNextComboInput = false;
+	bIsBasicAttackMontagePlaying = false;
+}
+
+void APlayerCharacter::HandleCommonSkillInput()
+{
+	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (!battleSubsystem) return;
+	const FBattleSkillData* currentBasicSkill = battleSubsystem->GetCurrentBasicSkillData();
+	if (!currentBasicSkill)	return;
+	USkeletalMeshComponent* meshComp = GetMesh();
+	if (!meshComp) return;
+	UAnimInstance* animInstance = meshComp->GetAnimInstance();
+	if (!animInstance) return;
+	UAnimMontage* montage = currentBasicSkill->CastMontage;
+	if (!montage) return;
+
+	animInstance->Montage_Play(montage);
+}
+

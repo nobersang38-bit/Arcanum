@@ -99,11 +99,11 @@ public:
 
 #pragma region 메인
 protected:
-	UFUNCTION()
-	void BasicAttack();
+	//UFUNCTION()
+	//void BasicAttack();
 
-	UFUNCTION()
-	void BasicSkill();
+	//UFUNCTION()
+	//void BasicSkill();
 
 	UFUNCTION()
 	void WeaponSwap();
@@ -216,6 +216,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> IA_CommonButton = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_BasicAttackSkill = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_CommonSkill = nullptr;
 #pragma endregion
 
 protected:
@@ -308,5 +314,25 @@ protected:
 	float UltimatePreviewMaxDistance = 1200.0f;
 
 	FTimerHandle UltimateSkillTimerHandle;
+#pragma endregion
+
+#pragma region 기본공격, 일반 스킬 처리
+public:
+	/* 기본공격 스킬 실행 */
+	UFUNCTION()
+	void TriggerBasicAttackHit();
+
+	/* 일반스킬 실제 실행 */
+	UFUNCTION()
+	void TriggerCommonSkill();
+
+protected:
+	/* 기본공격 입력 */
+	UFUNCTION()
+	void InputBasicAttack();
+
+	/* 일반스킬 입력 */
+	UFUNCTION()
+	void InputCommonSkill();
 #pragma endregion
 };

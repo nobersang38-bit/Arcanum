@@ -46,6 +46,7 @@ void UStatusAction_SetBonus::StartAction_Implementation(const FRegenStat& RegenS
 	Super::StartAction_Implementation(RegenStat, NonRegenStat);
 
 	if (!SetBonusTag.IsValid()) return;
+	if (SetBonusTag != Arcanum::Items::SetBonus::Surge)	return;
 	if (RegenStat.ParentTag != Arcanum::BattleStat::Character::Regen::Health::Root) return;
 	if (bIsBonusActive || bIsCooldown) return;
 

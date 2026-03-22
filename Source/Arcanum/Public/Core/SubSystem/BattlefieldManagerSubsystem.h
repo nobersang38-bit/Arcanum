@@ -14,6 +14,7 @@
 #include "Data/Types/BattleStageInfo.h"
 #include "DataInfo/StageData/StageInfo/Data/FStageDataInfo.h"
 #include "DataInfo/SkillData/Data/FBattleWeaponSkillData.h"
+#include "DataInfo/SkillData/Data/FSkillInfo.h"
 #include "BattlefieldManagerSubsystem.generated.h"
 
 USTRUCT(BlueprintType)
@@ -241,6 +242,21 @@ public:
 	/* 현재 활성 무기의 장착 타입 태그 */
 	FGameplayTag GetCurrentWeaponSlotTypeTag() const;
 
+	/* 현재 기본공격 스킬 정보*/
+	const FSkillInfo* GetCurrentBasicAttackSkillInfo() const;
+
+	/* 현재 스킬 정보*/
+	const FSkillInfo* GetCurrentBasicSkillInfo() const;
+
+	/* 현재 기본공격 스킬 캐시 Get */
+	const FBattleSkillData* GetCurrentBasicAttackSkillData() const;
+
+	/* 현재 일반스킬 캐시 Get */
+	const FBattleSkillData* GetCurrentBasicSkillData() const;
+
+	/* 현재 전설스킬 캐시 반환 Get */
+	const FBattleSkillData* GetCurrentLegendarySkillData() const;
+
 protected:
 	/* 스킬 캐스트타임 */
 	float FindSkillCastTime(const FGameplayTag& InSkillTag, int32 InSkillLevel) const;
@@ -256,6 +272,9 @@ protected:
 
 	/* Guid로 인벤토리에서 장비 찾기 */
 	const FEquipmentInfo* FindEquipmentByGuid(const FPlayerData& InPlayerData, const FGuid& InItemGuid) const;
+
+	/* 스킬 태그로 스킬 정보 */
+	const FSkillInfo* FindSkillInfoByTag(const FGameplayTag& InSkillTag) const;
 
 	/* 현재 선택된 플레이어 캐릭터 반환 */
 	const FBattleCharacterData* GetSelectedCharacterData() const;

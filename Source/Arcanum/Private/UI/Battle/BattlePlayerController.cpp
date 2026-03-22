@@ -120,8 +120,10 @@ void ABattlePlayerController::SetupInputComponent()
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
 	{
 		EnhancedInputComponent->BindAction(IA_Move, ETriggerEvent::Triggered, this, &ABattlePlayerController::InputMove);
-		EnhancedInputComponent->BindAction(IA_BasicAttack, ETriggerEvent::Completed, this, &ABattlePlayerController::BasicAttack);
-		EnhancedInputComponent->BindAction(IA_BasicSkill, ETriggerEvent::Completed, this, &ABattlePlayerController::BasicSkill);
+		//EnhancedInputComponent->BindAction(IA_BasicAttack, ETriggerEvent::Completed, this, &ABattlePlayerController::BasicAttack);
+		//EnhancedInputComponent->BindAction(IA_BasicSkill, ETriggerEvent::Completed, this, &ABattlePlayerController::BasicSkill);
+		EnhancedInputComponent->BindAction(IA_BasicAttackSkill, ETriggerEvent::Completed, this, &ABattlePlayerController::InputBasicAttack);
+		EnhancedInputComponent->BindAction(IA_CommonSkill, ETriggerEvent::Completed, this, &ABattlePlayerController::InputCommonSkill);
 		EnhancedInputComponent->BindAction(IA_UltimateSkill, ETriggerEvent::Started, this, &ABattlePlayerController::UltimateSkillPressed);
 		EnhancedInputComponent->BindAction(IA_UltimateSkill, ETriggerEvent::Completed, this, &ABattlePlayerController::UltimateSkillReleased);
 		EnhancedInputComponent->BindAction(IA_Item1, ETriggerEvent::Completed, this, &ABattlePlayerController::Item1);
@@ -254,10 +256,12 @@ void ABattlePlayerController::DebugRemovePlayerInfoPanelSlot(int32 RemoveIDX)
 // ========================================================
 void ABattlePlayerController::SetupMainHUDWidget()
 {
-	HUDWidgetInstance->OnClickBasicAttack.AddDynamic(this, &ABattlePlayerController::BasicAttack);
+	//HUDWidgetInstance->OnClickBasicAttack.AddDynamic(this, &ABattlePlayerController::BasicAttack);
+	//HUDWidgetInstance->OnClickBasicSkill.AddDynamic(this, &ABattlePlayerController::BasicSkill);
+	HUDWidgetInstance->OnClickBasicAttack.AddDynamic(this, &ABattlePlayerController::InputBasicAttack);
+	HUDWidgetInstance->OnClickBasicSkill.AddDynamic(this, &ABattlePlayerController::InputCommonSkill);
 	HUDWidgetInstance->OnPressedUltimateSkill.AddDynamic(this, &ABattlePlayerController::UltimateSkillPressed);
 	HUDWidgetInstance->OnReleasedUltimateSkill.AddDynamic(this, &ABattlePlayerController::UltimateSkillReleased);
-	HUDWidgetInstance->OnClickBasicSkill.AddDynamic(this, &ABattlePlayerController::BasicSkill);
 	HUDWidgetInstance->OnClickWeaponSwap.AddDynamic(this, &ABattlePlayerController::WeaponSwap);
 	HUDWidgetInstance->OnClickItem1.AddDynamic(this, &ABattlePlayerController::Item1);
 	HUDWidgetInstance->OnClickItem2.AddDynamic(this, &ABattlePlayerController::Item2);
@@ -364,41 +368,23 @@ void ABattlePlayerController::SetBossHealthProgress(float CurrentHealth, float M
 // ========================================================
 // 메인
 // ========================================================
-void ABattlePlayerController::BasicAttack()
-{
-	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
-	{
-		const FGameplayTag skillTag = battleSubsystem->GetCurrentBasicAttackSkillTag();
-		const int32 skillLevel = battleSubsystem->GetCurrentBasicAttackSkillLevel();
-
-		UE_LOG(LogTemp, Warning, TEXT("BasicAttack Tag=%s Level=%d"), *skillTag.ToString(), skillLevel);
-	}
-
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("BasicAttack"));
-	//Todo : 기본공격
-
-	//디버그
-	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
-	if (PlayerCharacter)
-	{
-		PlayerCharacter->PlayerBasicAttack();
-	}
-}
-
-void ABattlePlayerController::BasicSkill()
-{
-	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
-	{
-		const FGameplayTag skillTag = battleSubsystem->GetCurrentBasicSkillTag();
-		const int32 skillLevel = battleSubsystem->GetCurrentBasicSkillLevel();
-
-		UE_LOG(LogTemp, Warning, TEXT("BasicSkill Tag=%s Level=%d"), *skillTag.ToString(), skillLevel);
-	}
-
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("BasicSkill"));
-	//Todo : 기본스킬
-}
-
+//void ABattlePlayerController::BasicAttack()
+//{
+//	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("BasicAttack"));
+//	//Todo : 기본공격
+//
+//	//디버그
+//	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
+//	if (PlayerCharacter)
+//	{
+//		PlayerCharacter->PlayerBasicAttack();
+//	}
+//}
+//void ABattlePlayerController::BasicSkill()
+//{
+//	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("BasicSkill"));
+//	//Todo : 기본스킬
+//}
 //void ABattlePlayerController::UltimateSkill()
 //{
 //	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
@@ -964,4 +950,52 @@ void ABattlePlayerController::ExecuteUltimateSkill()
 
 		UltimateSkillEnd();
 	}
+}
+
+void ABattlePlayerController::InputBasicAttack()
+{
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
+	if (playerCharacter)
+	{
+		playerCharacter->HandleBasicAttackInput();
+	}
+}
+
+void ABattlePlayerController::InputCommonSkill()
+{
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
+	if (playerCharacter)
+	{
+		playerCharacter->HandleCommonSkillInput();
+	}
+}
+
+void ABattlePlayerController::TriggerBasicAttackHit()
+{
+	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
+	{
+		const FGameplayTag skillTag = battleSubsystem->GetCurrentBasicAttackSkillTag();
+		const int32 skillLevel = battleSubsystem->GetCurrentBasicAttackSkillLevel();
+
+		UE_LOG(LogTemp, Warning, TEXT("BasicAttack Tag=%s Level=%d"), *skillTag.ToString(), skillLevel);
+	}
+
+	// TODO : 기본 공격 스킬 실행 로직 연결
+	if (APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn()))
+	{
+		playerCharacter->PlayerBasicAttack();
+	}
+}
+
+void ABattlePlayerController::TriggerCommonSkill()
+{
+	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
+	{
+		const FGameplayTag skillTag = battleSubsystem->GetCurrentBasicSkillTag();
+		const int32 skillLevel = battleSubsystem->GetCurrentBasicSkillLevel();
+
+		UE_LOG(LogTemp, Warning, TEXT("TriggerBasicSkill Tag=%s Level=%d"), *skillTag.ToString(), skillLevel);
+	}
+
+	// TODO: 일반 스킬 실행 로직 연결
 }

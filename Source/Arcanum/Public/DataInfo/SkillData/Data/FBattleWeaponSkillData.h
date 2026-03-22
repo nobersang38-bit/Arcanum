@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "NativeGameplayTags.h"
+#include "Object/Skills/SkillActor.h"
 #include "FBattleWeaponSkillData.generated.h"
 
 /**
@@ -26,6 +27,16 @@ struct FBattleSkillData
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UTexture2D> SkillIcon = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UAnimMontage> CastMontage = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TArray<TObjectPtr<UAnimMontage>> ComboMontages;
+
+	/* 스킬 실행 클래스 캐시 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSoftClassPtr<ASkillActor> SkillClass;
 };
 
 USTRUCT(BlueprintType)
