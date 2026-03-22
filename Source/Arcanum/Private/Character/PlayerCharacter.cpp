@@ -61,6 +61,11 @@ APlayerCharacter::APlayerCharacter()
 	UltimatePreviewDecalComponent->SetVisibility(false);
 	UltimatePreviewDecalComponent->SetHiddenInGame(true);
 
+	SourceSkeletaMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SourceSkeletaMeshComponent"));
+	SourceSkeletaMeshComponent->SetupAttachment(RootComponent);
+	SourceSkeletaMeshComponent->SetVisibility(false);
+	SourceSkeletaMeshComponent->SetHiddenInGame(true);
+	SourceSkeletaMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 
 	PrimaryActorTick.bCanEverTick = true;
@@ -108,6 +113,10 @@ void APlayerCharacter::SetAutoMode(ABattlePlayerController* MainController, bool
 {
 	if (bIsAuto)
 	{
+		if (!CachedOwnerPC)
+		{
+			CachedOwnerPC = MainController;
+		}
 		if (CachedAIC)
 		{
 			UnPossessed();
@@ -217,10 +226,14 @@ void APlayerCharacter::RecievedDamage(AActor* DamagedActor, float Damage, const 
 	const FRegenStat* HealthStat = StatComponent->FindRegenStat(HealthTag);
 	if (HealthStat)
 	{
+		StatComponent->ChangeStatValue(HealthTag, -Damage, DamageCauser);
 		if (OwnerPC)
 		{
-			StatComponent->ChangeStatValue(HealthTag, -Damage, DamageCauser);
 			OwnerPC->SetPlayerHealthProgress(HealthStat->Current, HealthStat->GetTotalMax());
+		}
+		else if (CachedOwnerPC)
+		{
+			CachedOwnerPC->SetPlayerHealthProgress(HealthStat->Current, HealthStat->GetTotalMax());
 		}
 		if (HealthStat->Current <= 0.0f)
 		{

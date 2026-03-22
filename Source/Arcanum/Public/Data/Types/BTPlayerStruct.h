@@ -32,6 +32,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Runtime")
 	TWeakObjectPtr<class ABattlePlayerController> PlayerController = nullptr;
 
+	void SpawnUnit();
+	void SetTargetActor(AActor* InTargetACtor);
 	bool CostCheck();
-	void UseSkill();
+	bool UseSkill();
 };

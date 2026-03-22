@@ -54,6 +54,8 @@ public:
 
 #pragma endregion
 
+	UFUNCTION(BlueprintCallable)
+	USkeletalMeshComponent* GetSourceSkeletaMeshComponent() { return SourceSkeletaMeshComponent; }
 
 protected:
 
@@ -71,6 +73,10 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "StatusAction")
 	TObjectPtr<class UStatusActionComponent> StatusActionComponent = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	TObjectPtr<USkeletalMeshComponent> SourceSkeletaMeshComponent = nullptr;
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting|AI")
 	TObjectPtr<class UBehaviorTree> BehaviorTree = nullptr;
@@ -128,6 +134,9 @@ protected:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<class AAIController> CachedAIC = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<ABattlePlayerController> CachedOwnerPC = nullptr;
 	//UPROPERTY()
 	//TMap<FGameplayTag, FRegenStat> RegenStats;
 

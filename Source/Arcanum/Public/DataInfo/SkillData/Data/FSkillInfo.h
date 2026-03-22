@@ -60,6 +60,12 @@ struct FSkillInfo {
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     TSoftObjectPtr<UTexture2D> Icon;
 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    float EnabledRange = 300.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TObjectPtr<class UAnimMontage> SkillMontage = nullptr;
+
     /** 실행용 스킬 클래스 (BP) */
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     TSoftClassPtr<ASkillActor> SkillClass;

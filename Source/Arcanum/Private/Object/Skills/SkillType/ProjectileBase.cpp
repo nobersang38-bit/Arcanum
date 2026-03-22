@@ -60,11 +60,11 @@ void AProjectileBase::Tick(float Deltatime)
 
         case EProjectileMode::Howitzer:
             FVector TargetLocationIn;
-            if (TargetActor.IsValid())
+            /*if (TargetActor.IsValid())
             {
                 TargetLocationIn = TargetActor->GetActorLocation();
             }
-            else
+            else*/
             {
                 TargetLocationIn = TargetLocation;
             }
@@ -102,6 +102,10 @@ void AProjectileBase::DeactivateSkillActor()
     GetWorld()->GetTimerManager().ClearTimer(LifeTimerHandle);
     GetWorld()->GetTimerManager().ClearTimer(DeactiveDelayTimerHandle);
     CollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    bIsActive = false;
+    SetActorHiddenInGame(true);
+    SetActorEnableCollision(false);
+    DeactiveItem();
     Super::DeactivateSkillActor();
 }
 void AProjectileBase::ActivateSkillActor(USkillBase* InSkill, AActor* InOwner, const FVector& SpawnLocation, const FRotator& SpawnRotation)

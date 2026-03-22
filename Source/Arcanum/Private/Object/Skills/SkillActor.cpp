@@ -59,7 +59,6 @@ void ASkillActor::DeactiveItem()
 {
     // 0312 풀링 서브시스템에서 실행할 Deactive로직 추가
     bIsActive = false;
-
-    SetActorEnableCollision(false);
     SetActorHiddenInGame(true);
+    SetActorEnableCollision(false);
 }

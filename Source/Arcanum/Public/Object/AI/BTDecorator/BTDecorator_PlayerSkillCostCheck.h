@@ -13,5 +13,9 @@ UCLASS()
 class ARCANUM_API UBTDecorator_PlayerSkillCostCheck : public UBTDecorator_BlackboardBase
 {
 	GENERATED_BODY()
-	
+public:
+	UBTDecorator_PlayerSkillCostCheck();
+
+protected:
+	virtual bool CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const override;
 };

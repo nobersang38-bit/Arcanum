@@ -23,6 +23,7 @@
 #include "Object/Skills/SkillBase.h"
 #include "AIController.h"
 #include "Core/SubSystem/GameDataSubsystem.h"
+#include "Object/Actor/SkillRangeDecal.h"
 
 
 // ========================================================
@@ -41,6 +42,13 @@ void ABattlePlayerController::BeginPlay()
 		FTransform Transform;
 		Transform.SetLocation(FVector(0.0f, 0.0f, -9999.0f));
 		SelectedArrowInstance = GetWorld()->SpawnActor<ASelectedArrow>(SelectedArrowClass, Transform);
+	}
+
+	if (!SkillRangeDecalInstance && SkillRangeDecalClass)
+	{
+		FTransform Transform;
+		Transform.SetLocation(FVector(0.0f, 0.0f, -9999.0f));
+		SkillRangeDecalInstance = GetWorld()->SpawnActor<ASkillRangeDecal>(SkillRangeDecalClass, Transform);
 	}
 
 	if (HUDWidgetClass)
@@ -143,7 +151,7 @@ void ABattlePlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(IA_Move, ETriggerEvent::Triggered, this, &ABattlePlayerController::InputMove);
 		EnhancedInputComponent->BindAction(IA_BasicAttack, ETriggerEvent::Completed, this, &ABattlePlayerController::BasicAttack);
 		EnhancedInputComponent->BindAction(IA_BasicSkill, ETriggerEvent::Completed, this, &ABattlePlayerController::BasicSkill);
-		EnhancedInputComponent->BindAction(IA_UltimateSkill, ETriggerEvent::Started, this, &ABattlePlayerController::UltimateSkillPressed);
+		//EnhancedInputComponent->BindAction(IA_UltimateSkill, ETriggerEvent::Started, this, &ABattlePlayerController::UltimateSkillPressed);
 		EnhancedInputComponent->BindAction(IA_UltimateSkill, ETriggerEvent::Completed, this, &ABattlePlayerController::UltimateSkillReleased);
 		EnhancedInputComponent->BindAction(IA_Item1, ETriggerEvent::Completed, this, &ABattlePlayerController::Item1);
 		EnhancedInputComponent->BindAction(IA_Item2, ETriggerEvent::Completed, this, &ABattlePlayerController::Item2);
@@ -242,6 +250,15 @@ void ABattlePlayerController::Tick(float DeltaTime)
 			}
 		}
 	}
+
+	if (CurrentSelectedSkillBase.IsValid() && SkillRangeDecalInstance)
+	{
+		FHitResult HitResult;
+		GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, HitResult);
+		FVector SkillLocationBack = SkillRangeDecalInstance->SetCursorLocation(HitResult.ImpactPoint);
+
+		SkillLocation = FVector(SkillLocationBack.X, SkillLocationBack.Y, GetPawn()->GetActorLocation().Z + 100.0f);
+	}
 }
 
 // ========================================================
@@ -273,8 +290,9 @@ void ABattlePlayerController::DebugRemovePlayerInfoPanelSlot(int32 RemoveIDX)
 }
 #pragma endregion
 
-bool ABattlePlayerController::SkillStarter(FGameplayTag InSkillTag, int32 InLevel)
+bool ABattlePlayerController::SkillStarter(FGameplayTag InSkillTag, int32 InLevel, bool bIsUltimate)
 {
+	SkillCancel(!bIsUltimate);
 	InLevel++;
 	TSubclassOf<class ASkillActor> SkillActorClass;
 	FString SkillName;
@@ -336,25 +354,133 @@ bool ABattlePlayerController::SkillStarter(FGameplayTag InSkillTag, int32 InLeve
 		{
 			FTransform Transform;
 			Transform.SetLocation(GetPawn()->GetActorLocation());
-			Transform.SetRotation(GetPawn()->GetActorForwardVector().Rotation().Quaternion());
+
+			FVector2D Direction2D = FVector2D(SkillLocation) - FVector2D(GetPawn()->GetActorLocation());
+			FRotator RotatorDirection = FVector(Direction2D.X, Direction2D.Y, 0.0f).Rotation();
+			Transform.SetRotation(RotatorDirection.Quaternion());
 			AActor* SkillActor = PoolingSubsystem->SpawnFromPool(SkillActorClass, Transform);
 			ASkillActor* SkillInstance = Cast<ASkillActor>(SkillActor);
 			if (SkillInstance)
 			{
 				FHitResult HitResult;
 				GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, HitResult);
-				UE_LOG(LogTemp, Error, TEXT("%s"), *HitResult.GetActor()->GetName());
-				AActor* TargetActor = HitResult.GetActor()->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()) ? HitResult.GetActor() : nullptr;
-				SkillInstance->SetTargetActor(TargetActor);
-				SkillInstance->SetTargetLocation(HitResult.ImpactPoint);
-				SkillInstance->ActivateSkillActor(SkillBaseBack, GetPawn(), Transform.GetLocation(), Transform.GetRotation().Rotator());
-
-				return true;
+				if (HitResult.GetActor())
+				{
+					UE_LOG(LogTemp, Error, TEXT("%s"), *HitResult.GetActor()->GetName());
+					AActor* TargetActor = HitResult.GetActor()->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()) ? HitResult.GetActor() : nullptr;
+					if (SkillTargetActor.IsValid())
+					{
+						SkillInstance->SetTargetActor(SkillTargetActor.Get());
+					}
+					else
+					{
+						SkillInstance->SetTargetActor(TargetActor);
+					}
+					SkillInstance->SetTargetLocation(SkillLocation);
+					SkillInstance->ActivateSkillActor(SkillBaseBack, GetPawn(), Transform.GetLocation(), Transform.GetRotation().Rotator());
+					if (UAnimMontage* SkillMontage = SkillBaseBack->GetSkillInfo()->SkillMontage)
+					{
+						if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn()))
+						{
+							PlayerCharacter->GetSourceSkeletaMeshComponent()->GetAnimInstance()->Montage_Play(SkillMontage);
+						}
+					}
+					bIsSkillSuccess = true;
+					SkillTargetActor = nullptr;
+					return true;
+				}
 			}
 		}
 	}
 	return false;
 }
+
+void ABattlePlayerController::ReadySkillSet(FGameplayTag InSkillTag, int32 InLevel, bool bIsUltimate)
+{
+	if (CurrentSelectedSkillBase.IsValid())
+	{
+		SkillCancel(!bIsUltimate);
+		return;
+	}
+	SkillCancel(!bIsUltimate);
+	InLevel++;
+	FString SkillName;
+	USkillBase* SkillBaseBack = nullptr;
+
+	if (!SkillBaseInstances.Contains(InSkillTag))
+	{
+		SkillBaseBack = NewObject<USkillBase>(this);
+		SkillBaseInstances.Add(InSkillTag, SkillBaseBack);
+		UGameDataSubsystem* DataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
+		if (DataSubsystem)
+		{
+			SkillName = InSkillTag.ToString();
+			int32 LastDot;
+			if (SkillName.FindLastChar('.', LastDot))
+			{
+				// 찾은 인덱스 다음(+1)부터 끝까지 남기고 앞은 다 자릅니다.
+				SkillName = SkillName.RightChop(LastDot + 1);
+			}
+
+			FDTSkillsDataRow* DTSkillsDataRow = DataSubsystem->GetRow<FDTSkillsDataRow>(Arcanum::DataTable::SkillData, FName(SkillName));
+
+			if (DTSkillsDataRow)
+			{
+				SkillBaseBack->Initialize(GetPawn(), &DTSkillsDataRow->SkillData, InLevel, DTSkillsDataRow->SkillData.TargetFilterTag);
+				CurrentSelectedSkillBase = SkillBaseBack;
+			}
+		}
+	}
+	else
+	{
+		SkillBaseBack = *SkillBaseInstances.Find(InSkillTag);
+		CurrentSelectedSkillBase = SkillBaseBack;
+	}
+
+	if (CurrentSelectedSkillBase.IsValid() && CurrentSelectedSkillBase->GetSkillInfo())
+	{
+		if (!SkillCostChecker(CurrentSelectedSkillBase->GetSkillInfo()->SkillNameTag, InLevel))
+		{
+			SkillCancel();
+			return;
+		}
+	}
+
+	if (SkillRangeDecalInstance && SkillBaseBack && SkillBaseBack->GetSkillInfo())
+	{
+		FHitResult HitResult;
+		GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, HitResult);
+		SkillRangeDecalInstance->SkillRangeDecalOn(SkillBaseBack->GetSkillInfo()->EnabledRange, GetPawn(), HitResult.ImpactPoint);
+	}
+
+	if (bIsAutoManual)
+	{
+		CommonButton();
+	}
+}
+
+void ABattlePlayerController::CurrentSelectedSkillStarter()
+{
+	if (!CurrentSelectedSkillBase.IsValid()) return;
+
+	if (const FSkillInfo* SkillInfo = CurrentSelectedSkillBase->GetSkillInfo())
+	{
+		SkillStarter(SkillInfo->SkillNameTag, CurrentSelectedSkillBase->GetCurrentLevelEntry()->Level - 1);
+	}
+	SkillCancel();
+}
+
+void ABattlePlayerController::SkillCancel(bool bIsUltimateCancel)
+{
+	bIsSkillSuccess = false;
+	CurrentSelectedSkillBase = nullptr;
+	SkillRangeDecalInstance->SkillRangeDecalOff();
+	if (bIsUltimateCancel)
+	{
+		UltimateSkillEnd();
+	}
+}
+
 bool ABattlePlayerController::SkillCostChecker(FGameplayTag InSkillTag, int32 InLevel)
 {
 	TSubclassOf<class ASkillActor> SkillActorClass;
@@ -380,6 +506,7 @@ bool ABattlePlayerController::SkillCostChecker(FGameplayTag InSkillTag, int32 In
 
 			if (DTSkillsDataRow)
 			{
+				InLevel++;
 				SkillBaseBack->Initialize(GetPawn(), &DTSkillsDataRow->SkillData, InLevel, DTSkillsDataRow->SkillData.TargetFilterTag);
 			}
 			else return false;
@@ -398,10 +525,48 @@ bool ABattlePlayerController::SkillCostChecker(FGameplayTag InSkillTag, int32 In
 		}
 	}
 
-	if (SkillBaseBack && SkillBaseBack->GetCurrentLevelEntry())
+	float MaxCoolTime = 0.0f;
+
+	float ManaCost = 0.0f;
+	float MeatCost = 0.0f;
+	if (SkillBaseBack)
 	{
-		SkillBaseBack->GetCurrentLevelEntry()->Cooldown;//////////////////
-		SkillBaseBack->GetCurrentLevelEntry()->Cost;//////////////////
+		if (const FLevelModifierEntry* LevelModifier = SkillBaseBack->GetCurrentLevelEntry())
+		{
+			MaxCoolTime = LevelModifier->Cooldown;
+			float* CurrentCoolTime = SkillCoolTimes.Find(InSkillTag);
+			if (!CurrentCoolTime)
+			{
+				CurrentCoolTime = &SkillCoolTimes.Add(InSkillTag);
+				*CurrentCoolTime = 0.0f;
+				return true;
+			}
+
+			if (CurrentCoolTime)
+			{
+				for (const auto& Cost : LevelModifier->Cost) // 코스트 체크
+				{
+					if (Cost.StatTag == ManaTag)
+					{
+						ManaCost += Cost.Value.Flat;
+					}
+					else if (Cost.StatTag == MeatTag)
+					{
+						MeatCost += Cost.Value.Flat;
+					}
+				}
+
+				float TempCoolTime = *CurrentCoolTime;
+				if (*CurrentCoolTime <= 0.0f && ManaValue.Current >= FMath::Abs(ManaCost) && MeatValue.Current >= FMath::Abs(MeatCost))
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}
 	}
 
 	return false;
@@ -413,7 +578,7 @@ bool ABattlePlayerController::SkillCostChecker(FGameplayTag InSkillTag, int32 In
 void ABattlePlayerController::SetupMainHUDWidget()
 {
 	HUDWidgetInstance->OnClickBasicAttack.AddDynamic(this, &ABattlePlayerController::BasicAttack);
-	HUDWidgetInstance->OnPressedUltimateSkill.AddDynamic(this, &ABattlePlayerController::UltimateSkillPressed);
+	//HUDWidgetInstance->OnPressedUltimateSkill.AddDynamic(this, &ABattlePlayerController::UltimateSkillPressed);
 	HUDWidgetInstance->OnReleasedUltimateSkill.AddDynamic(this, &ABattlePlayerController::UltimateSkillReleased);
 	HUDWidgetInstance->OnClickBasicSkill.AddDynamic(this, &ABattlePlayerController::BasicSkill);
 	HUDWidgetInstance->OnClickWeaponSwap.AddDynamic(this, &ABattlePlayerController::WeaponSwap);
@@ -530,7 +695,9 @@ void ABattlePlayerController::BasicAttack()
 		const int32 skillLevel = battleSubsystem->GetCurrentBasicAttackSkillLevel();
 
 		UE_LOG(LogTemp, Warning, TEXT("BasicAttack Tag=%s Level=%d"), *skillTag.ToString(), skillLevel);
-		SkillStarter(skillTag, skillLevel);
+		ReadySkillSet(skillTag, skillLevel);
+
+		//SkillStarter(skillTag, skillLevel);
 	}
 }
 
@@ -542,7 +709,8 @@ void ABattlePlayerController::BasicSkill()
 		const int32 skillLevel = battleSubsystem->GetCurrentBasicSkillLevel();
 
 		UE_LOG(LogTemp, Warning, TEXT("BasicSkill Tag=%s Level=%d"), *skillTag.ToString(), skillLevel);
-		SkillStarter(skillTag, skillLevel);
+		ReadySkillSet(skillTag, skillLevel);
+		//SkillStarter(skillTag, skillLevel);
 	}
 
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("BasicSkill"));
@@ -565,6 +733,7 @@ void ABattlePlayerController::BasicSkill()
 
 void ABattlePlayerController::WeaponSwap()
 {
+	SkillCancel();
 	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
 	{
 		const FGameplayTag currentSlotTag = battleSubsystem->GetCurrentWeaponSlotTag();
@@ -602,18 +771,21 @@ void ABattlePlayerController::WeaponSwap()
 
 void ABattlePlayerController::Item1()
 {
+	SkillCancel();
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Item1"));
 	//Todo : 아이템1
 }
 
 void ABattlePlayerController::Item2()
 {
+	SkillCancel();
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Item2"));
 	//Todo : 아이템2
 }
 
 void ABattlePlayerController::AutoManualModeMobile(bool bIsChecked)
 {
+	SkillCancel();
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("AutoManualMode"));
 	bIsAutoManual = bIsChecked;
 
@@ -631,6 +803,7 @@ void ABattlePlayerController::AutoManualModeMobile(bool bIsChecked)
 
 void ABattlePlayerController::AutoManualModePC()
 {
+	SkillCancel();
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("AutoManualMode"));
 }
 
@@ -674,11 +847,20 @@ void ABattlePlayerController::SlotSelectCancel()
 	{
 		SelectedArrowInstance->SetActive(false);
 	}
+
+	SkillCancel();
 }
 
 void ABattlePlayerController::CommonButton()
 {
-	Internal_SpawnUnit();
+	if (SelectedUnit.IsValid() && !bIsAutoManual)
+	{
+		Internal_SpawnUnit();
+	}
+	else if (CurrentSelectedSkillBase.IsValid())
+	{
+		CurrentSelectedSkillStarter();
+	}
 }
 
 void ABattlePlayerController::ReadySpawnUnit(FGameplayTag InTag, UBattleAllyUnitSlotWidget* Slot)
@@ -728,7 +910,7 @@ void ABattlePlayerController::SetSpawnDecalActive(bool bIsOn)
 	}
 }
 
-ABaseUnitCharacter* ABattlePlayerController::Internal_SpawnUnit()
+ABaseUnitCharacter* ABattlePlayerController::Internal_SpawnUnit(const FVector InSpawnLocation)
 {
 	if (FUnitInfoSetting* UnitData = UsingAllyUnits.Find(SpawnTag))
 	{
@@ -761,7 +943,14 @@ ABaseUnitCharacter* ABattlePlayerController::Internal_SpawnUnit()
 				ResultLocation = ResultLocation + (FVector::UpVector * CapsuleHeight);
 
 				FTransform Transform;
-				Transform.SetLocation(ResultLocation);
+				if (InSpawnLocation.IsNearlyZero())
+				{
+					Transform.SetLocation(ResultLocation);
+				}
+				else
+				{
+					Transform.SetLocation(InSpawnLocation);
+				}
 				Transform.SetRotation(Direction.Rotation().Quaternion());
 				// Todo KDH : 미리 로드해 놓아야함
 				AActor* EnemyUnitInstance = PoolingSubsystem->SpawnFromPool(UnitData->UnitClass.LoadSynchronous(), Transform);
@@ -819,7 +1008,7 @@ bool ABattlePlayerController::UseSkillCost(FGameplayTag InTag)
 
 	float ManaCost = 0.0f;
 	float MeatCost = 0.0f;
-	if (USkillBase** SkillBaseBack = SkillBaseInstances.Find(InTag))
+	if (TObjectPtr<USkillBase>* SkillBaseBack = SkillBaseInstances.Find(InTag))
 	{
 		if (const FLevelModifierEntry* LevelModifier = (*SkillBaseBack)->GetCurrentLevelEntry())
 		{
@@ -1005,11 +1194,11 @@ void ABattlePlayerController::InputMove(const FInputActionValue& InputValue)
 		}
 
 		// 5. 궁극기 조준 중이면 프리뷰만 갱신
-		if (bIsUltimateAiming)
+		/*if (bIsUltimateAiming)
 		{
 			UpdateUltimatePreview();
 		}
-		else
+		else*/
 		{
 			// 6. 평소에는 Pawn 이동 입력 반영
 			ControlledPawn->AddMovementInput(ForwardDirection, MovementVector.Y); // 앞/뒤
@@ -1042,7 +1231,7 @@ void ABattlePlayerController::UltimateSkillEnd()
 
 void ABattlePlayerController::UltimateSkillPressed()
 {
-	if (bIsUltimateAiming) return;
+	//if (bIsUltimateAiming) return;
 
 	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 	if (!battleSubsystem) return;
@@ -1052,7 +1241,7 @@ void ABattlePlayerController::UltimateSkillPressed()
 
 	const float castTime = battleSubsystem->GetInBattleData().BattleWeaponSkill.LegendaryUltimateSkill.CastTime;
 
-	bIsUltimateAiming = true;
+	//bIsUltimateAiming = true;
 
 	battleSubsystem->BeginLegendaryWeaponMode();
 
@@ -1060,28 +1249,14 @@ void ABattlePlayerController::UltimateSkillPressed()
 	if (playerCharacter)
 	{
 		playerCharacter->UpdateEquippedWeaponMesh();
-		playerCharacter->ShowUltimatePreview();
 	}
 
 	UpdateUltimatePreview();
-
-	GetWorldTimerManager().ClearTimer(UltimateSkillTimerHandle);
-
-	if (castTime > 0.0f)
-	{
-		GetWorldTimerManager().SetTimer(
-			UltimateSkillTimerHandle,
-			this,
-			&ABattlePlayerController::ExecuteUltimateSkill,
-			castTime,
-			false
-		);
-	}
 }
 
 void ABattlePlayerController::UltimateSkillReleased()
 {
-	if (bIsUltimateAiming)
+	//if (bIsUltimateAiming)
 	{
 		ExecuteUltimateSkill();
 	}
@@ -1089,17 +1264,9 @@ void ABattlePlayerController::UltimateSkillReleased()
 
 void ABattlePlayerController::ExecuteUltimateSkill()
 {
-	if (bIsUltimateAiming)
+	//if (bIsUltimateAiming)
 	{
-		bIsUltimateAiming = false;
-
-		GetWorldTimerManager().ClearTimer(UltimateSkillTimerHandle);
-
-		APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
-		if (playerCharacter)
-		{
-			playerCharacter->HideUltimatePreview();
-		}
+		//bIsUltimateAiming = false;
 
 		UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 		if (battleSubsystem)
@@ -1108,18 +1275,16 @@ void ABattlePlayerController::ExecuteUltimateSkill()
 			const int32 skillLevel = battleSubsystem->GetLegendaryUltimateSkillLevel();
 
 			UE_LOG(LogTemp, Warning, TEXT("UltimateSkill Tag=%s Level=%d"), *skillTag.ToString(), skillLevel);
-
+			
+			if(SkillCostChecker(skillTag, skillLevel)) UltimateSkillPressed();
+			ReadySkillSet(skillTag, skillLevel, true);
 		}
-
-		// Todo : 현재 조준 위치로 궁극기 실제 발사
-
-		UltimateSkillEnd();
 	}
 }
 
 void ABattlePlayerController::UpdateUltimatePreview()
 {
-	if (!bIsUltimateAiming)	return;
+	//if (!bIsUltimateAiming)	return;
 
 	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
 	if (!playerCharacter) return;

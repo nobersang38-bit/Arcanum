@@ -94,6 +94,8 @@ public:
 	UFUNCTION()
 	void SetBossHealthProgress(float CurrentHealth, float MaxHealth);
 
+	UFUNCTION()
+	bool SkillCostChecker(FGameplayTag InSkillTag, int32 InLevel);
 
 #pragma endregion
 
@@ -116,10 +118,16 @@ protected:
 	void Item2();
 
 	UFUNCTION()
-	bool SkillStarter(FGameplayTag InSkillTag, int32 InLevel);
+	bool SkillStarter(FGameplayTag InSkillTag, int32 InLevel, bool bIsUltimate = false);
 
 	UFUNCTION()
-	bool SkillCostChecker(FGameplayTag InSkillTag, int32 InLevel);
+	void ReadySkillSet(FGameplayTag InSkillTag, int32 InLevel, bool bIsUltimate = false);
+
+	UFUNCTION()
+	void CurrentSelectedSkillStarter();
+
+	UFUNCTION()
+	void SkillCancel(bool bIsUltimateCancel = true);
 
 	UFUNCTION()
 	void AutoManualModeMobile(bool bIsChecked);
@@ -140,7 +148,7 @@ protected:
 	void SetSpawnDecalActive(bool bIsOn);
 
 	UFUNCTION()
-	ABaseUnitCharacter* Internal_SpawnUnit();
+	ABaseUnitCharacter* Internal_SpawnUnit(const FVector InSpawnLocation = FVector::ZeroVector);
 
 	// 사용할 고기
 	UFUNCTION()
@@ -241,7 +249,7 @@ protected:
 	TWeakObjectPtr<AActor> EnemyBasement = nullptr;
 
 protected:
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TMap<FGameplayTag, FUnitInfoSetting> UsingAllyUnits;
 
 	UPROPERTY()
@@ -276,6 +284,12 @@ protected:
 	TObjectPtr<class ASelectedArrow> SelectedArrowInstance = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
+	TSubclassOf<class ASkillRangeDecal> SkillRangeDecalClass = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Setting")
+	TObjectPtr<class ASkillRangeDecal> SkillRangeDecalInstance = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
 	FGameplayTag MeatTag = Arcanum::BattleStat::Player::Regen::Meat::Root;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
@@ -291,10 +305,20 @@ private:
 	TMap<FGameplayTag, float> SkillCoolTimes;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TMap<FGameplayTag, class USkillBase*> SkillBaseInstances;
+	TMap<FGameplayTag, TObjectPtr<class USkillBase>> SkillBaseInstances;
 
 	UPROPERTY()
 	TWeakObjectPtr<class APlayerCharacter> CachedPlayerCharacter = nullptr;
+
+	UPROPERTY()
+	TWeakObjectPtr<class USkillBase> CurrentSelectedSkillBase = nullptr;
+
+	FVector SkillLocation = FVector::ZeroVector;
+
+	bool bIsSkillSuccess = false;
+
+	UPROPERTY()
+	TWeakObjectPtr<AActor> SkillTargetActor = nullptr;
 
 #pragma region 궁극기 처리
 protected:
@@ -317,8 +341,8 @@ protected:
 
 protected:
 	/* 궁극기 조준 중 여부 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ultimate")
-	bool bIsUltimateAiming = false;
+	/*UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ultimate")
+	bool bIsUltimateAiming = false;*/
 
 	/* 마지막 이동 입력 방향 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ultimate")

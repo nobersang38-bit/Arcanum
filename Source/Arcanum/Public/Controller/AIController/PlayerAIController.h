@@ -16,14 +16,17 @@ class ARCANUM_API APlayerAIController : public AAIController
 	GENERATED_BODY()
 public:
 	APlayerAIController();
+	const class UAIPerceptionComponent* GetAIPerceptionComp() const { return AIPerceptionComp; }
+	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
 
 protected:
 	virtual void BeginPlay() override;
 
-	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
+	/*UFUNCTION()
+	void OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);*/
 
-	UFUNCTION()
-	void OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
+	/*UFUNCTION()
+	void UpdateTarget();*/
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
@@ -31,8 +34,10 @@ protected:
 
 private:
 	UPROPERTY()
-	TWeakObjectPtr<class ABasement> CachedEnemyBasement = nullptr;
+	TWeakObjectPtr<AActor> CachedEnemyBasement = nullptr;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TWeakObjectPtr<AActor> TargetActor = nullptr;
+
+	FTimerHandle TimerHandle;
 };
