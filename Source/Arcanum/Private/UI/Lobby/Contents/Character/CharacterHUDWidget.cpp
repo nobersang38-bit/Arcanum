@@ -77,7 +77,7 @@ void UCharacterHUDWidget::NativeConstruct()
 		CharacterEquipWidget->OnCharacterUnequipRequested.RemoveDynamic(this, &UCharacterHUDWidget::HandleCharacterUnequipRequested);
 		CharacterEquipWidget->OnCharacterUnequipRequested.AddDynamic(this, &UCharacterHUDWidget::HandleCharacterUnequipRequested);
 	}
-	
+
 	if (EquipOpenBtn)
 	{
 		EquipOpenBtn->OnClicked.RemoveDynamic(this, &UCharacterHUDWidget::HandleEquipOpenBtnClicked);
@@ -783,46 +783,51 @@ void UCharacterHUDWidget::RefreshSetEffectPanel()
 	USetEffectPanelWidget* setEffectPanelWidget = CharacterEquipWidget->GetSetEffectPanelWidget();
 	if (!setEffectPanelWidget) return;
 
-	int32 talashaCount = 0;
+	int32 setCount = 0;
+	FSetEffectDefinition setEffectDefinition;
 
 	for (const FBattleCharacterData& characterData : ParentLobby->CachedPlayerData.OwnedCharacters)
 	{
 		const FName characterName = GetLeafNameFromTag(characterData.CharacterInfo.BattleCharacterInitData.CharacterTag);
+		if (characterName != CurrentSelectedCharacterName) continue;
 
-		if (characterName == CurrentSelectedCharacterName)
+		for (const TPair<FGameplayTag, FGuid>& pair : characterData.ArmorSlots)
 		{
-			for (const TPair<FGameplayTag, FGuid>& pair : characterData.ArmorSlots)
+			const FGuid& itemGuid = pair.Value;
+			if (!itemGuid.IsValid()) continue;
+
+			const FEquipmentInfo* foundEquip = nullptr;
+			for (const FEquipmentInfo& equip : ParentLobby->CachedPlayerData.Inventory)
 			{
-				const FGuid& itemGuid = pair.Value;
-
-				if (itemGuid.IsValid())
+				if (equip.ItemGuid == itemGuid)
 				{
-					const FEquipmentInfo* foundEquip = nullptr;
-
-					for (const FEquipmentInfo& equip : ParentLobby->CachedPlayerData.Inventory)
-					{
-						if (equip.ItemGuid == itemGuid)
-						{
-							foundEquip = &equip;
-
-							break;
-						}
-					}
-					if (foundEquip)
-					{
-						if (foundEquip->ItemTag.MatchesTag(Arcanum::Items::Rarity::SetItem::Talasha::Armor::Root))
-						{
-							talashaCount++;
-						}
-					}
+					foundEquip = &equip;
+					break;
 				}
 			}
 
-			break;
+			if (foundEquip)
+			{
+				const FDTEquipmentInfoRow* equipRow = FPlayerAccountService::FindEquipmentInfoRowByTag(this, foundEquip->ItemTag);
+				if (equipRow && !equipRow->SetEffect.SetNameText.IsEmpty())
+				{
+					if (setEffectDefinition.SetNameText.IsEmpty())
+					{
+						setEffectDefinition = equipRow->SetEffect;
+					}
+
+					if (equipRow->SetEffect.SetNameText.EqualTo(setEffectDefinition.SetNameText))
+					{
+						setCount++;
+					}
+				}
+			}
 		}
+
+		break;
 	}
 
-	if (talashaCount <= 0)
+	if (setCount <= 0 || setEffectDefinition.SetNameText.IsEmpty())
 	{
 		setEffectPanelWidget->ClearEffectText();
 		return;
@@ -830,16 +835,20 @@ void UCharacterHUDWidget::RefreshSetEffectPanel()
 
 	FSetEffectViewData viewData;
 	viewData.bVisible = true;
-	viewData.bActivated = talashaCount >= 4;
-	viewData.SetNameText = FText::FromString(FString::Printf(TEXT("탈라샤 세트 (%d/4)"), talashaCount));
+	viewData.bActivated = setCount >= setEffectDefinition.NeedCount;
+	viewData.SetNameText = setEffectDefinition.SetNameText;
+	viewData.SetCountText = FText::Format(
+		FText::FromString(TEXT("({0}/{1})")),
+		FText::AsNumber(setCount),
+		FText::AsNumber(setEffectDefinition.NeedCount));
 
 	if (viewData.bActivated)
 	{
-		viewData.SetDescText = FText::FromString(TEXT("세트효과 발동: 체력 30% 이하일 때 10초 동안 체력 회복 속도 증가 (쿨타임: 30초)"));
+		viewData.SetDescText = setEffectDefinition.ActiveDescText;
 	}
 	else
 	{
-		viewData.SetDescText = FText::FromString(TEXT("4세트 효과: 체력 30% 이하일 때 체력 회복 속도 증가"));
+		viewData.SetDescText = setEffectDefinition.InactiveDescText;
 	}
 
 	setEffectPanelWidget->SetEffectText(viewData);

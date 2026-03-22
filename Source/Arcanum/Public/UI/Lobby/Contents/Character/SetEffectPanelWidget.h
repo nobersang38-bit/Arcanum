@@ -15,6 +15,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FText SetNameText;
 
+	FText SetCountText;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FText SetDescText;
 
@@ -50,11 +52,17 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UTextBlock> SetNameText;
 
+	/* 세트 개수 텍스트 */
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UTextBlock> SetCountText;
+
 	/* 세트 효과 설명 텍스트 */
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UTextBlock> SetDescText;
 
 	FSlateColor DefaultSetNameColor;
+	FSlateColor DefaultSetCountColor;
+	FSlateFontInfo DefaultSetCountFont;
 	FSlateColor DefaultSetDescColor;
 	FSlateFontInfo DefaultSetNameFont;
 	FSlateFontInfo DefaultSetDescFont;

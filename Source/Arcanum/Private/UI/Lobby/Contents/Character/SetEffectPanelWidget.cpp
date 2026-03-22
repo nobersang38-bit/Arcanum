@@ -10,7 +10,11 @@ void USetEffectPanelWidget::NativeConstruct()
 		DefaultSetNameColor = SetNameText->GetColorAndOpacity();
 		DefaultSetNameFont = SetNameText->GetFont();
 	}
-
+	if (SetCountText)
+	{
+		DefaultSetCountColor = SetCountText->GetColorAndOpacity();
+		DefaultSetCountFont = SetCountText->GetFont();
+	}
 	if (SetDescText)
 	{
 		DefaultSetDescColor = SetDescText->GetColorAndOpacity();
@@ -41,6 +45,27 @@ void USetEffectPanelWidget::SetEffectText(const FSetEffectViewData& InViewData)
 		}
 
 		SetNameText->SetFont(fontInfo);
+	}
+
+	if (SetCountText)
+	{
+		SetCountText->SetText(InViewData.SetCountText);
+
+		FSlateFontInfo fontInfo = DefaultSetCountFont;
+
+		if (InViewData.bActivated)
+		{
+			SetCountText->SetColorAndOpacity(ActivatedColor);
+			fontInfo.OutlineSettings.OutlineSize = 1;
+			fontInfo.OutlineSettings.OutlineColor = FLinearColor::Black;
+		}
+		else
+		{
+			SetCountText->SetColorAndOpacity(DefaultSetCountColor);
+			fontInfo.OutlineSettings.OutlineSize = 0;
+		}
+
+		SetCountText->SetFont(fontInfo);
 	}
 
 	if (SetDescText)
@@ -74,6 +99,13 @@ void USetEffectPanelWidget::ClearEffectText()
 		SetNameText->SetText(FText::GetEmpty());
 		SetNameText->SetColorAndOpacity(DefaultSetNameColor);
 		SetNameText->SetFont(DefaultSetNameFont);
+	}
+
+	if (SetCountText)
+	{
+		SetCountText->SetText(FText::GetEmpty());
+		SetCountText->SetColorAndOpacity(DefaultSetCountColor);
+		SetCountText->SetFont(DefaultSetCountFont);
 	}
 
 	if (SetDescText)

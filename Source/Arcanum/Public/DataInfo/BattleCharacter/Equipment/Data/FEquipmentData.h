@@ -23,6 +23,36 @@ struct FStatRangeDefinition
 };
 
 /**
+ * 세트 아이템 구조체
+ */
+USTRUCT(BlueprintType)
+struct FSetEffectDefinition
+{
+    GENERATED_BODY()
+
+public:
+    /* 세트 이름 */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FText SetNameText;
+
+    /* 세트 효과 발동 필요 개수 */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 NeedCount = 4;
+
+    /* 세트 효과 미발동 설명 */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FText InactiveDescText;
+
+    /* 세트 효과 발동 설명 */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FText ActiveDescText;
+
+    /* 세트 보너스 스킬 태그 */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FGameplayTag SetBonusTag;
+};
+
+/**
  * @brief 개별 장비데이터를 보관하는 구조체
  */
 USTRUCT(BlueprintType)
@@ -71,9 +101,6 @@ struct FEquipmentInfo {
     /** 현재 강화 수치 */
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int32 CurrUpgradeLevel = 0;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    bool IsEquipment = false; // false면 장착X (인벤에서 보여주기)
 };
 
 /**
