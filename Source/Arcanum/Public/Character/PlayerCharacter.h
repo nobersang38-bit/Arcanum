@@ -138,7 +138,13 @@ protected:
 	FVector UltimatePreviewDecalSize = FVector(40.0f, 200.0f, 200.0f);
 #pragma endregion
 
-#pragma region 갱신
+#pragma region 초기화, 갱신, 개터
+public:
+	UCameraComponent* GetCamera() const { return Camera; }
+
+	/* 궁극기 Release 몽타주 재생 중 여부 */
+	bool GetIsUltimateReleaseMontagePlaying() const { return bIsUltimateReleaseMontagePlaying; }
+
 private:
 	/* 체력 리젠 변경 시 체력바 갱신 */
 	void OnPlayerRegenStatChanged(const FRegenStat& InRegenStat);

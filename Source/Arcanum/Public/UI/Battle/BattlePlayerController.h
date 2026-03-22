@@ -269,6 +269,29 @@ private:
 	bool bIsAutoManual = false;
 	float StageTimeSecond = 0.0f;
 
+
+
+
+#pragma region 기본공격, 일반 스킬 처리
+public:
+	/* 기본공격 스킬 실행 */
+	UFUNCTION()
+	void TriggerBasicAttackHit();
+
+	/* 일반스킬 실제 실행 */
+	UFUNCTION()
+	void TriggerSkill();
+
+protected:
+	/* 기본공격 입력 */
+	UFUNCTION()
+	void InputBasicAttack();
+
+	/* 스킬 입력 */
+	UFUNCTION()
+	void InputSkill();
+#pragma endregion
+
 #pragma region 궁극기 처리
 public:
 	/* 궁극기 종료 처리 */
@@ -317,23 +340,74 @@ protected:
 	FTimerHandle UltimateSkillTimerHandle;
 #pragma endregion
 
-#pragma region 기본공격, 일반 스킬 처리
+#pragma region 궁극기 연출
 public:
-	/* 기본공격 스킬 실행 */
-	UFUNCTION()
-	void TriggerBasicAttackHit();
+	/* 궁극기 Press 연출 시작 */
+	void StartUltimatePresentation();
 
-	/* 일반스킬 실제 실행 */
-	UFUNCTION()
-	void TriggerSkill();
+	/* 궁극기 Release 직전 피크 연출 */
+	void PlayUltimateReleasePresentation();
+
+	/* 궁극기 연출 복귀 시작 */
+	void EndUltimatePresentation();
 
 protected:
-	/* 기본공격 입력 */
-	UFUNCTION()
-	void InputBasicAttack();
+	/* 궁극기 카메라/FOV/후처리 보간 갱신 */
+	void UpdateUltimatePresentation(float DeltaTime);
 
-	/* 스킬 입력 */
-	UFUNCTION()
-	void InputSkill();
+protected:
+	/* 궁극기 연출 진행 중 여부 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	bool bIsUltimatePresentationActive = false;
+
+	/* 궁극기 연출 복귀 중 여부 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	bool bIsUltimatePresentationRestoring = false;
+
+	/* Release 직전 2차 확대 진행 여부 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	bool bIsUltimateReleaseZoomActive = false;
+
+	/* 기본 카메라 FOV */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	float UltimateDefaultFOV = 0.0f;
+
+	/* Press 시 1차 목표 FOV */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	float UltimatePressTargetFOV = 100.0f;
+
+	/* Release 시 2차 목표 FOV */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	float UltimateReleaseTargetFOV = 85.0f;
+
+	/* Press 줌 보간 속도 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	float UltimatePressZoomInterpSpeed = 6.0f;
+
+	/* Release 줌 보간 속도 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	float UltimateReleaseZoomInterpSpeed = 12.0f;
+
+	/* 원복 보간 속도 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	float UltimateRestoreInterpSpeed = 5.0f;
+
+	/* 현재 목표 PostProcess 블렌드 웨이트 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	float UltimateTargetPostProcessBlendWeight = 0.0f;
+
+	/* Press 시 목표 PostProcess 블렌드 웨이트 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	float UltimatePressPostProcessBlendWeight = 1.0f;
+
+	/* PostProcess 보간 속도 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	float UltimatePostProcessInterpSpeed = 5.0f;
+
+	/* Release 순간 재생할 카메라 쉐이크 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	TSubclassOf<class UCameraShakeBase> UltimateReleaseCameraShakeClass = nullptr;
 #pragma endregion
+
+
 };

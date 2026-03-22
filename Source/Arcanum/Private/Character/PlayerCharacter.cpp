@@ -354,6 +354,8 @@ void APlayerCharacter::PlayUltimateReleaseMontage()
 	FOnMontageEnded montageEndedDelegate;
 	montageEndedDelegate.BindUObject(this, &APlayerCharacter::OnUltimateReleaseMontageEnded);
 
+	bIsUltimateReleaseMontagePlaying = true;
+
 	animInstance->Montage_Play(skillData->ReleaseMontage);
 	animInstance->Montage_SetEndDelegate(montageEndedDelegate, skillData->ReleaseMontage);
 }
@@ -473,6 +475,8 @@ void APlayerCharacter::OnCommonSkillMontageEnded(UAnimMontage* InMontage, bool b
 
 void APlayerCharacter::OnUltimateReleaseMontageEnded(UAnimMontage* InMontage, bool bInterrupted)
 {
+	bIsUltimateReleaseMontagePlaying = false;
+
 	if (ABattlePlayerController* battlePlayerController = GetController<ABattlePlayerController>())
 	{
 		battlePlayerController->UltimateSkillEnd();

@@ -19,6 +19,7 @@
 #include "Object/Actor/SpawnCheckDecal.h"
 #include "DataInfo/SkillData/Data/FSkillInfo.h"
 #include "Object/Skills/SkillBase.h"
+#include "Camera/CameraComponent.h"
 
 // ========================================================
 // 언리얼 기본 생성
@@ -106,6 +107,21 @@ void ABattlePlayerController::BeginPlay()
 
 	GetWorld()->GetTimerManager().ClearTimer(PlayerLocationProgressTimeHandle);
 	GetWorld()->GetTimerManager().SetTimer(PlayerLocationProgressTimeHandle, this, &ABattlePlayerController::UpdatePlayerLocationProgress, PlayerLocationProgressUpdateInterval, true, 0.0f);
+
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
+	if (playerCharacter)
+	{
+		if (UCameraComponent* playerCamera = playerCharacter->GetCamera())
+		{
+			UltimateDefaultFOV = playerCamera->FieldOfView;
+		}
+	}
+
+	if (UltimatePostProcessVolume)
+	{
+		UltimatePostProcessVolume->BlendWeight = 0.0f;
+		UltimatePostProcessVolume->bUnbound = false;
+	}
 }
 
 void ABattlePlayerController::SetupInputComponent()
@@ -219,6 +235,8 @@ void ABattlePlayerController::Tick(float DeltaTime)
 			}
 		}
 	}
+
+	UpdateUltimatePresentation(DeltaTime);
 }
 
 // ========================================================
@@ -847,6 +865,8 @@ void ABattlePlayerController::InputMove(const FInputActionValue& InputValue)
 // ========================================================
 void ABattlePlayerController::UltimateSkillEnd()
 {
+	EndUltimatePresentation();
+
 	bIsUltimateAiming = false;
 
 	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
@@ -882,8 +902,9 @@ void ABattlePlayerController::UltimateSkillPressed()
 	const float castTime = battleSubsystem->GetInBattleData().BattleWeaponSkill.LegendaryUltimateSkill.CastTime;
 
 	bIsUltimateAiming = true;
-
 	battleSubsystem->BeginLegendaryWeaponMode();
+
+	StartUltimatePresentation();
 
 	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
 	if (playerCharacter)
@@ -920,9 +941,17 @@ void ABattlePlayerController::UltimateSkillPressed()
 
 void ABattlePlayerController::UltimateSkillReleased()
 {
-	if (bIsUltimateAiming)
+	if (APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn()))
 	{
-		ExecuteUltimateSkill();
+		if (playerCharacter->GetIsUltimateReleaseMontagePlaying())
+		{
+			return;
+		}
+
+		if (bIsUltimateAiming)
+		{
+			ExecuteUltimateSkill();
+		}
 	}
 }
 
@@ -947,6 +976,8 @@ void ABattlePlayerController::ExecuteUltimateSkill()
 			UE_LOG(LogTemp, Warning, TEXT("UltimateSkill Tag=%s Level=%d"), *skillTag.ToString(), skillLevel);
 
 		}
+
+		PlayUltimateReleasePresentation();
 
 		playerCharacter->PlayUltimateReleaseMontage();
 	}
@@ -993,7 +1024,7 @@ void ABattlePlayerController::TriggerBasicAttackHit()
 		basicAttackSkillData->SkillLevel);
 
 	skillObject->Initialize(playerCharacter, skillInfo, basicAttackSkillData->SkillLevel, skillInfo->TargetFilterTag);
-	
+
 	const FVector spawnLocation = playerCharacter->GetActorLocation() + (playerCharacter->GetActorForwardVector() * 100.0f);
 	const FRotator spawnRotation = playerCharacter->GetActorForwardVector().Rotation();
 
@@ -1007,10 +1038,10 @@ void ABattlePlayerController::TriggerBasicAttackHit()
 
 	skillActor->ActivateSkillActor(skillObject, playerCharacter, spawnLocation, spawnRotation);
 
-    //if (APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn()))
-    //{
-    //	playerCharacter->PlayerBasicAttack();
-    //}
+	//if (APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn()))
+	//{
+	//	playerCharacter->PlayerBasicAttack();
+	//}
 }
 
 void ABattlePlayerController::TriggerSkill()
@@ -1051,8 +1082,18 @@ void ABattlePlayerController::TriggerSkill()
 
 	skillObject->Initialize(playerCharacter, skillInfo, skillData->SkillLevel, skillInfo->TargetFilterTag);
 
-	const FVector spawnLocation = playerCharacter->GetActorLocation() + (playerCharacter->GetActorForwardVector() * 100.0f);
-	const FRotator spawnRotation = playerCharacter->GetActorForwardVector().Rotation();
+	FVector spawnLocation;
+	FRotator spawnRotation;
+	if (bIsUltimateAiming)
+	{
+		spawnLocation = CurrentUltimatePreviewLocation + FVector(0.0f, 0.0f, 500.0f);   // TODO : 스폰 위치
+		spawnRotation = (CurrentUltimatePreviewLocation - spawnLocation).Rotation();
+	}
+	else
+	{
+		spawnLocation = playerCharacter->GetActorLocation() + (playerCharacter->GetActorForwardVector() * 100.0f);
+		spawnRotation = playerCharacter->GetActorForwardVector().Rotation();
+	}
 
 	FTransform spawnTransform;
 	spawnTransform.SetLocation(spawnLocation);
@@ -1063,4 +1104,104 @@ void ABattlePlayerController::TriggerSkill()
 	if (!skillActor) return;
 
 	skillActor->ActivateSkillActor(skillObject, playerCharacter, spawnLocation, spawnRotation);
+}
+
+void ABattlePlayerController::StartUltimatePresentation()
+{
+	bIsUltimatePresentationActive = true;
+	bIsUltimatePresentationRestoring = false;
+	bIsUltimateReleaseZoomActive = false;
+	UltimateTargetPostProcessBlendWeight = UltimatePressPostProcessBlendWeight;
+
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
+	if (playerCharacter)
+	{
+		if (UCameraComponent* playerCamera = playerCharacter->GetCamera())
+		{
+			if (UltimateDefaultFOV <= 0.0f)
+			{
+				UltimateDefaultFOV = playerCamera->FieldOfView;
+			}
+		}
+	}
+
+	if (UltimatePostProcessVolume)
+	{
+		UltimatePostProcessVolume->bUnbound = true;
+	}
+}
+
+void ABattlePlayerController::PlayUltimateReleasePresentation()
+{
+	bIsUltimatePresentationActive = true;
+	bIsUltimatePresentationRestoring = false;
+	bIsUltimateReleaseZoomActive = true;
+	UltimateTargetPostProcessBlendWeight = UltimatePressPostProcessBlendWeight;
+
+	if (UltimateReleaseCameraShakeClass)
+	{
+		ClientStartCameraShake(UltimateReleaseCameraShakeClass);
+	}
+
+	if (UltimatePostProcessVolume)
+	{
+		UltimatePostProcessVolume->bUnbound = true;
+	}
+}
+
+void ABattlePlayerController::EndUltimatePresentation()
+{
+	bIsUltimatePresentationActive = false;
+	bIsUltimateReleaseZoomActive = false;
+	bIsUltimatePresentationRestoring = true;
+	UltimateTargetPostProcessBlendWeight = 0.0f;
+}
+
+void ABattlePlayerController::UpdateUltimatePresentation(float DeltaTime)
+{
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
+	if (!playerCharacter) return;
+
+	UCameraComponent* playerCamera = playerCharacter->GetCamera();
+	if (!playerCamera) return;
+
+	const float targetFOV = bIsUltimatePresentationActive
+		? (bIsUltimateReleaseZoomActive ? UltimateReleaseTargetFOV : UltimatePressTargetFOV)
+		: UltimateDefaultFOV;
+
+	const float currentInterpSpeed = bIsUltimatePresentationActive
+		? (bIsUltimateReleaseZoomActive ? UltimateReleaseZoomInterpSpeed : UltimatePressZoomInterpSpeed)
+		: UltimateRestoreInterpSpeed;
+
+	playerCamera->SetFieldOfView(FMath::FInterpTo(
+		playerCamera->FieldOfView,
+		targetFOV,
+		DeltaTime,
+		currentInterpSpeed));
+
+	bool bIsFOVRestored = FMath::IsNearlyEqual(playerCamera->FieldOfView, UltimateDefaultFOV, 0.1f);
+	bool bIsPPRestored = true;
+
+	if (UltimatePostProcessVolume)
+	{
+		UltimatePostProcessVolume->BlendWeight = FMath::FInterpTo(
+			UltimatePostProcessVolume->BlendWeight,
+			UltimateTargetPostProcessBlendWeight,
+			DeltaTime,
+			UltimatePostProcessInterpSpeed);
+
+		bIsPPRestored = FMath::IsNearlyZero(UltimatePostProcessVolume->BlendWeight, 0.01f);
+
+		if (bIsPPRestored)
+		{
+			UltimatePostProcessVolume->BlendWeight = 0.0f;
+			UltimatePostProcessVolume->bUnbound = false;
+		}
+	}
+
+	if (bIsUltimatePresentationRestoring && bIsFOVRestored && bIsPPRestored)
+	{
+		playerCamera->SetFieldOfView(UltimateDefaultFOV);
+		bIsUltimatePresentationRestoring = false;
+	}
 }
