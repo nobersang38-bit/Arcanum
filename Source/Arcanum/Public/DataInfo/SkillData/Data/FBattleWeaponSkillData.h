@@ -32,6 +32,12 @@ struct FBattleSkillData
 	TObjectPtr<UAnimMontage> CastMontage = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UAnimMontage> PressMontage = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UAnimMontage> ReleaseMontage = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<TObjectPtr<UAnimMontage>> ComboMontages;
 
 	/* 스킬 실행 클래스 캐시 */

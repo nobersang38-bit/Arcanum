@@ -501,6 +501,8 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 					{
 						OutUltimateSkill.CastMontage = ultimateSkillInfo->CastMontage.LoadSynchronous();
 						OutUltimateSkill.SkillClass = ultimateSkillInfo->SkillClass.LoadSynchronous();
+						OutUltimateSkill.PressMontage = ultimateSkillInfo->PressMontage.LoadSynchronous();
+						OutUltimateSkill.ReleaseMontage = ultimateSkillInfo->ReleaseMontage.LoadSynchronous();
 					}
 
 					break;

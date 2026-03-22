@@ -318,6 +318,46 @@ void APlayerCharacter::ClearWeaponMesh()
 	}
 }
 
+void APlayerCharacter::PlayUltimatePressMontage()
+{
+	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (!battleSubsystem) return;
+
+	const FBattleSkillData* skillData = battleSubsystem->GetCurrentLegendarySkillData();
+	if (!skillData) return;
+	if (!skillData->PressMontage) return;
+
+	USkeletalMeshComponent* meshComp = GetMesh();
+	if (!meshComp) return;
+
+	UAnimInstance* animInstance = meshComp->GetAnimInstance();
+	if (!animInstance) return;
+
+	animInstance->Montage_Play(skillData->PressMontage);
+}
+
+void APlayerCharacter::PlayUltimateReleaseMontage()
+{
+	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (!battleSubsystem) return;
+
+	const FBattleSkillData* skillData = battleSubsystem->GetCurrentLegendarySkillData();
+	if (!skillData) return;
+	if (!skillData->ReleaseMontage) return;
+
+	USkeletalMeshComponent* meshComp = GetMesh();
+	if (!meshComp) return;
+
+	UAnimInstance* animInstance = meshComp->GetAnimInstance();
+	if (!animInstance) return;
+
+	FOnMontageEnded montageEndedDelegate;
+	montageEndedDelegate.BindUObject(this, &APlayerCharacter::OnUltimateReleaseMontageEnded);
+
+	animInstance->Montage_Play(skillData->ReleaseMontage);
+	animInstance->Montage_SetEndDelegate(montageEndedDelegate, skillData->ReleaseMontage);
+}
+
 void APlayerCharacter::ShowUltimatePreview()
 {
 	if (UltimatePreviewDecalComponent)
@@ -429,6 +469,14 @@ void APlayerCharacter::OnBasicAttackMontageEnded(UAnimMontage* InMontage, bool b
 void APlayerCharacter::OnCommonSkillMontageEnded(UAnimMontage* InMontage, bool bInterrupted)
 {
 	bIsCommonSkillMontagePlaying = false;
+}
+
+void APlayerCharacter::OnUltimateReleaseMontageEnded(UAnimMontage* InMontage, bool bInterrupted)
+{
+	if (ABattlePlayerController* battlePlayerController = GetController<ABattlePlayerController>())
+	{
+		battlePlayerController->UltimateSkillEnd();
+	}
 }
 
 void APlayerCharacter::EnableNextComboInput()

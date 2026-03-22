@@ -847,6 +847,8 @@ void ABattlePlayerController::InputMove(const FInputActionValue& InputValue)
 // ========================================================
 void ABattlePlayerController::UltimateSkillEnd()
 {
+	bIsUltimateAiming = false;
+
 	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 	if (!battleSubsystem) return;
 
@@ -895,6 +897,8 @@ void ABattlePlayerController::UltimateSkillPressed()
 		playerCharacter->UpdateEquippedWeaponMesh();
 		playerCharacter->ShowUltimatePreview();
 		playerCharacter->UpdateUltimatePreviewLocation(CurrentUltimatePreviewLocation);
+		playerCharacter->PlayUltimatePressMontage();
+
 		if (HUDWidgetInstance)
 		{
 			HUDWidgetInstance->SetLegendaryButtonIcon(battleSubsystem->GetLegendaryUltimateSkillIcon());
@@ -926,8 +930,6 @@ void ABattlePlayerController::ExecuteUltimateSkill()
 {
 	if (bIsUltimateAiming)
 	{
-		bIsUltimateAiming = false;
-
 		GetWorldTimerManager().ClearTimer(UltimateSkillTimerHandle);
 
 		APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
@@ -946,9 +948,7 @@ void ABattlePlayerController::ExecuteUltimateSkill()
 
 		}
 
-		// Todo : 현재 조준 위치로 궁극기 실제 발사
-
-		UltimateSkillEnd();
+		playerCharacter->PlayUltimateReleaseMontage();
 	}
 }
 

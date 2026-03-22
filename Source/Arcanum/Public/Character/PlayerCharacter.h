@@ -113,6 +113,12 @@ protected:
 
 #pragma region 궁극기 가시화
 public:
+	/* 궁극기 Press 몽타주 재생 */
+	void PlayUltimatePressMontage();
+
+	/* 궁극기 Release 몽타주 재생 */
+	void PlayUltimateReleaseMontage();
+
 	/* 궁극기 조준 데칼 표시 */
 	void ShowUltimatePreview();
 
@@ -146,7 +152,10 @@ public:
 	/* 몽타주 종료 */
 	UFUNCTION()
 	void OnBasicAttackMontageEnded(UAnimMontage* InMontage, bool bInterrupted);
+	UFUNCTION()
 	void OnCommonSkillMontageEnded(UAnimMontage* InMontage, bool bInterrupted);
+	UFUNCTION()
+	void OnUltimateReleaseMontageEnded(UAnimMontage* InMontage, bool bInterrupted);
 
 	/* 다음 콤보 입력 가능 시작 */
 	UFUNCTION()
@@ -174,5 +183,6 @@ private:
 	bool bHasNextComboInput = false;
 	bool bIsBasicAttackMontagePlaying = false;
 	bool bIsCommonSkillMontagePlaying = false;
+	bool bIsUltimateReleaseMontagePlaying = false; 
 #pragma endregion
 };

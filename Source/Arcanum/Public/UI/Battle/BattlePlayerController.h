@@ -270,10 +270,11 @@ private:
 	float StageTimeSecond = 0.0f;
 
 #pragma region 궁극기 처리
-protected:
+public:
 	/* 궁극기 종료 처리 */
 	void UltimateSkillEnd();
 
+protected:
 	/* 궁극기 조준 시작 */
 	UFUNCTION()
 	void UltimateSkillPressed();
