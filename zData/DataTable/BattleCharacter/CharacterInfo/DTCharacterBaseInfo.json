@@ -10,7 +10,7 @@
     "DeathDialogue": "아아… 다시 얼음처럼 돌아올게요!",
     "DefaultGrade": "Arcanum.Player.Grade.Common.0",
     "MaxGrade": "Arcanum.Player.Grade.Common.0",
-    "RequiredShardCount": [10,20,30],
+    "RequiredShardCount": [1000,2000,3000],
     "DuplicateShardReward" : 10
     }
   },
@@ -25,7 +25,7 @@
     "DeathDialogue": "저... 죄송해요... 다시 일어날 수 있을까요?",
     "DefaultGrade": "Arcanum.Player.Grade.Common.0",
     "MaxGrade": "Arcanum.Player.Grade.Common.0",
-    "RequiredShardCount": [10,20,30],
+    "RequiredShardCount": [1000,2000,3000],
     "DuplicateShardReward" : 10
     }
   },
@@ -40,7 +40,7 @@
     "DeathDialogue": "내가 진다고…? 웃기는 군.",
     "DefaultGrade": "Arcanum.Player.Grade.Rare.1",
     "MaxGrade": "Arcanum.Player.Grade.Rare.1",
-    "RequiredShardCount": [10,20,30],
+    "RequiredShardCount": [2000,4000,6000],
     "DuplicateShardReward" : 10
     }
   },
@@ -55,7 +55,7 @@
     "DeathDialogue": "하하… 잠깐 쉬어가겠다.",
     "DefaultGrade": "Arcanum.Player.Grade.Rare.1",
     "MaxGrade": "Arcanum.Player.Grade.Rare.1",
-    "RequiredShardCount": [10,20,30],
+    "RequiredShardCount": [2000,4000,6000],
     "DuplicateShardReward" : 10
     }
   },
@@ -70,7 +70,7 @@
     "DeathDialogue": "하하… 결국… 나도 끝인가 보네…",
     "DefaultGrade": "Arcanum.Player.Grade.Epic.2",
     "MaxGrade": "Arcanum.Player.Grade.Epic.2",
-    "RequiredShardCount": [10,20,30],
+    "RequiredShardCount": [3000,6000,9000],
     "DuplicateShardReward" : 10
     }
   },
@@ -85,7 +85,7 @@
     "DeathDialogue": "이 싸움… 반드시 끝을 보겠어…",
     "DefaultGrade": "Arcanum.Player.Grade.Epic.2",
     "MaxGrade": "Arcanum.Player.Grade.Epic.2",
-    "RequiredShardCount": [10,20,30],
+    "RequiredShardCount": [3000,6000,9000],
     "DuplicateShardReward" : 10
     }
   }

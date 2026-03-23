@@ -15,6 +15,7 @@
 #include "GameplayTags/ArcanumTags.h"
 #include "Data/Types/BaseUnitData.h"
 
+
 #include "Core/ARPlayerAccountService.h"
 #include "Core/ARGameInstance.h"
 #include "Core/SubSystem/GameDataSubsystem.h"
@@ -404,6 +405,8 @@ void UCharacterHUDWidget::CharacterEnhancement(FText InCharacterName, int32 InRe
 	const int64 soulAmount = (soulData) ? soulData->CurrAmount : 0;
 	if (soulAmount >= InRequiredSoul)
 		soulData->CurrAmount -= InRequiredSoul;
+	/// TODO : UpdateCurrency 사용시 캐릭터 CurrStarLevel가 초기화됨
+	//FPlayerAccountService::UpdateCurrency(this, ParentLobby->CachedPlayerData, Arcanum::PlayerData::Currencies::NonRegen::Soul::Value, InRequiredSoul * -1);
 
 	FName SelectedCharacterName;
 	CombinedInfoString = "";
@@ -421,6 +424,7 @@ void UCharacterHUDWidget::CharacterEnhancement(FText InCharacterName, int32 InRe
 		{
 			//CurrStarLevel + 1 저장
 			TargetData.CharacterInfo.CurrStarLevel += 1;
+
 			SelectedCharacterName = PlayerName;
 			TargetGradeIndex = (TargetData.CharacterInfo.CurrStarLevel > 0) ? TargetData.CharacterInfo.CurrStarLevel - 1 : 0;
 			CharacterStar = TargetGradeIndex;
@@ -473,10 +477,13 @@ void UCharacterHUDWidget::CharacterEnhancement(FText InCharacterName, int32 InRe
 			}
 			FinalText = FText::FromString(CombinedInfoString);
 			// Info창 다시 불러오기
-			const int64 updatedSoulAmount = soulData ? soulData->CurrAmount : 0;
-			UpdateCharacterInfo(SelectedCharacterName, TargetData.bSelection, true, FinalText, ButtonText, updatedSoulAmount);
+			//const int64 updatedSoulAmount = soulData ? soulData->CurrAmount : 0;
+			UpdateCharacterInfo(SelectedCharacterName, TargetData.bSelection, true, FinalText, ButtonText, soulAmount);
+			//ParentLobby->CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
+			break;
 		}
 	}
+	
 }
 
 // ========================================================
