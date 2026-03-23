@@ -13,5 +13,7 @@ UCLASS()
 class ARCANUM_API UStatusAction_BasementHealth : public UStatusAction
 {
 	GENERATED_BODY()
-	
+public:
+	UStatusAction_BasementHealth();
+	virtual void StartAction_Implementation(const FRegenStat& RegenStat, const FNonRegenStat& NonRegenStat) override;
 };

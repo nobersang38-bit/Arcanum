@@ -35,9 +35,6 @@ public:
 protected:
 	void SetBasementStat(const FEnemyBasement& InBasementStat);
 
-	UFUNCTION()
-	void RecievedDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
-
 protected:
 	/*UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FEnemyBasement BasementStat;

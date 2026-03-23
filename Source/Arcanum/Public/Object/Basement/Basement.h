@@ -43,6 +43,9 @@ protected:
 
 	// ITeamInterface을(를) 통해 상속됨
 	FGameplayTag GetTeamTag() const override;
+
+	UFUNCTION()
+	void RecievedDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 //
 //	/** True면 내 기지, false면 적 기지*/
 //	UPROPERTY(EditAnywhere, Category = "Basement")

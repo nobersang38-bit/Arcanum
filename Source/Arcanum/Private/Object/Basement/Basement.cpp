@@ -12,6 +12,7 @@
 #include "Component/BasementCombatComponent.h"
 #include "Component/Stats/CharacterBattleStatsComponent.h"
 #include "Component/StatusActionComponent.h"
+#include "Core/SubSystem/BattlefieldManagerSubsystem.h"
 
 // Sets default values
 ABasement::ABasement()
@@ -46,6 +47,9 @@ UCharacterBattleStatsComponent* ABasement::GetStatComponent()
 void ABasement::BeginPlay()
 {
 	Super::BeginPlay();
+
+	OnTakeAnyDamage.RemoveDynamic(this, &ABasement::RecievedDamage);
+	OnTakeAnyDamage.AddDynamic(this, &ABasement::RecievedDamage);
 	//if (CommonEnemyClass)
 	//{
 	//	GetWorld()->GetTimerManager().SetTimer(
@@ -90,3 +94,40 @@ void ABasement::ChangeStat(const FGameplayTag& InTag, float InValue)
 	CharacterBattleStatsComponent->ChangeStatValue(InTag, InValue, nullptr);
 }
 
+void ABasement::RecievedDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
+{
+	CharacterBattleStatsComponent->ChangeStatValue(Arcanum::BattleStat::Character::Regen::Health::Root, -FMath::Abs(Damage), DamageCauser);
+
+	const FRegenStat* HealthStat = CharacterBattleStatsComponent->FindRegenStat(Arcanum::BattleStat::Character::Regen::Health::Root);
+	if (!HealthStat) return;
+
+	if (HealthStat->Current <= 0.0f)
+	{
+		UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+		if (BattleSubsystem)
+		{
+			if (GetOwner()->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()))
+			{
+				auto Interface = Cast<ITeamInterface>(GetOwner());
+				FGameplayTag OwnerTag = Interface->GetTeamTag();
+
+				if (OwnerTag.IsValid())
+				{
+					FMatchData MatchData;
+					MatchData.CurrentMatchState = EMatchState::Ended;
+
+					if (OwnerTag == BattleSubsystem->AllyTeamTag)
+					{
+						MatchData.bIsVictory = false;
+					}
+					else if (OwnerTag == BattleSubsystem->EnemyTeamTag)
+					{
+						MatchData.bIsVictory = true;
+					}
+					MatchData.EndTimeSecond = BattleSubsystem->GetCurrentMatchData().EndTimeSecond;
+					BattleSubsystem->OnMatchEnded.Broadcast(MatchData);
+				}
+			}
+		}
+	}
+}

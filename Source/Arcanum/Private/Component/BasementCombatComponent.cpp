@@ -21,8 +21,6 @@ UBasementCombatComponent::UBasementCombatComponent()
 void UBasementCombatComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	/*GetOwner()->OnTakeAnyDamage.RemoveDynamic(this, &UBasementCombatComponent::RecievedDamage);
-	GetOwner()->OnTakeAnyDamage.AddDynamic(this, &UBasementCombatComponent::RecievedDamage);*/
 
 	if (GetOwner()->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()))
 	{
@@ -68,41 +66,3 @@ void UBasementCombatComponent::SetBasementStat(const FEnemyBasement& InBasementS
 		OwnerBasement->GetStatComponent()->SetData(GradeStatData);
 	}
 }
-
-void UBasementCombatComponent::RecievedDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
-{
-	/*float Health = BasementStat.CommandCenterHP.GetTotalValue();
-	BasementStat.CommandCenterHP.BaseValue = FMath::Clamp(Health - Damage, 0, FLT_MAX);
-	OnBasementChangeHealth.Broadcast(BasementStat.CommandCenterHP.GetBaseValue(), MaxHealth);
-
-	if (BasementStat.CommandCenterHP.GetTotalValue() <= 0.0f)
-	{
-		UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
-		if (BattleSubsystem)
-		{
-			if (GetOwner()->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()))
-			{
-				auto Interface = Cast<ITeamInterface>(GetOwner());
-				FGameplayTag OwnerTag = Interface->GetTeamTag();
-
-				if (OwnerTag.IsValid())
-				{
-					FMatchData MatchData;
-					MatchData.CurrentMatchState = EMatchState::Ended;
-
-					if (OwnerTag == BattleSubsystem->AllyTeamTag)
-					{
-						MatchData.bIsVictory = false;
-					}
-					else if(OwnerTag == BattleSubsystem->EnemyTeamTag)
-					{
-						MatchData.bIsVictory = true;
-					}
-					MatchData.EndTimeSecond = BattleSubsystem->GetCurrentMatchData().EndTimeSecond;
-					BattleSubsystem->OnMatchEnded.Broadcast(MatchData);
-				}
-			}
-		}
-	}*/
-}
-
