@@ -56,6 +56,12 @@ APlayerCharacter::APlayerCharacter()
 	UltimatePreviewDecalComponent->SetHiddenInGame(true);
 	UltimatePreviewDecalComponent->SetUsingAbsoluteRotation(true);
 
+	SourceSkeletaMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SourceSkeletaMeshComponent"));
+	SourceSkeletaMeshComponent->SetupAttachment(RootComponent);
+	SourceSkeletaMeshComponent->SetVisibility(false);
+	SourceSkeletaMeshComponent->SetHiddenInGame(true);
+	SourceSkeletaMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
 }
@@ -64,6 +70,11 @@ APlayerCharacter::APlayerCharacter()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (AIControllerClass)
+	{
+		CachedAIC = GetWorld()->SpawnActor<AAIController>(AIControllerClass);
+	}
 
 	// 기본 캐릭터 ID 태그
 	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
