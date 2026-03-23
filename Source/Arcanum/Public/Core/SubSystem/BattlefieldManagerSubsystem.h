@@ -14,6 +14,7 @@
 #include "Data/Types/BattleStageInfo.h"
 #include "DataInfo/StageData/StageInfo/Data/FStageDataInfo.h"
 #include "DataInfo/SkillData/Data/FBattleWeaponSkillData.h"
+#include "Data/Rows/DTBattleStageInfo.h"
 #include "BattlefieldManagerSubsystem.generated.h"
 
 USTRUCT(BlueprintType)
