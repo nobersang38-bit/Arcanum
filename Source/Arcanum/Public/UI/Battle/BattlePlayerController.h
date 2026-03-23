@@ -409,5 +409,44 @@ protected:
 	TSubclassOf<class UCameraShakeBase> UltimateReleaseCameraShakeClass = nullptr;
 #pragma endregion
 
+#pragma region 플레이어 스킬 쿨타임
+protected:
+	/* 스킬 쿨타임 타이머 갱신 */
+	void UpdateSkillCooldown();
 
+	/* 기본 공격 쿨타임 시작 */
+	void StartBasicAttackCooldown();
+
+	/* 일반 스킬 쿨타임 시작 */
+	void StartBasicSkillCooldown();
+
+	/* 궁극기 쿨타임 시작 */
+	void StartUltimateCooldown();
+
+	/* 스킬 쿨타임 UI 갱신 */
+	void RefreshSkillCooldownUI();
+
+	/* 플레이어 스킬 쿨타임 타이머 핸들 */
+	FTimerHandle SkillCooldownTimerHandle;
+
+	/* 기본 공격 남은 쿨타임 */
+	float BasicAttackCooldownRemaining = 0.0f;
+
+	/* 일반 스킬 남은 쿨타임 */
+	float BasicSkillCooldownRemaining = 0.0f;
+
+	/* 궁극기 남은 쿨타임 */
+	float UltimateCooldownRemaining = 0.0f;
+
+	/* 기본 공격 쿨타임 */
+	float BasicAttackCooldown = 0.0f;
+
+	/* 일반 스킬 쿨타임 */
+	float BasicSkillCooldown = 0.0f;
+
+	/* 궁극기 쿨타임 */
+	float UltimateCooldown = 0.0f;
+
+	float SkillCooldownTickInterval = 0.02f;
+#pragma endregion
 };

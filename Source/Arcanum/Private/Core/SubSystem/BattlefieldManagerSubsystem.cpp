@@ -447,6 +447,7 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 				OutBasicAttackSkill.SkillTag = InEquipInfo->Equipment.BasicAttackSkillTag;
 				OutBasicAttackSkill.SkillLevel = InEquipInfo->CurrUpgradeLevel;
 				OutBasicAttackSkill.SkillIcon = FindSkillIcon(OutBasicAttackSkill.SkillTag);
+				OutBasicAttackSkill.Cooldown = FindSkillCooldown(OutBasicAttackSkill.SkillTag, OutBasicAttackSkill.SkillLevel);
 
 				if (const FSkillInfo* basicAttackSkillInfo = FindSkillInfoByTag(OutBasicAttackSkill.SkillTag))
 				{
@@ -469,6 +470,7 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 					OutBasicSkill.SkillLevel = InEquipInfo->CurrUpgradeLevel;
 					OutBasicSkill.CastTime = FindSkillCastTime(OutBasicSkill.SkillTag, OutBasicSkill.SkillLevel);
 					OutBasicSkill.SkillIcon = FindSkillIcon(OutBasicSkill.SkillTag);
+					OutBasicSkill.Cooldown = FindSkillCooldown(OutBasicSkill.SkillTag, OutBasicSkill.SkillLevel);
 
 					if (const FSkillInfo* basicSkillInfo = FindSkillInfoByTag(OutBasicSkill.SkillTag))
 					{
@@ -496,6 +498,7 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 					OutUltimateSkill.SkillLevel = InEquipInfo->CurrUpgradeLevel;
 					OutUltimateSkill.CastTime = FindSkillCastTime(OutUltimateSkill.SkillTag, OutUltimateSkill.SkillLevel);
 					OutUltimateSkill.SkillIcon = FindSkillIcon(OutUltimateSkill.SkillTag);
+					OutUltimateSkill.Cooldown = FindSkillCooldown(OutUltimateSkill.SkillTag, OutUltimateSkill.SkillLevel);
 
 					if (const FSkillInfo* ultimateSkillInfo = FindSkillInfoByTag(OutUltimateSkill.SkillTag))
 					{
@@ -937,6 +940,36 @@ const FBattleSkillData* UBattlefieldManagerSubsystem::GetCurrentBasicSkillData()
 const FBattleSkillData* UBattlefieldManagerSubsystem::GetCurrentLegendarySkillData() const
 {
 	return &InBattleData.BattleWeaponSkill.LegendaryUltimateSkill;
+}
+
+float UBattlefieldManagerSubsystem::GetCurrentBasicAttackCooldown() const
+{
+	if (const FBattleSkillData* skillData = GetCurrentBasicAttackSkillData())
+	{
+		return skillData->Cooldown;
+	}
+
+	return 0.0f;
+}
+
+float UBattlefieldManagerSubsystem::GetCurrentBasicSkillCooldown() const
+{
+	if (const FBattleSkillData* skillData = GetCurrentBasicSkillData())
+	{
+		return skillData->Cooldown;
+	}
+
+	return 0.0f;
+}
+
+float UBattlefieldManagerSubsystem::GetLegendaryUltimateCooldown() const
+{
+	if (const FBattleSkillData* skillData = GetCurrentLegendarySkillData())
+	{
+		return skillData->Cooldown;
+	}
+
+	return 0.0f;
 }
 
 bool UBattlefieldManagerSubsystem::HasEquippedFullSet(const FGameplayTag& InSetRootTag) const

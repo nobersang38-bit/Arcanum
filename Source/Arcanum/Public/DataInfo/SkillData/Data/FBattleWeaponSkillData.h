@@ -21,9 +21,11 @@ struct FBattleSkillData
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int32 SkillLevel = 0;
 
-	/* 궁극기 캐스트 시간 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float CastTime = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float Cooldown = 0.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UTexture2D> SkillIcon = nullptr;

@@ -257,6 +257,11 @@ public:
 	/* 현재 전설스킬 캐시 Get */
 	const FBattleSkillData* GetCurrentLegendarySkillData() const;
 
+	/* 쿨타임 */
+	float GetCurrentBasicAttackCooldown() const;
+	float GetCurrentBasicSkillCooldown() const;
+	float GetLegendaryUltimateCooldown() const;
+
 	/* 스킬 태그로 스킬 정보 */
 	const FSkillInfo* FindSkillInfoByTag(const FGameplayTag& InSkillTag) const;
 

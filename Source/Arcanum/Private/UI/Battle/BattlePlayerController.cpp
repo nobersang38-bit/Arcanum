@@ -2,6 +2,7 @@
 #include "Blueprint/UserWidget.h"
 #include "UI/Battle/Contents/InBattleHUDWidget.h"
 #include "UI/Battle/SubLayout/BattleAllyUnitPanelWidget.h"
+#include "UI/Battle/Contents/InBattleHUDWidget.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
@@ -48,6 +49,7 @@ void ABattlePlayerController::BeginPlay()
 	}
 	SetupMainHUDWidget();
 	SetupInputMode();
+	RefreshSkillCooldownUI();
 
 	MeatValue.BaseMax = 1000000.0f;
 	MeatValue.Current = 1000000.0f;
@@ -892,6 +894,7 @@ void ABattlePlayerController::UltimateSkillEnd()
 void ABattlePlayerController::UltimateSkillPressed()
 {
 	if (bIsUltimateAiming) return;
+	if (UltimateCooldownRemaining > 0.0f) return;
 
 	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 	if (!battleSubsystem) return;
@@ -985,6 +988,8 @@ void ABattlePlayerController::ExecuteUltimateSkill()
 
 void ABattlePlayerController::InputBasicAttack()
 {
+	if (BasicAttackCooldownRemaining > 0.0f) return;
+
 	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
 	if (playerCharacter)
 	{
@@ -994,6 +999,8 @@ void ABattlePlayerController::InputBasicAttack()
 
 void ABattlePlayerController::InputSkill()
 {
+	if (BasicSkillCooldownRemaining > 0.0f) return;
+
 	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
 	if (playerCharacter)
 	{
@@ -1025,18 +1032,24 @@ void ABattlePlayerController::TriggerBasicAttackHit()
 
 	skillObject->Initialize(playerCharacter, skillInfo, basicAttackSkillData->SkillLevel, skillInfo->TargetFilterTag);
 
-	const FVector spawnLocation = playerCharacter->GetActorLocation() + (playerCharacter->GetActorForwardVector() * 100.0f);
-	const FRotator spawnRotation = playerCharacter->GetActorForwardVector().Rotation();
+	//const FVector spawnLocation = playerCharacter->GetActorLocation() + (playerCharacter->GetActorForwardVector() * 100.0f);
+	//const FRotator spawnRotation = playerCharacter->GetActorForwardVector().Rotation();
 
-	FTransform spawnTransform;
-	spawnTransform.SetLocation(spawnLocation);
-	spawnTransform.SetRotation(spawnRotation.Quaternion());
+	//FTransform spawnTransform;
+	//spawnTransform.SetLocation(spawnLocation);
+	//spawnTransform.SetRotation(spawnRotation.Quaternion());
+
+	const FTransform spawnTransform = playerCharacter->GetActorTransform();
+	const FVector spawnLocation = spawnTransform.GetLocation();
+	const FRotator spawnRotation = spawnTransform.Rotator();
 
 	AActor* spawnedActor = poolingSubsystem->SpawnFromPool(skillActorClass, spawnTransform);
 	ASkillActor* skillActor = Cast<ASkillActor>(spawnedActor);
 	if (!skillActor) return;
 
 	skillActor->ActivateSkillActor(skillObject, playerCharacter, spawnLocation, spawnRotation);
+
+	StartBasicAttackCooldown();
 
 	//if (APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn()))
 	//{
@@ -1049,19 +1062,13 @@ void ABattlePlayerController::TriggerSkill()
 	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 	if (!battleSubsystem) return;
 
-	const FBattleSkillData* skillData = nullptr;
-	const FSkillInfo* skillInfo = nullptr;
+	const FBattleSkillData* skillData = bIsUltimateAiming
+		? battleSubsystem->GetCurrentLegendarySkillData()
+		: battleSubsystem->GetCurrentBasicSkillData();
 
-	if (bIsUltimateAiming)
-	{
-		skillData = battleSubsystem->GetCurrentLegendarySkillData();
-		skillInfo = battleSubsystem->FindSkillInfoByTag(battleSubsystem->GetLegendaryUltimateSkillTag());
-	}
-	else
-	{
-		skillData = battleSubsystem->GetCurrentBasicSkillData();
-		skillInfo = battleSubsystem->GetCurrentBasicSkillInfo();
-	}
+	const FSkillInfo* skillInfo = bIsUltimateAiming
+		? battleSubsystem->FindSkillInfoByTag(battleSubsystem->GetLegendaryUltimateSkillTag())
+		: battleSubsystem->GetCurrentBasicSkillInfo();
 
 	if (!skillData) return;
 	if (!skillInfo) return;
@@ -1082,28 +1089,17 @@ void ABattlePlayerController::TriggerSkill()
 
 	skillObject->Initialize(playerCharacter, skillInfo, skillData->SkillLevel, skillInfo->TargetFilterTag);
 
-	FVector spawnLocation;
-	FRotator spawnRotation;
-	if (bIsUltimateAiming)
-	{
-		spawnLocation = CurrentUltimatePreviewLocation + FVector(0.0f, 0.0f, 500.0f);   // TODO : 스폰 위치
-		spawnRotation = (CurrentUltimatePreviewLocation - spawnLocation).Rotation();
-	}
-	else
-	{
-		spawnLocation = playerCharacter->GetActorLocation() + (playerCharacter->GetActorForwardVector() * 100.0f);
-		spawnRotation = playerCharacter->GetActorForwardVector().Rotation();
-	}
-
-	FTransform spawnTransform;
-	spawnTransform.SetLocation(spawnLocation);
-	spawnTransform.SetRotation(spawnRotation.Quaternion());
+	const FTransform spawnTransform = playerCharacter->GetActorTransform();
+	const FVector spawnLocation = spawnTransform.GetLocation();
+	const FRotator spawnRotation = spawnTransform.Rotator();
 
 	AActor* spawnedActor = poolingSubsystem->SpawnFromPool(skillActorClass, spawnTransform);
 	ASkillActor* skillActor = Cast<ASkillActor>(spawnedActor);
 	if (!skillActor) return;
 
 	skillActor->ActivateSkillActor(skillObject, playerCharacter, spawnLocation, spawnRotation);
+
+	bIsUltimateAiming ? StartUltimateCooldown() : StartBasicSkillCooldown();
 }
 
 void ABattlePlayerController::StartUltimatePresentation()
@@ -1203,5 +1199,126 @@ void ABattlePlayerController::UpdateUltimatePresentation(float DeltaTime)
 	{
 		playerCamera->SetFieldOfView(UltimateDefaultFOV);
 		bIsUltimatePresentationRestoring = false;
+	}
+}
+
+void ABattlePlayerController::UpdateSkillCooldown()
+{
+	if (BasicAttackCooldownRemaining > 0.0f)
+	{
+		BasicAttackCooldownRemaining = FMath::Max(0.0f, BasicAttackCooldownRemaining - SkillCooldownTickInterval);
+	}
+
+	if (BasicSkillCooldownRemaining > 0.0f)
+	{
+		BasicSkillCooldownRemaining = FMath::Max(0.0f, BasicSkillCooldownRemaining - SkillCooldownTickInterval);
+	}
+
+	if (UltimateCooldownRemaining > 0.0f)
+	{
+		UltimateCooldownRemaining = FMath::Max(0.0f, UltimateCooldownRemaining - SkillCooldownTickInterval);
+	}
+
+	RefreshSkillCooldownUI();
+
+	if (BasicAttackCooldownRemaining <= 0.0f &&
+		BasicSkillCooldownRemaining <= 0.0f &&
+		UltimateCooldownRemaining <= 0.0f)
+	{
+		GetWorldTimerManager().ClearTimer(SkillCooldownTimerHandle);
+	}
+}
+
+void ABattlePlayerController::StartBasicAttackCooldown()
+{
+	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
+	{
+		BasicAttackCooldown = battleSubsystem->GetCurrentBasicAttackCooldown();
+		BasicAttackCooldownRemaining = BasicAttackCooldown;
+
+		RefreshSkillCooldownUI();
+
+		if (BasicAttackCooldownRemaining > 0.0f)
+		{
+			GetWorldTimerManager().SetTimer(
+				SkillCooldownTimerHandle,
+				this,
+				&ABattlePlayerController::UpdateSkillCooldown,
+				SkillCooldownTickInterval,
+				true
+			);
+		}
+	}
+}
+
+void ABattlePlayerController::StartBasicSkillCooldown()
+{
+	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
+	{
+		BasicSkillCooldown = battleSubsystem->GetCurrentBasicSkillCooldown();
+		BasicSkillCooldownRemaining = BasicSkillCooldown;
+
+		RefreshSkillCooldownUI();
+
+		if (BasicSkillCooldownRemaining > 0.0f)
+		{
+			GetWorldTimerManager().SetTimer(
+				SkillCooldownTimerHandle,
+				this,
+				&ABattlePlayerController::UpdateSkillCooldown,
+				SkillCooldownTickInterval,
+				true
+			);
+		}
+	}
+}
+
+void ABattlePlayerController::StartUltimateCooldown()
+{
+	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
+	{
+		UltimateCooldown = battleSubsystem->GetLegendaryUltimateCooldown();
+		UltimateCooldownRemaining = UltimateCooldown;
+
+		RefreshSkillCooldownUI();
+
+		if (UltimateCooldownRemaining > 0.0f)
+		{
+			GetWorldTimerManager().SetTimer(
+				SkillCooldownTimerHandle,
+				this,
+				&ABattlePlayerController::UpdateSkillCooldown,
+				SkillCooldownTickInterval,
+				true
+			);
+		}
+	}
+}
+
+void ABattlePlayerController::RefreshSkillCooldownUI()
+{
+	if (HUDWidgetInstance)
+	{
+		float basicAttackPercent = 0.0f;
+		if (BasicAttackCooldown > 0.0f)
+		{
+			basicAttackPercent = BasicAttackCooldownRemaining / BasicAttackCooldown;
+		}
+
+		float basicSkillPercent = 0.0f;
+		if (BasicSkillCooldown > 0.0f)
+		{
+			basicSkillPercent = BasicSkillCooldownRemaining / BasicSkillCooldown;
+		}
+
+		float ultimatePercent = 0.0f;
+		if (UltimateCooldown > 0.0f)
+		{
+			ultimatePercent = UltimateCooldownRemaining / UltimateCooldown;
+		}
+
+		HUDWidgetInstance->SetBasicAttackCooldown(basicAttackPercent);
+		HUDWidgetInstance->SetBasicSkillCooldown(basicSkillPercent);
+		HUDWidgetInstance->SetUltimateCooldown(ultimatePercent);
 	}
 }
