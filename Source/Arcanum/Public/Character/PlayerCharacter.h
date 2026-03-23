@@ -172,6 +172,8 @@ public:
 	/* 궁극기 조준 데칼 위치 갱신 */
 	void UpdateUltimatePreviewLocation(const FVector& InWorldLocation);
 
+	const FVector GetUltimateLocation() const;
+
 protected:
 	/* 궁극기 조준용 바닥 데칼 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ultimate")

@@ -154,7 +154,7 @@ void ABattlePlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(IA_Move, ETriggerEvent::Triggered, this, &ABattlePlayerController::InputMove);
 		EnhancedInputComponent->BindAction(IA_BasicAttack, ETriggerEvent::Completed, this, &ABattlePlayerController::BasicAttack);
 		EnhancedInputComponent->BindAction(IA_BasicSkill, ETriggerEvent::Completed, this, &ABattlePlayerController::BasicSkill);
-		//EnhancedInputComponent->BindAction(IA_UltimateSkill, ETriggerEvent::Started, this, &ABattlePlayerController::UltimateSkillPressed);
+		EnhancedInputComponent->BindAction(IA_UltimateSkill, ETriggerEvent::Started, this, &ABattlePlayerController::UltimateSkillPressed);
 		EnhancedInputComponent->BindAction(IA_UltimateSkill, ETriggerEvent::Completed, this, &ABattlePlayerController::UltimateSkillReleased);
 		EnhancedInputComponent->BindAction(IA_Item1, ETriggerEvent::Completed, this, &ABattlePlayerController::Item1);
 		EnhancedInputComponent->BindAction(IA_Item2, ETriggerEvent::Completed, this, &ABattlePlayerController::Item2);
@@ -254,7 +254,7 @@ void ABattlePlayerController::Tick(float DeltaTime)
 		}
 	}
 
-	if (CurrentSelectedSkillBase.IsValid() && SkillRangeDecalInstance)
+	if (CurrentSelectedSkillBase.IsValid() && SkillRangeDecalInstance && !bIsUltimateAiming)
 	{
 		FHitResult HitResult;
 		GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, HitResult);
@@ -295,7 +295,7 @@ void ABattlePlayerController::DebugRemovePlayerInfoPanelSlot(int32 RemoveIDX)
 
 bool ABattlePlayerController::SkillStarter(FGameplayTag InSkillTag, int32 InLevel, bool bIsUltimate)
 {
-	SkillCancel(!bIsUltimate);
+	SkillCancel();
 	InLevel++;
 	TSubclassOf<class ASkillActor> SkillActorClass;
 	FString SkillName;
@@ -402,10 +402,10 @@ void ABattlePlayerController::ReadySkillSet(FGameplayTag InSkillTag, int32 InLev
 {
 	if (CurrentSelectedSkillBase.IsValid())
 	{
-		SkillCancel(!bIsUltimate);
+		SkillCancel();
 		return;
 	}
-	SkillCancel(!bIsUltimate);
+	SkillCancel();
 	InLevel++;
 	FString SkillName;
 	USkillBase* SkillBaseBack = nullptr;
@@ -473,14 +473,18 @@ void ABattlePlayerController::CurrentSelectedSkillStarter()
 	SkillCancel();
 }
 
-void ABattlePlayerController::SkillCancel(bool bIsUltimateCancel)
+void ABattlePlayerController::SkillCancel()
 {
 	bIsSkillSuccess = false;
 	CurrentSelectedSkillBase = nullptr;
 	SkillRangeDecalInstance->SkillRangeDecalOff();
-	if (bIsUltimateCancel)
+	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (battleSubsystem)
 	{
-		UltimateSkillEnd();
+		if (battleSubsystem->IsLengendaryWeapon())
+		{
+			UltimateSkillEnd();
+		}
 	}
 }
 
@@ -581,7 +585,7 @@ bool ABattlePlayerController::SkillCostChecker(FGameplayTag InSkillTag, int32 In
 void ABattlePlayerController::SetupMainHUDWidget()
 {
 	HUDWidgetInstance->OnClickBasicAttack.AddDynamic(this, &ABattlePlayerController::BasicAttack);
-	//HUDWidgetInstance->OnPressedUltimateSkill.AddDynamic(this, &ABattlePlayerController::UltimateSkillPressed);
+	HUDWidgetInstance->OnPressedUltimateSkill.AddDynamic(this, &ABattlePlayerController::UltimateSkillPressed);
 	HUDWidgetInstance->OnReleasedUltimateSkill.AddDynamic(this, &ABattlePlayerController::UltimateSkillReleased);
 	HUDWidgetInstance->OnClickBasicSkill.AddDynamic(this, &ABattlePlayerController::BasicSkill);
 	HUDWidgetInstance->OnClickWeaponSwap.AddDynamic(this, &ABattlePlayerController::WeaponSwap);
@@ -1179,8 +1183,7 @@ void ABattlePlayerController::InputMove(const FInputActionValue& InputValue)
 
 	if (APawn* ControlledPawn = GetPawn())
 	{
-		// 2. 컨트롤러의 회전 방향을 가져와서 Yaw(좌우 회전) 값만 추출
-		const FRotator Rotation = GetControlRotation();
+		const FRotator Rotation = PlayerCameraManager->GetCameraRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
 		// 3. 앞방향(Forward)과 오른쪽방향(Right) 계산
@@ -1224,8 +1227,8 @@ void ABattlePlayerController::InputMove(const FInputActionValue& InputValue)
 		else
 		{
 			// 5. 평소에는 Pawn에 이동 입력 반영
-			ControlledPawn->AddMovementInput(-ForwardDirection, MovementVector.Y);
-			ControlledPawn->AddMovementInput(-RightDirection, MovementVector.X);
+			ControlledPawn->AddMovementInput(ForwardDirection, MovementVector.Y);
+			ControlledPawn->AddMovementInput(RightDirection, MovementVector.X);
 		}
 	}
 }
@@ -1332,9 +1335,11 @@ void ABattlePlayerController::ExecuteUltimateSkill()
 
 			UE_LOG(LogTemp, Warning, TEXT("UltimateSkill Tag=%s Level=%d"), *skillTag.ToString(), skillLevel);
 
+			//if (SkillCostChecker(skillTag, skillLevel)) UltimateSkillPressed();
+			ReadySkillSet(skillTag, skillLevel, true);
+			SkillLocation = playerCharacter->GetUltimateLocation();
+			CurrentSelectedSkillStarter();
 		}
-
-		// Todo : 현재 조준 위치로 궁극기 실제 발사
 
 		UltimateSkillEnd();
 	}

@@ -127,7 +127,7 @@ protected:
 	void CurrentSelectedSkillStarter();
 
 	UFUNCTION()
-	void SkillCancel(bool bIsUltimateCancel = true);
+	void SkillCancel();
 
 	UFUNCTION()
 	void AutoManualModeMobile(bool bIsChecked);
