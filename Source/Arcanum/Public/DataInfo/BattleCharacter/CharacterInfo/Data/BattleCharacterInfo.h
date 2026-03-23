@@ -36,6 +36,15 @@ struct FBattleCharacterDef
     TArray<int32> RequiredShardCount = { 10, 20, 30 };
     int32 DuplicateShardReward = 10;
 
+    /* 가챠 연출용 */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gacha")
+    TSoftObjectPtr<UTexture2D> CharacterColor;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gacha")
+    TSoftObjectPtr<UTexture2D> CharacterSilhouette;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gacha")
+    TSoftObjectPtr<UTexture2D> CharacterBackground;
+
+
     // 캐릭터 클래스 추가
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "CharacterClass")
     TSoftClassPtr<AActor> CharacterClass = nullptr;

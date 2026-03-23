@@ -543,6 +543,31 @@ TMap<FGameplayTag, FGuid>* FPlayerAccountService::GetEquipmentSlotMapBySlotTag(F
 	return nullptr;
 }
 
+bool FPlayerAccountService::UpdateCharacter(const UObject* WorldContextObject, const FGameplayTag InCharacterTag)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return false;
+
+	UGameDataSubsystem* dataSubsystem = GI->GetSubsystem<UGameDataSubsystem>();
+	if (!dataSubsystem) return false;
+
+	FPlayerData& playerData = GI->GetPlayerData();
+	for (int32 i = 0; i < playerData.OwnedCharacters.Num(); i++)
+	{
+		FBattleCharacterData& TargetData = playerData.OwnedCharacters[i];
+
+		FGameplayTag CharacterTag = TargetData.CharacterInfo.BattleCharacterInitData.CharacterTag;
+
+		if (CharacterTag == InCharacterTag)
+		{
+			//CurrStarLevel + 1 저장
+			TargetData.CharacterInfo.CurrStarLevel += 1;
+			return true;
+		}
+	}
+	return false;
+}
+
 // ========================================================
 // Enhancement Widget 관련
 // ========================================================

@@ -11,7 +11,10 @@
     "DefaultGrade": "Arcanum.Player.Grade.Common.0",
     "MaxGrade": "Arcanum.Player.Grade.Common.0",
     "RequiredShardCount": [1000,2000,3000],
-    "DuplicateShardReward" : 10
+    "DuplicateShardReward" : 10,
+	"CharacterSilhouette" : "",
+	"CharacterColor" : ""
+	"CharacterBackground" : ""
     }
   },
   {
@@ -26,7 +29,10 @@
     "DefaultGrade": "Arcanum.Player.Grade.Common.0",
     "MaxGrade": "Arcanum.Player.Grade.Common.0",
     "RequiredShardCount": [1000,2000,3000],
-    "DuplicateShardReward" : 10
+    "DuplicateShardReward" : 10,
+	"CharacterSilhouette" : "",
+	"CharacterColor" : ""
+	"CharacterBackground" : ""
     }
   },
   {
@@ -41,7 +47,10 @@
     "DefaultGrade": "Arcanum.Player.Grade.Rare.1",
     "MaxGrade": "Arcanum.Player.Grade.Rare.1",
     "RequiredShardCount": [2000,4000,6000],
-    "DuplicateShardReward" : 10
+    "DuplicateShardReward" : 10,
+	"CharacterSilhouette" : "",
+	"CharacterColor" : ""
+	"CharacterBackground" : ""
     }
   },
   {
@@ -56,7 +65,10 @@
     "DefaultGrade": "Arcanum.Player.Grade.Rare.1",
     "MaxGrade": "Arcanum.Player.Grade.Rare.1",
     "RequiredShardCount": [2000,4000,6000],
-    "DuplicateShardReward" : 10
+    "DuplicateShardReward" : 10,
+	"CharacterSilhouette" : "",
+	"CharacterColor" : ""
+	"CharacterBackground" : ""
     }
   },
   {
@@ -67,11 +79,14 @@
     "DefaultDialogue": "나를 바라보지 마… 나는 그렇게 강하지 않아…",
     "AttackDialogue": "내가 원하는 건… 너를 완전히… 끝내는 거야!",
     "HitDialogue": "아파… 아프다고…",
-    "DeathDialogue": "하하… 결국… 나도 끝인가 보네…",
+    "DeathDialogue": "결국… 나도 끝인가 보네…",
     "DefaultGrade": "Arcanum.Player.Grade.Epic.2",
     "MaxGrade": "Arcanum.Player.Grade.Epic.2",
     "RequiredShardCount": [3000,6000,9000],
-    "DuplicateShardReward" : 10
+    "DuplicateShardReward" : 10,
+	"CharacterSilhouette" : "",
+	"CharacterColor" : ""
+	"CharacterBackground" : ""
     }
   },
   {
@@ -86,7 +101,10 @@
     "DefaultGrade": "Arcanum.Player.Grade.Epic.2",
     "MaxGrade": "Arcanum.Player.Grade.Epic.2",
     "RequiredShardCount": [3000,6000,9000],
-    "DuplicateShardReward" : 10
+    "DuplicateShardReward" : 10,
+	"CharacterSilhouette" : "",
+	"CharacterColor" : ""
+	"CharacterBackground" : ""
     }
   }
 ]
