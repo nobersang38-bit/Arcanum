@@ -18,6 +18,13 @@
 #include "Components/CapsuleComponent.h"
 #include "Object/Actor/SpawnCheckDecal.h"
 #include "DataInfo/SkillData/Data/FSkillInfo.h"
+#include "Object/Actor/SelectedArrow.h"
+#include "Object/Skills/SkillActor.h"
+#include "Object/Skills/SkillBase.h"
+#include "AIController.h"
+#include "Core/SubSystem/GameDataSubsystem.h"
+#include "Object/Actor/SkillRangeDecal.h"
+#include "Engine/PostProcessVolume.h"
 
 
 // ========================================================
@@ -31,6 +38,21 @@ void ABattlePlayerController::BeginPlay()
 	UClass* LoadAllyUnit = StaticLoadClass(UObject::StaticClass(), nullptr, *AllyUnitClassPath);
 
 	UnitClass = LoadAllyUnit;*/
+
+	CachedPostProcessVolume = Cast<APostProcessVolume>(UGameplayStatics::GetActorOfClass(this, APostProcessVolume::StaticClass()));
+	if (!SelectedArrowInstance && SelectedArrowClass)
+	{
+		FTransform Transform;
+		Transform.SetLocation(FVector(0.0f, 0.0f, -9999.0f));
+		SelectedArrowInstance = GetWorld()->SpawnActor<ASelectedArrow>(SelectedArrowClass, Transform);
+	}
+
+	if (!SkillRangeDecalInstance && SkillRangeDecalClass)
+	{
+		FTransform Transform;
+		Transform.SetLocation(FVector(0.0f, 0.0f, -9999.0f));
+		SkillRangeDecalInstance = GetWorld()->SpawnActor<ASkillRangeDecal>(SkillRangeDecalClass, Transform);
+	}
 
 	if (HUDWidgetClass)
 	{
@@ -48,9 +70,20 @@ void ABattlePlayerController::BeginPlay()
 	SetupMainHUDWidget();
 	SetupInputMode();
 
-	MeatValue.BaseMax = 1000000.0f;
-	MeatValue.Current = 1000000.0f;
-	MeatValue.BaseTick = 2.0f;
+	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (BattleSubsystem)
+	{
+		const TArray<FRegenStat>& PlayerBattleRegenStat = BattleSubsystem->GetInBattleData().PlayerBattleData.PlayerBattleRegenStat;
+		for (const auto& PlayerBattleRegenStatMeat : PlayerBattleRegenStat)
+		{
+			if (MeatTag == PlayerBattleRegenStatMeat.ParentTag)
+			{
+				MeatValue.AddFrom(PlayerBattleRegenStatMeat);
+				MeatValue.Current = PlayerBattleRegenStatMeat.BaseMax;
+				break;
+			}
+		}
+	}
 
 	ManaValue.BaseMax = 100.0f;
 	ManaValue.Current = 100.0f;
@@ -69,7 +102,6 @@ void ABattlePlayerController::BeginPlay()
 	GetWorld()->GetTimerManager().SetTimer(ManaTimer, ManaDelegate, ManaTickInterval, true);
 
 	UGameTimeSubsystem* TimeSubsystem = GetGameInstance()->GetSubsystem<UGameTimeSubsystem>();
-	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 
 	if (BattleSubsystem)
 	{
@@ -170,6 +202,7 @@ void ABattlePlayerController::Tick(float DeltaTime)
 					if (SelectedUnit2.IsValid())
 					{
 						SelectedUnit2->SetActorHiddenInGame(true);
+						SelectedArrowInstance->SetActive(false);
 					}
 				}
 				else
@@ -212,10 +245,22 @@ void ABattlePlayerController::Tick(float DeltaTime)
 						float Unit2Height = SelectedUnit2->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 0.5f;
 						FVector ResultUnit2Location = HitResult3.ImpactPoint + FVector::UpVector * Unit2Height;
 						SelectedUnit2->SetActorLocation(ResultUnit2Location);
+
+						SelectedArrowInstance->SetArrow(ResultLocation, ResultUnit2Location);
+						SelectedArrowInstance->SetActive(true);
 					}
 				}
 			}
 		}
+	}
+
+	if (CurrentSelectedSkillBase.IsValid() && SkillRangeDecalInstance && !bIsUltimateAiming)
+	{
+		FHitResult HitResult;
+		GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, HitResult);
+		FVector SkillLocationBack = SkillRangeDecalInstance->SetCursorLocation(HitResult.ImpactPoint);
+
+		SkillLocation = FVector(SkillLocationBack.X, SkillLocationBack.Y, GetPawn()->GetActorLocation().Z + 100.0f);
 	}
 }
 
@@ -248,6 +293,291 @@ void ABattlePlayerController::DebugRemovePlayerInfoPanelSlot(int32 RemoveIDX)
 }
 #pragma endregion
 
+bool ABattlePlayerController::SkillStarter(FGameplayTag InSkillTag, int32 InLevel, bool bIsUltimate)
+{
+	SkillCancel();
+	InLevel++;
+	TSubclassOf<class ASkillActor> SkillActorClass;
+	FString SkillName;
+	USkillBase* SkillBaseBack = nullptr;
+
+	if (!SkillBaseInstances.Contains(InSkillTag))
+	{
+		SkillBaseBack = NewObject<USkillBase>(this);
+		SkillBaseInstances.Add(InSkillTag, SkillBaseBack);
+		UGameDataSubsystem* DataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
+		if (DataSubsystem)
+		{
+			SkillName = InSkillTag.ToString();
+			int32 LastDot;
+			if (SkillName.FindLastChar('.', LastDot))
+			{
+				// 찾은 인덱스 다음(+1)부터 끝까지 남기고 앞은 다 자릅니다.
+				SkillName = SkillName.RightChop(LastDot + 1);
+			}
+
+			FDTSkillsDataRow* DTSkillsDataRow = DataSubsystem->GetRow<FDTSkillsDataRow>(Arcanum::DataTable::SkillData, FName(SkillName));
+
+			if (DTSkillsDataRow)
+			{
+				SkillBaseBack->Initialize(GetPawn(), &DTSkillsDataRow->SkillData, InLevel, DTSkillsDataRow->SkillData.TargetFilterTag);
+			}
+			else return false;
+		}
+	}
+	else
+	{
+		SkillBaseBack = *SkillBaseInstances.Find(InSkillTag);
+
+		SkillName = InSkillTag.ToString();
+		int32 LastDot;
+		if (SkillName.FindLastChar('.', LastDot))
+		{
+			// 찾은 인덱스 다음(+1)부터 끝까지 남기고 앞은 다 자릅니다.
+			SkillName = SkillName.RightChop(LastDot + 1);
+		}
+	}
+
+	UGameDataSubsystem* DataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
+	if (DataSubsystem)
+	{
+		FDTSkillsDataRow* DTSkillsDataRow = DataSubsystem->GetRow<FDTSkillsDataRow>(Arcanum::DataTable::SkillData, FName(SkillName));
+		if (DTSkillsDataRow)
+		{
+			SkillActorClass = DTSkillsDataRow->SkillData.SkillClass.LoadSynchronous();
+		}
+	}
+
+	if (!UseSkillCost(InSkillTag)) return false;
+
+	if (SkillActorClass)
+	{
+		UPoolingSubsystem* PoolingSubsystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
+		if (PoolingSubsystem)
+		{
+			FTransform Transform;
+			Transform.SetLocation(GetPawn()->GetActorLocation());
+
+			FVector2D Direction2D = FVector2D(SkillLocation) - FVector2D(GetPawn()->GetActorLocation());
+			FRotator RotatorDirection = FVector(Direction2D.X, Direction2D.Y, 0.0f).Rotation();
+			Transform.SetRotation(RotatorDirection.Quaternion());
+			AActor* SkillActor = PoolingSubsystem->SpawnFromPool(SkillActorClass, Transform);
+			ASkillActor* SkillInstance = Cast<ASkillActor>(SkillActor);
+			if (SkillInstance)
+			{
+				FHitResult HitResult;
+				GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, HitResult);
+				if (HitResult.GetActor())
+				{
+					UE_LOG(LogTemp, Error, TEXT("%s"), *HitResult.GetActor()->GetName());
+					AActor* TargetActor = HitResult.GetActor()->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()) ? HitResult.GetActor() : nullptr;
+					if (SkillTargetActor.IsValid())
+					{
+						SkillInstance->SetTargetActor(SkillTargetActor.Get());
+					}
+					else
+					{
+						SkillInstance->SetTargetActor(TargetActor);
+					}
+					SkillInstance->SetTargetLocation(SkillLocation);
+					SkillInstance->ActivateSkillActor(SkillBaseBack, GetPawn(), Transform.GetLocation(), Transform.GetRotation().Rotator());
+					if (UAnimMontage* SkillMontage = SkillBaseBack->GetSkillInfo()->SkillMontage)
+					{
+						if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn()))
+						{
+							PlayerCharacter->GetSourceSkeletaMeshComponent()->GetAnimInstance()->Montage_Play(SkillMontage);
+						}
+					}
+					bIsSkillSuccess = true;
+					SkillTargetActor = nullptr;
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
+void ABattlePlayerController::ReadySkillSet(FGameplayTag InSkillTag, int32 InLevel, bool bIsUltimate)
+{
+	if (CurrentSelectedSkillBase.IsValid())
+	{
+		SkillCancel();
+		return;
+	}
+	SkillCancel();
+	InLevel++;
+	FString SkillName;
+	USkillBase* SkillBaseBack = nullptr;
+
+	if (!SkillBaseInstances.Contains(InSkillTag))
+	{
+		SkillBaseBack = NewObject<USkillBase>(this);
+		SkillBaseInstances.Add(InSkillTag, SkillBaseBack);
+		UGameDataSubsystem* DataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
+		if (DataSubsystem)
+		{
+			SkillName = InSkillTag.ToString();
+			int32 LastDot;
+			if (SkillName.FindLastChar('.', LastDot))
+			{
+				// 찾은 인덱스 다음(+1)부터 끝까지 남기고 앞은 다 자릅니다.
+				SkillName = SkillName.RightChop(LastDot + 1);
+			}
+
+			FDTSkillsDataRow* DTSkillsDataRow = DataSubsystem->GetRow<FDTSkillsDataRow>(Arcanum::DataTable::SkillData, FName(SkillName));
+
+			if (DTSkillsDataRow)
+			{
+				SkillBaseBack->Initialize(GetPawn(), &DTSkillsDataRow->SkillData, InLevel, DTSkillsDataRow->SkillData.TargetFilterTag);
+				CurrentSelectedSkillBase = SkillBaseBack;
+			}
+		}
+	}
+	else
+	{
+		SkillBaseBack = *SkillBaseInstances.Find(InSkillTag);
+		CurrentSelectedSkillBase = SkillBaseBack;
+	}
+
+	if (CurrentSelectedSkillBase.IsValid() && CurrentSelectedSkillBase->GetSkillInfo())
+	{
+		if (!SkillCostChecker(CurrentSelectedSkillBase->GetSkillInfo()->SkillNameTag, InLevel))
+		{
+			SkillCancel();
+			return;
+		}
+	}
+
+	if (SkillRangeDecalInstance && SkillBaseBack && SkillBaseBack->GetSkillInfo())
+	{
+		FHitResult HitResult;
+		GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, HitResult);
+		SkillRangeDecalInstance->SkillRangeDecalOn(SkillBaseBack->GetSkillInfo()->EnabledRange, GetPawn(), HitResult.ImpactPoint);
+	}
+
+	if (bIsAutoManual)
+	{
+		CommonButton();
+	}
+}
+
+void ABattlePlayerController::CurrentSelectedSkillStarter()
+{
+	if (!CurrentSelectedSkillBase.IsValid()) return;
+
+	if (const FSkillInfo* SkillInfo = CurrentSelectedSkillBase->GetSkillInfo())
+	{
+		SkillStarter(SkillInfo->SkillNameTag, CurrentSelectedSkillBase->GetCurrentLevelEntry()->Level - 1);
+	}
+	SkillCancel();
+}
+
+void ABattlePlayerController::SkillCancel()
+{
+	bIsSkillSuccess = false;
+	CurrentSelectedSkillBase = nullptr;
+	SkillRangeDecalInstance->SkillRangeDecalOff();
+	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (battleSubsystem)
+	{
+		if (battleSubsystem->IsLengendaryWeapon())
+		{
+			UltimateSkillEnd();
+		}
+	}
+}
+
+bool ABattlePlayerController::SkillCostChecker(FGameplayTag InSkillTag, int32 InLevel)
+{
+	TSubclassOf<class ASkillActor> SkillActorClass;
+	FString SkillName;
+	USkillBase* SkillBaseBack = nullptr;
+
+	if (!SkillBaseInstances.Contains(InSkillTag))
+	{
+		SkillBaseBack = NewObject<USkillBase>(this);
+		SkillBaseInstances.Add(InSkillTag, SkillBaseBack);
+		UGameDataSubsystem* DataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
+		if (DataSubsystem)
+		{
+			SkillName = InSkillTag.ToString();
+			int32 LastDot;
+			if (SkillName.FindLastChar('.', LastDot))
+			{
+				// 찾은 인덱스 다음(+1)부터 끝까지 남기고 앞은 다 자릅니다.
+				SkillName = SkillName.RightChop(LastDot + 1);
+			}
+
+			FDTSkillsDataRow* DTSkillsDataRow = DataSubsystem->GetRow<FDTSkillsDataRow>(Arcanum::DataTable::SkillData, FName(SkillName));
+
+			if (DTSkillsDataRow)
+			{
+				InLevel++;
+				SkillBaseBack->Initialize(GetPawn(), &DTSkillsDataRow->SkillData, InLevel, DTSkillsDataRow->SkillData.TargetFilterTag);
+			}
+			else return false;
+		}
+	}
+	else
+	{
+		SkillBaseBack = *SkillBaseInstances.Find(InSkillTag);
+
+		SkillName = InSkillTag.ToString();
+		int32 LastDot;
+		if (SkillName.FindLastChar('.', LastDot))
+		{
+			// 찾은 인덱스 다음(+1)부터 끝까지 남기고 앞은 다 자릅니다.
+			SkillName = SkillName.RightChop(LastDot + 1);
+		}
+	}
+
+	float MaxCoolTime = 0.0f;
+
+	float ManaCost = 0.0f;
+	float MeatCost = 0.0f;
+	if (SkillBaseBack)
+	{
+		if (const FLevelModifierEntry* LevelModifier = SkillBaseBack->GetCurrentLevelEntry())
+		{
+			MaxCoolTime = LevelModifier->Cooldown;
+			float* CurrentCoolTime = SkillCoolTimes.Find(InSkillTag);
+			if (!CurrentCoolTime)
+			{
+				CurrentCoolTime = &SkillCoolTimes.Add(InSkillTag);
+				*CurrentCoolTime = 0.0f;
+				return true;
+			}
+
+			if (CurrentCoolTime)
+			{
+				for (const auto& Cost : LevelModifier->Cost) // 코스트 체크
+				{
+					if (Cost.StatTag == ManaTag)
+					{
+						ManaCost += Cost.Value.Flat;
+					}
+					else if (Cost.StatTag == MeatTag)
+					{
+						MeatCost += Cost.Value.Flat;
+					}
+				}
+
+				float TempCoolTime = *CurrentCoolTime;
+				if (*CurrentCoolTime <= 0.0f && ManaValue.Current >= FMath::Abs(ManaCost) && MeatValue.Current >= FMath::Abs(MeatCost))
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}
+	}
+
+	return false;
+}
 
 // ========================================================
 // 메인HUD
@@ -372,16 +702,9 @@ void ABattlePlayerController::BasicAttack()
 		const int32 skillLevel = battleSubsystem->GetCurrentBasicAttackSkillLevel();
 
 		UE_LOG(LogTemp, Warning, TEXT("BasicAttack Tag=%s Level=%d"), *skillTag.ToString(), skillLevel);
-	}
+		ReadySkillSet(skillTag, skillLevel);
 
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("BasicAttack"));
-	//Todo : 기본공격
-
-	//디버그
-	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
-	if (PlayerCharacter)
-	{
-		PlayerCharacter->PlayerBasicAttack();
+		//SkillStarter(skillTag, skillLevel);
 	}
 }
 
@@ -393,6 +716,8 @@ void ABattlePlayerController::BasicSkill()
 		const int32 skillLevel = battleSubsystem->GetCurrentBasicSkillLevel();
 
 		UE_LOG(LogTemp, Warning, TEXT("BasicSkill Tag=%s Level=%d"), *skillTag.ToString(), skillLevel);
+		ReadySkillSet(skillTag, skillLevel);
+		//SkillStarter(skillTag, skillLevel);
 	}
 
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("BasicSkill"));
@@ -415,6 +740,7 @@ void ABattlePlayerController::BasicSkill()
 
 void ABattlePlayerController::WeaponSwap()
 {
+	SkillCancel();
 	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
 	{
 		const FGameplayTag currentSlotTag = battleSubsystem->GetCurrentWeaponSlotTag();
@@ -452,25 +778,39 @@ void ABattlePlayerController::WeaponSwap()
 
 void ABattlePlayerController::Item1()
 {
+	SkillCancel();
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Item1"));
 	//Todo : 아이템1
 }
 
 void ABattlePlayerController::Item2()
 {
+	SkillCancel();
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Item2"));
 	//Todo : 아이템2
 }
 
 void ABattlePlayerController::AutoManualModeMobile(bool bIsChecked)
 {
+	SkillCancel();
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("AutoManualMode"));
 	bIsAutoManual = bIsChecked;
+
+	if (!CachedPlayerCharacter.IsValid())
+	{
+		CachedPlayerCharacter = Cast<APlayerCharacter>(GetPawn());
+	}
+
+	if (CachedPlayerCharacter.IsValid())
+	{
+		CachedPlayerCharacter->SetAutoMode(this, bIsAutoManual);
+	}
 	//Todo : 수동,자동 전투
 }
 
 void ABattlePlayerController::AutoManualModePC()
 {
+	SkillCancel();
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("AutoManualMode"));
 }
 
@@ -510,11 +850,24 @@ void ABattlePlayerController::SlotSelectCancel()
 	SetSpawnDecalActive(false);
 	SelectedUnit = nullptr;
 	SelectedUnit2 = nullptr;
+	if (SelectedArrowInstance)
+	{
+		SelectedArrowInstance->SetActive(false);
+	}
+
+	SkillCancel();
 }
 
 void ABattlePlayerController::CommonButton()
 {
-	Internal_SpawnUnit();
+	if (SelectedUnit.IsValid() && !bIsAutoManual)
+	{
+		Internal_SpawnUnit();
+	}
+	else if (CurrentSelectedSkillBase.IsValid())
+	{
+		CurrentSelectedSkillStarter();
+	}
 }
 
 void ABattlePlayerController::ReadySpawnUnit(FGameplayTag InTag, UBattleAllyUnitSlotWidget* Slot)
@@ -564,7 +917,7 @@ void ABattlePlayerController::SetSpawnDecalActive(bool bIsOn)
 	}
 }
 
-ABaseUnitCharacter* ABattlePlayerController::Internal_SpawnUnit()
+ABaseUnitCharacter* ABattlePlayerController::Internal_SpawnUnit(const FVector InSpawnLocation)
 {
 	if (FUnitInfoSetting* UnitData = UsingAllyUnits.Find(SpawnTag))
 	{
@@ -597,7 +950,14 @@ ABaseUnitCharacter* ABattlePlayerController::Internal_SpawnUnit()
 				ResultLocation = ResultLocation + (FVector::UpVector * CapsuleHeight);
 
 				FTransform Transform;
-				Transform.SetLocation(ResultLocation);
+				if (InSpawnLocation.IsNearlyZero())
+				{
+					Transform.SetLocation(ResultLocation);
+				}
+				else
+				{
+					Transform.SetLocation(InSpawnLocation);
+				}
 				Transform.SetRotation(Direction.Rotation().Quaternion());
 				// Todo KDH : 미리 로드해 놓아야함
 				AActor* EnemyUnitInstance = PoolingSubsystem->SpawnFromPool(UnitData->UnitClass.LoadSynchronous(), Transform);
@@ -646,32 +1006,53 @@ bool ABattlePlayerController::UseCoolTime(FGameplayTag InTag)
 	if (!UnitData) return false;
 
 	UnitData->CurrentCoolTime = UnitData->CoolTime;
-
-	/*FTimerDelegate CoolTimeDelegate;
-	float TickInterval = 0.01f;
-	CoolTimeDelegate.BindUObject(this, &ABattlePlayerController::Internal_UnitCoolTimeTick, UnitData->Tag, TickInterval);
-
-	FTimerHandle* CoolTimeHandle = nullptr;
-	if (FTimerHandle* InternalCoolTimeHandle = CoolTimeHandles.Find(InTag))
-	{
-		CoolTimeHandle = InternalCoolTimeHandle;
-	}
-	else
-	{
-		CoolTimeHandle = &CoolTimeHandles.Add(InTag, FTimerHandle());
-	}
-
-	if (CoolTimeHandle)
-	{
-		GetWorld()->GetTimerManager().ClearTimer(*CoolTimeHandle);
-		GetWorld()->GetTimerManager().SetTimer(*CoolTimeHandle, CoolTimeDelegate, TickInterval, true);
-		return true;
-	}
-	else
-	{
-		return false;
-	}*/
 	return true;
+}
+
+bool ABattlePlayerController::UseSkillCost(FGameplayTag InTag)
+{
+	float MaxCoolTime = 0.0f;
+
+	float ManaCost = 0.0f;
+	float MeatCost = 0.0f;
+	if (TObjectPtr<USkillBase>* SkillBaseBack = SkillBaseInstances.Find(InTag))
+	{
+		if (const FLevelModifierEntry* LevelModifier = (*SkillBaseBack)->GetCurrentLevelEntry())
+		{
+			MaxCoolTime = LevelModifier->Cooldown;
+			float* CurrentCoolTime = SkillCoolTimes.Find(InTag);
+			if (!CurrentCoolTime)
+			{
+				CurrentCoolTime = &SkillCoolTimes.Add(InTag);
+				*CurrentCoolTime = 0.0f;
+			}
+
+			if (CurrentCoolTime)
+			{
+				for (const auto& Cost : LevelModifier->Cost) // 코스트 체크
+				{
+					if (Cost.StatTag == ManaTag)
+					{
+						ManaCost += Cost.Value.Flat;
+					}
+					else if (Cost.StatTag == MeatTag)
+					{
+						MeatCost += Cost.Value.Flat;
+					}
+				}
+
+				if (*CurrentCoolTime <= 0.0f && ManaValue.Current >= FMath::Abs(ManaCost) && MeatValue.Current >= FMath::Abs(MeatCost))
+				{
+					*CurrentCoolTime = MaxCoolTime;
+					ManaValue.Current += ManaCost;
+					MeatValue.Current += MeatCost;
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
 }
 
 void ABattlePlayerController::BattleEnd(const FMatchData& MatchData)
@@ -683,29 +1064,20 @@ void ABattlePlayerController::BattleEnd(const FMatchData& MatchData)
 		{
 			BattleEndWidget->SetVictoryText(MatchData.bIsVictory);
 			UE_LOG(LogTemp, Error, TEXT("MatchData.bIsVictory = %d"), MatchData.bIsVictory);
+			BattleEndWidget->SetClearTimeText(MatchData.EndTimeSecond);
 
 			UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 			if (BattleSubsystem)
 			{
-				float PlayingTime = static_cast<float>(BattleSubsystem->GetInBattleData().BattleStageInfo.StageLimitTime) - static_cast<float>(MatchData.EndTimeSecond);
 				float Result = static_cast<float>(MatchData.EndTimeSecond) / static_cast<float>(BattleSubsystem->GetInBattleData().BattleStageInfo.StageLimitTime);
 
-				BattleEndWidget->SetClearTimeText(PlayingTime);
-
-				if (MatchData.bIsVictory)
-				{
-					Result *= 3.0f;
-					UE_LOG(LogTemp, Error, TEXT("Result : %f"), Result);
-					BattleEndWidget->SetStar(FMath::Clamp<int32>(FMath::RoundToInt(Result), 0, 3));
-				}
-				else
-				{
-					BattleEndWidget->SetStar(0);
-				}
+				Result *= 3.0f;
+				UE_LOG(LogTemp, Error, TEXT("Result : %f"), Result);
+				BattleEndWidget->SetStar(FMath::Clamp<int32>(FMath::RoundToInt(Result), 0, 3));
 			}
 			else
 			{
-				BattleEndWidget->SetStar(0);
+				BattleEndWidget->SetStar(3);
 			}
 
 			BattleEndWidget->SetVisibility(ESlateVisibility::Visible);
@@ -767,6 +1139,11 @@ void ABattlePlayerController::Internal_UnitsCoolTimeTick(float DeltaTime)
 			}
 		}
 	}
+
+	for (auto& SkillCoolTime : SkillCoolTimes)
+	{
+		SkillCoolTime.Value -= DeltaTime;
+	}
 }
 
 // ========================================================
@@ -795,6 +1172,7 @@ void ABattlePlayerController::SetupInputMode()
 }
 
 
+
 // ========================================================
 // 입력 관련
 // ========================================================
@@ -805,8 +1183,7 @@ void ABattlePlayerController::InputMove(const FInputActionValue& InputValue)
 
 	if (APawn* ControlledPawn = GetPawn())
 	{
-		// 2. 컨트롤러의 회전 방향을 가져와서 Yaw(좌우 회전) 값만 추출
-		const FRotator Rotation = GetControlRotation();
+		const FRotator Rotation = PlayerCameraManager->GetCameraRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
 		// 3. 앞방향(Forward)과 오른쪽방향(Right) 계산
@@ -850,8 +1227,8 @@ void ABattlePlayerController::InputMove(const FInputActionValue& InputValue)
 		else
 		{
 			// 5. 평소에는 Pawn에 이동 입력 반영
-			ControlledPawn->AddMovementInput(-ForwardDirection, MovementVector.Y);
-			ControlledPawn->AddMovementInput(-RightDirection, MovementVector.X);
+			ControlledPawn->AddMovementInput(ForwardDirection, MovementVector.Y);
+			ControlledPawn->AddMovementInput(RightDirection, MovementVector.X);
 		}
 	}
 }
@@ -958,9 +1335,11 @@ void ABattlePlayerController::ExecuteUltimateSkill()
 
 			UE_LOG(LogTemp, Warning, TEXT("UltimateSkill Tag=%s Level=%d"), *skillTag.ToString(), skillLevel);
 
+			//if (SkillCostChecker(skillTag, skillLevel)) UltimateSkillPressed();
+			ReadySkillSet(skillTag, skillLevel, true);
+			SkillLocation = playerCharacter->GetUltimateLocation();
+			CurrentSelectedSkillStarter();
 		}
-
-		// Todo : 현재 조준 위치로 궁극기 실제 발사
 
 		UltimateSkillEnd();
 	}

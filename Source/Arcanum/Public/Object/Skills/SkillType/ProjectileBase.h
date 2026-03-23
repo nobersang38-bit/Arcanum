@@ -29,7 +29,7 @@ class ARCANUM_API AProjectileBase : public ASkillActor
 {
     GENERATED_BODY()
 
-    public:
+public:
     AProjectileBase();
 
     virtual void ActivateSkillActor(USkillBase* InSkill, AActor* InOwner, const FVector& SpawnLocation, const FRotator& SpawnRotation) override;
@@ -40,7 +40,7 @@ protected:
     virtual void DeactivateSkillActor() override;
     /** 충돌 */
     UFUNCTION()
-    virtual void OnHit(UPrimitiveComponent* HitComponent,AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+    virtual void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
     /** 오버랩 */
     UFUNCTION()
