@@ -719,19 +719,22 @@ void UBattlefieldManagerSubsystem::SetCurrentWeaponSlotTag(const FGameplayTag& I
 
 void UBattlefieldManagerSubsystem::BeginLegendaryWeaponMode()
 {
-	//if (!bUsingLegendaryWeapon)
+	if (!bUsingLegendaryWeapon)
 	{
 		PreviousWeaponSlotTag = InBattleData.BattleWeaponSkill.CurrentWeaponSlotTag;
 	}
 
 	InBattleData.BattleWeaponSkill.CurrentWeaponSlotTag = Arcanum::Items::ItemSlot::Weapon::Legendary;
-	//bUsingLegendaryWeapon = true;
+	bUsingLegendaryWeapon = true;
 }
 
 void UBattlefieldManagerSubsystem::EndLegendaryWeaponMode()
 {
-	InBattleData.BattleWeaponSkill.CurrentWeaponSlotTag = PreviousWeaponSlotTag;
-	//bUsingLegendaryWeapon = false;
+	if (bUsingLegendaryWeapon)
+	{
+		InBattleData.BattleWeaponSkill.CurrentWeaponSlotTag = PreviousWeaponSlotTag;
+	}
+	bUsingLegendaryWeapon = false;
 }
 
 USkeletalMesh* UBattlefieldManagerSubsystem::GetCurrentWeaponMesh() const

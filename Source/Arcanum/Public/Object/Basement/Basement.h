@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Interface/TeamInterface.h"
+#include "Interface/StatModifierInterface.h"
 #include "Basement.generated.h"
 
 class UPlayerBattleStatsComponent;
@@ -22,7 +23,7 @@ class UCapsuleComponent;
 class UStaticMeshComponent;
 
 UCLASS()
-class ARCANUM_API ABasement : public AActor, public ITeamInterface
+class ARCANUM_API ABasement : public AActor, public ITeamInterface, public IStatModifierInterface
 {
 	GENERATED_BODY()
 	
@@ -35,7 +36,7 @@ class ARCANUM_API ABasement : public AActor, public ITeamInterface
 //FOnBasementHealthChanged OnBasementHealthChanged;
 public:
 	ABasement();
-	
+	class UCharacterBattleStatsComponent* GetStatComponent();
 	
 protected:
 	virtual void BeginPlay() override;
@@ -115,6 +116,21 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
 	TObjectPtr<class UBasementCombatComponent> BasementCombatComponent = nullptr;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<class UCharacterBattleStatsComponent> CharacterBattleStatsComponent = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<class UStatusActionComponent> StatusActionComponent = nullptr;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FGameplayTag TeamTag;
+
+
+	// IStatModifierInterface을(를) 통해 상속됨
+	void AddLevelModifierEntry(const FLevelModifierEntry& LevelModifierEntry) override;
+
+	void AddDerivedStatModifier(const FDerivedStatModifier& DerivedStatModifier) override;
+
+	void ChangeStat(const FGameplayTag& InTag, float InValue) override;
+
 };

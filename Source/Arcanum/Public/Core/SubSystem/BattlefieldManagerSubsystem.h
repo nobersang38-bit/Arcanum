@@ -264,7 +264,7 @@ protected:
 	FGameplayTag PreviousWeaponSlotTag;
 
 	/* 현재 궁극기 사용 중 여부 */
-	/*UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Battle|SkillCache")
-	bool bUsingLegendaryWeapon = false;*/
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Battle|SkillCache")
+	bool bUsingLegendaryWeapon = false;
 #pragma endregion
 };

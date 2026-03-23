@@ -24,6 +24,7 @@
 #include "AIController.h"
 #include "Core/SubSystem/GameDataSubsystem.h"
 #include "Object/Actor/SkillRangeDecal.h"
+#include "Engine/PostProcessVolume.h"
 
 
 // ========================================================
@@ -37,6 +38,8 @@ void ABattlePlayerController::BeginPlay()
 	UClass* LoadAllyUnit = StaticLoadClass(UObject::StaticClass(), nullptr, *AllyUnitClassPath);
 
 	UnitClass = LoadAllyUnit;*/
+
+	CachedPostProcessVolume = Cast<APostProcessVolume>(UGameplayStatics::GetActorOfClass(this, APostProcessVolume::StaticClass()));
 	if (!SelectedArrowInstance && SelectedArrowClass)
 	{
 		FTransform Transform;
@@ -1223,9 +1226,9 @@ void ABattlePlayerController::UltimateSkillEnd()
 		playerCharacter->UpdateEquippedWeaponMesh();
 	}
 
-	if (UltimatePostProcessVolume)
+	if (CachedPostProcessVolume.IsValid())
 	{
-		UltimatePostProcessVolume->bUnbound = false;
+		CachedPostProcessVolume->bUnbound = false;
 	}
 }
 
@@ -1241,6 +1244,10 @@ void ABattlePlayerController::UltimateSkillPressed()
 
 	const float castTime = battleSubsystem->GetInBattleData().BattleWeaponSkill.LegendaryUltimateSkill.CastTime;
 
+	if (CachedPostProcessVolume.IsValid())
+	{
+		CachedPostProcessVolume->bUnbound = true;
+	}
 	//bIsUltimateAiming = true;
 
 	battleSubsystem->BeginLegendaryWeaponMode();

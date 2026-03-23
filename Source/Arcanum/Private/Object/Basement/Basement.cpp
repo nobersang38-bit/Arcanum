@@ -10,6 +10,8 @@
 #include "Components/WidgetComponent.h"
 #include "UI/InGame/UnitHealthWidget.h"
 #include "Component/BasementCombatComponent.h"
+#include "Component/Stats/CharacterBattleStatsComponent.h"
+#include "Component/StatusActionComponent.h"
 
 // Sets default values
 ABasement::ABasement()
@@ -29,13 +31,21 @@ ABasement::ABasement()
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CrystalMesh"));
 	MeshComponent->SetupAttachment(RootComponent);
 	MeshComponent->SetCollisionProfileName(TEXT("BlockAll"));
+
+	CharacterBattleStatsComponent = CreateDefaultSubobject<UCharacterBattleStatsComponent>(TEXT("CharacterBattleStatsComponent"));
+
+	StatusActionComponent = CreateDefaultSubobject<UStatusActionComponent>(TEXT("StatusActionComponent"));
+}
+
+UCharacterBattleStatsComponent* ABasement::GetStatComponent()
+{
+	return CharacterBattleStatsComponent;
 }
 
 // Called when the game starts or when spawned
 void ABasement::BeginPlay()
 {
 	Super::BeginPlay();
-
 	//if (CommonEnemyClass)
 	//{
 	//	GetWorld()->GetTimerManager().SetTimer(
@@ -46,24 +56,37 @@ void ABasement::BeginPlay()
 	//		true
 	//	);
 	//}
+	StatusActionComponent->SetupAction();
 	if (UUserWidget* TempHealthWidgetUser = Cast<UUserWidget>(HealthWidgetComponent->GetWidget()))
 	{
 		if (UUnitHealthWidget* TempHealthWidget = Cast<UUnitHealthWidget>(TempHealthWidgetUser))
 		{
-			BasementCombatComponent->OnBasementChangeHealth.RemoveDynamic(TempHealthWidget, &UUnitHealthWidget::SetPercentFloat);
-			BasementCombatComponent->OnBasementChangeHealth.AddDynamic(TempHealthWidget, &UUnitHealthWidget::SetPercentFloat);
+			//CharacterBattleStatsComponent->OnCharacterRegenStatChanged.Remove(TempHealthWidget, &UUnitHealthWidget::SetPercent);
+			CharacterBattleStatsComponent->OnCharacterRegenStatChanged.AddUObject(TempHealthWidget, &UUnitHealthWidget::SetPercent);
 
-			FEnemyBasement Stat = BasementCombatComponent->GetBasementStat();
-			float CurrentHealth = Stat.CommandCenterHP.GetTotalValue();
-			float MaxHealth = CurrentHealth;
-			TempHealthWidget->SetPercentFloat(CurrentHealth, MaxHealth);
+			const FRegenStat* Stat = CharacterBattleStatsComponent->FindRegenStat(Arcanum::BattleStat::Character::Regen::Health::Root);
+			TempHealthWidget->SetPercentFloat(Stat->Current, Stat->BaseMax);
 		}
 	}
 }
 
 FGameplayTag ABasement::GetTeamTag() const
 {
-
 	return TeamTag;
+}
+
+void ABasement::AddLevelModifierEntry(const FLevelModifierEntry& LevelModifierEntry)
+{
+
+}
+
+void ABasement::AddDerivedStatModifier(const FDerivedStatModifier& DerivedStatModifier)
+{
+	CharacterBattleStatsComponent->ApplyDurationModifier(DerivedStatModifier);
+}
+
+void ABasement::ChangeStat(const FGameplayTag& InTag, float InValue)
+{
+	CharacterBattleStatsComponent->ChangeStatValue(InTag, InValue, nullptr);
 }
 

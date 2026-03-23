@@ -318,6 +318,9 @@ private:
 	bool bIsSkillSuccess = false;
 
 	UPROPERTY()
+	TWeakObjectPtr<class APostProcessVolume> CachedPostProcessVolume = nullptr;
+
+	UPROPERTY()
 	TWeakObjectPtr<AActor> SkillTargetActor = nullptr;
 
 #pragma region 궁극기 처리
@@ -351,9 +354,6 @@ protected:
 	/* 궁극기 프리뷰 거리 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate")
 	float UltimatePreviewDistance = 300.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate")
-	TObjectPtr<class APostProcessVolume> UltimatePostProcessVolume = nullptr;
 
 	FTimerHandle UltimateSkillTimerHandle;
 #pragma endregion

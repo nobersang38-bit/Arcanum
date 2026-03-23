@@ -100,8 +100,7 @@ bool UBTPlayerDataObject::UseSkill()
 			PlayerController->BasicSkill();
 			break;
 		case EBSkillType::UltimateSkill:
-			return false;
-			//PlayerController->UltimateSkill();
+			PlayerController->UltimateSkillReleased();
 			break;
 		case EBSkillType::Item01:
 			PlayerController->Item1();
