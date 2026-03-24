@@ -1087,7 +1087,13 @@ void ABattlePlayerController::TriggerSkill()
 		*skillData->SkillTag.ToString(),
 		skillData->SkillLevel);
 
-	skillObject->Initialize(playerCharacter, skillInfo, skillData->SkillLevel, skillInfo->TargetFilterTag);
+	FVector targetLocation = playerCharacter->GetActorLocation();
+	if (bIsUltimateAiming)
+	{
+		targetLocation = CurrentUltimatePreviewLocation;
+	}
+
+	skillObject->Initialize(playerCharacter, skillInfo, skillData->SkillLevel, skillInfo->TargetFilterTag, nullptr, targetLocation);
 
 	const FTransform spawnTransform = playerCharacter->GetActorTransform();
 	const FVector spawnLocation = spawnTransform.GetLocation();
