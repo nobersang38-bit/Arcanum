@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "NativeGameplayTags.h"
+#include "Object/Skills/SkillActor.h"
 #include "FBattleWeaponSkillData.generated.h"
 
 /**
@@ -20,12 +21,30 @@ struct FBattleSkillData
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int32 SkillLevel = 0;
 
-	/* 궁극기 캐스트 시간 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float CastTime = 0.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float Cooldown = 0.0f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UTexture2D> SkillIcon = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UAnimMontage> CastMontage = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UAnimMontage> PressMontage = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UAnimMontage> ReleaseMontage = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TArray<TObjectPtr<UAnimMontage>> ComboMontages;
+
+	/* 스킬 실행 클래스 캐시 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSoftClassPtr<ASkillActor> SkillClass;
 };
 
 USTRUCT(BlueprintType)

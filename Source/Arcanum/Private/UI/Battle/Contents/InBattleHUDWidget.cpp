@@ -189,3 +189,27 @@ void UInBattleHUDWidget::SetLegendaryButtonIcon(UTexture2D* InIcon)
 		UltimateSkill->SetImage(InIcon);
 	}
 }
+
+void UInBattleHUDWidget::SetBasicAttackCooldown(float InPercent)
+{
+	if (BasicAttack)
+	{
+		BasicAttack->SetSkillCooldownPercent(InPercent);
+	}
+}
+
+void UInBattleHUDWidget::SetBasicSkillCooldown(float InPercent)
+{
+	if (BasicSkill)
+	{
+		BasicSkill->SetSkillCooldownPercent(InPercent);
+	}
+}
+
+void UInBattleHUDWidget::SetUltimateCooldown(float InPercent)
+{
+	if (UltimateSkill)
+	{
+		UltimateSkill->SetSkillCooldownPercent(InPercent);
+	}
+}
