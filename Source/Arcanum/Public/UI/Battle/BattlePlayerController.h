@@ -136,9 +136,9 @@ protected:
 	//void CurrentSelectedSkillStarter();
 
 
-	USkillBase* GetOrCreateSkillBase(const FBattleSkillData& InSkillData, const FSkillInfo* InSkillInfo, const FVector& InTargetLocation);
+	//USkillBase* GetOrCreateSkillBase(const FBattleSkillData& InSkillData, const FSkillInfo* InSkillInfo, const FVector& InTargetLocation);
 
-	bool SpawnAndActivateSkillActor(USkillBase* InSkillBase, UClass* InSkillActorClass, const FVector& InTargetLocation);
+	//bool SpawnAndActivateSkillActor(USkillBase* InSkillBase, UClass* InSkillActorClass, const FVector& InTargetLocation);
 
 	UFUNCTION()
 	void SkillCancel();
@@ -482,10 +482,29 @@ protected:
 
 	/* Release 순간 재생할 카메라 쉐이크 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
-	TSubclassOf<class UCameraShakeBase> UltimateReleaseCameraShakeClass = nullptr;
+	TSubclassOf<class UCameraShakeBase> UltimateCameraShakeClass = nullptr;
+	UPROPERTY(Transient)
+	TObjectPtr<class UCameraShakeBase> ActiveUltimateCameraShake = nullptr;
 #pragma endregion
 
 #pragma region 플레이어 스킬 쿨타임
+protected:
+	/* 스킬 쿨타임 시작 */
+	void StartSkillCooldown(const FGameplayTag& InSkillTag, float InCooldown);
+
+	/* 스킬 남은 쿨타임 반환 */
+	float GetSkillCooldownRemaining(const FGameplayTag& InSkillTag) const;
+
+	/* 스킬 전체 쿨타임 반환 */
+	float GetSkillCooldown(const FGameplayTag& InSkillTag) const;
+
+protected:
+	/* 스킬별 전체 쿨타임 */
+	TMap<FGameplayTag, float> SkillCooldownMap;
+
+	/* 스킬별 남은 쿨타임 */
+	TMap<FGameplayTag, float> SkillCooldownRemainingMap;
+
 protected:
 	/* 스킬 쿨타임 타이머 갱신 */
 	void UpdateSkillCooldown();

@@ -610,7 +610,7 @@ bool ABattlePlayerController::SkillCostChecker(FGameplayTag InSkillTag, int32 In
 						return false;
 					}
 				}
-				
+
 			}
 		}
 	}
@@ -1246,7 +1246,7 @@ void ABattlePlayerController::InitialSkillBase()
 			}
 		}
 	}
-	
+
 	// 슬롯2 기본공격
 	SkillData = BattleSubsystem->GetInBattleData().BattleWeaponSkill.WeaponSlot2BasicAttackSkill;
 	if (!SkillBaseInstances.Contains(SkillData.SkillTag))
@@ -1520,7 +1520,7 @@ void ABattlePlayerController::TriggerSkill()
 		*skillData->SkillTag.ToString(),
 		skillData->SkillLevel);
 
-	
+
 	//if (bIsUltimateAiming) return;
 
 	FVector targetLocation = playerCharacter->GetUltimateLocation();
@@ -1546,7 +1546,14 @@ void ABattlePlayerController::TriggerSkill()
 
 void ABattlePlayerController::InputBasicAttack()
 {
-	if (BasicAttackCooldownRemaining > 0.0f) return;
+	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
+	{
+		const FGameplayTag skillTag = battleSubsystem->GetCurrentBasicAttackSkillTag();
+		if (GetSkillCooldownRemaining(skillTag) > 0.0f)
+		{
+			return;
+		}
+	}
 
 	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
 	if (playerCharacter)
@@ -1557,7 +1564,14 @@ void ABattlePlayerController::InputBasicAttack()
 
 void ABattlePlayerController::InputSkill()
 {
-	if (BasicSkillCooldownRemaining > 0.0f) return;
+	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
+	{
+		const FGameplayTag skillTag = battleSubsystem->GetCurrentBasicSkillTag();
+		if (GetSkillCooldownRemaining(skillTag) > 0.0f)
+		{
+			return;
+		}
+	}
 
 	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
 	if (playerCharacter)
@@ -1593,17 +1607,22 @@ void ABattlePlayerController::UltimateSkillEnd()
 	{
 		HUDWidgetInstance->SetLegendaryButtonIcon(battleSubsystem->GetLegendaryWeaponIcon());
 	}
+	if (ActiveUltimateCameraShake)
+	{
+		ActiveUltimateCameraShake->StopShake(false);
+		ActiveUltimateCameraShake = nullptr;
+	}
 }
 
 void ABattlePlayerController::UltimateSkillPressed()
 {
 	if (bIsUltimateAiming) return;
-	if (UltimateCooldownRemaining > 0.0f) return;
 
 	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 	if (!battleSubsystem) return;
 
 	const FGameplayTag skillTag = battleSubsystem->GetLegendaryUltimateSkillTag();
+	if (GetSkillCooldownRemaining(skillTag) > 0.0f) return;
 	if (!skillTag.IsValid()) return;
 	if (!SkillCostChecker(skillTag, battleSubsystem->GetLegendaryUltimateSkillLevel(), true)) return;
 
@@ -1689,6 +1708,12 @@ void ABattlePlayerController::ExecuteUltimateSkill()
 
 		playerCharacter->PlayUltimateReleaseMontage();
 	}
+
+	if (ActiveUltimateCameraShake)
+	{
+		ActiveUltimateCameraShake->StopShake(false);
+		ActiveUltimateCameraShake = nullptr;
+	}
 }
 
 void ABattlePlayerController::StartUltimatePresentation()
@@ -1710,6 +1735,11 @@ void ABattlePlayerController::StartUltimatePresentation()
 		}
 	}
 
+	if (UltimateCameraShakeClass && PlayerCameraManager)
+	{
+		ActiveUltimateCameraShake = PlayerCameraManager->StartCameraShake(UltimateCameraShakeClass);
+	}
+
 	if (UltimatePostProcessVolume)
 	{
 		UltimatePostProcessVolume->bUnbound = true;
@@ -1722,11 +1752,6 @@ void ABattlePlayerController::PlayUltimateReleasePresentation()
 	bIsUltimatePresentationRestoring = false;
 	bIsUltimateReleaseZoomActive = true;
 	UltimateTargetPostProcessBlendWeight = UltimatePressPostProcessBlendWeight;
-
-	if (UltimateReleaseCameraShakeClass)
-	{
-		ClientStartCameraShake(UltimateReleaseCameraShakeClass);
-	}
 
 	if (UltimatePostProcessVolume)
 	{
@@ -1791,28 +1816,69 @@ void ABattlePlayerController::UpdateUltimatePresentation(float DeltaTime)
 	}
 }
 
+void ABattlePlayerController::StartSkillCooldown(const FGameplayTag& InSkillTag, float InCooldown)
+{
+	if (!InSkillTag.IsValid()) return;
+	if (InCooldown <= 0.0f) return;
+
+	SkillCooldownMap.FindOrAdd(InSkillTag) = InCooldown;
+	SkillCooldownRemainingMap.FindOrAdd(InSkillTag) = InCooldown;
+
+	RefreshSkillCooldownUI();
+
+	GetWorldTimerManager().SetTimer(
+		SkillCooldownTimerHandle,
+		this,
+		&ABattlePlayerController::UpdateSkillCooldown,
+		SkillCooldownTickInterval,
+		true
+	);
+}
+
+float ABattlePlayerController::GetSkillCooldownRemaining(const FGameplayTag& InSkillTag) const
+{
+	if (const float* foundRemaining = SkillCooldownRemainingMap.Find(InSkillTag))
+	{
+		return *foundRemaining;
+	}
+	return 0.0f;
+}
+
+float ABattlePlayerController::GetSkillCooldown(const FGameplayTag& InSkillTag) const
+{
+	if (const float* foundCooldown = SkillCooldownMap.Find(InSkillTag))
+	{
+		return *foundCooldown;
+	}
+	return 0.0f;
+}
+
 void ABattlePlayerController::UpdateSkillCooldown()
 {
-	if (BasicAttackCooldownRemaining > 0.0f)
+	TArray<FGameplayTag> expiredSkillTags;
+
+	for (TPair<FGameplayTag, float>& skillCooldownPair : SkillCooldownRemainingMap)
 	{
-		BasicAttackCooldownRemaining = FMath::Max(0.0f, BasicAttackCooldownRemaining - SkillCooldownTickInterval);
+		if (skillCooldownPair.Value > 0.0f)
+		{
+			skillCooldownPair.Value = FMath::Max(0.0f, skillCooldownPair.Value - SkillCooldownTickInterval);
+		}
+
+		if (skillCooldownPair.Value <= 0.0f)
+		{
+			expiredSkillTags.Add(skillCooldownPair.Key);
+		}
 	}
 
-	if (BasicSkillCooldownRemaining > 0.0f)
+	for (const FGameplayTag& expiredSkillTag : expiredSkillTags)
 	{
-		BasicSkillCooldownRemaining = FMath::Max(0.0f, BasicSkillCooldownRemaining - SkillCooldownTickInterval);
-	}
-
-	if (UltimateCooldownRemaining > 0.0f)
-	{
-		UltimateCooldownRemaining = FMath::Max(0.0f, UltimateCooldownRemaining - SkillCooldownTickInterval);
+		SkillCooldownRemainingMap.Remove(expiredSkillTag);
+		SkillCooldownMap.Remove(expiredSkillTag);
 	}
 
 	RefreshSkillCooldownUI();
 
-	if (BasicAttackCooldownRemaining <= 0.0f &&
-		BasicSkillCooldownRemaining <= 0.0f &&
-		UltimateCooldownRemaining <= 0.0f)
+	if (SkillCooldownRemainingMap.IsEmpty())
 	{
 		GetWorldTimerManager().ClearTimer(SkillCooldownTimerHandle);
 	}
@@ -1822,21 +1888,10 @@ void ABattlePlayerController::StartBasicAttackCooldown()
 {
 	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
 	{
-		BasicAttackCooldown = battleSubsystem->GetCurrentBasicAttackCooldown();
-		BasicAttackCooldownRemaining = BasicAttackCooldown;
+		const FGameplayTag skillTag = battleSubsystem->GetCurrentBasicAttackSkillTag();
+		const float cooldown = battleSubsystem->GetCurrentBasicAttackCooldown();
 
-		RefreshSkillCooldownUI();
-
-		if (BasicAttackCooldownRemaining > 0.0f)
-		{
-			GetWorldTimerManager().SetTimer(
-				SkillCooldownTimerHandle,
-				this,
-				&ABattlePlayerController::UpdateSkillCooldown,
-				SkillCooldownTickInterval,
-				true
-			);
-		}
+		StartSkillCooldown(skillTag, cooldown);
 	}
 }
 
@@ -1844,21 +1899,9 @@ void ABattlePlayerController::StartBasicSkillCooldown()
 {
 	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
 	{
-		BasicSkillCooldown = battleSubsystem->GetCurrentBasicSkillCooldown();
-		BasicSkillCooldownRemaining = BasicSkillCooldown;
-
-		RefreshSkillCooldownUI();
-
-		if (BasicSkillCooldownRemaining > 0.0f)
-		{
-			GetWorldTimerManager().SetTimer(
-				SkillCooldownTimerHandle,
-				this,
-				&ABattlePlayerController::UpdateSkillCooldown,
-				SkillCooldownTickInterval,
-				true
-			);
-		}
+		const FGameplayTag skillTag = battleSubsystem->GetCurrentBasicSkillTag();
+		const float cooldown = battleSubsystem->GetCurrentBasicSkillCooldown();
+		StartSkillCooldown(skillTag, cooldown);
 	}
 }
 
@@ -1866,21 +1909,9 @@ void ABattlePlayerController::StartUltimateCooldown()
 {
 	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
 	{
-		UltimateCooldown = battleSubsystem->GetLegendaryUltimateCooldown();
-		UltimateCooldownRemaining = UltimateCooldown;
-
-		RefreshSkillCooldownUI();
-
-		if (UltimateCooldownRemaining > 0.0f)
-		{
-			GetWorldTimerManager().SetTimer(
-				SkillCooldownTimerHandle,
-				this,
-				&ABattlePlayerController::UpdateSkillCooldown,
-				SkillCooldownTickInterval,
-				true
-			);
-		}
+		const FGameplayTag skillTag = battleSubsystem->GetLegendaryUltimateSkillTag();
+		const float cooldown = battleSubsystem->GetLegendaryUltimateCooldown();
+		StartSkillCooldown(skillTag, cooldown);
 	}
 }
 
@@ -1888,26 +1919,36 @@ void ABattlePlayerController::RefreshSkillCooldownUI()
 {
 	if (HUDWidgetInstance)
 	{
-		float basicAttackPercent = 0.0f;
-		if (BasicAttackCooldown > 0.0f)
+		if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
 		{
-			basicAttackPercent = BasicAttackCooldownRemaining / BasicAttackCooldown;
-		}
+			const FGameplayTag basicAttackSkillTag = battleSubsystem->GetCurrentBasicAttackSkillTag();
+			const FGameplayTag basicSkillTag = battleSubsystem->GetCurrentBasicSkillTag();
+			const FGameplayTag ultimateSkillTag = battleSubsystem->GetLegendaryUltimateSkillTag();
 
-		float basicSkillPercent = 0.0f;
-		if (BasicSkillCooldown > 0.0f)
-		{
-			basicSkillPercent = BasicSkillCooldownRemaining / BasicSkillCooldown;
-		}
+			float basicAttackPercent = 0.0f;
+			const float basicAttackCooldown = GetSkillCooldown(basicAttackSkillTag);
+			if (basicAttackCooldown > 0.0f)
+			{
+				basicAttackPercent = GetSkillCooldownRemaining(basicAttackSkillTag) / basicAttackCooldown;
+			}
 
-		float ultimatePercent = 0.0f;
-		if (UltimateCooldown > 0.0f)
-		{
-			ultimatePercent = UltimateCooldownRemaining / UltimateCooldown;
-		}
+			float basicSkillPercent = 0.0f;
+			const float basicSkillCooldown = GetSkillCooldown(basicSkillTag);
+			if (basicSkillCooldown > 0.0f)
+			{
+				basicSkillPercent = GetSkillCooldownRemaining(basicSkillTag) / basicSkillCooldown;
+			}
 
-		HUDWidgetInstance->SetBasicAttackCooldown(basicAttackPercent);
-		HUDWidgetInstance->SetBasicSkillCooldown(basicSkillPercent);
-		HUDWidgetInstance->SetUltimateCooldown(ultimatePercent);
+			float ultimatePercent = 0.0f;
+			const float ultimateCooldown = GetSkillCooldown(ultimateSkillTag);
+			if (ultimateCooldown > 0.0f)
+			{
+				ultimatePercent = GetSkillCooldownRemaining(ultimateSkillTag) / ultimateCooldown;
+			}
+
+			HUDWidgetInstance->SetBasicAttackCooldown(basicAttackPercent);
+			HUDWidgetInstance->SetBasicSkillCooldown(basicSkillPercent);
+			HUDWidgetInstance->SetUltimateCooldown(ultimatePercent);
+		}
 	}
 }

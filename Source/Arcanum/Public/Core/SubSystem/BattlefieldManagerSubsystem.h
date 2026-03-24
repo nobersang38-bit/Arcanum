@@ -29,6 +29,7 @@ public:
 	FGradeStatData PlayerBattleStat;
 	FBattleWeaponSkillData BattleWeaponSkill;
 	FPlayerBattleData PlayerBattleData;
+	//TArray<FItemDefinition> EquipmentStats;
 };
 
 
