@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -7,6 +5,7 @@
 #include "GameplayTags/ArcanumTags.h"
 #include "Interface/TeamInterface.h"
 #include "DataInfo/BattleCharacter/BattleStats/Data/FGradeStatData.h"
+#include "Interface/StatModifierInterface.h"
 #include "PlayerCharacter.generated.h"
 
 /*
@@ -14,7 +13,7 @@
 */
 
 UCLASS()
-class ARCANUM_API APlayerCharacter : public ACharacter, public ITeamInterface
+class ARCANUM_API APlayerCharacter : public ACharacter, public ITeamInterface, public IStatModifierInterface
 	//, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
@@ -23,16 +22,21 @@ public:
 	// Sets default values for this character's properties
 	APlayerCharacter();
 
+	void SetAutoMode(class ABattlePlayerController* MainController, bool bIsAuto);
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
-	virtual FGameplayTag GetTeamTag() override;
+	virtual FGameplayTag GetTeamTag() const override;
 
 	UFUNCTION()
 	void RecievedDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+
+	void AddLevelModifierEntry(const FLevelModifierEntry& LevelModifierEntry) override;
+	void AddDerivedStatModifier(const FDerivedStatModifier& DerivedStatModifier) override;
+	void ChangeStat(const FGameplayTag& InTag, float InValue) override;
 
 public:
 	// ID 태그 바꾸는 함수
@@ -52,6 +56,8 @@ public:
 
 #pragma endregion
 
+	UFUNCTION(BlueprintCallable)
+	USkeletalMeshComponent* GetSourceSkeletaMeshComponent() { return SourceSkeletaMeshComponent; }
 
 protected:
 
@@ -70,6 +76,50 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "StatusAction")
 	TObjectPtr<class UStatusActionComponent> StatusActionComponent = nullptr;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	TObjectPtr<USkeletalMeshComponent> SourceSkeletaMeshComponent = nullptr;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting|AI")
+	TObjectPtr<class UBehaviorTree> BehaviorTree = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting|AI")
+	FName BlackboardBasicAttackName = FName("BasicAttack");
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting|AI")
+	FName BlackboardBasicSkillName = FName("BasicSkill");
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting|AI")
+	FName BlackboardUltimateSkillName = FName("UltimateSkill");
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting|AI")
+	FName BlackboardItem01Name = FName("Item01");
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting|AI")
+	FName BlackboardItem02Name = FName("Item02");
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting|AI")
+	FName BlackboardSwapName = FName("Swap");
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Runtime")
+	TObjectPtr<class UBTPlayerDataObject> AIBasicAttack = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Runtime")
+	TObjectPtr<class UBTPlayerDataObject> AIBasicSkill = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Runtime")
+	TObjectPtr<class UBTPlayerDataObject> AIUltimateSkill = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Runtime")
+	TObjectPtr<class UBTPlayerDataObject> AIItem01 = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Runtime")
+	TObjectPtr<class UBTPlayerDataObject> AIItem02 = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Runtime")
+	TObjectPtr<class UBTPlayerDataObject> AISwap = nullptr;
+
+
 	// 캐릭터 태그
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tags")
 	FGameplayTagContainer GameplayTags;
@@ -84,11 +134,11 @@ protected:
 	FGameplayTag ManaTag = Arcanum::BattleStat::Character::Regen::Mana::Root;
 
 protected:
-	//UPROPERTY()
-	//TMap<FGameplayTag, FRegenStat> RegenStats;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<class AAIController> CachedAIC = nullptr;
 
-	//UPROPERTY()
-	//TMap<FGameplayTag, FNonRegenStat> NonRegenStats;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<ABattlePlayerController> CachedOwnerPC = nullptr;
 
 #pragma region 무기 교체
 public:
@@ -113,12 +163,6 @@ protected:
 
 #pragma region 궁극기 가시화
 public:
-	/* 궁극기 Press 몽타주 재생 */
-	void PlayUltimatePressMontage();
-
-	/* 궁극기 Release 몽타주 재생 */
-	void PlayUltimateReleaseMontage();
-
 	/* 궁극기 조준 데칼 표시 */
 	void ShowUltimatePreview();
 
@@ -127,6 +171,8 @@ public:
 
 	/* 궁극기 조준 데칼 위치 갱신 */
 	void UpdateUltimatePreviewLocation(const FVector& InWorldLocation);
+
+	const FVector GetUltimateLocation() const;
 
 protected:
 	/* 궁극기 조준용 바닥 데칼 */
@@ -138,57 +184,9 @@ protected:
 	FVector UltimatePreviewDecalSize = FVector(40.0f, 200.0f, 200.0f);
 #pragma endregion
 
-#pragma region 초기화, 갱신, 개터
-public:
-	UCameraComponent* GetCamera() const { return Camera; }
-
-	/* 궁극기 Release 몽타주 재생 중 여부 */
-	bool GetIsUltimateReleaseMontagePlaying() const { return bIsUltimateReleaseMontagePlaying; }
-
+#pragma region 갱신
 private:
 	/* 체력 리젠 변경 시 체력바 갱신 */
 	void OnPlayerRegenStatChanged(const FRegenStat& InRegenStat);
-#pragma endregion
-
-#pragma region 기본공격 콤보
-public:
-	/* 기본공격 입력 */
-	void HandleBasicAttackInput();
-
-	/* 몽타주 종료 */
-	UFUNCTION()
-	void OnBasicAttackMontageEnded(UAnimMontage* InMontage, bool bInterrupted);
-	UFUNCTION()
-	void OnCommonSkillMontageEnded(UAnimMontage* InMontage, bool bInterrupted);
-	UFUNCTION()
-	void OnUltimateReleaseMontageEnded(UAnimMontage* InMontage, bool bInterrupted);
-
-	/* 다음 콤보 입력 가능 시작 */
-	UFUNCTION()
-	void EnableNextComboInput();
-
-	/* 다음 콤보 입력 가능 종료 */
-	UFUNCTION()
-	void DisableNextComboInput();
-
-	/* 일반스킬 입력 처리 */
-	void HandleCommonSkillInput();
-
-protected:
-	/* 다음 콤보 진행 또는 콤보 종료 */
-	UFUNCTION()
-	void ProceedBasicAttackCombo();
-
-	/* 기본공격 콤보 상태 초기화 */
-	UFUNCTION()
-	void ResetBasicAttackCombo();
-
-private:
-	int32 BasicAttackComboIndex = 0;
-	bool bCanNextComboInput = false;
-	bool bHasNextComboInput = false;
-	bool bIsBasicAttackMontagePlaying = false;
-	bool bIsCommonSkillMontagePlaying = false;
-	bool bIsUltimateReleaseMontagePlaying = false; 
 #pragma endregion
 };

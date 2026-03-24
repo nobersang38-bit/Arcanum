@@ -134,6 +134,21 @@ void UInBattleHUDWidget::ToggleAutoManualMode(bool bIsChecked)
 	OnToggleAutoManualMode.Broadcast(bIsChecked);
 }
 
+UBattleActionButtonWidget* UInBattleHUDWidget::GetBasicAttack()
+{
+	return BasicAttack;
+}
+
+UBattleActionButtonWidget* UInBattleHUDWidget::GetBasicSkill()
+{
+	return BasicSkill;
+}
+
+UBattleActionButtonWidget* UInBattleHUDWidget::GetUltimateSkill()
+{
+	return UltimateSkill;
+}
+
 // ========================================================
 // 바인딩
 // ========================================================

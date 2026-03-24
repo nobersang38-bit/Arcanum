@@ -108,6 +108,11 @@ public:
 	FORCEINLINE UBattleAllyUnitPanelWidget* GetPlayerInfoPanel() const { return PlayerInfoPanel; }
 #pragma endregion
 
+#pragma region Getter
+	UBattleActionButtonWidget* GetBasicAttack();
+	UBattleActionButtonWidget* GetBasicSkill();
+	UBattleActionButtonWidget* GetUltimateSkill();
+#pragma endregion
 
 
 #pragma region 바인딩

@@ -14,7 +14,7 @@
 #include "Data/Types/BattleStageInfo.h"
 #include "DataInfo/StageData/StageInfo/Data/FStageDataInfo.h"
 #include "DataInfo/SkillData/Data/FBattleWeaponSkillData.h"
-#include "DataInfo/SkillData/Data/FSkillInfo.h"
+#include "Data/Rows/DTBattleStageInfo.h"
 #include "BattlefieldManagerSubsystem.generated.h"
 
 USTRUCT(BlueprintType)
@@ -233,6 +233,9 @@ public:
 	/* 궁극기 종료 후 이전 무기로 복귀 */
 	void EndLegendaryWeaponMode();
 
+	/* 궁극기 활성화 여부*/
+	bool IsLengendaryWeapon() const { return bUsingLegendaryWeapon; }
+
 	/* 현재 활성 무기 스켈레탈 메시 */
 	USkeletalMesh* GetCurrentWeaponMesh() const;
 
@@ -241,29 +244,6 @@ public:
 
 	/* 현재 활성 무기의 장착 타입 태그 */
 	FGameplayTag GetCurrentWeaponSlotTypeTag() const;
-
-	/* 현재 기본공격 스킬 정보*/
-	const FSkillInfo* GetCurrentBasicAttackSkillInfo() const;
-
-	/* 현재 스킬 정보*/
-	const FSkillInfo* GetCurrentBasicSkillInfo() const;
-
-	/* 현재 기본공격 스킬 캐시 Get */
-	const FBattleSkillData* GetCurrentBasicAttackSkillData() const;
-
-	/* 현재 일반스킬 캐시 Get */
-	const FBattleSkillData* GetCurrentBasicSkillData() const;
-
-	/* 현재 전설스킬 캐시 Get */
-	const FBattleSkillData* GetCurrentLegendarySkillData() const;
-
-	/* 쿨타임 */
-	float GetCurrentBasicAttackCooldown() const;
-	float GetCurrentBasicSkillCooldown() const;
-	float GetLegendaryUltimateCooldown() const;
-
-	/* 스킬 태그로 스킬 정보 */
-	const FSkillInfo* FindSkillInfoByTag(const FGameplayTag& InSkillTag) const;
 
 protected:
 	/* 스킬 캐스트타임 */

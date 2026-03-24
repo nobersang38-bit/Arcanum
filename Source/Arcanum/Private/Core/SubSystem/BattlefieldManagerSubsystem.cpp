@@ -15,6 +15,7 @@
 #include "Object/Actor/SpawnCheckDecal.h"
 #include "Core/ARPlayerAccountService.h"
 
+
 void UBattlefieldManagerSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
@@ -350,10 +351,11 @@ void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerDa
 
 	//스테이지 데이터 설정 부분
 	UGameDataSubsystem* GameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
+	FGameplayTag StageTag = Arcanum::BattleStage::Normal::Stage1;
+
 	if (GameDataSubsystem)
 	{
 		// Todo KDH : 나중에 현재 스테이지 태그가 들어와야함
-		FGameplayTag StageTag = Arcanum::BattleStage::Normal::Stage1;
 
 		if (UDataTable** DTStageData = GameDataSubsystem->MasterDataTables.Find(Arcanum::DataTable::StageInfo))
 		{
@@ -370,6 +372,25 @@ void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerDa
 			}
 		}
 	}
+
+	//인스테이지 데이터 설정 부분
+	if (GameDataSubsystem)
+	{
+		if (UDataTable** DTStageData = GameDataSubsystem->MasterDataTables.Find(Arcanum::DataTable::InStageInfo))
+		{
+			TArray<FDTBattleStageInfo*> StageData;
+			(*DTStageData)->GetAllRows<FDTBattleStageInfo>(FString(), StageData);
+			for (int i = 0; i < StageData.Num(); i++)
+			{
+				if (StageData[i] && StageData[i]->StageTag == StageTag)
+				{
+					OutInBattleData.BattleStageInfo = StageData[i]->BattleStageInfo;
+					break;
+				}
+			}
+		}
+	}
+
 	for (const auto& PlayerNonRegen : OutInBattleData.PlayerBattleData.PlayerBattleNonRegenStat)
 	{
 		if (PlayerNonRegen.TagName == AllyBaseStaminaTag)

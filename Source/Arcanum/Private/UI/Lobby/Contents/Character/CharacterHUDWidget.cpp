@@ -16,6 +16,7 @@
 #include "GameplayTags/ArcanumTags.h"
 #include "Data/Types/BaseUnitData.h"
 
+
 #include "Core/ARPlayerAccountService.h"
 #include "Core/ARGameInstance.h"
 #include "Core/SubSystem/GameDataSubsystem.h"
@@ -404,8 +405,10 @@ void UCharacterHUDWidget::CharacterEnhancement(FText InCharacterName, int32 InRe
 	// 소울 소비
 	FCurrencyData* soulData = ParentLobby->CachedPlayerData.PlayerCurrency.CurrencyDatas.Find(Arcanum::PlayerData::Currencies::NonRegen::Soul::Value);
 	const int64 soulAmount = (soulData) ? soulData->CurrAmount : 0;
-	if (soulAmount >= InRequiredSoul)
-		soulData->CurrAmount -= InRequiredSoul;
+	/*if (soulAmount >= InRequiredSoul)
+		soulData->CurrAmount -= InRequiredSoul;*/
+	/// TODO : UpdateCurrency 사용시 캐릭터 CurrStarLevel가 초기화됨
+	FPlayerAccountService::UpdateCurrency(this, ParentLobby->CachedPlayerData, Arcanum::PlayerData::Currencies::NonRegen::Soul::Value, InRequiredSoul * -1);
 
 	FName SelectedCharacterName;
 	CombinedInfoString = "";
@@ -415,68 +418,87 @@ void UCharacterHUDWidget::CharacterEnhancement(FText InCharacterName, int32 InRe
 		FBattleCharacterData& TargetData = ParentLobby->CachedPlayerData.OwnedCharacters[i];
 
 		FGameplayTag CharacterTag = TargetData.CharacterInfo.BattleCharacterInitData.CharacterTag;
-		FName PlayerName = GetLeafNameFromTag(CharacterTag);
 
+		FName PlayerName = GetLeafNameFromTag(CharacterTag);
 		bool bIsSelected = InCharacterName.ToString().Equals(PlayerName.ToString());
 
 		if (bIsSelected)
 		{
 			//CurrStarLevel + 1 저장
-			TargetData.CharacterInfo.CurrStarLevel += 1;
-			SelectedCharacterName = PlayerName;
-			TargetGradeIndex = (TargetData.CharacterInfo.CurrStarLevel > 0) ? TargetData.CharacterInfo.CurrStarLevel - 1 : 0;
-			CharacterStar = TargetGradeIndex;
-			CharacterGrade = GetGradePriority(TargetData.CharacterInfo.CurrGrade);
+			//TargetData.CharacterInfo.CurrStarLevel += 1;
+			if (FPlayerAccountService::UpdateCharacter(this, CharacterTag)) {
+				ParentLobby->CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
 
-			// 최대 강화를 넘지 않기 위해
-			if (TargetGradeIndex < 3)
-			{
-				RequiredSoul = TargetData.CharacterInfo.BattleCharacterInitData.RequiredShardCount[TargetGradeIndex];
-				ButtonText = FText::Format(FText::FromString(TEXT("강화 : {0} 소울")), FText::AsNumber(RequiredSoul));
-			}
-			else
-			{
-				ButtonText = FText::FromString(TEXT("최대 강화"));
-			}
+				for (int32 j = 0; j < ParentLobby->CachedPlayerData.OwnedCharacters.Num(); j++)
+				{
+					FBattleCharacterData& UpdateTargetData = ParentLobby->CachedPlayerData.OwnedCharacters[i];
 
-			if (FDTBattleStatsContainerRow* BattleRow = DataSubsystem->GetRow<FDTBattleStatsContainerRow>(Arcanum::DataTable::BattleStats, PlayerName)) {
-				if (BattleRow->GradeDataSteps.IsValidIndex(TargetGradeIndex)) {
-					const FGradeStatData& CurrentStats = BattleRow->GradeDataSteps[TargetGradeIndex];
-					for (const FRegenStat& RStat : CurrentStats.RegenStats)
+					FGameplayTag UpdateCharacterTag = UpdateTargetData.CharacterInfo.BattleCharacterInitData.CharacterTag;
+
+					FName UpdatePlayerName = GetLeafNameFromTag(UpdateCharacterTag);
+					bool bIsUpdateSelected = InCharacterName.ToString().Equals(UpdatePlayerName.ToString());
+
+					if (bIsUpdateSelected)
 					{
-						FString TagString = RStat.ParentTag.IsValid() ? GetLeafNameFromTag(RStat.ParentTag).ToString() : TEXT("NoTag");
-						FString RowString = FString::Printf(TEXT("%.1f ( %.2f )"), RStat.BaseMax, RStat.BaseTick);
+						SelectedCharacterName = UpdatePlayerName;
+						TargetGradeIndex = (UpdateTargetData.CharacterInfo.CurrStarLevel > 0) ? UpdateTargetData.CharacterInfo.CurrStarLevel - 1 : 0;
+						CharacterStar = TargetGradeIndex;
+						CharacterGrade = GetGradePriority(UpdateTargetData.CharacterInfo.CurrGrade);
 
-						if (CombinedInfoString.IsEmpty())
+						// 최대 강화를 넘지 않기 위해
+						if (TargetGradeIndex < 3)
 						{
-							CombinedInfoString = RowString;
+							RequiredSoul = UpdateTargetData.CharacterInfo.BattleCharacterInitData.RequiredShardCount[TargetGradeIndex];
+							ButtonText = FText::Format(FText::FromString(TEXT("강화 : {0} 소울")), FText::AsNumber(RequiredSoul));
 						}
 						else
 						{
-							CombinedInfoString += LINE_TERMINATOR + RowString; // LINE_TERMINATOR \n 역할
+							ButtonText = FText::FromString(TEXT("최대 강화"));
 						}
-					}
-					for (const FNonRegenStat& NRStat : CurrentStats.NonRegenStats)
-					{
-						FString TagString = NRStat.TagName.IsValid() ? GetLeafNameFromTag(NRStat.TagName).ToString() : TEXT("NoTag");
-						float TotalValue = NRStat.BaseValue + NRStat.BonusValue + NRStat.ModifierValue;
 
-						FString RowString = FString::Printf(TEXT("%.2f"), TotalValue);
-						if (CombinedInfoString.IsEmpty())
-						{
-							CombinedInfoString = RowString;
+						if (FDTBattleStatsContainerRow* BattleRow = DataSubsystem->GetRow<FDTBattleStatsContainerRow>(Arcanum::DataTable::BattleStats, PlayerName)) {
+							if (BattleRow->GradeDataSteps.IsValidIndex(TargetGradeIndex)) {
+								const FGradeStatData& CurrentStats = BattleRow->GradeDataSteps[TargetGradeIndex];
+								for (const FRegenStat& RStat : CurrentStats.RegenStats)
+								{
+									FString TagString = RStat.ParentTag.IsValid() ? GetLeafNameFromTag(RStat.ParentTag).ToString() : TEXT("NoTag");
+									FString RowString = FString::Printf(TEXT("%.1f ( %.2f )"), RStat.BaseMax, RStat.BaseTick);
+
+									if (CombinedInfoString.IsEmpty())
+									{
+										CombinedInfoString = RowString;
+									}
+									else
+									{
+										CombinedInfoString += LINE_TERMINATOR + RowString; // LINE_TERMINATOR \n 역할
+									}
+								}
+								for (const FNonRegenStat& NRStat : CurrentStats.NonRegenStats)
+								{
+									FString TagString = NRStat.TagName.IsValid() ? GetLeafNameFromTag(NRStat.TagName).ToString() : TEXT("NoTag");
+									float TotalValue = NRStat.BaseValue + NRStat.BonusValue + NRStat.ModifierValue;
+
+									FString RowString = FString::Printf(TEXT("%.2f"), TotalValue);
+									if (CombinedInfoString.IsEmpty())
+									{
+										CombinedInfoString = RowString;
+									}
+									else
+									{
+										CombinedInfoString += LINE_TERMINATOR + RowString;
+									}
+								}
+							}
 						}
-						else
-						{
-							CombinedInfoString += LINE_TERMINATOR + RowString;
-						}
+						FinalText = FText::FromString(CombinedInfoString);
+						// Info창 다시 불러오기
+						//const int64 updatedSoulAmount = soulData ? soulData->CurrAmount : 0;
+						UpdateCharacterInfo(SelectedCharacterName, UpdateTargetData.bSelection, true, FinalText, ButtonText, soulAmount);
+						//ParentLobby->CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
+						break;
 					}
 				}
 			}
-			FinalText = FText::FromString(CombinedInfoString);
-			// Info창 다시 불러오기
-			const int64 updatedSoulAmount = soulData ? soulData->CurrAmount : 0;
-			UpdateCharacterInfo(SelectedCharacterName, TargetData.bSelection, true, FinalText, ButtonText, updatedSoulAmount);
 		}
 	}
 }
