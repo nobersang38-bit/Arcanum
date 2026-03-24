@@ -119,8 +119,17 @@ void UBattleActionButtonWidget::SetCoolTimeProgress(float CurrentProgress, float
 void UBattleActionButtonWidget::SetImage(UTexture2D* InImage)
 {
 	FButtonStyle ButtonStyle = ActionButton->GetStyle();
-
-	FSlateBrush NormaSlateBrush = ButtonStyle.Normal;
+	auto UpdateBrush = [&](FSlateBrush& Brush) {
+		if (InImage == nullptr) {
+			Brush.SetResourceObject(nullptr);
+			Brush.DrawAs = ESlateBrushDrawType::NoDrawType; // 무기 장착 안 했을때 아이콘 투명하게
+		}
+		else {
+			Brush.SetResourceObject(InImage);
+			Brush.DrawAs = ESlateBrushDrawType::Image; 
+		}
+	};
+	/*FSlateBrush NormaSlateBrush = ButtonStyle.Normal;
 	NormaSlateBrush.SetResourceObject(InImage);
 
 	FSlateBrush HoveredSlateBrush = ButtonStyle.Hovered;
@@ -135,7 +144,13 @@ void UBattleActionButtonWidget::SetImage(UTexture2D* InImage)
 	ButtonStyle.SetNormal(NormaSlateBrush);
 	ButtonStyle.SetHovered(HoveredSlateBrush);
 	ButtonStyle.SetPressed(PressedSlateBrush);
-	ButtonStyle.SetDisabled(DisabledSlateBrush);
+	ButtonStyle.SetDisabled(DisabledSlateBrush);*/
+
+	UpdateBrush(ButtonStyle.Normal);
+	UpdateBrush(ButtonStyle.Hovered);
+	UpdateBrush(ButtonStyle.Pressed);
+	UpdateBrush(ButtonStyle.Disabled);
+
 	ActionButton->SetStyle(ButtonStyle);
 }
 
