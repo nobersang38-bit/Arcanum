@@ -11,6 +11,14 @@
 #include "GameplayTags/ArcanumTags.h"
 #include "BattlePlayerController.generated.h"
 
+UENUM()
+enum class ESkillType : uint8
+{
+	BasicAttack,
+	BasicSkill,
+	UltimateSkill
+};
+
 class UInputMappingContext;
 class UInputAction;
 class UInBattleHUDWidget;
@@ -95,7 +103,7 @@ public:
 	void SetBossHealthProgress(float CurrentHealth, float MaxHealth);
 
 	UFUNCTION()
-	bool SkillCostChecker(FGameplayTag InSkillTag, int32 InLevel);
+	bool SkillCostChecker(FGameplayTag InSkillTag, int32 InLevel, bool bIsOnlyManaCheck = false);
 
 #pragma endregion
 
@@ -186,7 +194,10 @@ protected:
 
 	// 쿨타임을 계속 줄임
 	UFUNCTION()
-	void Internal_UnitsCoolTimeTick(float DeltaTime);
+	void Internal_CoolTimeTick(float DeltaTime);
+
+	UFUNCTION()
+	void InitialSkillBase();
 
 #pragma endregion
 
@@ -255,7 +266,6 @@ protected:
 	UPROPERTY()
 	TMap<FGameplayTag, class UBattleAllyUnitSlotWidget*> UsingAllyUnitSlots;
 
-	// Todo KDH : 데이터 가져오게 변경해야함
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FRegenStat MeatValue;
 
@@ -293,7 +303,10 @@ protected:
 	FGameplayTag MeatTag = Arcanum::BattleStat::Player::Regen::Meat::Root;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
-	FGameplayTag ManaTag = Arcanum::BattleStat::Character::Regen::Mana::Value;
+	FGameplayTag ManaValueTag = Arcanum::BattleStat::Character::Regen::Mana::Value;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
+	FGameplayTag ManaTag = Arcanum::BattleStat::Character::Regen::Mana::Root;
 
 
 private:

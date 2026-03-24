@@ -80,6 +80,12 @@ protected:
 #pragma region 에디터 변경 및 런타임 참조용
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "에디터 변경용")
 	FText IconText = FText::FromString(TEXT("버튼"));
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "에디터 변경용")
+	bool bUseDisableImage = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "에디터 변경용")
+	bool bUseCoolTimeProgressBar = true;
 #pragma endregion
 
 

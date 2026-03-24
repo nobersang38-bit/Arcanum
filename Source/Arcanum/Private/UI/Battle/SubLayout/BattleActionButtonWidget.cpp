@@ -26,6 +26,16 @@ void UBattleActionButtonWidget::NativeConstruct()
 		//UE_LOG(LogTemp, Warning, TEXT("작동!!!!!!!!! %s"), *IconText.ToString());
 	}
 	SetProgressesVisible(false);
+
+	if (!bUseDisableImage)
+	{
+		DisabledImage->SetVisibility(ESlateVisibility::Hidden);
+	}
+
+	if (!bUseCoolTimeProgressBar)
+	{
+		CoolTimeProgress->SetVisibility(ESlateVisibility::Hidden);
+	}
 }
 
 #if WITH_EDITOR
@@ -64,33 +74,40 @@ void UBattleActionButtonWidget::PostEditChangeProperty(FPropertyChangedEvent& Pr
 
 void UBattleActionButtonWidget::SetActivateCost(bool InIsDisable)
 {
-	if (InIsDisable)
+	if (bUseDisableImage)
 	{
-		DisabledImage->SetVisibility(ESlateVisibility::HitTestInvisible);
+		if (InIsDisable)
+		{
+			DisabledImage->SetVisibility(ESlateVisibility::HitTestInvisible);
+		}
+		else
+		{
+			DisabledImage->SetVisibility(ESlateVisibility::Hidden);
+		}
 	}
-	else
-	{
-		DisabledImage->SetVisibility(ESlateVisibility::Hidden);
-	}
+	
 }
 
 void UBattleActionButtonWidget::SetCoolTimeProgress(float CurrentProgress, float MaxProgress)
 {
-	SetProgressesVisible(true);
-	if (CoolTimeProgress)
+	if (bUseCoolTimeProgressBar)
 	{
-		CoolTimeProgress->SetPercent(CurrentProgress / MaxProgress);
-	}
-	if(ActionText)
-	{
-		FString Result = FString::Printf(TEXT("%d"), FMath::RoundToInt(CurrentProgress));
-		ActionText->SetText(FText::FromString(Result));
-	}
+		SetProgressesVisible(true);
+		if (CoolTimeProgress)
+		{
+			CoolTimeProgress->SetPercent(CurrentProgress / MaxProgress);
+		}
+		if (ActionText)
+		{
+			FString Result = FString::Printf(TEXT("%d"), FMath::RoundToInt(CurrentProgress));
+			ActionText->SetText(FText::FromString(Result));
+		}
 
-	if (CurrentProgress <= 0.0f)
-	{
-		SetProgressesVisible(false);
-		ActionText->SetText(IconText);
+		if (CurrentProgress <= 0.0f)
+		{
+			SetProgressesVisible(false);
+			ActionText->SetText(IconText);
+		}
 	}
 }
 
