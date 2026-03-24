@@ -8,7 +8,16 @@
 #include "Data/Types/UnitData.h"
 #include "Data/Types/MatchData.h"
 #include "DataInfo/SkillData/Data/FBattleWeaponSkillData.h"
+#include "GameplayTags/ArcanumTags.h"
 #include "BattlePlayerController.generated.h"
+
+UENUM()
+enum class ESkillType : uint8
+{
+	BasicAttack,
+	BasicSkill,
+	UltimateSkill
+};
 
 class UInputMappingContext;
 class UInputAction;
@@ -20,7 +29,7 @@ UCLASS()
 class ARCANUM_API ABattlePlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	friend struct FBTPlayerStruct;
+	friend class UBTPlayerDataObject;
 #pragma region 언리얼 기본생성
 protected:
 	virtual void BeginPlay() override;
@@ -93,6 +102,8 @@ public:
 	UFUNCTION()
 	void SetBossHealthProgress(float CurrentHealth, float MaxHealth);
 
+	UFUNCTION()
+	bool SkillCostChecker(FGameplayTag InSkillTag, int32 InLevel, bool bIsOnlyManaCheck = false);
 
 #pragma endregion
 
@@ -115,6 +126,18 @@ protected:
 	void Item2();
 
 	UFUNCTION()
+	bool SkillStarter(FGameplayTag InSkillTag, int32 InLevel, bool bIsUltimate = false);
+
+	UFUNCTION()
+	void ReadySkillSet(FGameplayTag InSkillTag, int32 InLevel, bool bIsUltimate = false);
+
+	UFUNCTION()
+	void CurrentSelectedSkillStarter();
+
+	UFUNCTION()
+	void SkillCancel();
+
+	UFUNCTION()
 	void AutoManualModeMobile(bool bIsChecked);
 
 	UFUNCTION()
@@ -133,7 +156,7 @@ protected:
 	void SetSpawnDecalActive(bool bIsOn);
 
 	UFUNCTION()
-	ABaseUnitCharacter* Internal_SpawnUnit();
+	ABaseUnitCharacter* Internal_SpawnUnit(const FVector InSpawnLocation = FVector::ZeroVector);
 
 	// 사용할 고기
 	UFUNCTION()
@@ -146,6 +169,10 @@ protected:
 	// 쿨타임
 	UFUNCTION()
 	bool UseCoolTime(FGameplayTag InTag);
+
+	// 스킬 쿨타임
+	UFUNCTION()
+	bool UseSkillCost(FGameplayTag InTag);
 #pragma endregion
 
 #pragma region 전투 종료
@@ -167,7 +194,10 @@ protected:
 
 	// 쿨타임을 계속 줄임
 	UFUNCTION()
-	void Internal_UnitsCoolTimeTick(float DeltaTime);
+	void Internal_CoolTimeTick(float DeltaTime);
+
+	UFUNCTION()
+	void InitialSkillBase();
 
 #pragma endregion
 
@@ -230,13 +260,12 @@ protected:
 	TWeakObjectPtr<AActor> EnemyBasement = nullptr;
 
 protected:
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TMap<FGameplayTag, FUnitInfoSetting> UsingAllyUnits;
 
 	UPROPERTY()
 	TMap<FGameplayTag, class UBattleAllyUnitSlotWidget*> UsingAllyUnitSlots;
 
-	// Todo KDH : 데이터 가져오게 변경해야함
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FRegenStat MeatValue;
 
@@ -258,10 +287,54 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TWeakObjectPtr<ABaseUnitCharacter> SelectedUnit2 = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
+	TSubclassOf<class ASelectedArrow> SelectedArrowClass = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Setting")
+	TObjectPtr<class ASelectedArrow> SelectedArrowInstance = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
+	TSubclassOf<class ASkillRangeDecal> SkillRangeDecalClass = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Setting")
+	TObjectPtr<class ASkillRangeDecal> SkillRangeDecalInstance = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
+	FGameplayTag MeatTag = Arcanum::BattleStat::Player::Regen::Meat::Root;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
+	FGameplayTag ManaValueTag = Arcanum::BattleStat::Character::Regen::Mana::Value;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
+	FGameplayTag ManaTag = Arcanum::BattleStat::Character::Regen::Mana::Root;
+
+
 private:
 	FTimerHandle PlayerLocationProgressTimeHandle;
 	bool bIsAutoManual = false;
 	float StageTimeSecond = 0.0f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TMap<FGameplayTag, float> SkillCoolTimes;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TMap<FGameplayTag, TObjectPtr<class USkillBase>> SkillBaseInstances;
+
+	UPROPERTY()
+	TWeakObjectPtr<class APlayerCharacter> CachedPlayerCharacter = nullptr;
+
+	UPROPERTY()
+	TWeakObjectPtr<class USkillBase> CurrentSelectedSkillBase = nullptr;
+
+	FVector SkillLocation = FVector::ZeroVector;
+
+	bool bIsSkillSuccess = false;
+
+	UPROPERTY()
+	TWeakObjectPtr<class APostProcessVolume> CachedPostProcessVolume = nullptr;
+
+	UPROPERTY()
+	TWeakObjectPtr<AActor> SkillTargetActor = nullptr;
 
 #pragma region 궁극기 처리
 protected:

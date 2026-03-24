@@ -14,6 +14,7 @@
 #include "Data/Types/BattleStageInfo.h"
 #include "DataInfo/StageData/StageInfo/Data/FStageDataInfo.h"
 #include "DataInfo/SkillData/Data/FBattleWeaponSkillData.h"
+#include "Data/Rows/DTBattleStageInfo.h"
 #include "BattlefieldManagerSubsystem.generated.h"
 
 USTRUCT(BlueprintType)
@@ -231,6 +232,9 @@ public:
 
 	/* 궁극기 종료 후 이전 무기로 복귀 */
 	void EndLegendaryWeaponMode();
+
+	/* 궁극기 활성화 여부*/
+	bool IsLengendaryWeapon() const { return bUsingLegendaryWeapon; }
 
 	/* 현재 활성 무기 스켈레탈 메시 */
 	USkeletalMesh* GetCurrentWeaponMesh() const;
