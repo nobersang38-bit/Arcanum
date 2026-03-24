@@ -161,8 +161,13 @@ protected:
 	FName WeaponAttachSocketName = TEXT("Weapon_R");
 #pragma endregion
 
-#pragma region 궁극기 가시화
 public:
+	/* 궁극기 Press 몽타주 재생 */
+	void PlayUltimatePressMontage();
+
+	/* 궁극기 Release 몽타주 재생 */
+	void PlayUltimateReleaseMontage();
+
 	/* 궁극기 조준 데칼 표시 */
 	void ShowUltimatePreview();
 
@@ -172,9 +177,8 @@ public:
 	/* 궁극기 조준 데칼 위치 갱신 */
 	void UpdateUltimatePreviewLocation(const FVector& InWorldLocation);
 
-	const FVector GetUltimateLocation() const;
-
 protected:
+
 	/* 궁극기 조준용 바닥 데칼 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ultimate")
 	TObjectPtr<class UDecalComponent> UltimatePreviewDecalComponent = nullptr;
@@ -184,9 +188,58 @@ protected:
 	FVector UltimatePreviewDecalSize = FVector(40.0f, 200.0f, 200.0f);
 #pragma endregion
 
-#pragma region 갱신
+#pragma region 초기화, 갱신, 개터
+public:
+	UCameraComponent* GetCamera() const { return Camera; }
+
+	/* 궁극기 Release 몽타주 재생 중 여부 */
+	bool GetIsUltimateReleaseMontagePlaying() const { return bIsUltimateReleaseMontagePlaying; }
+	const FVector GetUltimateLocation() const;
+
 private:
 	/* 체력 리젠 변경 시 체력바 갱신 */
 	void OnPlayerRegenStatChanged(const FRegenStat& InRegenStat);
+#pragma endregion
+
+#pragma region 기본공격 콤보
+public:
+	/* 기본공격 입력 */
+	void HandleBasicAttackInput();
+
+	/* 몽타주 종료 */
+	UFUNCTION()
+	void OnBasicAttackMontageEnded(UAnimMontage* InMontage, bool bInterrupted);
+	UFUNCTION()
+	void OnCommonSkillMontageEnded(UAnimMontage* InMontage, bool bInterrupted);
+	UFUNCTION()
+	void OnUltimateReleaseMontageEnded(UAnimMontage* InMontage, bool bInterrupted);
+
+	/* 다음 콤보 입력 가능 시작 */
+	UFUNCTION()
+	void EnableNextComboInput();
+
+	/* 다음 콤보 입력 가능 종료 */
+	UFUNCTION()
+	void DisableNextComboInput();
+
+	/* 일반스킬 입력 처리 */
+	void HandleCommonSkillInput();
+
+protected:
+	/* 다음 콤보 진행 또는 콤보 종료 */
+	UFUNCTION()
+	void ProceedBasicAttackCombo();
+
+	/* 기본공격 콤보 상태 초기화 */
+	UFUNCTION()
+	void ResetBasicAttackCombo();
+
+private:
+	int32 BasicAttackComboIndex = 0;
+	bool bCanNextComboInput = false;
+	bool bHasNextComboInput = false;
+	bool bIsBasicAttackMontagePlaying = false;
+	bool bIsCommonSkillMontagePlaying = false;
+	bool bIsUltimateReleaseMontagePlaying = false;
 #pragma endregion
 };

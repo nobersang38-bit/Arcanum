@@ -61,6 +61,9 @@ struct FSkillInfo {
     TSoftObjectPtr<UTexture2D> Icon;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    float EnabledRange = 300.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
     TArray<TSoftObjectPtr<UAnimMontage>> ComboMontages;
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     TSoftObjectPtr<UAnimMontage> CastMontage;

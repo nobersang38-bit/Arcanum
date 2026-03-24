@@ -465,8 +465,10 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 		{
 			if (InEquipInfo)
 			{
+				const int32 skillLevel = InEquipInfo->CurrUpgradeLevel + 1;
+
 				OutBasicAttackSkill.SkillTag = InEquipInfo->Equipment.BasicAttackSkillTag;
-				OutBasicAttackSkill.SkillLevel = InEquipInfo->CurrUpgradeLevel;
+				OutBasicAttackSkill.SkillLevel = skillLevel;
 				OutBasicAttackSkill.SkillIcon = FindSkillIcon(OutBasicAttackSkill.SkillTag);
 				OutBasicAttackSkill.Cooldown = FindSkillCooldown(OutBasicAttackSkill.SkillTag, OutBasicAttackSkill.SkillLevel);
 
@@ -488,10 +490,10 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 					if (skillPair.Value <= 0) continue;
 
 					OutBasicSkill.SkillTag = skillPair.Key;
-					OutBasicSkill.SkillLevel = InEquipInfo->CurrUpgradeLevel;
-					OutBasicSkill.CastTime = FindSkillCastTime(OutBasicSkill.SkillTag, OutBasicSkill.SkillLevel);
+					OutBasicSkill.SkillLevel = skillLevel;
 					OutBasicSkill.SkillIcon = FindSkillIcon(OutBasicSkill.SkillTag);
-					OutBasicSkill.Cooldown = FindSkillCooldown(OutBasicSkill.SkillTag, OutBasicSkill.SkillLevel);
+					OutBasicSkill.CastTime = FindSkillCastTime(OutBasicSkill.SkillTag, skillLevel);
+					OutBasicSkill.Cooldown = FindSkillCooldown(OutBasicSkill.SkillTag, skillLevel);
 
 					if (const FSkillInfo* basicSkillInfo = FindSkillInfoByTag(OutBasicSkill.SkillTag))
 					{
@@ -509,6 +511,8 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 		{
 			if (InEquipInfo)
 			{
+				const int32 skillLevel = InEquipInfo->CurrUpgradeLevel + 1;
+
 				for (const TPair<FGameplayTag, int32>& skillPair : InEquipInfo->Equipment.Skills)
 				{
 					if (!skillPair.Key.IsValid()) continue;
@@ -516,10 +520,10 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 					if (skillPair.Value <= 0) continue;
 
 					OutUltimateSkill.SkillTag = skillPair.Key;
-					OutUltimateSkill.SkillLevel = InEquipInfo->CurrUpgradeLevel;
-					OutUltimateSkill.CastTime = FindSkillCastTime(OutUltimateSkill.SkillTag, OutUltimateSkill.SkillLevel);
+					OutUltimateSkill.SkillLevel = skillLevel;
 					OutUltimateSkill.SkillIcon = FindSkillIcon(OutUltimateSkill.SkillTag);
-					OutUltimateSkill.Cooldown = FindSkillCooldown(OutUltimateSkill.SkillTag, OutUltimateSkill.SkillLevel);
+					OutUltimateSkill.CastTime = FindSkillCastTime(OutUltimateSkill.SkillTag, skillLevel);
+					OutUltimateSkill.Cooldown = FindSkillCooldown(OutUltimateSkill.SkillTag, skillLevel);
 
 					if (const FSkillInfo* ultimateSkillInfo = FindSkillInfoByTag(OutUltimateSkill.SkillTag))
 					{

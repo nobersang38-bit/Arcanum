@@ -6,41 +6,14 @@
       "DisplayName": "기본 근접 공격",
       "SkillTypeTag": "Arcanum.Skills.SkillTypes.Active",
       "TargetTypeTag": "Arcanum.Skills.TargetingType.Unit",
-      "TargetFilterTag": "Arcanum.Unit.Enemy",
+      "TargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
       "SkillVFXTag": [
         "Arcanum.Skills.SkillVFX.None"
       ],
       "Icon": "",
+      "EnabledRange": 500.0,
       "SkillClass": "",
       "LevelModifiers": [
-        {
-          "Level": 0,
-          "CastTime": 0.0,
-          "Cooldown": 0.0,
-          "Cost": [],
-          "Effect": "",
-          "OtherCharacterModifiers": [
-            {
-              "ModifierId": {
-                "A": 0,
-                "B": 0,
-                "C": 0,
-                "D": 0
-              },
-              "SourceTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
-              "Value": {
-                "Flat": -5.0,
-                "Mul": 1.0
-              },
-              "bIsPermanent": false,
-              "Duration": 0.0,
-              "ModifierPolicy": "Refresh",
-              "MaxStack": 5
-            }
-          ],
-          "TargetEffect": ""
-        },
         {
           "Level": 1,
           "CastTime": 0.0,
@@ -56,7 +29,7 @@
                 "D": 0
               },
               "SourceTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
               "Value": {
                 "Flat": -10.0,
                 "Mul": 1.0
@@ -84,7 +57,7 @@
                 "D": 0
               },
               "SourceTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
               "Value": {
                 "Flat": -15.0,
                 "Mul": 1.0
@@ -112,7 +85,7 @@
                 "D": 0
               },
               "SourceTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
               "Value": {
                 "Flat": -20.0,
                 "Mul": 1.0
@@ -140,37 +113,9 @@
                 "D": 0
               },
               "SourceTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
               "Value": {
                 "Flat": -25.0,
-                "Mul": 1.0
-              },
-              "bIsPermanent": false,
-              "Duration": 0.0,
-              "ModifierPolicy": "Refresh",
-              "MaxStack": 5
-            }
-          ],
-          "TargetEffect": ""
-        },
-        {
-          "Level": 5,
-          "CastTime": 0.0,
-          "Cooldown": 0.0,
-          "Cost": [],
-          "Effect": "",
-          "OtherCharacterModifiers": [
-            {
-              "ModifierId": {
-                "A": 0,
-                "B": 0,
-                "C": 0,
-                "D": 0
-              },
-              "SourceTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
-              "Value": {
-                "Flat": -30.0,
                 "Mul": 1.0
               },
               "bIsPermanent": false,
@@ -199,41 +144,14 @@
       "DisplayName": "기본 원거리 공격",
       "SkillTypeTag": "Arcanum.Skills.SkillTypes.Active",
       "TargetTypeTag": "Arcanum.Skills.TargetingType.Unit",
-      "TargetFilterTag": "Arcanum.Unit.Enemy",
+      "TargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
       "SkillVFXTag": [
         "Arcanum.Skills.SkillVFX.None"
       ],
       "Icon": "",
+      "EnabledRange": 500.0,
       "SkillClass": "",
       "LevelModifiers": [
-        {
-          "Level": 0,
-          "CastTime": 0.0,
-          "Cooldown": 0.0,
-          "Cost": [],
-          "Effect": "",
-          "OtherCharacterModifiers": [
-            {
-              "ModifierId": {
-                "A": 0,
-                "B": 0,
-                "C": 0,
-                "D": 0
-              },
-              "SourceTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
-              "Value": {
-                "Flat": -5.0,
-                "Mul": 1.0
-              },
-              "bIsPermanent": false,
-              "Duration": 0.0,
-              "ModifierPolicy": "Refresh",
-              "MaxStack": 5
-            }
-          ],
-          "TargetEffect": ""
-        },
         {
           "Level": 1,
           "CastTime": 0.0,
@@ -249,7 +167,7 @@
                 "D": 0
               },
               "SourceTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
               "Value": {
                 "Flat": -10.0,
                 "Mul": 1.0
@@ -277,7 +195,7 @@
                 "D": 0
               },
               "SourceTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
               "Value": {
                 "Flat": -15.0,
                 "Mul": 1.0
@@ -305,7 +223,7 @@
                 "D": 0
               },
               "SourceTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
               "Value": {
                 "Flat": -20.0,
                 "Mul": 1.0
@@ -333,37 +251,9 @@
                 "D": 0
               },
               "SourceTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
               "Value": {
                 "Flat": -25.0,
-                "Mul": 1.0
-              },
-              "bIsPermanent": false,
-              "Duration": 0.0,
-              "ModifierPolicy": "Refresh",
-              "MaxStack": 5
-            }
-          ],
-          "TargetEffect": ""
-        },
-        {
-          "Level": 5,
-          "CastTime": 0.0,
-          "Cooldown": 0.0,
-          "Cost": [],
-          "Effect": "",
-          "OtherCharacterModifiers": [
-            {
-              "ModifierId": {
-                "A": 0,
-                "B": 0,
-                "C": 0,
-                "D": 0
-              },
-              "SourceTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
-              "Value": {
-                "Flat": -30.0,
                 "Mul": 1.0
               },
               "bIsPermanent": false,
@@ -392,41 +282,14 @@
       "DisplayName": "쇼크웨이브",
       "SkillTypeTag": "Arcanum.Skills.SkillTypes.Active",
       "TargetTypeTag": "Arcanum.Skills.TargetingType.Unit",
-      "TargetFilterTag": "Arcanum.Unit.Enemy",
+      "TargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
       "SkillVFXTag": [
         "Arcanum.Skills.SkillVFX.None"
       ],
       "Icon": "/Game/Assets/UI/Icon/Skill/Icon_ShockWave.Icon_ShockWave",
+      "EnabledRange": 500.0,
       "SkillClass": "",
       "LevelModifiers": [
-        {
-          "Level": 0,
-          "CastTime": 0.1,
-          "Cooldown": 5.0,
-          "Cost": [],
-          "Effect": "",
-          "OtherCharacterModifiers": [
-            {
-              "ModifierId": {
-                "A": 0,
-                "B": 0,
-                "C": 0,
-                "D": 0
-              },
-              "SourceTag": "Arcanum.Skills.SkillName.ShockWave",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
-              "Value": {
-                "Flat": -30.0,
-                "Mul": 1.0
-              },
-              "bIsPermanent": false,
-              "Duration": 0.0,
-              "ModifierPolicy": "Refresh",
-              "MaxStack": 5
-            }
-          ],
-          "TargetEffect": ""
-        },
         {
           "Level": 1,
           "CastTime": 0.1,
@@ -442,7 +305,7 @@
                 "D": 0
               },
               "SourceTag": "Arcanum.Skills.SkillName.ShockWave",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
               "Value": {
                 "Flat": -40.0,
                 "Mul": 1.0
@@ -470,7 +333,7 @@
                 "D": 0
               },
               "SourceTag": "Arcanum.Skills.SkillName.ShockWave",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
               "Value": {
                 "Flat": -50.0,
                 "Mul": 1.0
@@ -498,7 +361,7 @@
                 "D": 0
               },
               "SourceTag": "Arcanum.Skills.SkillName.ShockWave",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
               "Value": {
                 "Flat": -60.0,
                 "Mul": 1.0
@@ -526,37 +389,9 @@
                 "D": 0
               },
               "SourceTag": "Arcanum.Skills.SkillName.ShockWave",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
               "Value": {
                 "Flat": -70.0,
-                "Mul": 1.0
-              },
-              "bIsPermanent": false,
-              "Duration": 0.0,
-              "ModifierPolicy": "Refresh",
-              "MaxStack": 5
-            }
-          ],
-          "TargetEffect": ""
-        },
-        {
-          "Level": 5,
-          "CastTime": 0.1,
-          "Cooldown": 5.0,
-          "Cost": [],
-          "Effect": "",
-          "OtherCharacterModifiers": [
-            {
-              "ModifierId": {
-                "A": 0,
-                "B": 0,
-                "C": 0,
-                "D": 0
-              },
-              "SourceTag": "Arcanum.Skills.SkillName.ShockWave",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
-              "Value": {
-                "Flat": -80.0,
                 "Mul": 1.0
               },
               "bIsPermanent": false,
@@ -581,60 +416,14 @@
       "DisplayName": "체인볼트",
       "SkillTypeTag": "Arcanum.Skills.SkillTypes.Active",
       "TargetTypeTag": "Arcanum.Skills.TargetingType.Unit",
-      "TargetFilterTag": "Arcanum.Unit.Enemy",
+      "TargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
       "SkillVFXTag": [
         "Arcanum.Skills.SkillVFX.None"
       ],
       "Icon": "/Game/Assets/UI/Icon/Skill/Icon_ChainBolt.Icon_ChainBolt",
+      "EnabledRange": 500.0,
       "SkillClass": "",
       "LevelModifiers": [
-        {
-          "Level": 0,
-          "CastTime": 0.1,
-          "Cooldown": 5.0,
-          "Cost": [
-            {
-              "ModifierId": {
-                "A": 0,
-                "B": 0,
-                "C": 0,
-                "D": 0
-              },
-              "SourceTag": "Arcanum.Skills.SkillName.ChainBolt",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Value",
-              "Value": {
-                "Flat": -10.0,
-                "Mul": 1.0
-              },
-              "bIsPermanent": false,
-              "Duration": 0.0,
-              "ModifierPolicy": "Refresh",
-              "MaxStack": 5
-            }
-          ],
-          "Effect": "",
-          "OtherCharacterModifiers": [
-            {
-              "ModifierId": {
-                "A": 0,
-                "B": 0,
-                "C": 0,
-                "D": 0
-              },
-              "SourceTag": "Arcanum.Skills.SkillName.ChainBolt",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
-              "Value": {
-                "Flat": -30.0,
-                "Mul": 1.0
-              },
-              "bIsPermanent": false,
-              "Duration": 0.0,
-              "ModifierPolicy": "Refresh",
-              "MaxStack": 5
-            }
-          ],
-          "TargetEffect": ""
-        },
         {
           "Level": 1,
           "CastTime": 0.1,
@@ -669,7 +458,7 @@
                 "D": 0
               },
               "SourceTag": "Arcanum.Skills.SkillName.ChainBolt",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
               "Value": {
                 "Flat": -40.0,
                 "Mul": 1.0
@@ -716,7 +505,7 @@
                 "D": 0
               },
               "SourceTag": "Arcanum.Skills.SkillName.ChainBolt",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
               "Value": {
                 "Flat": -50.0,
                 "Mul": 1.0
@@ -763,7 +552,7 @@
                 "D": 0
               },
               "SourceTag": "Arcanum.Skills.SkillName.ChainBolt",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
               "Value": {
                 "Flat": -60.0,
                 "Mul": 1.0
@@ -810,56 +599,9 @@
                 "D": 0
               },
               "SourceTag": "Arcanum.Skills.SkillName.ChainBolt",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
               "Value": {
                 "Flat": -70.0,
-                "Mul": 1.0
-              },
-              "bIsPermanent": false,
-              "Duration": 0.0,
-              "ModifierPolicy": "Refresh",
-              "MaxStack": 5
-            }
-          ],
-          "TargetEffect": ""
-        },
-        {
-          "Level": 5,
-          "CastTime": 0.1,
-          "Cooldown": 5.0,
-          "Cost": [
-            {
-              "ModifierId": {
-                "A": 0,
-                "B": 0,
-                "C": 0,
-                "D": 0
-              },
-              "SourceTag": "Arcanum.Skills.SkillName.ChainBolt",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Value",
-              "Value": {
-                "Flat": -10.0,
-                "Mul": 1.0
-              },
-              "bIsPermanent": false,
-              "Duration": 0.0,
-              "ModifierPolicy": "Refresh",
-              "MaxStack": 5
-            }
-          ],
-          "Effect": "",
-          "OtherCharacterModifiers": [
-            {
-              "ModifierId": {
-                "A": 0,
-                "B": 0,
-                "C": 0,
-                "D": 0
-              },
-              "SourceTag": "Arcanum.Skills.SkillName.ChainBolt",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
-              "Value": {
-                "Flat": -80.0,
                 "Mul": 1.0
               },
               "bIsPermanent": false,
@@ -884,60 +626,14 @@
       "DisplayName": "솔라플레어",
       "SkillTypeTag": "Arcanum.Skills.SkillTypes.Active",
       "TargetTypeTag": "Arcanum.Skills.TargetingType.Ground",
-      "TargetFilterTag": "Arcanum.Unit.Enemy",
+      "TargetFilterTag": "Arcanum.Skills.TargetFilter.Enemy",
       "SkillVFXTag": [
         "Arcanum.Skills.SkillVFX.Burn"
       ],
       "Icon": "/Game/Assets/UI/Icon/Skill/Icon_SolarFlare.Icon_SolarFlare",
+      "EnabledRange": 500.0,
       "SkillClass": "",
       "LevelModifiers": [
-        {
-          "Level": 0,
-          "CastTime": 2.0,
-          "Cooldown": 20.0,
-          "Cost": [
-            {
-              "ModifierId": {
-                "A": 0,
-                "B": 0,
-                "C": 0,
-                "D": 0
-              },
-              "SourceTag": "Arcanum.Skills.SkillName.SolarFlare",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Value",
-              "Value": {
-                "Flat": -30.0,
-                "Mul": 1.0
-              },
-              "bIsPermanent": false,
-              "Duration": 0.0,
-              "ModifierPolicy": "Refresh",
-              "MaxStack": 5
-            }
-          ],
-          "Effect": "",
-          "OtherCharacterModifiers": [
-            {
-              "ModifierId": {
-                "A": 0,
-                "B": 0,
-                "C": 0,
-                "D": 0
-              },
-              "SourceTag": "Arcanum.Skills.SkillName.SolarFlare",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
-              "Value": {
-                "Flat": -60.0,
-                "Mul": 1.0
-              },
-              "bIsPermanent": false,
-              "Duration": 0.0,
-              "ModifierPolicy": "Refresh",
-              "MaxStack": 5
-            }
-          ],
-          "TargetEffect": ""
-        },
         {
           "Level": 1,
           "CastTime": 2.0,
@@ -972,7 +668,7 @@
                 "D": 0
               },
               "SourceTag": "Arcanum.Skills.SkillName.SolarFlare",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
               "Value": {
                 "Flat": -70.0,
                 "Mul": 1.0
@@ -1019,7 +715,7 @@
                 "D": 0
               },
               "SourceTag": "Arcanum.Skills.SkillName.SolarFlare",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
               "Value": {
                 "Flat": -80.0,
                 "Mul": 1.0
@@ -1066,7 +762,7 @@
                 "D": 0
               },
               "SourceTag": "Arcanum.Skills.SkillName.SolarFlare",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
               "Value": {
                 "Flat": -90.0,
                 "Mul": 1.0
@@ -1113,56 +809,9 @@
                 "D": 0
               },
               "SourceTag": "Arcanum.Skills.SkillName.SolarFlare",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
               "Value": {
                 "Flat": -100.0,
-                "Mul": 1.0
-              },
-              "bIsPermanent": false,
-              "Duration": 0.0,
-              "ModifierPolicy": "Refresh",
-              "MaxStack": 5
-            }
-          ],
-          "TargetEffect": ""
-        },
-        {
-          "Level": 5,
-          "CastTime": 2.0,
-          "Cooldown": 20.0,
-          "Cost": [
-            {
-              "ModifierId": {
-                "A": 0,
-                "B": 0,
-                "C": 0,
-                "D": 0
-              },
-              "SourceTag": "Arcanum.Skills.SkillName.SolarFlare",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Value",
-              "Value": {
-                "Flat": -30.0,
-                "Mul": 1.0
-              },
-              "bIsPermanent": false,
-              "Duration": 0.0,
-              "ModifierPolicy": "Refresh",
-              "MaxStack": 5
-            }
-          ],
-          "Effect": "",
-          "OtherCharacterModifiers": [
-            {
-              "ModifierId": {
-                "A": 0,
-                "B": 0,
-                "C": 0,
-                "D": 0
-              },
-              "SourceTag": "Arcanum.Skills.SkillName.SolarFlare",
-              "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
-              "Value": {
-                "Flat": -110.0,
                 "Mul": 1.0
               },
               "bIsPermanent": false,
