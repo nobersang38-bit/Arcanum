@@ -138,7 +138,7 @@ void ABattlePlayerController::BeginPlay()
 
 	float CoolTImeTickInterval = 0.05f;
 	FTimerDelegate CoolTimeDelegate;
-	//CoolTimeDelegate.BindUObject(this, &ABattlePlayerController::Internal_CoolTimeTick, CoolTImeTickInterval);
+	CoolTimeDelegate.BindUObject(this, &ABattlePlayerController::Internal_CoolTimeTick, CoolTImeTickInterval);
 	GetWorld()->GetTimerManager().ClearTimer(CoolTimeTimer);
 	GetWorld()->GetTimerManager().SetTimer(CoolTimeTimer, CoolTimeDelegate, CoolTImeTickInterval, true);
 
@@ -1174,45 +1174,45 @@ bool ABattlePlayerController::UsingUnitCost(FGameplayTag InTag)
 
 	return true;
 }
-//
-//void ABattlePlayerController::Internal_CoolTimeTick(float DeltaTime)
-//{
-//	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
-//
-//	for (auto& UsingAllyUnit : UsingAllyUnits)
-//	{
-//		if (UsingAllyUnit.Value.CurrentCoolTime > 0.0f)
-//		{
-//			float& CurrentCoolTime = UsingAllyUnit.Value.CurrentCoolTime;
-//			const float& MaxCoolTime = UsingAllyUnit.Value.CoolTime;
-//
-//			CurrentCoolTime -= DeltaTime;
-//
-//			if (UBattleAllyUnitSlotWidget** SlotWidget = UsingAllyUnitSlots.Find(UsingAllyUnit.Key))
-//			{
-//				(*SlotWidget)->SetCoolTimeProgress(CurrentCoolTime, MaxCoolTime);
-//			}
-//		}
-//	}
-//
-//	for (auto& SkillCoolTime : SkillCoolTimes)
-//	{
-//		SkillCoolTime.Value -= DeltaTime;
-//		if (SkillCoolTime.Key == BattleSubsystem->GetCurrentBasicAttackSkillTag())
-//		{
-//			HUDWidgetInstance->GetBasicAttack()->SetCoolTimeProgress(SkillCoolTime.Value, (*SkillBaseInstances.Find(SkillCoolTime.Key))->GetCurrentLevelEntry()->Cooldown);
-//		}
-//		else if (SkillCoolTime.Key == BattleSubsystem->GetCurrentBasicSkillTag())
-//		{
-//			HUDWidgetInstance->GetBasicSkill()->SetCoolTimeProgress(SkillCoolTime.Value, (*SkillBaseInstances.Find(SkillCoolTime.Key))->GetCurrentLevelEntry()->Cooldown);
-//
-//		}
-//		else if (SkillCoolTime.Key == BattleSubsystem->GetLegendaryUltimateSkillTag())
-//		{
-//			HUDWidgetInstance->GetUltimateSkill()->SetCoolTimeProgress(SkillCoolTime.Value, (*SkillBaseInstances.Find(SkillCoolTime.Key))->GetCurrentLevelEntry()->Cooldown);
-//		}
-//	}
-//}
+
+void ABattlePlayerController::Internal_CoolTimeTick(float DeltaTime)
+{
+	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+
+	for (auto& UsingAllyUnit : UsingAllyUnits)
+	{
+		if (UsingAllyUnit.Value.CurrentCoolTime > 0.0f)
+		{
+			float& CurrentCoolTime = UsingAllyUnit.Value.CurrentCoolTime;
+			const float& MaxCoolTime = UsingAllyUnit.Value.CoolTime;
+
+			CurrentCoolTime -= DeltaTime;
+
+			if (UBattleAllyUnitSlotWidget** SlotWidget = UsingAllyUnitSlots.Find(UsingAllyUnit.Key))
+			{
+				(*SlotWidget)->SetCoolTimeProgress(CurrentCoolTime, MaxCoolTime);
+			}
+		}
+	}
+
+	/*for (auto& SkillCoolTime : SkillCoolTimes)
+	{
+		SkillCoolTime.Value -= DeltaTime;
+		if (SkillCoolTime.Key == BattleSubsystem->GetCurrentBasicAttackSkillTag())
+		{
+			HUDWidgetInstance->GetBasicAttack()->SetCoolTimeProgress(SkillCoolTime.Value, (*SkillBaseInstances.Find(SkillCoolTime.Key))->GetCurrentLevelEntry()->Cooldown);
+		}
+		else if (SkillCoolTime.Key == BattleSubsystem->GetCurrentBasicSkillTag())
+		{
+			HUDWidgetInstance->GetBasicSkill()->SetCoolTimeProgress(SkillCoolTime.Value, (*SkillBaseInstances.Find(SkillCoolTime.Key))->GetCurrentLevelEntry()->Cooldown);
+
+		}
+		else if (SkillCoolTime.Key == BattleSubsystem->GetLegendaryUltimateSkillTag())
+		{
+			HUDWidgetInstance->GetUltimateSkill()->SetCoolTimeProgress(SkillCoolTime.Value, (*SkillBaseInstances.Find(SkillCoolTime.Key))->GetCurrentLevelEntry()->Cooldown);
+		}
+	}*/
+}
 
 void ABattlePlayerController::InitialSkillBase()
 {

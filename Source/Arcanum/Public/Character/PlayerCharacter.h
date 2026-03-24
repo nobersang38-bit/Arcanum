@@ -17,7 +17,8 @@ class ARCANUM_API APlayerCharacter : public ACharacter, public ITeamInterface, p
 	//, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
-
+	friend class UBTPlayerDataObject;
+	friend class UBTService_PlayerSelectTarget;
 public:
 	// Sets default values for this character's properties
 	APlayerCharacter();

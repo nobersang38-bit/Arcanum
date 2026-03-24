@@ -31,6 +31,7 @@ class ARCANUM_API ABattlePlayerController : public APlayerController
 {
 	GENERATED_BODY()
 	friend class UBTPlayerDataObject;
+	friend class UBTService_PlayerSelectTarget;
 #pragma region 언리얼 기본생성
 protected:
 	virtual void BeginPlay() override;
@@ -199,8 +200,8 @@ protected:
 	bool UsingUnitCost(FGameplayTag InTag);
 
 	// 쿨타임을 계속 줄임
-	//UFUNCTION()
-	//void Internal_CoolTimeTick(float DeltaTime);
+	UFUNCTION()
+	void Internal_CoolTimeTick(float DeltaTime);
 
 	UFUNCTION()
 	void InitialSkillBase();
