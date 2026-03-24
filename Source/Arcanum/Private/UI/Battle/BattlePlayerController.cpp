@@ -1670,9 +1670,6 @@ void ABattlePlayerController::UltimateSkillPressed()
 
 void ABattlePlayerController::UltimateSkillReleased()
 {
-	UE_LOG(LogTemp, Warning, TEXT("UltimateSkillReleased bIsUltimateAiming=%d"), bIsUltimateAiming);
-
-
 	if (APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn()))
 	{
 		if (playerCharacter->GetIsUltimateReleaseMontagePlaying())
@@ -1689,9 +1686,6 @@ void ABattlePlayerController::UltimateSkillReleased()
 
 void ABattlePlayerController::ExecuteUltimateSkill()
 {
-	UE_LOG(LogTemp, Warning, TEXT("ExecuteUltimateSkill"));
-
-
 	if (bIsUltimateAiming)
 	{
 		GetWorldTimerManager().ClearTimer(UltimateSkillTimerHandle);
