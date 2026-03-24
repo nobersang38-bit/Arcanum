@@ -12,6 +12,8 @@
 #include "Core/ARGameInstance.h"
 #include "Core/ARPlayerAccountService.h"
 
+//#include "Kismet/GameplayStatics.h"
+
 void UBattleHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -150,6 +152,19 @@ void UBattleHUDWidget::EnterGame()
 	FDTStageDataRow** FoundRowPtr = StageDatas.FindByPredicate([&](const FDTStageDataRow* Row) { return Row && Row->StageData.StageTag == CurrentSelectedStage->StageTag; });
 	if (FoundRowPtr && *FoundRowPtr) {
 		FDTStageDataRow* TargetRow = *FoundRowPtr;
+
+		//if (LoadingWidgetClass)
+		//{
+		//	LoadingWidgetInstance = CreateWidget<UUserWidget>(GetWorld(), LoadingWidgetClass);
+		//	if (LoadingWidgetInstance)
+		//	{
+		//		LoadingWidgetInstance->AddToViewport(1000); // ZOrder 높게
+		//	}
+		//}
+		//FName LevelName = TargetRow->StageData.StageLevel->GetFName();
+
+		//UGameplayStatics::LoadStreamLevel(this, LevelName, true, false, FLatentActionInfo());
+
 		FPlayerAccountService::ChangedLevel(this, TargetRow->StageData.StageLevel);
 
 		UE_LOG(LogTemp, Log, TEXT("게임 시작"));

@@ -14,6 +14,7 @@ class UScrollBox;
 class UItemSlot;
 class UInventoryItemSlotWidget;
 class USquareSlotWidget;
+class UUserWidget;
 
 /* 배틀 슬롯 클릭 알림 */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnShowUnitList, int32, InIndex);
@@ -96,6 +97,11 @@ protected:
 	/* 아이템 선택 패널 */
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UItemSlot> ItemListSlot;
+
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	//TSubclassOf<UUserWidget> LoadingWidgetClass;
+
+	//UUserWidget* LoadingWidgetInstance;
 
 private:
 	/* 화면 슬롯 위젯 배열 */
