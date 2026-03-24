@@ -32,8 +32,21 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Runtime")
 	TWeakObjectPtr<class ABattlePlayerController> PlayerController = nullptr;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Setting")
+	FName TargetActorName = FName("TargetActor");
+
 	void SpawnUnit();
 	void SetTargetActor(AActor* InTargetACtor);
 	bool CostCheck();
 	bool UseSkill();
+
+protected:
+	UFUNCTION()
+	void UltimateStep1();
+
+	UFUNCTION()
+	void UltimateStep2();
+
+	FTimerHandle UltimateStep1TimerHandle;
+	FTimerHandle UltimateStep2TimerHandle;
 };

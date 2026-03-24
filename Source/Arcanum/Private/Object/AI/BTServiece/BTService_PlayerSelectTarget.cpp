@@ -7,6 +7,8 @@
 #include "Perception/AIPerceptionComponent.h"
 #include "Interface/RuntimeUnitDataInterface.h"
 #include "Core/SubSystem/BattlefieldManagerSubsystem.h"
+#include "Character/PlayerCharacter.h"
+#include "UI/Battle/BattlePlayerController.h"
 
 UBTService_PlayerSelectTarget::UBTService_PlayerSelectTarget()
 {
@@ -26,12 +28,30 @@ void UBTService_PlayerSelectTarget::InitializeFromAsset(UBehaviorTree& Asset)
 	if (BBAsset)
 	{
 		CurrentDistance.ResolveSelectedKey(*BBAsset);
+		IsMoveKey.ResolveSelectedKey(*BBAsset);
 	}
+}
+
+void UBTService_PlayerSelectTarget::OnSearchStart(FBehaviorTreeSearchData& SearchData)
+{
+	Super::OnSearchStart(SearchData);
 }
 
 void UBTService_PlayerSelectTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
+	if (!CachedPlayerCharacter.IsValid())
+	{
+		if (APlayerCharacter* TempPlayerCharacter = Cast<APlayerCharacter>(OwnerComp.GetAIOwner()->GetPawn()))
+		{
+			CachedPlayerCharacter = TempPlayerCharacter;
+
+			if (ABattlePlayerController* TempPlayerController = Cast<ABattlePlayerController>(CachedPlayerCharacter->CachedOwnerPC))
+			{
+				CachedPlayerController = TempPlayerController;
+			}
+		}
+	}
 	APlayerAIController* PlayerAIC = Cast<APlayerAIController>(OwnerComp.GetAIOwner());
 	if (!PlayerAIC) return;
 	UBehaviorTreeComponent* Behavior = &OwnerComp;
@@ -113,5 +133,16 @@ void UBTService_PlayerSelectTarget::TickNode(UBehaviorTreeComponent& OwnerComp, 
 		}
 	}
 
+	//움직일 수 있는 상태인가
+	if (CachedPlayerCharacter.IsValid())
+	{
+		bool bIsMove = !(CachedPlayerCharacter->bHasNextComboInput	||
+			CachedPlayerCharacter->bIsBasicAttackMontagePlaying		||
+			CachedPlayerCharacter->bIsCommonSkillMontagePlaying		||
+			CachedPlayerCharacter->bIsUltimateReleaseMontagePlaying ||
+			CachedPlayerController->bIsUltimateAiming);
+
+		Behavior->GetBlackboardComponent()->SetValueAsBool(IsMoveKey.SelectedKeyName, bIsMove);
+	}
 
 }
