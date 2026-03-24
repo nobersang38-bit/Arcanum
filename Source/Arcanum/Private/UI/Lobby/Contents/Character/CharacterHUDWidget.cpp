@@ -3,6 +3,7 @@
 #include "UI/Lobby/Contents/Character/CharacterInfo.h"
 #include "UI/Lobby/Contents/Character/SquareSlotWidget.h"
 #include "UI/Lobby/Contents/Character/CharacterEquipWidget.h"
+#include "UI/Lobby/Contents/Character/SetEffectPanelWidget.h"
 #include "UI/Lobby/Contents/Inventory/InventoryHUDWidget.h"
 #include "UI/Lobby/Contents/ItemDetail/ItemDetailHelper.h"
 #include "UI/Lobby/Contents/ItemDetail/ItemStatPanelWidget.h"
@@ -77,7 +78,7 @@ void UCharacterHUDWidget::NativeConstruct()
 		CharacterEquipWidget->OnCharacterUnequipRequested.RemoveDynamic(this, &UCharacterHUDWidget::HandleCharacterUnequipRequested);
 		CharacterEquipWidget->OnCharacterUnequipRequested.AddDynamic(this, &UCharacterHUDWidget::HandleCharacterUnequipRequested);
 	}
-	
+
 	if (EquipOpenBtn)
 	{
 		EquipOpenBtn->OnClicked.RemoveDynamic(this, &UCharacterHUDWidget::HandleEquipOpenBtnClicked);
@@ -295,6 +296,7 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
 	}
 	InitEquipment(CharacterName);
 	RefreshArmorStatPanel();
+	RefreshSetEffectPanel();
 
 	/// 260311 변경 : 추가 (클릭 시 데이터 변경되게 info 관련은 변경해주세요.)
 	FGameplayTag TargetTag = FGameplayTag::RequestGameplayTag(FName("Arcanum.Unit.Ally"));
@@ -733,6 +735,7 @@ void UCharacterHUDWidget::HandleCharacterEquipRequested(const FGameplayTag& InEq
 			ParentLobby->RefreshAllLobbyUI();
 			InitEquipment(CurrentSelectedCharacterName);
 			RefreshArmorStatPanel();
+			RefreshSetEffectPanel();
 			CharacterEquipWidget->SetEquipSlotTag(InEquipSlotTag);
 		}
 	}
@@ -749,6 +752,7 @@ void UCharacterHUDWidget::HandleCharacterUnequipRequested(const FGameplayTag& In
 			ParentLobby->RefreshAllLobbyUI();
 			InitEquipment(CurrentSelectedCharacterName);
 			RefreshArmorStatPanel();
+			RefreshSetEffectPanel();
 			CharacterEquipWidget->SetEquipSlotTag(InEquipSlotTag);
 		}
 	}
@@ -792,4 +796,82 @@ void UCharacterHUDWidget::RefreshArmorStatPanel()
 			}
 		}
 	}
+}
+
+void UCharacterHUDWidget::RefreshSetEffectPanel()
+{
+	if (!CharacterEquipWidget || !ParentLobby) return;
+
+	USetEffectPanelWidget* setEffectPanelWidget = CharacterEquipWidget->GetSetEffectPanelWidget();
+	if (!setEffectPanelWidget) return;
+
+	int32 setCount = 0;
+	FSetEffectDefinition setEffectDefinition;
+
+	for (const FBattleCharacterData& characterData : ParentLobby->CachedPlayerData.OwnedCharacters)
+	{
+		const FName characterName = GetLeafNameFromTag(characterData.CharacterInfo.BattleCharacterInitData.CharacterTag);
+		if (characterName != CurrentSelectedCharacterName) continue;
+
+		for (const TPair<FGameplayTag, FGuid>& pair : characterData.ArmorSlots)
+		{
+			const FGuid& itemGuid = pair.Value;
+			if (!itemGuid.IsValid()) continue;
+
+			const FEquipmentInfo* foundEquip = nullptr;
+			for (const FEquipmentInfo& equip : ParentLobby->CachedPlayerData.Inventory)
+			{
+				if (equip.ItemGuid == itemGuid)
+				{
+					foundEquip = &equip;
+					break;
+				}
+			}
+
+			if (foundEquip)
+			{
+				const FDTEquipmentInfoRow* equipRow = FPlayerAccountService::FindEquipmentInfoRowByTag(this, foundEquip->ItemTag);
+				if (equipRow && !equipRow->SetEffect.SetNameText.IsEmpty())
+				{
+					if (setEffectDefinition.SetNameText.IsEmpty())
+					{
+						setEffectDefinition = equipRow->SetEffect;
+					}
+
+					if (equipRow->SetEffect.SetNameText.EqualTo(setEffectDefinition.SetNameText))
+					{
+						setCount++;
+					}
+				}
+			}
+		}
+
+		break;
+	}
+
+	if (setCount <= 0 || setEffectDefinition.SetNameText.IsEmpty())
+	{
+		setEffectPanelWidget->ClearEffectText();
+		return;
+	}
+
+	FSetEffectViewData viewData;
+	viewData.bVisible = true;
+	viewData.bActivated = setCount >= setEffectDefinition.NeedCount;
+	viewData.SetNameText = setEffectDefinition.SetNameText;
+	viewData.SetCountText = FText::Format(
+		FText::FromString(TEXT("({0}/{1})")),
+		FText::AsNumber(setCount),
+		FText::AsNumber(setEffectDefinition.NeedCount));
+
+	if (viewData.bActivated)
+	{
+		viewData.SetDescText = setEffectDefinition.ActiveDescText;
+	}
+	else
+	{
+		viewData.SetDescText = setEffectDefinition.InactiveDescText;
+	}
+
+	setEffectPanelWidget->SetEffectText(viewData);
 }

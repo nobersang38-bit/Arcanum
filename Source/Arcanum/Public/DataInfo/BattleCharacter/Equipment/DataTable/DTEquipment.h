@@ -37,6 +37,10 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int64 SellPrice;
 
+    /* 세트 효과 구조체 */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FSetEffectDefinition SetEffect;
+
     /** 기본 스펙을 담고 있는 구조체 */
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TArray<FItemDefinition> BaseInfoSteps;

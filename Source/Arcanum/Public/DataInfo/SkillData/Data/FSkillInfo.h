@@ -44,7 +44,7 @@ struct FLevelModifierEntry
 USTRUCT(BlueprintType)
 struct FSkillInfo {
     GENERATED_BODY()
-
+    
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     FGameplayTag SkillNameTag;
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -64,7 +64,13 @@ struct FSkillInfo {
     float EnabledRange = 300.0f;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    TObjectPtr<class UAnimMontage> SkillMontage = nullptr;
+    TArray<TSoftObjectPtr<UAnimMontage>> ComboMontages;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TSoftObjectPtr<UAnimMontage> CastMontage;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TSoftObjectPtr<UAnimMontage> PressMontage;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TSoftObjectPtr<UAnimMontage> ReleaseMontage;
 
     /** 실행용 스킬 클래스 (BP) */
     UPROPERTY(EditAnywhere, BlueprintReadOnly)

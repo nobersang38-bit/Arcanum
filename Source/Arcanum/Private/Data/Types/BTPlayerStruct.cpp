@@ -94,10 +94,12 @@ bool UBTPlayerDataObject::UseSkill()
 		case EBSkillType::None:
 			break;
 		case EBSkillType::BasicAttack:
-			PlayerController->BasicAttack();
-			break;
+			//PlayerController->BasicAttack();
+			PlayerController->TriggerBasicAttackHit();
+          	break;
 		case EBSkillType::BasicSkill:
-			PlayerController->BasicSkill();
+			//PlayerController->BasicSkill();
+			PlayerController->TriggerSkill();
 			break;
 		case EBSkillType::UltimateSkill:
 			PlayerController->UltimateSkillReleased();
