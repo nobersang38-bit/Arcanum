@@ -1483,6 +1483,8 @@ void ABattlePlayerController::TriggerBasicAttackHit()
 
 void ABattlePlayerController::TriggerSkill()
 {
+	UE_LOG(LogTemp, Warning, TEXT("TriggerSkill Enter Ultimate=%d"), bIsUltimateAiming);
+
 	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 	if (!battleSubsystem) return;
 
@@ -1668,6 +1670,9 @@ void ABattlePlayerController::UltimateSkillPressed()
 
 void ABattlePlayerController::UltimateSkillReleased()
 {
+	UE_LOG(LogTemp, Warning, TEXT("UltimateSkillReleased bIsUltimateAiming=%d"), bIsUltimateAiming);
+
+
 	if (APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn()))
 	{
 		if (playerCharacter->GetIsUltimateReleaseMontagePlaying())
@@ -1684,6 +1689,9 @@ void ABattlePlayerController::UltimateSkillReleased()
 
 void ABattlePlayerController::ExecuteUltimateSkill()
 {
+	UE_LOG(LogTemp, Warning, TEXT("ExecuteUltimateSkill"));
+
+
 	if (bIsUltimateAiming)
 	{
 		GetWorldTimerManager().ClearTimer(UltimateSkillTimerHandle);

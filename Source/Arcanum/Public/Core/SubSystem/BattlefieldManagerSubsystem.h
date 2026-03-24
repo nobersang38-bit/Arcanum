@@ -124,6 +124,18 @@ public:
 	플레이어 캐릭터
 	현재 스테이지
 	*/
+
+protected:
+	/* 장착 슬롯 Guid로 인벤토리 장비를 찾아 OwnerStats를 전투 스탯에 합산 */
+	void ApplyEquippedArmorStatsToBattleStat(
+		const FPlayerData& InPlayerData,
+		const FBattleCharacterData& InSelectedCharacter,
+		FGradeStatData& InOutBattleStat) const;
+
+	/* 장비 OwnerStats 1개를 같은 전투 스탯에 반영 */
+	void ApplyDerivedModifierToBattleStat(
+		const FDerivedStatModifier& InModifier,
+		FGradeStatData& InOutBattleStat) const;
 #pragma endregion
 
 

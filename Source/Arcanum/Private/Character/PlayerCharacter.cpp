@@ -379,6 +379,21 @@ void APlayerCharacter::AddCurrentStat(FGameplayTag InTag, float InValue)
 
 }
 
+ABattlePlayerController* APlayerCharacter::GetBattleOwnerController() const
+{
+	if (ABattlePlayerController* ownerPC = Cast<ABattlePlayerController>(GetController()))
+	{
+		return ownerPC;
+	}
+
+	if (CachedOwnerPC)
+	{
+		return CachedOwnerPC;
+	}
+
+	return nullptr;
+}
+
 void APlayerCharacter::UpdateEquippedWeaponMesh()
 {
 
