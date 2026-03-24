@@ -10,7 +10,7 @@ void UAnimNotify_BasicAttackHit::Notify(USkeletalMeshComponent* MeshComp, UAnimS
 	{
 		if (APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(MeshComp->GetOwner()))
 		{
-			if (ABattlePlayerController* battlePlayerController = playerCharacter->GetController<ABattlePlayerController>())
+			if (ABattlePlayerController* battlePlayerController = playerCharacter->GetBattlePlayerController())
 			{
 				battlePlayerController->TriggerBasicAttackHit();
 			}

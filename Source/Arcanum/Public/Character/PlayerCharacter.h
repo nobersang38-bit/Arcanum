@@ -60,6 +60,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	USkeletalMeshComponent* GetSourceSkeletaMeshComponent() { return SourceSkeletaMeshComponent; }
 
+	UFUNCTION()
+	ABattlePlayerController* GetBattlePlayerController() { return CachedOwnerPC.Get(); }
 protected:
 
 	// 스프링암
