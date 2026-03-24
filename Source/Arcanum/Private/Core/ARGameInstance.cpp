@@ -441,32 +441,31 @@ void UARGameInstance::AddRandomEquipmentToInventory(FDTEquipmentInfoRow* InRow)
 	NewItem.ItemTag = InRow->ItemTag;
 	NewItem.ItemGuid = FGuid::NewGuid();
 	NewItem.CurrUpgradeLevel = 0;
+
 	NewItem.Equipment = InRow->BaseInfoSteps[0];
+	for (const FStatRangeDefinition& Range : NewItem.Equipment.RandomStatRanges) {
+		FDerivedStatModifier FinalStat;
+		FinalStat.StatTag = Range.StatTag;
 
-	const bool bIsWeapon =
-		NewItem.ItemTag.MatchesTag(Arcanum::Items::Rarity::Common::Weapon::Root) ||
-		NewItem.ItemTag.MatchesTag(Arcanum::Items::Rarity::Legendary::Weapon::Root);
+		float MinF = Range.MinValue.Flat;
+		float MaxF = Range.MaxValue.Flat;
+		FinalStat.Value.Flat = FMath::RandRange(FMath::Min(MinF, MaxF), FMath::Max(MinF, MaxF));
 
-	if (bIsWeapon)
-	{
-		FPlayerAccountService::RollEquipmentStats(NewItem.Equipment, NewItem.Equipment.OnHitTargetStats);
+		float MinM = Range.MinValue.Mul;
+		float MaxM = Range.MaxValue.Mul;
+		FinalStat.Value.Mul = FMath::RandRange(FMath::Min(MinM, MaxM), FMath::Max(MinM, MaxM));
+		NewItem.Equipment.OnHitTargetStats.Add(FinalStat);
 	}
-	else
-	{
-		FPlayerAccountService::RollEquipmentStats(NewItem.Equipment, NewItem.Equipment.OwnerStats);
-	}
 
-	if (PlayerData.Inventory.Num() < PlayerData.InventoryCapacity)
-	{
-		PlayerData.Inventory.Add(NewItem);
-	}
-	else if (PlayerData.Mailbox.Num() < PlayerData.MailboxCapacity)
-	{
-		FMailItem MailItem;
-		MailItem.Equipment = NewItem;
-		MailItem.ExpireTime = FDateTime::UtcNow() + FTimespan::FromDays(30);
+	if (PlayerData.Inventory.Num() < PlayerData.InventoryCapacity) PlayerData.Inventory.Add(NewItem);
+	else {
+		if (PlayerData.Mailbox.Num() < PlayerData.MailboxCapacity) {
+			FMailItem MailItem;
+			MailItem.Equipment = NewItem;
+			MailItem.ExpireTime = FDateTime::UtcNow() + FTimespan::FromDays(30);
 
-		PlayerData.Mailbox.Add(MailItem);
+			PlayerData.Mailbox.Add(MailItem);
+		}
 	}
 
 	//if (NewItem.Equipment.OnHitTargetStats.Num() > 0)
@@ -637,13 +636,34 @@ bool UARGameInstance::AddTestEquipmentSet()
 	for (const FGameplayTag& itemTag : itemTags)
 	{
 		const FDTItemCatalogRow* catalogRow = FPlayerAccountService::FindItemCatalogRowByTag(this, itemTag);
-		if (!catalogRow) continue;
-		if (catalogRow->DetailRowName.IsNone()) continue;
+		if (!catalogRow)
+		{
+			continue;
+		}
 
-		FDTEquipmentInfoRow* equipRow = dataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, catalogRow->DetailRowName);
-		if (!equipRow) continue;
-		if (!equipRow->ItemTag.IsValid()) continue;
-		if (equipRow->BaseInfoSteps.IsEmpty()) continue;
+		if (catalogRow->DetailRowName.IsNone())
+		{
+			continue;
+		}
+
+		FDTEquipmentInfoRow* equipRow = dataSubsystem->GetRow<FDTEquipmentInfoRow>(
+			Arcanum::DataTable::Equipment,
+			catalogRow->DetailRowName);
+
+		if (!equipRow)
+		{
+			continue;
+		}
+
+		if (!equipRow->ItemTag.IsValid())
+		{
+			continue;
+		}
+
+		if (equipRow->BaseInfoSteps.IsEmpty())
+		{
+			continue;
+		}
 
 		FEquipmentInfo newItem;
 		newItem.ItemTag = equipRow->ItemTag;

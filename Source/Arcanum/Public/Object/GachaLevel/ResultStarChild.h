@@ -23,6 +23,8 @@ public:
 
     UFUNCTION() void OnNotifyClicked(AActor* TouchedActor, FKey ButtonPressed);
 
+    UFUNCTION() void OpenStar();
+
     void SetResultData(const FGachaItemResult& InData);
 
     UFUNCTION(BlueprintImplementableEvent) void PlayOpenAnimation(const FGachaItemResult& Data);
