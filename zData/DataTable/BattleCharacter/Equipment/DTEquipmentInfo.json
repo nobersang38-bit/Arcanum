@@ -225,7 +225,14 @@
           "Arcanum.Skills.SkillName.ShockWave": 1
         }
       }
-    ]
+    ],
+    "SetEffect": {
+      "SetNameText": "",
+      "NeedCount": 0,
+      "InactiveDescText": "",
+      "ActiveDescText": "",
+      "SetBonusTag": ""
+    }
   },
   {
     "Name": "Staff",
@@ -453,7 +460,14 @@
           "Arcanum.Skills.SkillName.ChainBolt": 1
         }
       }
-    ]
+    ],
+    "SetEffect": {
+      "SetNameText": "",
+      "NeedCount": 0,
+      "InactiveDescText": "",
+      "ActiveDescText": "",
+      "SetBonusTag": ""
+    }
   },
   {
     "Name": "Bow",
@@ -681,7 +695,14 @@
           "Arcanum.Skills.SkillName.PiercingShot": 1
         }
       }
-    ]
+    ],
+    "SetEffect": {
+      "SetNameText": "",
+      "NeedCount": 0,
+      "InactiveDescText": "",
+      "ActiveDescText": "",
+      "SetBonusTag": ""
+    }
   },
   {
     "Name": "Shield",
@@ -909,7 +930,14 @@
           "Arcanum.Skills.SkillName.Slash": 1
         }
       }
-    ]
+    ],
+    "SetEffect": {
+      "SetNameText": "",
+      "NeedCount": 0,
+      "InactiveDescText": "",
+      "ActiveDescText": "",
+      "SetBonusTag": ""
+    }
   },
   {
     "Name": "Helmet",
@@ -1119,7 +1147,14 @@
           "Arcanum.Skills.SkillName.None": 0
         }
       }
-    ]
+    ],
+    "SetEffect": {
+      "SetNameText": "",
+      "NeedCount": 0,
+      "InactiveDescText": "",
+      "ActiveDescText": "",
+      "SetBonusTag": ""
+    }
   },
   {
     "Name": "Chest",
@@ -1329,7 +1364,14 @@
           "Arcanum.Skills.SkillName.None": 0
         }
       }
-    ]
+    ],
+    "SetEffect": {
+      "SetNameText": "",
+      "NeedCount": 0,
+      "InactiveDescText": "",
+      "ActiveDescText": "",
+      "SetBonusTag": ""
+    }
   },
   {
     "Name": "Glove",
@@ -1539,7 +1581,14 @@
           "Arcanum.Skills.SkillName.None": 0
         }
       }
-    ]
+    ],
+    "SetEffect": {
+      "SetNameText": "",
+      "NeedCount": 0,
+      "InactiveDescText": "",
+      "ActiveDescText": "",
+      "SetBonusTag": ""
+    }
   },
   {
     "Name": "Boot",
@@ -1749,7 +1798,14 @@
           "Arcanum.Skills.SkillName.None": 0
         }
       }
-    ]
+    ],
+    "SetEffect": {
+      "SetNameText": "",
+      "NeedCount": 0,
+      "InactiveDescText": "",
+      "ActiveDescText": "",
+      "SetBonusTag": ""
+    }
   },
   {
     "Name": "TalashaHelmet",
@@ -1959,7 +2015,14 @@
           "Arcanum.Skills.SkillName.None": 0
         }
       }
-    ]
+    ],
+    "SetEffect": {
+      "SetNameText": "탈라샤 세트",
+      "NeedCount": 4,
+      "InactiveDescText": "4세트 효과: 체력 일정 수치 이하일 때 체력 회복 속도가 증가합니다",
+      "ActiveDescText": "세트효과 발동: 체력 30% 이하일 때 10초 동안 체력 회복 속도가 초당 7 증가합니다 (쿨타임 30초)",
+      "SetBonusTag": "Arcanum.Items.SetBonus.Surge"
+    }
   },
   {
     "Name": "TalashaChest",
@@ -2169,7 +2232,14 @@
           "Arcanum.Skills.SkillName.None": 0
         }
       }
-    ]
+    ],
+    "SetEffect": {
+      "SetNameText": "탈라샤 세트",
+      "NeedCount": 4,
+      "InactiveDescText": "4세트 효과: 체력 일정 수치 이하일 때 체력 회복 속도가 증가합니다",
+      "ActiveDescText": "세트효과 발동: 체력 30% 이하일 때 10초 동안 체력 회복 속도가 초당 7 증가합니다 (쿨타임 30초)",
+      "SetBonusTag": "Arcanum.Items.SetBonus.Surge"
+    }
   },
   {
     "Name": "TalashaGlove",
@@ -2379,7 +2449,14 @@
           "Arcanum.Skills.SkillName.None": 0
         }
       }
-    ]
+    ],
+    "SetEffect": {
+      "SetNameText": "탈라샤 세트",
+      "NeedCount": 4,
+      "InactiveDescText": "4세트 효과: 체력 일정 수치 이하일 때 체력 회복 속도가 증가합니다",
+      "ActiveDescText": "세트효과 발동: 체력 30% 이하일 때 10초 동안 체력 회복 속도가 초당 7 증가합니다 (쿨타임 30초)",
+      "SetBonusTag": "Arcanum.Items.SetBonus.Surge"
+    }
   },
   {
     "Name": "TalashaBoot",
@@ -2589,7 +2666,14 @@
           "Arcanum.Skills.SkillName.None": 0
         }
       }
-    ]
+    ],
+    "SetEffect": {
+      "SetNameText": "탈라샤 세트",
+      "NeedCount": 4,
+      "InactiveDescText": "4세트 효과: 체력 일정 수치 이하일 때 체력 회복 속도가 증가합니다",
+      "ActiveDescText": "세트효과 발동: 체력 30% 이하일 때 10초 동안 체력 회복 속도가 초당 7 증가합니다 (쿨타임 30초)",
+      "SetBonusTag": "Arcanum.Items.SetBonus.Surge"
+    }
   },
   {
     "Name": "SigonHelmet",
@@ -2799,7 +2883,14 @@
           "Arcanum.Skills.SkillName.None": 0
         }
       }
-    ]
+    ],
+    "SetEffect": {
+      "SetNameText": "시그온 세트",
+      "NeedCount": 4,
+      "InactiveDescText": "4세트 효과: 물약 회복량이 증가합니다",
+      "ActiveDescText": "세트효과 발동: 물약 회복량이 20% 증가합니다",
+      "SetBonusTag": "Arcanum.Items.SetBonus.Avarice"
+    }
   },
   {
     "Name": "SigonChest",
@@ -3009,7 +3100,14 @@
           "Arcanum.Skills.SkillName.None": 0
         }
       }
-    ]
+    ],
+    "SetEffect": {
+      "SetNameText": "시그온 세트",
+      "NeedCount": 4,
+      "InactiveDescText": "4세트 효과: 물약 회복량이 증가합니다",
+      "ActiveDescText": "세트효과 발동: 물약 회복량이 20% 증가합니다",
+      "SetBonusTag": "Arcanum.Items.SetBonus.Avarice"
+    }
   },
   {
     "Name": "SigonGlove",
@@ -3219,7 +3317,14 @@
           "Arcanum.Skills.SkillName.None": 0
         }
       }
-    ]
+    ],
+    "SetEffect": {
+      "SetNameText": "시그온 세트",
+      "NeedCount": 4,
+      "InactiveDescText": "4세트 효과: 물약 회복량이 증가합니다",
+      "ActiveDescText": "세트효과 발동: 물약 회복량이 20% 증가합니다",
+      "SetBonusTag": "Arcanum.Items.SetBonus.Avarice"
+    }
   },
   {
     "Name": "SigonBoot",
@@ -3429,7 +3534,14 @@
           "Arcanum.Skills.SkillName.None": 0
         }
       }
-    ]
+    ],
+    "SetEffect": {
+      "SetNameText": "시그온 세트",
+      "NeedCount": 4,
+      "InactiveDescText": "4세트 효과: 물약 회복량이 증가합니다",
+      "ActiveDescText": "세트효과 발동: 물약 회복량이 20% 증가합니다",
+      "SetBonusTag": "Arcanum.Items.SetBonus.Avarice"
+    }
   },
   {
     "Name": "Scepter",
@@ -3657,7 +3769,14 @@
           "Arcanum.Skills.SkillName.SolarFlare": 1
         }
       }
-    ]
+    ],
+    "SetEffect": {
+      "SetNameText": "",
+      "NeedCount": 0,
+      "InactiveDescText": "",
+      "ActiveDescText": "",
+      "SetBonusTag": ""
+    }
   },
   {
     "Name": "Scythe",
@@ -3885,6 +4004,13 @@
           "Arcanum.Skills.SkillName.VoidEclipse": 1
         }
       }
-    ]
+    ],
+    "SetEffect": {
+      "SetNameText": "",
+      "NeedCount": 0,
+      "InactiveDescText": "",
+      "ActiveDescText": "",
+      "SetBonusTag": ""
+    }
   }
 ]

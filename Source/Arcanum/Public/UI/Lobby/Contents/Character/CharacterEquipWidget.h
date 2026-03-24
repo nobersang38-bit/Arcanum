@@ -10,6 +10,7 @@ class UCommonBtnWidget;
 class UTextBlock;
 class UBorder;
 class UItemStatPanelWidget;
+class USetEffectPanelWidget;
 struct FInventoryViewSlot;
 
 /* 장착 버튼 클릭 */
@@ -41,6 +42,7 @@ public:
 
 	UItemStatPanelWidget* GetArmorStatPanelWidget() const { return ArmorStatPanelWidget; }
 	UInventoryHUDWidget* GetInventoryHUDWidget() const { return InventoryHUDWidget; }
+	USetEffectPanelWidget* GetSetEffectPanelWidget() const { return SetEffectPanelWidget; }
 
 private:
 	UFUNCTION()
@@ -82,6 +84,9 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UItemStatPanelWidget> ArmorStatPanelWidget;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<USetEffectPanelWidget> SetEffectPanelWidget;
 
 private:
 	/* 현재 장착 대상 슬롯 태그 */

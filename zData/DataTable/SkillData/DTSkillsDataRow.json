@@ -181,7 +181,15 @@
           ],
           "TargetEffect": ""
         }
-      ]
+      ],
+      "ComboMontages": [
+        "/Game/AnimBlueprint/Ally/11_OutSider/AM_BasicMeleeCombo0.AM_BasicMeleeCombo0",
+        "/Game/AnimBlueprint/Ally/11_OutSider/AM_BasicMeleeCombo1.AM_BasicMeleeCombo1",
+        "/Game/AnimBlueprint/Ally/11_OutSider/AM_BasicMeleeCombo2.AM_BasicMeleeCombo2"
+      ],
+      "CastMontage": "",
+      "PressMontage": "",
+      "ReleaseMontage": ""
     }
   },
   {
@@ -366,7 +374,15 @@
           ],
           "TargetEffect": ""
         }
-      ]
+      ],
+      "ComboMontages": [
+        "/Game/AnimBlueprint/Ally/11_OutSider/AM_BasicRangedCombo0.AM_BasicRangedCombo0",
+        "/Game/AnimBlueprint/Ally/11_OutSider/AM_BasicRangedCombo1.AM_BasicRangedCombo1",
+        "/Game/AnimBlueprint/Ally/11_OutSider/AM_BasicRangedCombo2.AM_BasicRangedCombo2"
+      ],
+      "CastMontage": "",
+      "PressMontage": "",
+      "ReleaseMontage": ""
     }
   },
   {
@@ -551,7 +567,11 @@
           ],
           "TargetEffect": ""
         }
-      ]
+      ],
+      "ComboMontages": [],
+      "CastMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_ShockWave.AM_ShockWave",
+      "PressMontage": "",
+      "ReleaseMontage": ""
     }
   },
   {
@@ -850,7 +870,11 @@
           ],
           "TargetEffect": ""
         }
-      ]
+      ],
+      "ComboMontages": [],
+      "CastMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_ChainBolt.AM_ChainBolt",
+      "PressMontage": "",
+      "ReleaseMontage": ""
     }
   },
   {
@@ -1149,7 +1173,11 @@
           ],
           "TargetEffect": ""
         }
-      ]
+      ],
+      "ComboMontages": [],
+      "CastMontage": "",
+      "PressMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_SolarFlare_Press.AM_SolarFlare_Press",
+      "ReleaseMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_SolarFlare_Release.AM_SolarFlare_Release"
     }
   }
 ]

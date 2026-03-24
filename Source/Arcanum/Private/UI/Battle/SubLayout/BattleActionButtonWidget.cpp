@@ -25,6 +25,11 @@ void UBattleActionButtonWidget::NativeConstruct()
 		ActionText->SetText(IconText);
 		//UE_LOG(LogTemp, Warning, TEXT("작동!!!!!!!!! %s"), *IconText.ToString());
 	}
+	if (SkillCooldownImage)
+	{
+		SkillCooldownMID = SkillCooldownImage->GetDynamicMaterial();
+		SkillCooldownImage->SetVisibility(ESlateVisibility::Hidden);
+	}
 	SetProgressesVisible(false);
 }
 
@@ -148,4 +153,29 @@ void UBattleActionButtonWidget::OnActionButtonPressed()
 void UBattleActionButtonWidget::OnActionButtonReleased()
 {
 	OnButtonReleased.Broadcast();
+}
+
+void UBattleActionButtonWidget::SetSkillCooldownPercent(float InPercent)
+{
+	if (SkillCooldownImage)
+	{
+		if (!SkillCooldownMID)
+		{
+			SkillCooldownMID = SkillCooldownImage->GetDynamicMaterial();
+		}
+
+		if (SkillCooldownMID)
+		{
+			SkillCooldownMID->SetScalarParameterValue(TEXT("CooldownPercent"), InPercent);
+		}
+
+		if (InPercent > 0.0f)
+		{
+			SkillCooldownImage->SetVisibility(ESlateVisibility::HitTestInvisible);
+		}
+		else
+		{
+			SkillCooldownImage->SetVisibility(ESlateVisibility::Hidden);
+		}
+	}
 }

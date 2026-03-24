@@ -19,6 +19,8 @@ class UTextBlock;
 class UButton;
 class UProgressBar;
 class UImage;
+class UMaterialInstanceDynamic;
+
 UCLASS()
 class ARCANUM_API UBattleActionButtonWidget : public UUserWidget
 {
@@ -99,5 +101,21 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Debug|Cost")
 	bool bIsSetDebugCostDisableImage = false;
 #pragma endregion
+
+
+#pragma region 스킬 쿨타임
+public:
+	/* 스킬 쿨타임 머티리얼 진행도 갱신 */
+	void SetSkillCooldownPercent(float InPercent);
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UImage> SkillCooldownImage = nullptr;
+
+	/* 스킬 쿨타임 머티리얼 인스턴스 */
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> SkillCooldownMID = nullptr;
+#pragma endregion
+
 };
 

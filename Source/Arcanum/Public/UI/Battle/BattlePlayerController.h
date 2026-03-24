@@ -99,11 +99,11 @@ public:
 
 #pragma region 메인
 protected:
-	UFUNCTION()
-	void BasicAttack();
+	//UFUNCTION()
+	//void BasicAttack();
 
-	UFUNCTION()
-	void BasicSkill();
+	//UFUNCTION()
+	//void BasicSkill();
 
 	UFUNCTION()
 	void WeaponSwap();
@@ -216,6 +216,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> IA_CommonButton = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_BasicAttackSkill = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_CommonSkill = nullptr;
 #pragma endregion
 
 protected:
@@ -263,11 +269,35 @@ private:
 	bool bIsAutoManual = false;
 	float StageTimeSecond = 0.0f;
 
-#pragma region 궁극기 처리
+
+
+
+#pragma region 기본공격, 일반 스킬 처리
+public:
+	/* 기본공격 스킬 실행 */
+	UFUNCTION()
+	void TriggerBasicAttackHit();
+
+	/* 일반스킬 실제 실행 */
+	UFUNCTION()
+	void TriggerSkill();
+
 protected:
+	/* 기본공격 입력 */
+	UFUNCTION()
+	void InputBasicAttack();
+
+	/* 스킬 입력 */
+	UFUNCTION()
+	void InputSkill();
+#pragma endregion
+
+#pragma region 궁극기 처리
+public:
 	/* 궁극기 종료 처리 */
 	void UltimateSkillEnd();
 
+protected:
 	/* 궁극기 조준 시작 */
 	UFUNCTION()
 	void UltimateSkillPressed();
@@ -308,5 +338,115 @@ protected:
 	float UltimatePreviewMaxDistance = 1200.0f;
 
 	FTimerHandle UltimateSkillTimerHandle;
+#pragma endregion
+
+#pragma region 궁극기 연출
+public:
+	/* 궁극기 Press 연출 시작 */
+	void StartUltimatePresentation();
+
+	/* 궁극기 Release 직전 피크 연출 */
+	void PlayUltimateReleasePresentation();
+
+	/* 궁극기 연출 복귀 시작 */
+	void EndUltimatePresentation();
+
+protected:
+	/* 궁극기 카메라/FOV/후처리 보간 갱신 */
+	void UpdateUltimatePresentation(float DeltaTime);
+
+protected:
+	/* 궁극기 연출 진행 중 여부 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	bool bIsUltimatePresentationActive = false;
+
+	/* 궁극기 연출 복귀 중 여부 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	bool bIsUltimatePresentationRestoring = false;
+
+	/* Release 직전 2차 확대 진행 여부 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	bool bIsUltimateReleaseZoomActive = false;
+
+	/* 기본 카메라 FOV */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	float UltimateDefaultFOV = 0.0f;
+
+	/* Press 시 1차 목표 FOV */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	float UltimatePressTargetFOV = 100.0f;
+
+	/* Release 시 2차 목표 FOV */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	float UltimateReleaseTargetFOV = 85.0f;
+
+	/* Press 줌 보간 속도 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	float UltimatePressZoomInterpSpeed = 6.0f;
+
+	/* Release 줌 보간 속도 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	float UltimateReleaseZoomInterpSpeed = 12.0f;
+
+	/* 원복 보간 속도 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	float UltimateRestoreInterpSpeed = 5.0f;
+
+	/* 현재 목표 PostProcess 블렌드 웨이트 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	float UltimateTargetPostProcessBlendWeight = 0.0f;
+
+	/* Press 시 목표 PostProcess 블렌드 웨이트 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	float UltimatePressPostProcessBlendWeight = 1.0f;
+
+	/* PostProcess 보간 속도 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	float UltimatePostProcessInterpSpeed = 5.0f;
+
+	/* Release 순간 재생할 카메라 쉐이크 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	TSubclassOf<class UCameraShakeBase> UltimateReleaseCameraShakeClass = nullptr;
+#pragma endregion
+
+#pragma region 플레이어 스킬 쿨타임
+protected:
+	/* 스킬 쿨타임 타이머 갱신 */
+	void UpdateSkillCooldown();
+
+	/* 기본 공격 쿨타임 시작 */
+	void StartBasicAttackCooldown();
+
+	/* 일반 스킬 쿨타임 시작 */
+	void StartBasicSkillCooldown();
+
+	/* 궁극기 쿨타임 시작 */
+	void StartUltimateCooldown();
+
+	/* 스킬 쿨타임 UI 갱신 */
+	void RefreshSkillCooldownUI();
+
+	/* 플레이어 스킬 쿨타임 타이머 핸들 */
+	FTimerHandle SkillCooldownTimerHandle;
+
+	/* 기본 공격 남은 쿨타임 */
+	float BasicAttackCooldownRemaining = 0.0f;
+
+	/* 일반 스킬 남은 쿨타임 */
+	float BasicSkillCooldownRemaining = 0.0f;
+
+	/* 궁극기 남은 쿨타임 */
+	float UltimateCooldownRemaining = 0.0f;
+
+	/* 기본 공격 쿨타임 */
+	float BasicAttackCooldown = 0.0f;
+
+	/* 일반 스킬 쿨타임 */
+	float BasicSkillCooldown = 0.0f;
+
+	/* 궁극기 쿨타임 */
+	float UltimateCooldown = 0.0f;
+
+	float SkillCooldownTickInterval = 0.02f;
 #pragma endregion
 };

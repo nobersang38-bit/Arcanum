@@ -60,6 +60,15 @@ struct FSkillInfo {
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     TSoftObjectPtr<UTexture2D> Icon;
 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TArray<TSoftObjectPtr<UAnimMontage>> ComboMontages;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TSoftObjectPtr<UAnimMontage> CastMontage;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TSoftObjectPtr<UAnimMontage> PressMontage;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TSoftObjectPtr<UAnimMontage> ReleaseMontage;
+
     /** 실행용 스킬 클래스 (BP) */
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     TSoftClassPtr<ASkillActor> SkillClass;

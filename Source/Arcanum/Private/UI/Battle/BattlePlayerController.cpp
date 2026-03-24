@@ -2,6 +2,7 @@
 #include "Blueprint/UserWidget.h"
 #include "UI/Battle/Contents/InBattleHUDWidget.h"
 #include "UI/Battle/SubLayout/BattleAllyUnitPanelWidget.h"
+#include "UI/Battle/Contents/InBattleHUDWidget.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
@@ -18,7 +19,8 @@
 #include "Components/CapsuleComponent.h"
 #include "Object/Actor/SpawnCheckDecal.h"
 #include "DataInfo/SkillData/Data/FSkillInfo.h"
-
+#include "Object/Skills/SkillBase.h"
+#include "Camera/CameraComponent.h"
 
 // ========================================================
 // 언리얼 기본 생성
@@ -47,6 +49,7 @@ void ABattlePlayerController::BeginPlay()
 	}
 	SetupMainHUDWidget();
 	SetupInputMode();
+	RefreshSkillCooldownUI();
 
 	MeatValue.BaseMax = 1000000.0f;
 	MeatValue.Current = 1000000.0f;
@@ -106,6 +109,21 @@ void ABattlePlayerController::BeginPlay()
 
 	GetWorld()->GetTimerManager().ClearTimer(PlayerLocationProgressTimeHandle);
 	GetWorld()->GetTimerManager().SetTimer(PlayerLocationProgressTimeHandle, this, &ABattlePlayerController::UpdatePlayerLocationProgress, PlayerLocationProgressUpdateInterval, true, 0.0f);
+
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
+	if (playerCharacter)
+	{
+		if (UCameraComponent* playerCamera = playerCharacter->GetCamera())
+		{
+			UltimateDefaultFOV = playerCamera->FieldOfView;
+		}
+	}
+
+	if (UltimatePostProcessVolume)
+	{
+		UltimatePostProcessVolume->BlendWeight = 0.0f;
+		UltimatePostProcessVolume->bUnbound = false;
+	}
 }
 
 void ABattlePlayerController::SetupInputComponent()
@@ -120,8 +138,10 @@ void ABattlePlayerController::SetupInputComponent()
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
 	{
 		EnhancedInputComponent->BindAction(IA_Move, ETriggerEvent::Triggered, this, &ABattlePlayerController::InputMove);
-		EnhancedInputComponent->BindAction(IA_BasicAttack, ETriggerEvent::Completed, this, &ABattlePlayerController::BasicAttack);
-		EnhancedInputComponent->BindAction(IA_BasicSkill, ETriggerEvent::Completed, this, &ABattlePlayerController::BasicSkill);
+		//EnhancedInputComponent->BindAction(IA_BasicAttack, ETriggerEvent::Completed, this, &ABattlePlayerController::BasicAttack);
+		//EnhancedInputComponent->BindAction(IA_BasicSkill, ETriggerEvent::Completed, this, &ABattlePlayerController::BasicSkill);
+		EnhancedInputComponent->BindAction(IA_BasicAttackSkill, ETriggerEvent::Completed, this, &ABattlePlayerController::InputBasicAttack);
+		EnhancedInputComponent->BindAction(IA_CommonSkill, ETriggerEvent::Completed, this, &ABattlePlayerController::InputSkill);
 		EnhancedInputComponent->BindAction(IA_UltimateSkill, ETriggerEvent::Started, this, &ABattlePlayerController::UltimateSkillPressed);
 		EnhancedInputComponent->BindAction(IA_UltimateSkill, ETriggerEvent::Completed, this, &ABattlePlayerController::UltimateSkillReleased);
 		EnhancedInputComponent->BindAction(IA_Item1, ETriggerEvent::Completed, this, &ABattlePlayerController::Item1);
@@ -217,6 +237,8 @@ void ABattlePlayerController::Tick(float DeltaTime)
 			}
 		}
 	}
+
+	UpdateUltimatePresentation(DeltaTime);
 }
 
 // ========================================================
@@ -254,10 +276,12 @@ void ABattlePlayerController::DebugRemovePlayerInfoPanelSlot(int32 RemoveIDX)
 // ========================================================
 void ABattlePlayerController::SetupMainHUDWidget()
 {
-	HUDWidgetInstance->OnClickBasicAttack.AddDynamic(this, &ABattlePlayerController::BasicAttack);
+	//HUDWidgetInstance->OnClickBasicAttack.AddDynamic(this, &ABattlePlayerController::BasicAttack);
+	//HUDWidgetInstance->OnClickBasicSkill.AddDynamic(this, &ABattlePlayerController::BasicSkill);
+	HUDWidgetInstance->OnClickBasicAttack.AddDynamic(this, &ABattlePlayerController::InputBasicAttack);
+	HUDWidgetInstance->OnClickBasicSkill.AddDynamic(this, &ABattlePlayerController::InputSkill);
 	HUDWidgetInstance->OnPressedUltimateSkill.AddDynamic(this, &ABattlePlayerController::UltimateSkillPressed);
 	HUDWidgetInstance->OnReleasedUltimateSkill.AddDynamic(this, &ABattlePlayerController::UltimateSkillReleased);
-	HUDWidgetInstance->OnClickBasicSkill.AddDynamic(this, &ABattlePlayerController::BasicSkill);
 	HUDWidgetInstance->OnClickWeaponSwap.AddDynamic(this, &ABattlePlayerController::WeaponSwap);
 	HUDWidgetInstance->OnClickItem1.AddDynamic(this, &ABattlePlayerController::Item1);
 	HUDWidgetInstance->OnClickItem2.AddDynamic(this, &ABattlePlayerController::Item2);
@@ -364,41 +388,23 @@ void ABattlePlayerController::SetBossHealthProgress(float CurrentHealth, float M
 // ========================================================
 // 메인
 // ========================================================
-void ABattlePlayerController::BasicAttack()
-{
-	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
-	{
-		const FGameplayTag skillTag = battleSubsystem->GetCurrentBasicAttackSkillTag();
-		const int32 skillLevel = battleSubsystem->GetCurrentBasicAttackSkillLevel();
-
-		UE_LOG(LogTemp, Warning, TEXT("BasicAttack Tag=%s Level=%d"), *skillTag.ToString(), skillLevel);
-	}
-
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("BasicAttack"));
-	//Todo : 기본공격
-
-	//디버그
-	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
-	if (PlayerCharacter)
-	{
-		PlayerCharacter->PlayerBasicAttack();
-	}
-}
-
-void ABattlePlayerController::BasicSkill()
-{
-	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
-	{
-		const FGameplayTag skillTag = battleSubsystem->GetCurrentBasicSkillTag();
-		const int32 skillLevel = battleSubsystem->GetCurrentBasicSkillLevel();
-
-		UE_LOG(LogTemp, Warning, TEXT("BasicSkill Tag=%s Level=%d"), *skillTag.ToString(), skillLevel);
-	}
-
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("BasicSkill"));
-	//Todo : 기본스킬
-}
-
+//void ABattlePlayerController::BasicAttack()
+//{
+//	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("BasicAttack"));
+//	//Todo : 기본공격
+//
+//	//디버그
+//	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
+//	if (PlayerCharacter)
+//	{
+//		PlayerCharacter->PlayerBasicAttack();
+//	}
+//}
+//void ABattlePlayerController::BasicSkill()
+//{
+//	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("BasicSkill"));
+//	//Todo : 기본스킬
+//}
 //void ABattlePlayerController::UltimateSkill()
 //{
 //	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
@@ -861,6 +867,10 @@ void ABattlePlayerController::InputMove(const FInputActionValue& InputValue)
 // ========================================================
 void ABattlePlayerController::UltimateSkillEnd()
 {
+	EndUltimatePresentation();
+
+	bIsUltimateAiming = false;
+
 	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 	if (!battleSubsystem) return;
 
@@ -884,6 +894,7 @@ void ABattlePlayerController::UltimateSkillEnd()
 void ABattlePlayerController::UltimateSkillPressed()
 {
 	if (bIsUltimateAiming) return;
+	if (UltimateCooldownRemaining > 0.0f) return;
 
 	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 	if (!battleSubsystem) return;
@@ -894,8 +905,9 @@ void ABattlePlayerController::UltimateSkillPressed()
 	const float castTime = battleSubsystem->GetInBattleData().BattleWeaponSkill.LegendaryUltimateSkill.CastTime;
 
 	bIsUltimateAiming = true;
-
 	battleSubsystem->BeginLegendaryWeaponMode();
+
+	StartUltimatePresentation();
 
 	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
 	if (playerCharacter)
@@ -909,6 +921,8 @@ void ABattlePlayerController::UltimateSkillPressed()
 		playerCharacter->UpdateEquippedWeaponMesh();
 		playerCharacter->ShowUltimatePreview();
 		playerCharacter->UpdateUltimatePreviewLocation(CurrentUltimatePreviewLocation);
+		playerCharacter->PlayUltimatePressMontage();
+
 		if (HUDWidgetInstance)
 		{
 			HUDWidgetInstance->SetLegendaryButtonIcon(battleSubsystem->GetLegendaryUltimateSkillIcon());
@@ -930,9 +944,17 @@ void ABattlePlayerController::UltimateSkillPressed()
 
 void ABattlePlayerController::UltimateSkillReleased()
 {
-	if (bIsUltimateAiming)
+	if (APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn()))
 	{
-		ExecuteUltimateSkill();
+		if (playerCharacter->GetIsUltimateReleaseMontagePlaying())
+		{
+			return;
+		}
+
+		if (bIsUltimateAiming)
+		{
+			ExecuteUltimateSkill();
+		}
 	}
 }
 
@@ -940,8 +962,6 @@ void ABattlePlayerController::ExecuteUltimateSkill()
 {
 	if (bIsUltimateAiming)
 	{
-		bIsUltimateAiming = false;
-
 		GetWorldTimerManager().ClearTimer(UltimateSkillTimerHandle);
 
 		APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
@@ -960,8 +980,345 @@ void ABattlePlayerController::ExecuteUltimateSkill()
 
 		}
 
-		// Todo : 현재 조준 위치로 궁극기 실제 발사
+		PlayUltimateReleasePresentation();
 
-		UltimateSkillEnd();
+		playerCharacter->PlayUltimateReleaseMontage();
+	}
+}
+
+void ABattlePlayerController::InputBasicAttack()
+{
+	if (BasicAttackCooldownRemaining > 0.0f) return;
+
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
+	if (playerCharacter)
+	{
+		playerCharacter->HandleBasicAttackInput();
+	}
+}
+
+void ABattlePlayerController::InputSkill()
+{
+	if (BasicSkillCooldownRemaining > 0.0f) return;
+
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
+	if (playerCharacter)
+	{
+		playerCharacter->HandleCommonSkillInput();
+	}
+}
+
+void ABattlePlayerController::TriggerBasicAttackHit()
+{
+	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (!battleSubsystem) return;
+	const FBattleSkillData* basicAttackSkillData = battleSubsystem->GetCurrentBasicAttackSkillData();
+	if (!basicAttackSkillData) return;
+	const FSkillInfo* skillInfo = battleSubsystem->GetCurrentBasicAttackSkillInfo();
+	if (!skillInfo) return;
+	if (!basicAttackSkillData->SkillClass) return;
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
+	if (!playerCharacter) return;
+	UPoolingSubsystem* poolingSubsystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
+	if (!poolingSubsystem) return;
+	USkillBase* skillObject = NewObject<USkillBase>(this);
+	if (!skillObject) return;
+	UClass* skillActorClass = basicAttackSkillData->SkillClass.Get();
+	if (!skillActorClass) return;
+
+	UE_LOG(LogTemp, Warning, TEXT("BasicAttack SkillTag=%s SkillLevel=%d"),
+		*basicAttackSkillData->SkillTag.ToString(),
+		basicAttackSkillData->SkillLevel);
+
+	skillObject->Initialize(playerCharacter, skillInfo, basicAttackSkillData->SkillLevel, skillInfo->TargetFilterTag);
+
+	//const FVector spawnLocation = playerCharacter->GetActorLocation() + (playerCharacter->GetActorForwardVector() * 100.0f);
+	//const FRotator spawnRotation = playerCharacter->GetActorForwardVector().Rotation();
+
+	//FTransform spawnTransform;
+	//spawnTransform.SetLocation(spawnLocation);
+	//spawnTransform.SetRotation(spawnRotation.Quaternion());
+
+	const FTransform spawnTransform = playerCharacter->GetActorTransform();
+	const FVector spawnLocation = spawnTransform.GetLocation();
+	const FRotator spawnRotation = spawnTransform.Rotator();
+
+	AActor* spawnedActor = poolingSubsystem->SpawnFromPool(skillActorClass, spawnTransform);
+	ASkillActor* skillActor = Cast<ASkillActor>(spawnedActor);
+	if (!skillActor) return;
+
+	skillActor->ActivateSkillActor(skillObject, playerCharacter, spawnLocation, spawnRotation);
+
+	StartBasicAttackCooldown();
+
+	//if (APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn()))
+	//{
+	//	playerCharacter->PlayerBasicAttack();
+	//}
+}
+
+void ABattlePlayerController::TriggerSkill()
+{
+	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (!battleSubsystem) return;
+
+	const FBattleSkillData* skillData = bIsUltimateAiming
+		? battleSubsystem->GetCurrentLegendarySkillData()
+		: battleSubsystem->GetCurrentBasicSkillData();
+
+	const FSkillInfo* skillInfo = bIsUltimateAiming
+		? battleSubsystem->FindSkillInfoByTag(battleSubsystem->GetLegendaryUltimateSkillTag())
+		: battleSubsystem->GetCurrentBasicSkillInfo();
+
+	if (!skillData) return;
+	if (!skillInfo) return;
+	if (!skillData->SkillClass) return;
+
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
+	if (!playerCharacter) return;
+	UPoolingSubsystem* poolingSubsystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
+	if (!poolingSubsystem) return;
+	USkillBase* skillObject = NewObject<USkillBase>(this);
+	if (!skillObject) return;
+	UClass* skillActorClass = skillData->SkillClass.Get();
+	if (!skillActorClass) return;
+
+	UE_LOG(LogTemp, Warning, TEXT("Skill SkillTag=%s SkillLevel=%d"),
+		*skillData->SkillTag.ToString(),
+		skillData->SkillLevel);
+
+	skillObject->Initialize(playerCharacter, skillInfo, skillData->SkillLevel, skillInfo->TargetFilterTag);
+
+	const FTransform spawnTransform = playerCharacter->GetActorTransform();
+	const FVector spawnLocation = spawnTransform.GetLocation();
+	const FRotator spawnRotation = spawnTransform.Rotator();
+
+	AActor* spawnedActor = poolingSubsystem->SpawnFromPool(skillActorClass, spawnTransform);
+	ASkillActor* skillActor = Cast<ASkillActor>(spawnedActor);
+	if (!skillActor) return;
+
+	skillActor->ActivateSkillActor(skillObject, playerCharacter, spawnLocation, spawnRotation);
+
+	bIsUltimateAiming ? StartUltimateCooldown() : StartBasicSkillCooldown();
+}
+
+void ABattlePlayerController::StartUltimatePresentation()
+{
+	bIsUltimatePresentationActive = true;
+	bIsUltimatePresentationRestoring = false;
+	bIsUltimateReleaseZoomActive = false;
+	UltimateTargetPostProcessBlendWeight = UltimatePressPostProcessBlendWeight;
+
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
+	if (playerCharacter)
+	{
+		if (UCameraComponent* playerCamera = playerCharacter->GetCamera())
+		{
+			if (UltimateDefaultFOV <= 0.0f)
+			{
+				UltimateDefaultFOV = playerCamera->FieldOfView;
+			}
+		}
+	}
+
+	if (UltimatePostProcessVolume)
+	{
+		UltimatePostProcessVolume->bUnbound = true;
+	}
+}
+
+void ABattlePlayerController::PlayUltimateReleasePresentation()
+{
+	bIsUltimatePresentationActive = true;
+	bIsUltimatePresentationRestoring = false;
+	bIsUltimateReleaseZoomActive = true;
+	UltimateTargetPostProcessBlendWeight = UltimatePressPostProcessBlendWeight;
+
+	if (UltimateReleaseCameraShakeClass)
+	{
+		ClientStartCameraShake(UltimateReleaseCameraShakeClass);
+	}
+
+	if (UltimatePostProcessVolume)
+	{
+		UltimatePostProcessVolume->bUnbound = true;
+	}
+}
+
+void ABattlePlayerController::EndUltimatePresentation()
+{
+	bIsUltimatePresentationActive = false;
+	bIsUltimateReleaseZoomActive = false;
+	bIsUltimatePresentationRestoring = true;
+	UltimateTargetPostProcessBlendWeight = 0.0f;
+}
+
+void ABattlePlayerController::UpdateUltimatePresentation(float DeltaTime)
+{
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
+	if (!playerCharacter) return;
+
+	UCameraComponent* playerCamera = playerCharacter->GetCamera();
+	if (!playerCamera) return;
+
+	const float targetFOV = bIsUltimatePresentationActive
+		? (bIsUltimateReleaseZoomActive ? UltimateReleaseTargetFOV : UltimatePressTargetFOV)
+		: UltimateDefaultFOV;
+
+	const float currentInterpSpeed = bIsUltimatePresentationActive
+		? (bIsUltimateReleaseZoomActive ? UltimateReleaseZoomInterpSpeed : UltimatePressZoomInterpSpeed)
+		: UltimateRestoreInterpSpeed;
+
+	playerCamera->SetFieldOfView(FMath::FInterpTo(
+		playerCamera->FieldOfView,
+		targetFOV,
+		DeltaTime,
+		currentInterpSpeed));
+
+	bool bIsFOVRestored = FMath::IsNearlyEqual(playerCamera->FieldOfView, UltimateDefaultFOV, 0.1f);
+	bool bIsPPRestored = true;
+
+	if (UltimatePostProcessVolume)
+	{
+		UltimatePostProcessVolume->BlendWeight = FMath::FInterpTo(
+			UltimatePostProcessVolume->BlendWeight,
+			UltimateTargetPostProcessBlendWeight,
+			DeltaTime,
+			UltimatePostProcessInterpSpeed);
+
+		bIsPPRestored = FMath::IsNearlyZero(UltimatePostProcessVolume->BlendWeight, 0.01f);
+
+		if (bIsPPRestored)
+		{
+			UltimatePostProcessVolume->BlendWeight = 0.0f;
+			UltimatePostProcessVolume->bUnbound = false;
+		}
+	}
+
+	if (bIsUltimatePresentationRestoring && bIsFOVRestored && bIsPPRestored)
+	{
+		playerCamera->SetFieldOfView(UltimateDefaultFOV);
+		bIsUltimatePresentationRestoring = false;
+	}
+}
+
+void ABattlePlayerController::UpdateSkillCooldown()
+{
+	if (BasicAttackCooldownRemaining > 0.0f)
+	{
+		BasicAttackCooldownRemaining = FMath::Max(0.0f, BasicAttackCooldownRemaining - SkillCooldownTickInterval);
+	}
+
+	if (BasicSkillCooldownRemaining > 0.0f)
+	{
+		BasicSkillCooldownRemaining = FMath::Max(0.0f, BasicSkillCooldownRemaining - SkillCooldownTickInterval);
+	}
+
+	if (UltimateCooldownRemaining > 0.0f)
+	{
+		UltimateCooldownRemaining = FMath::Max(0.0f, UltimateCooldownRemaining - SkillCooldownTickInterval);
+	}
+
+	RefreshSkillCooldownUI();
+
+	if (BasicAttackCooldownRemaining <= 0.0f &&
+		BasicSkillCooldownRemaining <= 0.0f &&
+		UltimateCooldownRemaining <= 0.0f)
+	{
+		GetWorldTimerManager().ClearTimer(SkillCooldownTimerHandle);
+	}
+}
+
+void ABattlePlayerController::StartBasicAttackCooldown()
+{
+	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
+	{
+		BasicAttackCooldown = battleSubsystem->GetCurrentBasicAttackCooldown();
+		BasicAttackCooldownRemaining = BasicAttackCooldown;
+
+		RefreshSkillCooldownUI();
+
+		if (BasicAttackCooldownRemaining > 0.0f)
+		{
+			GetWorldTimerManager().SetTimer(
+				SkillCooldownTimerHandle,
+				this,
+				&ABattlePlayerController::UpdateSkillCooldown,
+				SkillCooldownTickInterval,
+				true
+			);
+		}
+	}
+}
+
+void ABattlePlayerController::StartBasicSkillCooldown()
+{
+	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
+	{
+		BasicSkillCooldown = battleSubsystem->GetCurrentBasicSkillCooldown();
+		BasicSkillCooldownRemaining = BasicSkillCooldown;
+
+		RefreshSkillCooldownUI();
+
+		if (BasicSkillCooldownRemaining > 0.0f)
+		{
+			GetWorldTimerManager().SetTimer(
+				SkillCooldownTimerHandle,
+				this,
+				&ABattlePlayerController::UpdateSkillCooldown,
+				SkillCooldownTickInterval,
+				true
+			);
+		}
+	}
+}
+
+void ABattlePlayerController::StartUltimateCooldown()
+{
+	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
+	{
+		UltimateCooldown = battleSubsystem->GetLegendaryUltimateCooldown();
+		UltimateCooldownRemaining = UltimateCooldown;
+
+		RefreshSkillCooldownUI();
+
+		if (UltimateCooldownRemaining > 0.0f)
+		{
+			GetWorldTimerManager().SetTimer(
+				SkillCooldownTimerHandle,
+				this,
+				&ABattlePlayerController::UpdateSkillCooldown,
+				SkillCooldownTickInterval,
+				true
+			);
+		}
+	}
+}
+
+void ABattlePlayerController::RefreshSkillCooldownUI()
+{
+	if (HUDWidgetInstance)
+	{
+		float basicAttackPercent = 0.0f;
+		if (BasicAttackCooldown > 0.0f)
+		{
+			basicAttackPercent = BasicAttackCooldownRemaining / BasicAttackCooldown;
+		}
+
+		float basicSkillPercent = 0.0f;
+		if (BasicSkillCooldown > 0.0f)
+		{
+			basicSkillPercent = BasicSkillCooldownRemaining / BasicSkillCooldown;
+		}
+
+		float ultimatePercent = 0.0f;
+		if (UltimateCooldown > 0.0f)
+		{
+			ultimatePercent = UltimateCooldownRemaining / UltimateCooldown;
+		}
+
+		HUDWidgetInstance->SetBasicAttackCooldown(basicAttackPercent);
+		HUDWidgetInstance->SetBasicSkillCooldown(basicSkillPercent);
+		HUDWidgetInstance->SetUltimateCooldown(ultimatePercent);
 	}
 }
