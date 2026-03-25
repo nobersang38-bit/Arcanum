@@ -26,6 +26,7 @@ public:
     const FLevelModifierEntry* GetCurrentLevelEntry() const;
     const FSkillInfo& GetSkillInfo() const;
     const FDerivedStatModifier& GetDerivedStatModifier() const { return AddDerivedStatModifier; }
+    AActor* GetOwnerActor() const { return OwnerActor.Get(); }
 
 protected:
     UPROPERTY()
