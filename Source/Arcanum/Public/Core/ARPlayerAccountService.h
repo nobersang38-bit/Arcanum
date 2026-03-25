@@ -152,6 +152,9 @@ public:
 	static FBattleCharacterData* FindOwnedCharacterByName(FPlayerData& InPlayerData, const FName& InCharacterName);
 	/* 슬롯 태그에 맞는 장착 맵 반환 */
 	static TMap<FGameplayTag, FGuid>* GetEquipmentSlotMapBySlotTag(FBattleCharacterData& InCharacterData, const FGameplayTag& InEquipSlotTag);
+
+	/* 캐릭터 업데이트 */
+	static bool UpdateCharacter(const UObject* WorldContextObject, const FGameplayTag CharacterTag);
 #pragma endregion
 
 #pragma region Enhancement Widget 관련
@@ -165,7 +168,6 @@ public:
 	/* 장비 분해 */
 	static bool DisassembleEquipment(const UObject* WorldContextObject, const FGuid& InItemGuid);
 
-private:
 	/* 장비 랜덤 능력치 OwnerStats 생성 */
 	static void RollEquipmentStats(const FItemDefinition& InItemDefinition, TArray<FDerivedStatModifier>& OutStats);
 #pragma endregion

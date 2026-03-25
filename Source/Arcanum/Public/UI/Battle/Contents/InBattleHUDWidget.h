@@ -108,6 +108,11 @@ public:
 	FORCEINLINE UBattleAllyUnitPanelWidget* GetPlayerInfoPanel() const { return PlayerInfoPanel; }
 #pragma endregion
 
+#pragma region Getter
+	UBattleActionButtonWidget* GetBasicAttack();
+	UBattleActionButtonWidget* GetBasicSkill();
+	UBattleActionButtonWidget* GetUltimateSkill();
+#pragma endregion
 
 
 #pragma region 바인딩
@@ -163,4 +168,17 @@ private:
 public:
 	/* 전설무기(궁극기) 버튼 아이콘만 변경 */
 	void SetLegendaryButtonIcon(UTexture2D* InIcon);
+
+
+#pragma region 쿨타임
+public:
+	/* 기본 공격 쿨타임 진행도 갱신 */
+	void SetBasicAttackCooldown(float InPercent);
+
+	/* 일반 스킬 쿨타임 진행도 갱신 */
+	void SetBasicSkillCooldown(float InPercent);
+
+	/* 궁극기 쿨타임 진행도 갱신 */
+	void SetUltimateCooldown(float InPercent);
+#pragma endregion
 };

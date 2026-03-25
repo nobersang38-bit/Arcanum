@@ -60,7 +60,7 @@ void ABaseUnitCharacter::SetUnit(FUnitInfoSetting InUnitData, bool bUseReadyHolo
 	SetActorHiddenInGame(false);
 }
 
-FGameplayTag ABaseUnitCharacter::GetTeamTag()
+FGameplayTag ABaseUnitCharacter::GetTeamTag() const
 {
 	UGameplayTagsManager& TagManager = UGameplayTagsManager::Get();
 	FGameplayTag TeamTag = TagManager.RequestGameplayTagDirectParent(UnitData.Info.InfoSetting.Tag);

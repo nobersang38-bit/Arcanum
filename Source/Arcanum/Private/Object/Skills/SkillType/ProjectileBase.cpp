@@ -30,7 +30,7 @@ void AProjectileBase::BeginPlay()
 void AProjectileBase::Tick(float Deltatime)
 {
     Super::Tick(Deltatime);
-    
+
     if (bIsActive)
     {
         FVector ResultVelocity;
@@ -60,11 +60,11 @@ void AProjectileBase::Tick(float Deltatime)
 
         case EProjectileMode::Howitzer:
             FVector TargetLocationIn;
-            if (TargetActor.IsValid())
+            /*if (TargetActor.IsValid())
             {
                 TargetLocationIn = TargetActor->GetActorLocation();
             }
-            else
+            else*/
             {
                 TargetLocationIn = TargetLocation;
             }
@@ -75,7 +75,7 @@ void AProjectileBase::Tick(float Deltatime)
             float HeightValue = (HowitzerHeightCurve.EditorCurveData.Eval(DistanceNormalize) * HowitzerHeight) + HowitzerStartTransform.GetLocation().Z;
 
             float SpeedValue = HowitzerSpeedCurve.EditorCurveData.Eval(DistanceNormalize);
-            SpeedValue =  (SpeedValue * InitialSpeed) * (TotalLength2D * 0.001f);
+            SpeedValue = (SpeedValue * InitialSpeed) * (TotalLength2D * 0.001f);
 
             FVector Direction = TargetLocationIn - HowitzerStartTransform.GetLocation();
             Direction = FVector(Direction).GetSafeNormal2D();
@@ -95,13 +95,17 @@ void AProjectileBase::Tick(float Deltatime)
             break;
         }
     }
-    
+
 }
 void AProjectileBase::DeactivateSkillActor()
 {
     GetWorld()->GetTimerManager().ClearTimer(LifeTimerHandle);
     GetWorld()->GetTimerManager().ClearTimer(DeactiveDelayTimerHandle);
     CollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    bIsActive = false;
+    SetActorHiddenInGame(true);
+    SetActorEnableCollision(false);
+    DeactiveItem();
     Super::DeactivateSkillActor();
 }
 void AProjectileBase::ActivateSkillActor(USkillBase* InSkill, AActor* InOwner, const FVector& SpawnLocation, const FRotator& SpawnRotation)
@@ -157,7 +161,7 @@ void AProjectileBase::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 {
     if (!bIsActive) return;
     if (!TargetfilterCheck(OtherActor)) return;
-   
+
     switch (CollisionMode)
     {
     case ECollisionMode::Immediately:
@@ -192,10 +196,10 @@ void AProjectileBase::CollisionProcess(AActor* OtherActor)
             if (OtherActor->GetClass()->ImplementsInterface(UStatModifierInterface::StaticClass()))
             {
                 auto Interface = Cast<IStatModifierInterface>(OtherActor);
-                if (LevelModifierEntry->OtherCharacterModifiers.Num() > LevelModifierEntry->Level - 1)
+                if (LevelModifierEntry->OtherCharacterModifiers.Num() > 0)
                 {
                     // 계산 부분
-                    FDerivedStatModifier StatModifier = LevelModifierEntry->OtherCharacterModifiers[LevelModifierEntry->Level - 1];
+                    FDerivedStatModifier StatModifier = LevelModifierEntry->OtherCharacterModifiers[0];
 
                     if (StatModifier.Duration <= 0.0f && !StatModifier.bIsPermanent) // 체인지 스탯함수 실행
                     {
@@ -217,7 +221,7 @@ void AProjectileBase::ActivateOnCollisionProcess(AActor* OtherActor)
     FCollisionShape CollisionShape;
     CollisionShape.MakeSphere(SphereCollisionRadius);
     GetWorld()->OverlapMultiByChannel(OverlapResults, GetActorLocation(), FQuat::Identity, ECollisionChannel::ECC_Visibility, CollisionShape);
-    
+
     for (int i = 0; i < OverlapResults.Num(); i++)
     {
         if (!bIsActive) continue;

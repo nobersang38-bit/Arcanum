@@ -37,6 +37,7 @@ namespace Arcanum {
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(GachaTable);
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(SkillData);
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(StageInfo);
+		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(InStageInfo);
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(AllyUnitInfo);
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(EnemyUnitInfo);
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(AllyUnitStatInfo);
@@ -78,6 +79,7 @@ namespace Arcanum {
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Lynette);   // Lynette : 빠르고 치명적인 크리티컬, 높은 이동 속도와 공격 속도.
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Arna);  // Arna : 높은 공격력과 크리티컬 확률, 공격에 특화된 캐릭터.
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Aiden);  // Aiden : 균형 잡힌 공격력, 회피 능력, 크리티컬 확률을 갖춘 다재다능한 캐릭터.
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(OutSider);
 		}
 
 		namespace Grade { // cpp 확인 필수

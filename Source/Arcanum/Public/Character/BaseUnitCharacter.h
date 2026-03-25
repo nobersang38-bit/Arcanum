@@ -35,7 +35,7 @@ public:
 public:
 	void SetUnit(FUnitInfoSetting InUnitData, bool bUseReadyHologram = false);
 
-	virtual FGameplayTag GetTeamTag() override;
+	virtual FGameplayTag GetTeamTag() const override;
 
 	class UCharacterBattleStatsComponent* GetCharacterBattleStatsComponent() { return CharacterBattleStatsComponent; }
 

@@ -134,6 +134,21 @@ void UInBattleHUDWidget::ToggleAutoManualMode(bool bIsChecked)
 	OnToggleAutoManualMode.Broadcast(bIsChecked);
 }
 
+UBattleActionButtonWidget* UInBattleHUDWidget::GetBasicAttack()
+{
+	return BasicAttack;
+}
+
+UBattleActionButtonWidget* UInBattleHUDWidget::GetBasicSkill()
+{
+	return BasicSkill;
+}
+
+UBattleActionButtonWidget* UInBattleHUDWidget::GetUltimateSkill()
+{
+	return UltimateSkill;
+}
+
 // ========================================================
 // 바인딩
 // ========================================================
@@ -172,5 +187,29 @@ void UInBattleHUDWidget::SetLegendaryButtonIcon(UTexture2D* InIcon)
 	if (UltimateSkill)
 	{
 		UltimateSkill->SetImage(InIcon);
+	}
+}
+
+void UInBattleHUDWidget::SetBasicAttackCooldown(float InPercent)
+{
+	if (BasicAttack)
+	{
+		BasicAttack->SetSkillCooldownPercent(InPercent);
+	}
+}
+
+void UInBattleHUDWidget::SetBasicSkillCooldown(float InPercent)
+{
+	if (BasicSkill)
+	{
+		BasicSkill->SetSkillCooldownPercent(InPercent);
+	}
+}
+
+void UInBattleHUDWidget::SetUltimateCooldown(float InPercent)
+{
+	if (UltimateSkill)
+	{
+		UltimateSkill->SetSkillCooldownPercent(InPercent);
 	}
 }

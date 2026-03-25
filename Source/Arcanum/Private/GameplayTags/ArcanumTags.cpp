@@ -10,6 +10,7 @@ namespace Arcanum {
 		UE_DEFINE_GAMEPLAY_TAG(GachaTable, "Arcanum.DataTable.GachaTable");
 		UE_DEFINE_GAMEPLAY_TAG(SkillData, "Arcanum.DataTable.SkillData");
 		UE_DEFINE_GAMEPLAY_TAG(StageInfo, "Arcanum.DataTable.StageInfo");
+		UE_DEFINE_GAMEPLAY_TAG(InStageInfo, "Arcanum.DataTable.InStageInfo");
 		UE_DEFINE_GAMEPLAY_TAG(AllyUnitInfo, "Arcanum.DataTable.AllyUnitInfo");
 		UE_DEFINE_GAMEPLAY_TAG(EnemyUnitInfo, "Arcanum.DataTable.EnemyUnitInfo");
 		UE_DEFINE_GAMEPLAY_TAG(AllyUnitStatInfo, "Arcanum.DataTable.AllyUnitStatInfo");
@@ -52,6 +53,7 @@ namespace Arcanum
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Lynette, "Arcanum.Player.ID.Lynette", "리넷");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Arna, "Arcanum.Player.ID.Arna", "아르나");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Aiden, "Arcanum.Player.ID.Aiden", "Aiden");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(OutSider, "Arcanum.Player.ID.OutSider", "OutSider");
 		}
 
 		namespace Grade

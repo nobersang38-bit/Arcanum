@@ -8,7 +8,17 @@
 #include "Data/Types/UnitData.h"
 #include "Data/Types/MatchData.h"
 #include "DataInfo/SkillData/Data/FBattleWeaponSkillData.h"
+#include "DataInfo/SkillData/Data/FSkillInfo.h"
+#include "GameplayTags/ArcanumTags.h"
 #include "BattlePlayerController.generated.h"
+
+UENUM()
+enum class ESkillType : uint8
+{
+	BasicAttack,
+	BasicSkill,
+	UltimateSkill
+};
 
 class UInputMappingContext;
 class UInputAction;
@@ -20,7 +30,8 @@ UCLASS()
 class ARCANUM_API ABattlePlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	friend struct FBTPlayerStruct;
+	friend class UBTPlayerDataObject;
+	friend class UBTService_PlayerSelectTarget;
 #pragma region 언리얼 기본생성
 protected:
 	virtual void BeginPlay() override;
@@ -93,17 +104,19 @@ public:
 	UFUNCTION()
 	void SetBossHealthProgress(float CurrentHealth, float MaxHealth);
 
+	UFUNCTION()
+	bool SkillCostChecker(FGameplayTag InSkillTag, int32 InLevel, bool bIsOnlyManaCheck = false);
 
 #pragma endregion
 
 
 #pragma region 메인
 protected:
-	UFUNCTION()
-	void BasicAttack();
+	//UFUNCTION()
+	//void BasicAttack();
 
-	UFUNCTION()
-	void BasicSkill();
+	//UFUNCTION()
+	//void BasicSkill();
 
 	UFUNCTION()
 	void WeaponSwap();
@@ -113,6 +126,23 @@ protected:
 
 	UFUNCTION()
 	void Item2();
+
+	//UFUNCTION()
+	//bool SkillStarter(FGameplayTag InSkillTag, int32 InLevel, bool bIsUltimate = false);
+
+	UFUNCTION()
+	void ReadySkillSet(FGameplayTag InSkillTag, int32 InLevel, bool bIsUltimate = false);
+
+	//UFUNCTION()
+	//void CurrentSelectedSkillStarter();
+
+
+	//USkillBase* GetOrCreateSkillBase(const FBattleSkillData& InSkillData, const FSkillInfo* InSkillInfo, const FVector& InTargetLocation);
+
+	//bool SpawnAndActivateSkillActor(USkillBase* InSkillBase, UClass* InSkillActorClass, const FVector& InTargetLocation);
+
+	UFUNCTION()
+	void SkillCancel();
 
 	UFUNCTION()
 	void AutoManualModeMobile(bool bIsChecked);
@@ -133,7 +163,7 @@ protected:
 	void SetSpawnDecalActive(bool bIsOn);
 
 	UFUNCTION()
-	ABaseUnitCharacter* Internal_SpawnUnit();
+	ABaseUnitCharacter* Internal_SpawnUnit(const FVector InSpawnLocation = FVector::ZeroVector);
 
 	// 사용할 고기
 	UFUNCTION()
@@ -146,6 +176,10 @@ protected:
 	// 쿨타임
 	UFUNCTION()
 	bool UseCoolTime(FGameplayTag InTag);
+
+	// 스킬 쿨타임
+	UFUNCTION()
+	bool UseSkillCost(FGameplayTag InTag);
 #pragma endregion
 
 #pragma region 전투 종료
@@ -167,7 +201,10 @@ protected:
 
 	// 쿨타임을 계속 줄임
 	UFUNCTION()
-	void Internal_UnitsCoolTimeTick(float DeltaTime);
+	void Internal_CoolTimeTick(float DeltaTime);
+
+	UFUNCTION()
+	void InitialSkillBase();
 
 #pragma endregion
 
@@ -216,6 +253,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> IA_CommonButton = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_BasicAttackSkill = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_CommonSkill = nullptr;
 #pragma endregion
 
 protected:
@@ -230,13 +273,12 @@ protected:
 	TWeakObjectPtr<AActor> EnemyBasement = nullptr;
 
 protected:
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TMap<FGameplayTag, FUnitInfoSetting> UsingAllyUnits;
 
 	UPROPERTY()
 	TMap<FGameplayTag, class UBattleAllyUnitSlotWidget*> UsingAllyUnitSlots;
 
-	// Todo KDH : 데이터 가져오게 변경해야함
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FRegenStat MeatValue;
 
@@ -258,16 +300,61 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TWeakObjectPtr<ABaseUnitCharacter> SelectedUnit2 = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
+	TSubclassOf<class ASelectedArrow> SelectedArrowClass = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Setting")
+	TObjectPtr<class ASelectedArrow> SelectedArrowInstance = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
+	TSubclassOf<class ASkillRangeDecal> SkillRangeDecalClass = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Setting")
+	TObjectPtr<class ASkillRangeDecal> SkillRangeDecalInstance = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
+	FGameplayTag MeatTag = Arcanum::BattleStat::Player::Regen::Meat::Root;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
+	FGameplayTag ManaValueTag = Arcanum::BattleStat::Character::Regen::Mana::Value;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
+	FGameplayTag ManaTag = Arcanum::BattleStat::Character::Regen::Mana::Root;
+
+
 private:
 	FTimerHandle PlayerLocationProgressTimeHandle;
 	bool bIsAutoManual = false;
 	float StageTimeSecond = 0.0f;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TMap<FGameplayTag, float> SkillCoolTimes;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TMap<FGameplayTag, TObjectPtr<class USkillBase>> SkillBaseInstances;
+
+	UPROPERTY()
+	TWeakObjectPtr<class APlayerCharacter> CachedPlayerCharacter = nullptr;
+
+	UPROPERTY()
+	TWeakObjectPtr<class USkillBase> CurrentSelectedSkillBase = nullptr;
+
+	FVector SkillLocation = FVector::ZeroVector;
+
+	bool bIsSkillSuccess = false;
+
+	UPROPERTY()
+	TWeakObjectPtr<class APostProcessVolume> CachedPostProcessVolume = nullptr;
+
+	UPROPERTY()
+	TWeakObjectPtr<AActor> SkillTargetActor = nullptr;
+
 #pragma region 궁극기 처리
-protected:
+public:
 	/* 궁극기 종료 처리 */
 	void UltimateSkillEnd();
 
+protected:
 	/* 궁극기 조준 시작 */
 	UFUNCTION()
 	void UltimateSkillPressed();
@@ -308,5 +395,154 @@ protected:
 	float UltimatePreviewMaxDistance = 1200.0f;
 
 	FTimerHandle UltimateSkillTimerHandle;
+#pragma endregion
+
+#pragma region 기본공격, 일반 스킬 처리
+public:
+	/* 기본공격 스킬 실행 */
+	UFUNCTION()
+	void TriggerBasicAttackHit();
+
+	/* 일반스킬 실제 실행 */
+	UFUNCTION()
+	void TriggerSkill();
+
+protected:
+	/* 기본공격 입력 */
+	UFUNCTION()
+	void InputBasicAttack();
+
+	/* 스킬 입력 */
+	UFUNCTION()
+	void InputSkill();
+#pragma endregion
+
+#pragma region 궁극기 연출
+public:
+	/* 궁극기 Press 연출 시작 */
+	void StartUltimatePresentation();
+
+	/* 궁극기 Release 직전 피크 연출 */
+	void PlayUltimateReleasePresentation();
+
+	/* 궁극기 연출 복귀 시작 */
+	void EndUltimatePresentation();
+
+protected:
+	/* 궁극기 카메라/FOV/후처리 보간 갱신 */
+	void UpdateUltimatePresentation(float DeltaTime);
+
+protected:
+	/* 궁극기 연출 진행 중 여부 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	bool bIsUltimatePresentationActive = false;
+
+	/* 궁극기 연출 복귀 중 여부 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	bool bIsUltimatePresentationRestoring = false;
+
+	/* Release 직전 2차 확대 진행 여부 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	bool bIsUltimateReleaseZoomActive = false;
+
+	/* 기본 카메라 FOV */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	float UltimateDefaultFOV = 0.0f;
+
+	/* Press 시 1차 목표 FOV */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	float UltimatePressTargetFOV = 80.0f;
+
+	/* Release 시 2차 목표 FOV */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	float UltimateReleaseTargetFOV = 120.0f;
+
+	/* Press 줌 보간 속도 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	float UltimatePressZoomInterpSpeed = 6.0f;
+
+	/* Release 줌 보간 속도 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	float UltimateReleaseZoomInterpSpeed = 12.0f;
+
+	/* 원복 보간 속도 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	float UltimateRestoreInterpSpeed = 5.0f;
+
+	/* 현재 목표 PostProcess 블렌드 웨이트 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	float UltimateTargetPostProcessBlendWeight = 0.0f;
+
+	/* Press 시 목표 PostProcess 블렌드 웨이트 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	float UltimatePressPostProcessBlendWeight = 1.0f;
+
+	/* PostProcess 보간 속도 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	float UltimatePostProcessInterpSpeed = 5.0f;
+
+	/* Release 순간 재생할 카메라 쉐이크 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
+	TSubclassOf<class UCameraShakeBase> UltimateCameraShakeClass = nullptr;
+	UPROPERTY(Transient)
+	TObjectPtr<class UCameraShakeBase> ActiveUltimateCameraShake = nullptr;
+#pragma endregion
+
+#pragma region 플레이어 스킬 쿨타임
+protected:
+	/* 스킬 쿨타임 시작 */
+	void StartSkillCooldown(const FGameplayTag& InSkillTag, float InCooldown);
+
+	/* 스킬 남은 쿨타임 반환 */
+	float GetSkillCooldownRemaining(const FGameplayTag& InSkillTag) const;
+
+	/* 스킬 전체 쿨타임 반환 */
+	float GetSkillCooldown(const FGameplayTag& InSkillTag) const;
+
+protected:
+	/* 스킬별 전체 쿨타임 */
+	TMap<FGameplayTag, float> SkillCooldownMap;
+
+	/* 스킬별 남은 쿨타임 */
+	TMap<FGameplayTag, float> SkillCooldownRemainingMap;
+
+protected:
+	/* 스킬 쿨타임 타이머 갱신 */
+	void UpdateSkillCooldown();
+
+	/* 기본 공격 쿨타임 시작 */
+	void StartBasicAttackCooldown();
+
+	/* 일반 스킬 쿨타임 시작 */
+	void StartBasicSkillCooldown();
+
+	/* 궁극기 쿨타임 시작 */
+	void StartUltimateCooldown();
+
+	/* 스킬 쿨타임 UI 갱신 */
+	void RefreshSkillCooldownUI();
+
+	/* 플레이어 스킬 쿨타임 타이머 핸들 */
+	FTimerHandle SkillCooldownTimerHandle;
+
+	/* 기본 공격 남은 쿨타임 */
+	float BasicAttackCooldownRemaining = 0.0f;
+
+	/* 일반 스킬 남은 쿨타임 */
+	float BasicSkillCooldownRemaining = 0.0f;
+
+	/* 궁극기 남은 쿨타임 */
+	float UltimateCooldownRemaining = 0.0f;
+
+	/* 기본 공격 쿨타임 */
+	float BasicAttackCooldown = 0.0f;
+
+	/* 일반 스킬 쿨타임 */
+	float BasicSkillCooldown = 0.0f;
+
+	/* 궁극기 쿨타임 */
+	float UltimateCooldown = 0.0f;
+
+	float SkillCooldownTickInterval = 0.02f;
 #pragma endregion
 };

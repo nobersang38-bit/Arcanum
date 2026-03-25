@@ -162,6 +162,9 @@ private:
 	/* 장착 방어구 능력치 패널 갱신 */
 	void RefreshArmorStatPanel();
 
+	/* 세트 효과 패널 갱신 */
+	void RefreshSetEffectPanel();
+
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UCharacterEquipWidget> CharacterEquipWidget;

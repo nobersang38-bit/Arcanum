@@ -3,6 +3,7 @@
 #include "UI/Lobby/Contents/Character/CharacterInfo.h"
 #include "UI/Lobby/Contents/Character/SquareSlotWidget.h"
 #include "UI/Lobby/Contents/Character/CharacterEquipWidget.h"
+#include "UI/Lobby/Contents/Character/SetEffectPanelWidget.h"
 #include "UI/Lobby/Contents/Inventory/InventoryHUDWidget.h"
 #include "UI/Lobby/Contents/ItemDetail/ItemDetailHelper.h"
 #include "UI/Lobby/Contents/ItemDetail/ItemStatPanelWidget.h"
@@ -14,6 +15,7 @@
 #include "Components/WidgetSwitcher.h"
 #include "GameplayTags/ArcanumTags.h"
 #include "Data/Types/BaseUnitData.h"
+
 
 #include "Core/ARPlayerAccountService.h"
 #include "Core/ARGameInstance.h"
@@ -76,7 +78,7 @@ void UCharacterHUDWidget::NativeConstruct()
 		CharacterEquipWidget->OnCharacterUnequipRequested.RemoveDynamic(this, &UCharacterHUDWidget::HandleCharacterUnequipRequested);
 		CharacterEquipWidget->OnCharacterUnequipRequested.AddDynamic(this, &UCharacterHUDWidget::HandleCharacterUnequipRequested);
 	}
-	
+
 	if (EquipOpenBtn)
 	{
 		EquipOpenBtn->OnClicked.RemoveDynamic(this, &UCharacterHUDWidget::HandleEquipOpenBtnClicked);
@@ -294,6 +296,7 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
 	}
 	InitEquipment(CharacterName);
 	RefreshArmorStatPanel();
+	RefreshSetEffectPanel();
 
 	/// 260311 변경 : 추가 (클릭 시 데이터 변경되게 info 관련은 변경해주세요.)
 	FGameplayTag TargetTag = FGameplayTag::RequestGameplayTag(FName("Arcanum.Unit.Ally"));
@@ -402,8 +405,10 @@ void UCharacterHUDWidget::CharacterEnhancement(FText InCharacterName, int32 InRe
 	// 소울 소비
 	FCurrencyData* soulData = ParentLobby->CachedPlayerData.PlayerCurrency.CurrencyDatas.Find(Arcanum::PlayerData::Currencies::NonRegen::Soul::Value);
 	const int64 soulAmount = (soulData) ? soulData->CurrAmount : 0;
-	if (soulAmount >= InRequiredSoul)
-		soulData->CurrAmount -= InRequiredSoul;
+	/*if (soulAmount >= InRequiredSoul)
+		soulData->CurrAmount -= InRequiredSoul;*/
+	/// TODO : UpdateCurrency 사용시 캐릭터 CurrStarLevel가 초기화됨
+	FPlayerAccountService::UpdateCurrency(this, ParentLobby->CachedPlayerData, Arcanum::PlayerData::Currencies::NonRegen::Soul::Value, InRequiredSoul * -1);
 
 	FName SelectedCharacterName;
 	CombinedInfoString = "";
@@ -413,68 +418,87 @@ void UCharacterHUDWidget::CharacterEnhancement(FText InCharacterName, int32 InRe
 		FBattleCharacterData& TargetData = ParentLobby->CachedPlayerData.OwnedCharacters[i];
 
 		FGameplayTag CharacterTag = TargetData.CharacterInfo.BattleCharacterInitData.CharacterTag;
-		FName PlayerName = GetLeafNameFromTag(CharacterTag);
 
+		FName PlayerName = GetLeafNameFromTag(CharacterTag);
 		bool bIsSelected = InCharacterName.ToString().Equals(PlayerName.ToString());
 
 		if (bIsSelected)
 		{
 			//CurrStarLevel + 1 저장
-			TargetData.CharacterInfo.CurrStarLevel += 1;
-			SelectedCharacterName = PlayerName;
-			TargetGradeIndex = (TargetData.CharacterInfo.CurrStarLevel > 0) ? TargetData.CharacterInfo.CurrStarLevel - 1 : 0;
-			CharacterStar = TargetGradeIndex;
-			CharacterGrade = GetGradePriority(TargetData.CharacterInfo.CurrGrade);
+			//TargetData.CharacterInfo.CurrStarLevel += 1;
+			if (FPlayerAccountService::UpdateCharacter(this, CharacterTag)) {
+				ParentLobby->CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
 
-			// 최대 강화를 넘지 않기 위해
-			if (TargetGradeIndex < 3)
-			{
-				RequiredSoul = TargetData.CharacterInfo.BattleCharacterInitData.RequiredShardCount[TargetGradeIndex];
-				ButtonText = FText::Format(FText::FromString(TEXT("강화 : {0} 소울")), FText::AsNumber(RequiredSoul));
-			}
-			else
-			{
-				ButtonText = FText::FromString(TEXT("최대 강화"));
-			}
+				for (int32 j = 0; j < ParentLobby->CachedPlayerData.OwnedCharacters.Num(); j++)
+				{
+					FBattleCharacterData& UpdateTargetData = ParentLobby->CachedPlayerData.OwnedCharacters[i];
 
-			if (FDTBattleStatsContainerRow* BattleRow = DataSubsystem->GetRow<FDTBattleStatsContainerRow>(Arcanum::DataTable::BattleStats, PlayerName)) {
-				if (BattleRow->GradeDataSteps.IsValidIndex(TargetGradeIndex)) {
-					const FGradeStatData& CurrentStats = BattleRow->GradeDataSteps[TargetGradeIndex];
-					for (const FRegenStat& RStat : CurrentStats.RegenStats)
+					FGameplayTag UpdateCharacterTag = UpdateTargetData.CharacterInfo.BattleCharacterInitData.CharacterTag;
+
+					FName UpdatePlayerName = GetLeafNameFromTag(UpdateCharacterTag);
+					bool bIsUpdateSelected = InCharacterName.ToString().Equals(UpdatePlayerName.ToString());
+
+					if (bIsUpdateSelected)
 					{
-						FString TagString = RStat.ParentTag.IsValid() ? GetLeafNameFromTag(RStat.ParentTag).ToString() : TEXT("NoTag");
-						FString RowString = FString::Printf(TEXT("%.1f ( %.2f )"), RStat.BaseMax, RStat.BaseTick);
+						SelectedCharacterName = UpdatePlayerName;
+						TargetGradeIndex = (UpdateTargetData.CharacterInfo.CurrStarLevel > 0) ? UpdateTargetData.CharacterInfo.CurrStarLevel - 1 : 0;
+						CharacterStar = TargetGradeIndex;
+						CharacterGrade = GetGradePriority(UpdateTargetData.CharacterInfo.CurrGrade);
 
-						if (CombinedInfoString.IsEmpty())
+						// 최대 강화를 넘지 않기 위해
+						if (TargetGradeIndex < 3)
 						{
-							CombinedInfoString = RowString;
+							RequiredSoul = UpdateTargetData.CharacterInfo.BattleCharacterInitData.RequiredShardCount[TargetGradeIndex];
+							ButtonText = FText::Format(FText::FromString(TEXT("강화 : {0} 소울")), FText::AsNumber(RequiredSoul));
 						}
 						else
 						{
-							CombinedInfoString += LINE_TERMINATOR + RowString; // LINE_TERMINATOR \n 역할
+							ButtonText = FText::FromString(TEXT("최대 강화"));
 						}
-					}
-					for (const FNonRegenStat& NRStat : CurrentStats.NonRegenStats)
-					{
-						FString TagString = NRStat.TagName.IsValid() ? GetLeafNameFromTag(NRStat.TagName).ToString() : TEXT("NoTag");
-						float TotalValue = NRStat.BaseValue + NRStat.BonusValue + NRStat.ModifierValue;
 
-						FString RowString = FString::Printf(TEXT("%.2f"), TotalValue);
-						if (CombinedInfoString.IsEmpty())
-						{
-							CombinedInfoString = RowString;
+						if (FDTBattleStatsContainerRow* BattleRow = DataSubsystem->GetRow<FDTBattleStatsContainerRow>(Arcanum::DataTable::BattleStats, PlayerName)) {
+							if (BattleRow->GradeDataSteps.IsValidIndex(TargetGradeIndex)) {
+								const FGradeStatData& CurrentStats = BattleRow->GradeDataSteps[TargetGradeIndex];
+								for (const FRegenStat& RStat : CurrentStats.RegenStats)
+								{
+									FString TagString = RStat.ParentTag.IsValid() ? GetLeafNameFromTag(RStat.ParentTag).ToString() : TEXT("NoTag");
+									FString RowString = FString::Printf(TEXT("%.1f ( %.2f )"), RStat.BaseMax, RStat.BaseTick);
+
+									if (CombinedInfoString.IsEmpty())
+									{
+										CombinedInfoString = RowString;
+									}
+									else
+									{
+										CombinedInfoString += LINE_TERMINATOR + RowString; // LINE_TERMINATOR \n 역할
+									}
+								}
+								for (const FNonRegenStat& NRStat : CurrentStats.NonRegenStats)
+								{
+									FString TagString = NRStat.TagName.IsValid() ? GetLeafNameFromTag(NRStat.TagName).ToString() : TEXT("NoTag");
+									float TotalValue = NRStat.BaseValue + NRStat.BonusValue + NRStat.ModifierValue;
+
+									FString RowString = FString::Printf(TEXT("%.2f"), TotalValue);
+									if (CombinedInfoString.IsEmpty())
+									{
+										CombinedInfoString = RowString;
+									}
+									else
+									{
+										CombinedInfoString += LINE_TERMINATOR + RowString;
+									}
+								}
+							}
 						}
-						else
-						{
-							CombinedInfoString += LINE_TERMINATOR + RowString;
-						}
+						FinalText = FText::FromString(CombinedInfoString);
+						// Info창 다시 불러오기
+						//const int64 updatedSoulAmount = soulData ? soulData->CurrAmount : 0;
+						UpdateCharacterInfo(SelectedCharacterName, UpdateTargetData.bSelection, true, FinalText, ButtonText, soulAmount);
+						//ParentLobby->CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
+						break;
 					}
 				}
 			}
-			FinalText = FText::FromString(CombinedInfoString);
-			// Info창 다시 불러오기
-			const int64 updatedSoulAmount = soulData ? soulData->CurrAmount : 0;
-			UpdateCharacterInfo(SelectedCharacterName, TargetData.bSelection, true, FinalText, ButtonText, updatedSoulAmount);
 		}
 	}
 }
@@ -711,6 +735,7 @@ void UCharacterHUDWidget::HandleCharacterEquipRequested(const FGameplayTag& InEq
 			ParentLobby->RefreshAllLobbyUI();
 			InitEquipment(CurrentSelectedCharacterName);
 			RefreshArmorStatPanel();
+			RefreshSetEffectPanel();
 			CharacterEquipWidget->SetEquipSlotTag(InEquipSlotTag);
 		}
 	}
@@ -727,6 +752,7 @@ void UCharacterHUDWidget::HandleCharacterUnequipRequested(const FGameplayTag& In
 			ParentLobby->RefreshAllLobbyUI();
 			InitEquipment(CurrentSelectedCharacterName);
 			RefreshArmorStatPanel();
+			RefreshSetEffectPanel();
 			CharacterEquipWidget->SetEquipSlotTag(InEquipSlotTag);
 		}
 	}
@@ -770,4 +796,82 @@ void UCharacterHUDWidget::RefreshArmorStatPanel()
 			}
 		}
 	}
+}
+
+void UCharacterHUDWidget::RefreshSetEffectPanel()
+{
+	if (!CharacterEquipWidget || !ParentLobby) return;
+
+	USetEffectPanelWidget* setEffectPanelWidget = CharacterEquipWidget->GetSetEffectPanelWidget();
+	if (!setEffectPanelWidget) return;
+
+	int32 setCount = 0;
+	FSetEffectDefinition setEffectDefinition;
+
+	for (const FBattleCharacterData& characterData : ParentLobby->CachedPlayerData.OwnedCharacters)
+	{
+		const FName characterName = GetLeafNameFromTag(characterData.CharacterInfo.BattleCharacterInitData.CharacterTag);
+		if (characterName != CurrentSelectedCharacterName) continue;
+
+		for (const TPair<FGameplayTag, FGuid>& pair : characterData.ArmorSlots)
+		{
+			const FGuid& itemGuid = pair.Value;
+			if (!itemGuid.IsValid()) continue;
+
+			const FEquipmentInfo* foundEquip = nullptr;
+			for (const FEquipmentInfo& equip : ParentLobby->CachedPlayerData.Inventory)
+			{
+				if (equip.ItemGuid == itemGuid)
+				{
+					foundEquip = &equip;
+					break;
+				}
+			}
+
+			if (foundEquip)
+			{
+				const FDTEquipmentInfoRow* equipRow = FPlayerAccountService::FindEquipmentInfoRowByTag(this, foundEquip->ItemTag);
+				if (equipRow && !equipRow->SetEffect.SetNameText.IsEmpty())
+				{
+					if (setEffectDefinition.SetNameText.IsEmpty())
+					{
+						setEffectDefinition = equipRow->SetEffect;
+					}
+
+					if (equipRow->SetEffect.SetNameText.EqualTo(setEffectDefinition.SetNameText))
+					{
+						setCount++;
+					}
+				}
+			}
+		}
+
+		break;
+	}
+
+	if (setCount <= 0 || setEffectDefinition.SetNameText.IsEmpty())
+	{
+		setEffectPanelWidget->ClearEffectText();
+		return;
+	}
+
+	FSetEffectViewData viewData;
+	viewData.bVisible = true;
+	viewData.bActivated = setCount >= setEffectDefinition.NeedCount;
+	viewData.SetNameText = setEffectDefinition.SetNameText;
+	viewData.SetCountText = FText::Format(
+		FText::FromString(TEXT("({0}/{1})")),
+		FText::AsNumber(setCount),
+		FText::AsNumber(setEffectDefinition.NeedCount));
+
+	if (viewData.bActivated)
+	{
+		viewData.SetDescText = setEffectDefinition.ActiveDescText;
+	}
+	else
+	{
+		viewData.SetDescText = setEffectDefinition.InactiveDescText;
+	}
+
+	setEffectPanelWidget->SetEffectText(viewData);
 }

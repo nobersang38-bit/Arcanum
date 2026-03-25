@@ -12,4 +12,4 @@ struct FDTSkillsDataRow : public FTableRowBase
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     FSkillInfo SkillData;
-};
+};  
