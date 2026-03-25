@@ -499,15 +499,16 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 		{
 			if (InEquipInfo)
 			{
-				const int32 skillLevel = InEquipInfo->CurrUpgradeLevel + 1;
+				const int32 rawSkillLevel = InEquipInfo->CurrUpgradeLevel + 1;
 
 				OutBasicAttackSkill.SkillTag = InEquipInfo->Equipment.BasicAttackSkillTag;
-				OutBasicAttackSkill.SkillLevel = skillLevel;
-				OutBasicAttackSkill.SkillIcon = FindSkillIcon(OutBasicAttackSkill.SkillTag);
-				OutBasicAttackSkill.Cooldown = FindSkillCooldown(OutBasicAttackSkill.SkillTag, OutBasicAttackSkill.SkillLevel);
 
+				int32 basicAttackSkillLevel = rawSkillLevel;
 				if (const FSkillInfo* basicAttackSkillInfo = FindSkillInfoByTag(OutBasicAttackSkill.SkillTag))
 				{
+					const int32 maxSkillLevel = basicAttackSkillInfo->LevelModifiers.Num();
+					basicAttackSkillLevel = FMath::Clamp(rawSkillLevel, 1, maxSkillLevel);
+
 					OutBasicAttackSkill.ComboMontages.Empty();
 
 					for (const TSoftObjectPtr<UAnimMontage>& comboMontage : basicAttackSkillInfo->ComboMontages)
@@ -517,6 +518,10 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 					}
 				}
 
+				OutBasicAttackSkill.SkillLevel = basicAttackSkillLevel;
+				OutBasicAttackSkill.SkillIcon = FindSkillIcon(OutBasicAttackSkill.SkillTag);
+				OutBasicAttackSkill.Cooldown = FindSkillCooldown(OutBasicAttackSkill.SkillTag, OutBasicAttackSkill.SkillLevel);
+
 				for (const TPair<FGameplayTag, int32>& skillPair : InEquipInfo->Equipment.Skills)
 				{
 					if (!skillPair.Key.IsValid()) continue;
@@ -524,16 +529,21 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 					if (skillPair.Value <= 0) continue;
 
 					OutBasicSkill.SkillTag = skillPair.Key;
-					OutBasicSkill.SkillLevel = skillLevel;
-					OutBasicSkill.SkillIcon = FindSkillIcon(OutBasicSkill.SkillTag);
-					OutBasicSkill.CastTime = FindSkillCastTime(OutBasicSkill.SkillTag, skillLevel);
-					OutBasicSkill.Cooldown = FindSkillCooldown(OutBasicSkill.SkillTag, skillLevel);
 
+					int32 basicSkillLevel = rawSkillLevel;
 					if (const FSkillInfo* basicSkillInfo = FindSkillInfoByTag(OutBasicSkill.SkillTag))
 					{
+						const int32 maxSkillLevel = basicSkillInfo->LevelModifiers.Num();
+						basicSkillLevel = FMath::Clamp(rawSkillLevel, 1, maxSkillLevel);
+
 						OutBasicSkill.CastMontage = basicSkillInfo->CastMontage.LoadSynchronous();
 						OutBasicSkill.SkillClass = basicSkillInfo->SkillClass.LoadSynchronous();
 					}
+
+					OutBasicSkill.SkillLevel = basicSkillLevel;
+					OutBasicSkill.SkillIcon = FindSkillIcon(OutBasicSkill.SkillTag);
+					OutBasicSkill.CastTime = FindSkillCastTime(OutBasicSkill.SkillTag, OutBasicSkill.SkillLevel);
+					OutBasicSkill.Cooldown = FindSkillCooldown(OutBasicSkill.SkillTag, OutBasicSkill.SkillLevel);
 
 					break;
 				}
@@ -545,7 +555,7 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 		{
 			if (InEquipInfo)
 			{
-				const int32 skillLevel = InEquipInfo->CurrUpgradeLevel + 1;
+				const int32 rawSkillLevel = InEquipInfo->CurrUpgradeLevel + 1;
 
 				for (const TPair<FGameplayTag, int32>& skillPair : InEquipInfo->Equipment.Skills)
 				{
@@ -554,18 +564,23 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 					if (skillPair.Value <= 0) continue;
 
 					OutUltimateSkill.SkillTag = skillPair.Key;
-					OutUltimateSkill.SkillLevel = skillLevel;
-					OutUltimateSkill.SkillIcon = FindSkillIcon(OutUltimateSkill.SkillTag);
-					OutUltimateSkill.CastTime = FindSkillCastTime(OutUltimateSkill.SkillTag, skillLevel);
-					OutUltimateSkill.Cooldown = FindSkillCooldown(OutUltimateSkill.SkillTag, skillLevel);
 
+					int32 ultimateSkillLevel = rawSkillLevel;
 					if (const FSkillInfo* ultimateSkillInfo = FindSkillInfoByTag(OutUltimateSkill.SkillTag))
 					{
+						const int32 maxSkillLevel = ultimateSkillInfo->LevelModifiers.Num();
+						ultimateSkillLevel = FMath::Clamp(rawSkillLevel, 1, maxSkillLevel);
+
 						OutUltimateSkill.CastMontage = ultimateSkillInfo->CastMontage.LoadSynchronous();
 						OutUltimateSkill.SkillClass = ultimateSkillInfo->SkillClass.LoadSynchronous();
 						OutUltimateSkill.PressMontage = ultimateSkillInfo->PressMontage.LoadSynchronous();
 						OutUltimateSkill.ReleaseMontage = ultimateSkillInfo->ReleaseMontage.LoadSynchronous();
 					}
+
+					OutUltimateSkill.SkillLevel = ultimateSkillLevel;
+					OutUltimateSkill.SkillIcon = FindSkillIcon(OutUltimateSkill.SkillTag);
+					OutUltimateSkill.CastTime = FindSkillCastTime(OutUltimateSkill.SkillTag, OutUltimateSkill.SkillLevel);
+					OutUltimateSkill.Cooldown = FindSkillCooldown(OutUltimateSkill.SkillTag, OutUltimateSkill.SkillLevel);
 
 					break;
 				}
