@@ -161,5 +161,4 @@ void UBTPlayerDataObject::UltimateStep1()
 void UBTPlayerDataObject::UltimateStep2()
 {
 	PlayerController->UltimateSkillReleased();
-	PlayerController->ExecuteUltimateSkill();
 }

@@ -1195,10 +1195,10 @@ void ABattlePlayerController::Internal_CoolTimeTick(float DeltaTime)
 		}
 	}
 
-	/*for (auto& SkillCoolTime : SkillCoolTimes)
+	for (auto& SkillCoolTime : SkillCoolTimes)
 	{
 		SkillCoolTime.Value -= DeltaTime;
-		if (SkillCoolTime.Key == BattleSubsystem->GetCurrentBasicAttackSkillTag())
+		/*if (SkillCoolTime.Key == BattleSubsystem->GetCurrentBasicAttackSkillTag())
 		{
 			HUDWidgetInstance->GetBasicAttack()->SetCoolTimeProgress(SkillCoolTime.Value, (*SkillBaseInstances.Find(SkillCoolTime.Key))->GetCurrentLevelEntry()->Cooldown);
 		}
@@ -1210,8 +1210,8 @@ void ABattlePlayerController::Internal_CoolTimeTick(float DeltaTime)
 		else if (SkillCoolTime.Key == BattleSubsystem->GetLegendaryUltimateSkillTag())
 		{
 			HUDWidgetInstance->GetUltimateSkill()->SetCoolTimeProgress(SkillCoolTime.Value, (*SkillBaseInstances.Find(SkillCoolTime.Key))->GetCurrentLevelEntry()->Cooldown);
-		}
-	}*/
+		}*/
+	}
 }
 
 void ABattlePlayerController::InitialSkillBase()
@@ -1483,6 +1483,8 @@ void ABattlePlayerController::TriggerBasicAttackHit()
 
 void ABattlePlayerController::TriggerSkill()
 {
+	UE_LOG(LogTemp, Warning, TEXT("TriggerSkill Enter Ultimate=%d"), bIsUltimateAiming);
+
 	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 	if (!battleSubsystem) return;
 

@@ -59,7 +59,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	USkeletalMeshComponent* GetSourceSkeletaMeshComponent() { return SourceSkeletaMeshComponent; }
-
+	ABattlePlayerController* GetBattleOwnerController() const;
 protected:
 
 	// 스프링암
