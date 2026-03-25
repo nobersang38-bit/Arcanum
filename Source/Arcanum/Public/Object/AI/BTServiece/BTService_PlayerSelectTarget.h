@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/Services/BTService_BlackboardBase.h"
+#include "Data/DataAssets/DATargetPriorityWeight.h"
 #include "BTService_PlayerSelectTarget.generated.h"
 
 /**
@@ -34,4 +35,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TWeakObjectPtr<class ABattlePlayerController> CachedPlayerController = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FTargetPriorityWeightData TargetPriorityWeightData;
 };

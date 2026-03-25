@@ -437,6 +437,13 @@ void UBattlefieldManagerSubsystem::MatchEnded(const FMatchData& MatchData)
 	UGameInstance* GI = GetWorld()->GetGameInstance();
 	if (GI)
 	{
+		if (MatchData.bIsVictory)
+		{
+			FPlayerAccountService::AddCurrency(this, Arcanum::PlayerData::Currencies::NonRegen::Gold::Value, InBattleData.StageData.Reward.Gold);
+			FPlayerAccountService::AddCurrency(this, Arcanum::PlayerData::Currencies::NonRegen::Shard::Value, InBattleData.StageData.Reward.Gem);
+			FPlayerAccountService::AddCurrency(this, Arcanum::PlayerData::Currencies::NonRegen::Soul::Value, InBattleData.StageData.Reward.Soul);
+		}
+
 		UGameTimeSubsystem* GameTimeSubsystem = GI->GetSubsystem<UGameTimeSubsystem>();
 		if (GameTimeSubsystem)
 		{
