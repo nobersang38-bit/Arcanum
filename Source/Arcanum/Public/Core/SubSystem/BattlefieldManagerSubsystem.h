@@ -30,6 +30,22 @@ public:
 	FBattleWeaponSkillData BattleWeaponSkill;
 	FPlayerBattleData PlayerBattleData;
 	TArray<FDerivedStatModifier> EquippedOwnerStats;
+	TMap<FGameplayTag, TMap<FGameplayTag, FDerivedStatModifier>> WeaponOnHitTarget;
+	
+	/* TODO: 꺼내쓸때
+	const TMap<FGameplayTag, FDerivedStatModifier>* weaponSlot1OnHitTarget = InBattleData.WeaponOnHitTarget.Find(Arcanum::Items::ItemSlot::Weapon::Slot1);
+	const TMap<FGameplayTag, FDerivedStatModifier>* weaponSlot2OnHitTarget = InBattleData.WeaponOnHitTarget.Find(Arcanum::Items::ItemSlot::Weapon::Slot2);
+	const TMap<FGameplayTag, FDerivedStatModifier>* legendaryWeaponOnHitTarget = InBattleData.WeaponOnHitTarget.Find(Arcanum::Items::ItemSlot::Weapon::Legendary);
+
+	if (weaponSlot1OnHitTarget)
+    {
+	    const FDerivedStatModifier* healthModifier = weaponSlot1OnHitTarget->Find(Arcanum::BattleStat::Character::Regen::Health::Value);
+	    if (healthModifier)
+	    { 
+	 	    const float damage = healthModifier->Value.Flat;
+	    }
+    }
+	*/
 };
 
 
@@ -131,6 +147,12 @@ protected:
 		const FPlayerData& InPlayerData,
 		const FBattleCharacterData& InSelectedCharacter,
 		TArray<FDerivedStatModifier>& OutEquippedOwnerStats) const;
+
+	/* 장착 무기 OnHitTargetStats 데이터 */
+	void EquippedWeaponOnHitTarget(
+		const FPlayerData& InPlayerData,
+		const FBattleCharacterData& InSelectedCharacter,
+		TMap<FGameplayTag, TMap<FGameplayTag, FDerivedStatModifier>>& OutWeaponOnHitTarget) const;
 #pragma endregion
 
 
