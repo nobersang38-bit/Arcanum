@@ -203,9 +203,14 @@ void AProjectileBase::CollisionProcess(AActor* OtherActor)
                     // 계산 부분
                     FDerivedStatModifier StatModifier = LevelModifierEntry->OtherCharacterModifiers[0];
 
+                    if (OwnerSkill->GetDerivedStatModifier().StatTag.MatchesTag(StatModifier.StatTag))
+                    {
+                        StatModifier.Value.Flat = StatModifier.Value.Flat + OwnerSkill->GetDerivedStatModifier().Value.Flat;
+                    }
+
                     if (StatModifier.Duration <= 0.0f && !StatModifier.bIsPermanent) // 체인지 스탯함수 실행
                     {
-                        Interface->ChangeStat(StatModifier.StatTag, StatModifier.Value.Flat * StatModifier.Value.Mul);
+                        Interface->ChangeStat(StatModifier.StatTag, (StatModifier.Value.Flat * StatModifier.Value.Mul));
                     }
                     else // 모디파이어 추가
                     {
@@ -247,24 +252,22 @@ bool AProjectileBase::TargetfilterCheck(AActor* OtherActor)
                 FGameplayTag OtherActorTag = OtherActorInterface->GetTeamTag();
                 FGameplayTag InstigatorTag = InstigatorActorInterface->GetTeamTag();
 
-                if (const FSkillInfo* SkillInfo = OwnerSkill->GetSkillInfo())
+                const FSkillInfo& SkillInfo = OwnerSkill->GetSkillInfo();
+                if (SkillInfo.TargetFilterTag == AllyTag)
                 {
-                    if (SkillInfo->TargetFilterTag == AllyTag)
-                    {
-                        if (InstigatorTag != OtherActorTag) return false;
-                    }
-                    else if (SkillInfo->TargetFilterTag == EnemyTag)
-                    {
-                        if (InstigatorTag == OtherActorTag) return false;
-                    }
-                    else if (SkillInfo->TargetFilterTag == SelfTag)
-                    {
-                        if (OtherActor != InstigatorActor) return false;
-                    }
-                    else if (SkillInfo->TargetFilterTag == NoneTag)
-                    {
-                        return false;
-                    }
+                    if (InstigatorTag != OtherActorTag) return false;
+                }
+                else if (SkillInfo.TargetFilterTag == EnemyTag)
+                {
+                    if (InstigatorTag == OtherActorTag) return false;
+                }
+                else if (SkillInfo.TargetFilterTag == SelfTag)
+                {
+                    if (OtherActor != InstigatorActor) return false;
+                }
+                else if (SkillInfo.TargetFilterTag == NoneTag)
+                {
+                    return false;
                 }
             }
         }
