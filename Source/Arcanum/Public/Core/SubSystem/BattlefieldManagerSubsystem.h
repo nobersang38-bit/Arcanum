@@ -29,7 +29,7 @@ public:
 	FGradeStatData PlayerBattleStat;
 	FBattleWeaponSkillData BattleWeaponSkill;
 	FPlayerBattleData PlayerBattleData;
-	//TArray<FItemDefinition> EquipmentStats;
+	TArray<FDerivedStatModifier> EquippedOwnerStats;
 };
 
 
@@ -124,6 +124,13 @@ public:
 	플레이어 캐릭터
 	현재 스테이지
 	*/
+
+protected:
+	/* 장착 방어구 OwnerStats 데이터 */
+	void EquippedArmorOwnerStats(
+		const FPlayerData& InPlayerData,
+		const FBattleCharacterData& InSelectedCharacter,
+		TArray<FDerivedStatModifier>& OutEquippedOwnerStats) const;
 #pragma endregion
 
 

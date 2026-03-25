@@ -328,6 +328,17 @@ void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerDa
 						FGradeStatData GradeStatData = DTBattleStatsContainerRow->GradeDataSteps[OwnedCharacter.CharacterInfo.CurrStarLevel - 1];
 						OutInBattleData.PlayerBattleStat = GradeStatData;
 
+						OutInBattleData.EquippedOwnerStats.Empty();
+						EquippedArmorOwnerStats(InPlayerData, OwnedCharacter, OutInBattleData.EquippedOwnerStats);
+
+						UE_LOG(LogTemp, Warning, TEXT("[EquippedOwnerStats] Num=%d"), OutInBattleData.EquippedOwnerStats.Num());
+						for (const FDerivedStatModifier& stat : OutInBattleData.EquippedOwnerStats)
+						{
+							UE_LOG(LogTemp, Warning, TEXT("[EquippedOwnerStats] Stat=%s Flat=%.2f Mul=%.4f"),
+								*stat.StatTag.ToString(),
+								stat.Value.Flat,
+								stat.Value.Mul);
+						}
 
 						//로그 부분 나중에 삭제
 						UE_LOG(LogTemp, Warning, TEXT("플레이어 스탯 리젠"));
@@ -431,6 +442,23 @@ void UBattlefieldManagerSubsystem::MatchEnded(const FMatchData& MatchData)
 		{
 			GameTimeSubsystem->StopStage();
 			OnMatchEnded.Clear();
+		}
+	}
+}
+
+void UBattlefieldManagerSubsystem::EquippedArmorOwnerStats(const FPlayerData& InPlayerData, const FBattleCharacterData& InSelectedCharacter, TArray<FDerivedStatModifier>& OutEquippedOwnerStats) const
+{
+	OutEquippedOwnerStats.Empty();
+
+	for (const TPair<FGameplayTag, FGuid>& armorPair : InSelectedCharacter.ArmorSlots)
+	{
+		const FGuid& itemGuid = armorPair.Value;
+		if (itemGuid.IsValid())
+		{
+			if (const FEquipmentInfo* foundEquip = FindEquipmentByGuid(InPlayerData, itemGuid))
+			{
+				OutEquippedOwnerStats.Append(foundEquip->Equipment.OwnerStats);
+			}
 		}
 	}
 }
