@@ -1388,6 +1388,21 @@ FDateTime FPlayerAccountService::GetCurrentTimeKST()
 // ========================================================
 // Gacha Widget 관련
 // ========================================================
+FGachaBannerState FPlayerAccountService::InitGachaBannerData(const UObject* WorldContextObject, FGameplayTag TargetTag)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return FGachaBannerState();
+
+	FGachaData& GachaState = GI->GetPlayerData().GachaState;
+
+	if (!GachaState.BannerStates.Contains(TargetTag)) {
+		GachaState.BannerStates.Add(TargetTag, FGachaBannerState());
+		SavePlayerData(GI);
+	}
+
+	return GachaState.BannerStates[TargetTag];
+}
+
 const FDTGachaBannerDataRow* FPlayerAccountService::GetGachaBannerData(const UObject* WorldContextObject, FGameplayTag TargetTag)
 {
 	if (!WorldContextObject) return nullptr;
@@ -1464,6 +1479,12 @@ bool FPlayerAccountService::ExecuteGacha(const UObject* WorldContextObject, cons
 
 	if (GI->GenerateResults(BannerData, PullCount)) {
 		UpdateCurrency(WorldContextObject, PlayerData, Cost.ConsumptionCurrencyTag, -SpendAmount);
+		
+		FGachaData& GachaState = GI->GetPlayerData().GachaState;
+		FGachaBannerState& TargetState = GachaState.BannerStates.FindOrAdd(BannerTag);
+		TargetState.PityCount += PullCount;
+		SavePlayerData(GI);
+		
 		res = true;
 	}
 
