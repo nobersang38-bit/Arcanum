@@ -167,6 +167,7 @@ void UCharacterBattleStatsComponent::RebuildTotalStats()
 
     for (FRegenStat& Stat : TotalRegenStats) {
         Stat.Current = FMath::Clamp(Stat.Current, 0.f, Stat.GetTotalMax());
+        //Stat.Current = Stat.GetTotalMax();
     }
 }
 // ========================================================

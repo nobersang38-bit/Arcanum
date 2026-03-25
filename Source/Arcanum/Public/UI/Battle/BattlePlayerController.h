@@ -451,11 +451,11 @@ protected:
 
 	/* Press 시 1차 목표 FOV */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
-	float UltimatePressTargetFOV = 100.0f;
+	float UltimatePressTargetFOV = 80.0f;
 
 	/* Release 시 2차 목표 FOV */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
-	float UltimateReleaseTargetFOV = 85.0f;
+	float UltimateReleaseTargetFOV = 120.0f;
 
 	/* Press 줌 보간 속도 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")

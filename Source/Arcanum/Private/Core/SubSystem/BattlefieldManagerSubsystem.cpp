@@ -328,7 +328,6 @@ void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerDa
 						FGradeStatData GradeStatData = DTBattleStatsContainerRow->GradeDataSteps[OwnedCharacter.CharacterInfo.CurrStarLevel - 1];
 						OutInBattleData.PlayerBattleStat = GradeStatData;
 
-						ApplyEquippedArmorStatsToBattleStat(InPlayerData, OwnedCharacter, OutInBattleData.PlayerBattleStat);
 
 						//로그 부분 나중에 삭제
 						UE_LOG(LogTemp, Warning, TEXT("플레이어 스탯 리젠"));
@@ -432,54 +431,6 @@ void UBattlefieldManagerSubsystem::MatchEnded(const FMatchData& MatchData)
 		{
 			GameTimeSubsystem->StopStage();
 			OnMatchEnded.Clear();
-		}
-	}
-}
-
-void UBattlefieldManagerSubsystem::ApplyEquippedArmorStatsToBattleStat(const FPlayerData& InPlayerData, const FBattleCharacterData& InSelectedCharacter, FGradeStatData& InOutBattleStat) const
-{
-	for (const TPair<FGameplayTag, FGuid>& armorPair : InSelectedCharacter.ArmorSlots)
-	{
-		const FGuid& itemGuid = armorPair.Value;
-		if (itemGuid.IsValid())
-		{
-			if (const FEquipmentInfo* foundEquip = FindEquipmentByGuid(InPlayerData, itemGuid))
-			{
-				for (const FDerivedStatModifier& statModifier : foundEquip->Equipment.OwnerStats)
-				{
-					if (statModifier.StatTag.IsValid())
-					{
-						ApplyDerivedModifierToBattleStat(statModifier, InOutBattleStat);
-					}
-				}
-			}
-		}
-	}
-}
-
-void UBattlefieldManagerSubsystem::ApplyDerivedModifierToBattleStat(const FDerivedStatModifier& InModifier, FGradeStatData& InOutBattleStat) const
-{
-	float mulValue = InModifier.Value.Mul - 1.0f;
-
-	for (FRegenStat& regenStat : InOutBattleStat.RegenStats)
-	{
-		regenStat.InitializeTags();
-
-		if (InModifier.StatTag == regenStat.Child_Max)
-		{
-			regenStat.BonusMax += InModifier.Value.Flat + (regenStat.BaseMax * mulValue);
-		}
-		else if (InModifier.StatTag == regenStat.Child_Tick)
-		{
-			regenStat.ModifierTick += InModifier.Value.Flat + (regenStat.BaseTick * mulValue);
-		}
-	}
-
-	for (FNonRegenStat& nonRegenStat : InOutBattleStat.NonRegenStats)
-	{
-		if (InModifier.StatTag == nonRegenStat.TagName)
-		{
-			nonRegenStat.BonusValue += InModifier.Value.Flat + (nonRegenStat.BaseValue * mulValue);
 		}
 	}
 }

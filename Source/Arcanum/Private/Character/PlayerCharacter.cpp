@@ -21,6 +21,7 @@
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Struct.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
 #include "Perception/AIPerceptionComponent.h"
+#include "Character/BaseUnitCharacter.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -105,7 +106,7 @@ void APlayerCharacter::BeginPlay()
 	{
 		if (const FRegenStat* RegenStat = StatComponent->FindRegenStat(HealthTag))
 		{
-			OwnerPC->SetPlayerHealthProgress(RegenStat->Current, RegenStat->GetBaseMax());
+			OwnerPC->SetPlayerHealthProgress(RegenStat->Current, RegenStat->GetTotalMax());
 		}
 	}
 
@@ -687,4 +688,3 @@ void APlayerCharacter::HandleCommonSkillInput()
 	animInstance->Montage_Play(montage);
 	animInstance->Montage_SetEndDelegate(montageEndedDelegate, montage);
 }
-
