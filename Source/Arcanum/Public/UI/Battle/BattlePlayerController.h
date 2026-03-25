@@ -415,6 +415,10 @@ protected:
 	/* 스킬 입력 */
 	UFUNCTION()
 	void InputSkill();
+	
+private:
+	/* 무기 스왑 중 여부 */
+	bool bIsWeaponSwapping = false;
 #pragma endregion
 
 #pragma region 궁극기 연출
