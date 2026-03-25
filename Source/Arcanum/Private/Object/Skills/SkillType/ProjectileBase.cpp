@@ -42,6 +42,7 @@ void AProjectileBase::Tick(float Deltatime)
             break;
 
         case EProjectileMode::Horming:
+        {
             FRotator HormingDirection;
             if (TargetActor.IsValid())
             {
@@ -56,7 +57,8 @@ void AProjectileBase::Tick(float Deltatime)
             SetActorRotation(ResultDirection);
             ResultVelocity = GetActorForwardVector() * InitialSpeed;
             SetActorLocation(GetActorLocation() + (ResultVelocity * Deltatime));
-            break;
+        }
+        break;
 
         case EProjectileMode::Howitzer:
             FVector TargetLocationIn;
