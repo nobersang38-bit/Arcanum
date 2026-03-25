@@ -196,10 +196,10 @@ void AProjectileBase::CollisionProcess(AActor* OtherActor)
             if (OtherActor->GetClass()->ImplementsInterface(UStatModifierInterface::StaticClass()))
             {
                 auto Interface = Cast<IStatModifierInterface>(OtherActor);
-                if (LevelModifierEntry->OtherCharacterModifiers.Num() > LevelModifierEntry->Level - 1)
+                if (LevelModifierEntry->OtherCharacterModifiers.Num() > 0)
                 {
                     // 계산 부분
-                    FDerivedStatModifier StatModifier = LevelModifierEntry->OtherCharacterModifiers[LevelModifierEntry->Level - 1];
+                    FDerivedStatModifier StatModifier = LevelModifierEntry->OtherCharacterModifiers[0];
 
                     if (StatModifier.Duration <= 0.0f && !StatModifier.bIsPermanent) // 체인지 스탯함수 실행
                     {
