@@ -331,6 +331,9 @@ void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerDa
 						OutInBattleData.EquippedOwnerStats.Empty();
 						EquippedArmorOwnerStats(InPlayerData, OwnedCharacter, OutInBattleData.EquippedOwnerStats);
 
+						OutInBattleData.WeaponOnHitTarget.Empty();
+						EquippedWeaponOnHitTarget(InPlayerData, OwnedCharacter, OutInBattleData.WeaponOnHitTarget);
+
 						UE_LOG(LogTemp, Warning, TEXT("[EquippedOwnerStats] Num=%d"), OutInBattleData.EquippedOwnerStats.Num());
 						for (const FDerivedStatModifier& stat : OutInBattleData.EquippedOwnerStats)
 						{
@@ -467,6 +470,41 @@ void UBattlefieldManagerSubsystem::EquippedArmorOwnerStats(const FPlayerData& In
 				OutEquippedOwnerStats.Append(foundEquip->Equipment.OwnerStats);
 			}
 		}
+	}
+}
+
+void UBattlefieldManagerSubsystem::EquippedWeaponOnHitTarget(const FPlayerData& InPlayerData, const FBattleCharacterData& InSelectedCharacter, TMap<FGameplayTag, TMap<FGameplayTag, FDerivedStatModifier>>& OutWeaponOnHitTarget) const
+{
+	OutWeaponOnHitTarget.Empty();
+
+	auto addWeaponOnHitTarget =
+		[this, &InPlayerData, &OutWeaponOnHitTarget](const FGameplayTag& InWeaponSlotTag, const FGuid& InItemGuid)
+		{
+			if (!InWeaponSlotTag.IsValid()) return;
+			if (!InItemGuid.IsValid()) return;
+
+			if (const FEquipmentInfo* foundEquip = FindEquipmentByGuid(InPlayerData, InItemGuid))
+			{
+				TMap<FGameplayTag, FDerivedStatModifier>& slotOnHitMap = OutWeaponOnHitTarget.FindOrAdd(InWeaponSlotTag);
+
+				for (const FDerivedStatModifier& statModifier : foundEquip->Equipment.OnHitTargetStats)
+				{
+					if (statModifier.StatTag.IsValid())
+					{
+						slotOnHitMap.Add(statModifier.StatTag, statModifier);
+					}
+				}
+			}
+		};
+
+	for (const TPair<FGameplayTag, FGuid>& pair : InSelectedCharacter.WeaponSlots)
+	{
+		addWeaponOnHitTarget(pair.Key, pair.Value);
+	}
+
+	for (const TPair<FGameplayTag, FGuid>& pair : InSelectedCharacter.LegendaryWeaponSlots)
+	{
+		addWeaponOnHitTarget(pair.Key, pair.Value);
 	}
 }
 
@@ -653,7 +691,7 @@ const FSkillInfo* UBattlefieldManagerSubsystem::FindSkillInfoByTag(const FGamepl
 
 	if (const FDTSkillsDataRow* skillRow = gameDataSubsystem->GetRow<FDTSkillsDataRow>(Arcanum::DataTable::SkillData, GetLeafNameFromTag(InSkillTag)))
 	{
-		return &skillRow->SkillData; 
+		return &skillRow->SkillData;
 	}
 
 	return nullptr;
