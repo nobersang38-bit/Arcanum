@@ -788,7 +788,10 @@ void ABattlePlayerController::WeaponSwap()
 	SkillCancel();
 	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
 	{
+		if (bIsWeaponSwapping) return;
+
 		const FGameplayTag currentSlotTag = battleSubsystem->GetCurrentWeaponSlotTag();
+		bIsWeaponSwapping = true;
 
 		if (currentSlotTag == Arcanum::Items::ItemSlot::Weapon::Slot1)
 		{
@@ -799,12 +802,35 @@ void ABattlePlayerController::WeaponSwap()
 			battleSubsystem->SetCurrentWeaponSlotTag(Arcanum::Items::ItemSlot::Weapon::Slot1);
 		}
 
-		UE_LOG(LogTemp, Warning, TEXT("WeaponSwap CurrentSlot=%s"), *battleSubsystem->GetCurrentWeaponSlotTag().ToString());
+		UE_LOG(LogTemp, Warning, TEXT("WeaponSwap CurrentSlot=%s"), *battleSubsystem->GetCurrentWeaponSlotTag().ToString());\
+			if (UAnimMontage* equipMontage = battleSubsystem->GetCurrentWeaponEquipMontage())
+			{
+				UE_LOG(LogTemp, Warning, TEXT("EquipMontage=%s"), *equipMontage->GetName());
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("EquipMontage=null"));
+			}
 
 		APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
 		if (playerCharacter)
 		{
 			playerCharacter->UpdateEquippedWeaponMesh();
+
+			if (UAnimMontage* equipMontage = battleSubsystem->GetCurrentWeaponEquipMontage())
+			{
+				if (USkeletalMeshComponent* meshComp = playerCharacter->GetMesh())
+				{
+					if (UAnimInstance* animInstance = meshComp->GetAnimInstance())
+					{
+						animInstance->Montage_Play(equipMontage);
+
+						FOnMontageEnded montageEndedDelegate;
+						montageEndedDelegate.BindUObject(this, &ABattlePlayerController::OnWeaponSwapMontageEnded);
+						animInstance->Montage_SetEndDelegate(montageEndedDelegate, equipMontage);
+					}
+				}
+			}
 		}
 	}
 
@@ -1586,6 +1612,8 @@ void ABattlePlayerController::TriggerSkill()
 
 void ABattlePlayerController::InputBasicAttack()
 {
+	if (bIsWeaponSwapping) return;
+
 	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
 	{
 		const FGameplayTag skillTag = battleSubsystem->GetCurrentBasicAttackSkillTag();
@@ -1604,6 +1632,8 @@ void ABattlePlayerController::InputBasicAttack()
 
 void ABattlePlayerController::InputSkill()
 {
+	if (bIsWeaponSwapping) return;
+
 	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
 	{
 		const FGameplayTag skillTag = battleSubsystem->GetCurrentBasicSkillTag();
@@ -1618,6 +1648,11 @@ void ABattlePlayerController::InputSkill()
 	{
 		playerCharacter->HandleCommonSkillInput();
 	}
+}
+
+void ABattlePlayerController::OnWeaponSwapMontageEnded(UAnimMontage* InMontage, bool bInterrupted)
+{
+	bIsWeaponSwapping = false;
 }
 
 // ========================================================
@@ -1656,6 +1691,7 @@ void ABattlePlayerController::UltimateSkillEnd()
 
 void ABattlePlayerController::UltimateSkillPressed()
 {
+	if (bIsWeaponSwapping) return;
 	if (bIsUltimateAiming) return;
 
 	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
