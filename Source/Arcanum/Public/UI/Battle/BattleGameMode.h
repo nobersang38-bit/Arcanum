@@ -14,4 +14,7 @@ class ARCANUM_API ABattleGameMode : public AGameModeBase
 	
 protected:
 	virtual void BeginPlay() override;
+
+	UFUNCTION()
+	void OnStageLevelLoaded();
 };
