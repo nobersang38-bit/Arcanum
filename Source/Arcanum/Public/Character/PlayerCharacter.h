@@ -60,6 +60,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	USkeletalMeshComponent* GetSourceSkeletaMeshComponent() { return SourceSkeletaMeshComponent; }
 	ABattlePlayerController* GetBattleOwnerController() const;
+	class UCharacterBattleStatsComponent* GetBattleStatComponent() const {return StatComponent;}
+	class UStatusActionComponent* GetStatusActionComponent() const { return StatusActionComponent; }
+
 protected:
 
 	// 스프링암
@@ -135,6 +138,9 @@ protected:
 	FGameplayTag ManaTag = Arcanum::BattleStat::Character::Regen::Mana::Root;
 
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
+	TSubclassOf<class AFloatingDamageText> TextFloatingClass = nullptr;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<class AAIController> CachedAIC = nullptr;
 

@@ -22,6 +22,8 @@
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Character/BaseUnitCharacter.h"
+#include "Core/SubSystem/PoolingSubsystem.h"
+#include "Object/Actor/FloatingDamageText.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -89,10 +91,20 @@ void APlayerCharacter::BeginPlay()
 	if (BattleSubsystem)
 	{
 		TeamTag = BattleSubsystem->AllyTeamTag;
+
 		StatComponent->SetData(BattleSubsystem->GetInBattleData().PlayerBattleStat);
 		StatComponent->OnCharacterRegenStatChanged.AddUObject(this, &APlayerCharacter::OnPlayerRegenStatChanged);
 		StatusActionComponent->SetupAction();
+
+		for (int i = 0; i < BattleSubsystem->GetInBattleData().EquippedOwnerStats.Num(); i++)
+		{
+			FDerivedStatModifier DerivedStatModifier = BattleSubsystem->GetInBattleData().EquippedOwnerStats[i];
+			DerivedStatModifier.bIsPermanent = true;
+			StatComponent->ApplyDurationModifier(DerivedStatModifier);
+		}
+		StatComponent->SetCurrentValueMax();
 	}
+
 	FGameplayTag PlayerID = FGameplayTag::RequestGameplayTag(TEXT("Arcanum.Player.ID.Elara"));
 	GameplayTags.AddTag(PlayerID);
 
@@ -230,7 +242,31 @@ void APlayerCharacter::RecievedDamage(AActor* DamagedActor, float Damage, const 
 	const FRegenStat* HealthStat = StatComponent->FindRegenStat(HealthTag);
 	if (HealthStat)
 	{
-		StatComponent->ChangeStatValue(HealthTag, -Damage, DamageCauser);
+		const FNonRegenStat* EvasionStat = StatComponent->FindNonRegenStat(StatusActionComponent->EvasionTag);
+		if (EvasionStat)
+		{
+			float EvasionPercent = EvasionStat->GetTotalValue();
+			bool bIsEvasionSuccess = (FMath::FRandRange(0.0f, 1.0f) <= EvasionPercent);
+			if (bIsEvasionSuccess)
+			{
+				UPoolingSubsystem* PoolingSystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
+				if (PoolingSystem && TextFloatingClass)
+				{
+					FTransform Transform;
+					Transform.SetLocation((GetActorLocation() + (GetActorUpVector() * 60.0f)) + (FMath::VRand() * 20.0f));
+					AActor* FloatingActor = PoolingSystem->SpawnFromPool(TextFloatingClass, Transform);
+					if (AFloatingDamageText* FloatingText = Cast<AFloatingDamageText>(FloatingActor))
+					{
+						FloatingText->SetText(FText::FromString(TEXT("회피")));
+					}
+				}
+				return;
+			}
+			else
+			{
+				StatComponent->ChangeStatValue(HealthTag, -Damage, DamageCauser);
+			}
+		}
 		if (OwnerPC)
 		{
 			OwnerPC->SetPlayerHealthProgress(HealthStat->Current, HealthStat->GetTotalMax());
@@ -601,7 +637,7 @@ void APlayerCharacter::HandleBasicAttackInput()
 	FOnMontageEnded montageEndedDelegate;
 	montageEndedDelegate.BindUObject(this, &APlayerCharacter::OnBasicAttackMontageEnded);
 
-	animInstance->Montage_Play(montage);
+	animInstance->Montage_Play(montage, StatComponent->FindNonRegenStat(Arcanum::BattleStat::Character::NonRegen::AttackSpeed::Root)->GetTotalValue());
 	animInstance->Montage_SetEndDelegate(montageEndedDelegate, montage);
 }
 

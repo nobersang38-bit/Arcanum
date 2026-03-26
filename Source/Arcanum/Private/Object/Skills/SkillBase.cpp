@@ -5,7 +5,7 @@ USkillBase::USkillBase()
 {
 }
 
-void USkillBase::Initialize(AActor* InOwner, const FSkillInfo* InSkillInfo, int32 InLevel, FGameplayTag InTargetFilterTag, AActor* InTargetActor, const FVector InTargetLocation)
+void USkillBase::Initialize(AActor* InOwner, const FSkillInfo* InSkillInfo, int32 InLevel, FGameplayTag InTargetFilterTag, const FDerivedStatModifier InAddDerivedStatModifier, AActor* InTargetActor, const FVector InTargetLocation)
 {
     if (!InOwner || !InSkillInfo)
     {
@@ -13,9 +13,14 @@ void USkillBase::Initialize(AActor* InOwner, const FSkillInfo* InSkillInfo, int3
     }
 
     OwnerActor = InOwner;
-    SkillInfo = InSkillInfo;
+    SkillInfo = *InSkillInfo;
     SkillState.Level = InLevel;
     TargetFilterTag = InTargetFilterTag;
+
+    if (!AddDerivedStatModifier.StatTag.IsValid())
+    {
+        AddDerivedStatModifier = InAddDerivedStatModifier;
+    }
 }
 
 const FLevelModifierEntry* USkillBase::GetCurrentLevelEntry() const
@@ -25,7 +30,7 @@ const FLevelModifierEntry* USkillBase::GetCurrentLevelEntry() const
         return nullptr;
     }
 
-    for (const FLevelModifierEntry& Entry : SkillInfo->LevelModifiers)
+    for (const FLevelModifierEntry& Entry : SkillInfo.LevelModifiers)
     {
         if (Entry.Level == SkillState.Level)
         {
@@ -36,7 +41,7 @@ const FLevelModifierEntry* USkillBase::GetCurrentLevelEntry() const
     return nullptr;
 }
 
-const FSkillInfo* USkillBase::GetSkillInfo() const
+const FSkillInfo& USkillBase::GetSkillInfo() const
 {
     return SkillInfo;
 }
