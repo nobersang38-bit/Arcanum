@@ -824,7 +824,10 @@ void ABattlePlayerController::WeaponSwap()
 					if (UAnimInstance* animInstance = meshComp->GetAnimInstance())
 					{
 						animInstance->Montage_Play(equipMontage);
-						bIsWeaponSwapping = false;
+
+						FOnMontageEnded montageEndedDelegate;
+						montageEndedDelegate.BindUObject(this, &ABattlePlayerController::OnWeaponSwapMontageEnded);
+						animInstance->Montage_SetEndDelegate(montageEndedDelegate, equipMontage);
 					}
 				}
 			}
@@ -1607,6 +1610,11 @@ void ABattlePlayerController::InputSkill()
 	{
 		playerCharacter->HandleCommonSkillInput();
 	}
+}
+
+void ABattlePlayerController::OnWeaponSwapMontageEnded(UAnimMontage* InMontage, bool bInterrupted)
+{
+	bIsWeaponSwapping = false;
 }
 
 // ========================================================

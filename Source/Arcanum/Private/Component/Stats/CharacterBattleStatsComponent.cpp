@@ -286,8 +286,8 @@ void UCharacterBattleStatsComponent::UpdateFinalStatValue(FGameplayTag Tag)
         }
 
         if (Tag == RStat->Child_Max) {
-            RStat->BonusMax = B_Flat + (RStat->BaseMax * B_Mul);
-            RStat->ModifierMax = C_Flat + (RStat->BaseMax * C_Mul);
+            RStat->BonusMax = B_Flat/* + (RStat->BaseMax * B_Mul)*/;
+            RStat->ModifierMax = C_Flat/* + (RStat->BaseMax * C_Mul)*/;
             RStat->Current = FMath::Clamp(RStat->Current, 0.f, RStat->GetTotalMax());
         }
         else if (Tag == RStat->Child_Tick) {

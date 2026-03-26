@@ -417,6 +417,10 @@ protected:
 	void InputSkill();
 	
 private:
+	/* 스왑 몽타주 종료 */
+	UFUNCTION()
+	void OnWeaponSwapMontageEnded(UAnimMontage* InMontage, bool bInterrupted);
+
 	/* 무기 스왑 중 여부 */
 	bool bIsWeaponSwapping = false;
 #pragma endregion
