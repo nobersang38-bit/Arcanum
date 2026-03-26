@@ -1637,6 +1637,9 @@ void ABattlePlayerController::InputSkill()
 	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
 	{
 		const FGameplayTag skillTag = battleSubsystem->GetCurrentBasicSkillTag();
+		const int32 skillLevel = battleSubsystem->GetCurrentBasicSkillLevel();
+		if (!SkillCostChecker(skillTag, skillLevel)) return;
+
 		if (GetSkillCooldownRemaining(skillTag) > 0.0f)
 		{
 			return;
