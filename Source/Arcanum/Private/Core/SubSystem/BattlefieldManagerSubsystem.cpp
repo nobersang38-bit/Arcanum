@@ -710,6 +710,47 @@ const FBattleCharacterData* UBattlefieldManagerSubsystem::GetSelectedCharacterDa
 	return nullptr;
 }
 
+UAnimMontage* UBattlefieldManagerSubsystem::GetCurrentWeaponEquipMontage() const
+{
+	const FBattleCharacterData* selectedCharacter = GetSelectedCharacterData();
+	if (!selectedCharacter) return nullptr;
+
+	FGuid itemGuid;
+	const FGameplayTag currentWeaponSlotTag = GetCurrentWeaponSlotTag();
+
+	if (bUsingLegendaryWeapon)
+	{
+		if (const FGuid* foundLegendaryGuid = selectedCharacter->LegendaryWeaponSlots.Find(Arcanum::Items::ItemSlot::Weapon::Legendary))
+		{
+			itemGuid = *foundLegendaryGuid;
+		}
+	}
+	else
+	{
+		if (const FGuid* foundWeaponGuid = selectedCharacter->WeaponSlots.Find(currentWeaponSlotTag))
+		{
+			itemGuid = *foundWeaponGuid;
+		}
+	}
+	if (!itemGuid.IsValid()) return nullptr;
+
+	const FEquipmentInfo* foundEquipment = FindEquipmentByGuid(InBattleData.PlayerData, itemGuid);
+	if (!foundEquipment) return nullptr;
+
+	UGameDataSubsystem* gameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
+	if (!gameDataSubsystem){return nullptr;
+	}
+
+	const FName itemTagLeafName = GetLeafNameFromTag(foundEquipment->ItemTag);
+	const FDTItemCatalogRow* itemCatalogRow = gameDataSubsystem->GetRow<FDTItemCatalogRow>(Arcanum::DataTable::ItemCatalog, itemTagLeafName);
+	if (!itemCatalogRow) return nullptr;
+
+	const FDTEquipmentInfoRow* equipmentRow = gameDataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, itemCatalogRow->DetailRowName);
+	if (!equipmentRow) return nullptr;
+
+	return equipmentRow->EquipMontage.LoadSynchronous();
+}
+
 FGameplayTag UBattlefieldManagerSubsystem::GetCurrentWeaponSlotTag() const
 {
 	return InBattleData.BattleWeaponSkill.CurrentWeaponSlotTag;
