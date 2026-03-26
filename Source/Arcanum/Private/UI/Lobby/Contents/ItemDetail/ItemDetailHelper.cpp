@@ -420,8 +420,8 @@ FText FItemDetailHelper::BuildNextStatValueText(const FStatRangeDefinition& InRa
 		return FText::FromString(FString::Printf(TEXT("+%.0f%% ~ +%.0f%%"), minValue, maxValue));
 	}
 
-	const float minValue = FMath::Min(InRange.MinValue.Flat, InRange.MaxValue.Flat);
-	const float maxValue = FMath::Max(InRange.MinValue.Flat, InRange.MaxValue.Flat);
+	const float minValue = FMath::Min(FMath::Abs(InRange.MinValue.Flat), FMath::Abs(InRange.MaxValue.Flat));
+	const float maxValue = FMath::Max(FMath::Abs(InRange.MinValue.Flat), FMath::Abs(InRange.MaxValue.Flat));
 
 	if (FMath::IsNearlyEqual(minValue, maxValue))
 	{

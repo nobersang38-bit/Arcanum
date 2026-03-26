@@ -30,11 +30,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 1.0,
+              "Flat": -1.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 5.0,
+              "Flat": -5.0,
               "Mul": 1.0
             }
           }
@@ -66,11 +66,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 6.0,
+              "Flat": -6.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 10.0,
+              "Flat": -10.0,
               "Mul": 1.0
             }
           }
@@ -102,11 +102,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 11.0,
+              "Flat": -11.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 15.0,
+              "Flat": -15.0,
               "Mul": 1.0
             }
           }
@@ -138,11 +138,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 16.0,
+              "Flat": -16.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 20.0,
+              "Flat": -20.0,
               "Mul": 1.0
             }
           }
@@ -174,11 +174,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 21.0,
+              "Flat": -21.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 25.0,
+              "Flat": -25.0,
               "Mul": 1.0
             }
           }
@@ -210,11 +210,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 26.0,
+              "Flat": -26.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 30.0,
+              "Flat": -30.0,
               "Mul": 1.0
             }
           }
@@ -232,7 +232,8 @@
       "InactiveDescText": "",
       "ActiveDescText": "",
       "SetBonusTag": ""
-    }
+    },
+    "EquipMontage": ""
   },
   {
     "Name": "Staff",
@@ -265,11 +266,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 1.0,
+              "Flat": -1.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 5.0,
+              "Flat": -5.0,
               "Mul": 1.0
             }
           }
@@ -301,11 +302,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 6.0,
+              "Flat": -6.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 10.0,
+              "Flat": -10.0,
               "Mul": 1.0
             }
           }
@@ -337,11 +338,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 11.0,
+              "Flat": -11.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 15.0,
+              "Flat": -15.0,
               "Mul": 1.0
             }
           }
@@ -373,11 +374,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 16.0,
+              "Flat": -16.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 20.0,
+              "Flat": -20.0,
               "Mul": 1.0
             }
           }
@@ -409,11 +410,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 21.0,
+              "Flat": -21.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 25.0,
+              "Flat": -25.0,
               "Mul": 1.0
             }
           }
@@ -445,11 +446,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 26.0,
+              "Flat": -26.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 30.0,
+              "Flat": -30.0,
               "Mul": 1.0
             }
           }
@@ -467,7 +468,8 @@
       "InactiveDescText": "",
       "ActiveDescText": "",
       "SetBonusTag": ""
-    }
+    },
+    "EquipMontage": ""
   },
   {
     "Name": "Bow",
@@ -500,11 +502,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 1.0,
+              "Flat": -1.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 5.0,
+              "Flat": -5.0,
               "Mul": 1.0
             }
           }
@@ -536,11 +538,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 6.0,
+              "Flat": -6.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 10.0,
+              "Flat": -10.0,
               "Mul": 1.0
             }
           }
@@ -572,11 +574,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 11.0,
+              "Flat": -11.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 15.0,
+              "Flat": -15.0,
               "Mul": 1.0
             }
           }
@@ -608,11 +610,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 16.0,
+              "Flat": -16.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 20.0,
+              "Flat": -20.0,
               "Mul": 1.0
             }
           }
@@ -644,11 +646,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 21.0,
+              "Flat": -21.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 25.0,
+              "Flat": -25.0,
               "Mul": 1.0
             }
           }
@@ -680,11 +682,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 26.0,
+              "Flat": -26.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 30.0,
+              "Flat": -30.0,
               "Mul": 1.0
             }
           }
@@ -702,7 +704,8 @@
       "InactiveDescText": "",
       "ActiveDescText": "",
       "SetBonusTag": ""
-    }
+    },
+    "EquipMontage": ""
   },
   {
     "Name": "Shield",
@@ -735,11 +738,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 1.0,
+              "Flat": -1.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 5.0,
+              "Flat": -5.0,
               "Mul": 1.0
             }
           }
@@ -771,11 +774,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 6.0,
+              "Flat": -6.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 10.0,
+              "Flat": -10.0,
               "Mul": 1.0
             }
           }
@@ -807,11 +810,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 11.0,
+              "Flat": -11.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 15.0,
+              "Flat": -15.0,
               "Mul": 1.0
             }
           }
@@ -843,11 +846,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 16.0,
+              "Flat": -16.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 20.0,
+              "Flat": -20.0,
               "Mul": 1.0
             }
           }
@@ -879,11 +882,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 21.0,
+              "Flat": -21.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 25.0,
+              "Flat": -25.0,
               "Mul": 1.0
             }
           }
@@ -915,11 +918,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 26.0,
+              "Flat": -26.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 30.0,
+              "Flat": -30.0,
               "Mul": 1.0
             }
           }
@@ -937,7 +940,8 @@
       "InactiveDescText": "",
       "ActiveDescText": "",
       "SetBonusTag": ""
-    }
+    },
+    "EquipMontage": ""
   },
   {
     "Name": "Helmet",
@@ -1154,7 +1158,8 @@
       "InactiveDescText": "",
       "ActiveDescText": "",
       "SetBonusTag": ""
-    }
+    },
+    "EquipMontage": ""
   },
   {
     "Name": "Chest",
@@ -1371,7 +1376,8 @@
       "InactiveDescText": "",
       "ActiveDescText": "",
       "SetBonusTag": ""
-    }
+    },
+    "EquipMontage": ""
   },
   {
     "Name": "Glove",
@@ -1588,7 +1594,8 @@
       "InactiveDescText": "",
       "ActiveDescText": "",
       "SetBonusTag": ""
-    }
+    },
+    "EquipMontage": ""
   },
   {
     "Name": "Boot",
@@ -1805,7 +1812,8 @@
       "InactiveDescText": "",
       "ActiveDescText": "",
       "SetBonusTag": ""
-    }
+    },
+    "EquipMontage": ""
   },
   {
     "Name": "TalashaHelmet",
@@ -2022,7 +2030,8 @@
       "InactiveDescText": "4세트 효과: 체력 일정 수치 이하일 때 체력 회복 속도가 증가합니다",
       "ActiveDescText": "세트효과 발동: 체력 30% 이하일 때 10초 동안 체력 회복 속도가 초당 7 증가합니다 (쿨타임 30초)",
       "SetBonusTag": "Arcanum.Items.SetBonus.Surge"
-    }
+    },
+    "EquipMontage": ""
   },
   {
     "Name": "TalashaChest",
@@ -2239,7 +2248,8 @@
       "InactiveDescText": "4세트 효과: 체력 일정 수치 이하일 때 체력 회복 속도가 증가합니다",
       "ActiveDescText": "세트효과 발동: 체력 30% 이하일 때 10초 동안 체력 회복 속도가 초당 7 증가합니다 (쿨타임 30초)",
       "SetBonusTag": "Arcanum.Items.SetBonus.Surge"
-    }
+    },
+    "EquipMontage": ""
   },
   {
     "Name": "TalashaGlove",
@@ -2456,7 +2466,8 @@
       "InactiveDescText": "4세트 효과: 체력 일정 수치 이하일 때 체력 회복 속도가 증가합니다",
       "ActiveDescText": "세트효과 발동: 체력 30% 이하일 때 10초 동안 체력 회복 속도가 초당 7 증가합니다 (쿨타임 30초)",
       "SetBonusTag": "Arcanum.Items.SetBonus.Surge"
-    }
+    },
+    "EquipMontage": ""
   },
   {
     "Name": "TalashaBoot",
@@ -2673,7 +2684,8 @@
       "InactiveDescText": "4세트 효과: 체력 일정 수치 이하일 때 체력 회복 속도가 증가합니다",
       "ActiveDescText": "세트효과 발동: 체력 30% 이하일 때 10초 동안 체력 회복 속도가 초당 7 증가합니다 (쿨타임 30초)",
       "SetBonusTag": "Arcanum.Items.SetBonus.Surge"
-    }
+    },
+    "EquipMontage": ""
   },
   {
     "Name": "SigonHelmet",
@@ -2890,7 +2902,8 @@
       "InactiveDescText": "4세트 효과: 물약 회복량이 증가합니다",
       "ActiveDescText": "세트효과 발동: 물약 회복량이 20% 증가합니다",
       "SetBonusTag": "Arcanum.Items.SetBonus.Avarice"
-    }
+    },
+    "EquipMontage": ""
   },
   {
     "Name": "SigonChest",
@@ -3107,7 +3120,8 @@
       "InactiveDescText": "4세트 효과: 물약 회복량이 증가합니다",
       "ActiveDescText": "세트효과 발동: 물약 회복량이 20% 증가합니다",
       "SetBonusTag": "Arcanum.Items.SetBonus.Avarice"
-    }
+    },
+    "EquipMontage": ""
   },
   {
     "Name": "SigonGlove",
@@ -3324,7 +3338,8 @@
       "InactiveDescText": "4세트 효과: 물약 회복량이 증가합니다",
       "ActiveDescText": "세트효과 발동: 물약 회복량이 20% 증가합니다",
       "SetBonusTag": "Arcanum.Items.SetBonus.Avarice"
-    }
+    },
+    "EquipMontage": ""
   },
   {
     "Name": "SigonBoot",
@@ -3541,7 +3556,8 @@
       "InactiveDescText": "4세트 효과: 물약 회복량이 증가합니다",
       "ActiveDescText": "세트효과 발동: 물약 회복량이 20% 증가합니다",
       "SetBonusTag": "Arcanum.Items.SetBonus.Avarice"
-    }
+    },
+    "EquipMontage": ""
   },
   {
     "Name": "Scepter",
@@ -3574,11 +3590,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 10.0,
+              "Flat": -10.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 15.0,
+              "Flat": -15.0,
               "Mul": 1.0
             }
           }
@@ -3610,11 +3626,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 6.0,
+              "Flat": -6.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 10.0,
+              "Flat": -10.0,
               "Mul": 1.0
             }
           }
@@ -3646,11 +3662,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 11.0,
+              "Flat": -11.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 15.0,
+              "Flat": -15.0,
               "Mul": 1.0
             }
           }
@@ -3682,11 +3698,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 16.0,
+              "Flat": -16.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 20.0,
+              "Flat": -20.0,
               "Mul": 1.0
             }
           }
@@ -3718,11 +3734,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 21.0,
+              "Flat": -21.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 25.0,
+              "Flat": -25.0,
               "Mul": 1.0
             }
           }
@@ -3754,11 +3770,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 26.0,
+              "Flat": -26.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 30.0,
+              "Flat": -30.0,
               "Mul": 1.0
             }
           }
@@ -3776,7 +3792,8 @@
       "InactiveDescText": "",
       "ActiveDescText": "",
       "SetBonusTag": ""
-    }
+    },
+    "EquipMontage": ""
   },
   {
     "Name": "Scythe",
@@ -3809,11 +3826,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 10.0,
+              "Flat": -10.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 15.0,
+              "Flat": -15.0,
               "Mul": 1.0
             }
           }
@@ -3845,11 +3862,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 6.0,
+              "Flat": -6.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 10.0,
+              "Flat": -10.0,
               "Mul": 1.0
             }
           }
@@ -3881,11 +3898,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 11.0,
+              "Flat": -11.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 15.0,
+              "Flat": -15.0,
               "Mul": 1.0
             }
           }
@@ -3917,11 +3934,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 16.0,
+              "Flat": -16.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 20.0,
+              "Flat": -20.0,
               "Mul": 1.0
             }
           }
@@ -3953,11 +3970,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 21.0,
+              "Flat": -21.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 25.0,
+              "Flat": -25.0,
               "Mul": 1.0
             }
           }
@@ -3989,11 +4006,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Value",
             "MinValue": {
-              "Flat": 26.0,
+              "Flat": -26.0,
               "Mul": 1.0
             },
             "MaxValue": {
-              "Flat": 30.0,
+              "Flat": -30.0,
               "Mul": 1.0
             }
           }
@@ -4011,6 +4028,7 @@
       "InactiveDescText": "",
       "ActiveDescText": "",
       "SetBonusTag": ""
-    }
+    },
+    "EquipMontage": ""
   }
 ]
