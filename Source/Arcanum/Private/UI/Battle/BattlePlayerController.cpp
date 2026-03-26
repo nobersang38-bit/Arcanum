@@ -465,20 +465,20 @@ void ABattlePlayerController::ReadySkillSet(FGameplayTag InSkillTag, int32 InLev
 		CurrentSelectedSkillBase = SkillBaseBack;
 	}
 
-	if (CurrentSelectedSkillBase.IsValid() && CurrentSelectedSkillBase->GetSkillInfo())
+	if (CurrentSelectedSkillBase.IsValid())
 	{
-		if (!SkillCostChecker(CurrentSelectedSkillBase->GetSkillInfo()->SkillNameTag, InLevel))
+		if (!SkillCostChecker(CurrentSelectedSkillBase->GetSkillInfo().SkillNameTag, InLevel))
 		{
 			SkillCancel();
 			return;
 		}
 	}
 
-	if (SkillRangeDecalInstance && SkillBaseBack && SkillBaseBack->GetSkillInfo())
+	if (SkillRangeDecalInstance && SkillBaseBack)
 	{
 		FHitResult HitResult;
 		GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, HitResult);
-		SkillRangeDecalInstance->SkillRangeDecalOn(SkillBaseBack->GetSkillInfo()->EnabledRange, GetPawn(), HitResult.ImpactPoint);
+		SkillRangeDecalInstance->SkillRangeDecalOn(SkillBaseBack->GetSkillInfo().EnabledRange, GetPawn(), HitResult.ImpactPoint);
 	}
 
 	if (bIsAutoManual)
@@ -788,7 +788,10 @@ void ABattlePlayerController::WeaponSwap()
 	SkillCancel();
 	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
 	{
+		if (bIsWeaponSwapping) return;
+
 		const FGameplayTag currentSlotTag = battleSubsystem->GetCurrentWeaponSlotTag();
+		bIsWeaponSwapping = true;
 
 		if (currentSlotTag == Arcanum::Items::ItemSlot::Weapon::Slot1)
 		{
@@ -799,12 +802,35 @@ void ABattlePlayerController::WeaponSwap()
 			battleSubsystem->SetCurrentWeaponSlotTag(Arcanum::Items::ItemSlot::Weapon::Slot1);
 		}
 
-		UE_LOG(LogTemp, Warning, TEXT("WeaponSwap CurrentSlot=%s"), *battleSubsystem->GetCurrentWeaponSlotTag().ToString());
+		UE_LOG(LogTemp, Warning, TEXT("WeaponSwap CurrentSlot=%s"), *battleSubsystem->GetCurrentWeaponSlotTag().ToString());\
+			if (UAnimMontage* equipMontage = battleSubsystem->GetCurrentWeaponEquipMontage())
+			{
+				UE_LOG(LogTemp, Warning, TEXT("EquipMontage=%s"), *equipMontage->GetName());
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("EquipMontage=null"));
+			}
 
 		APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
 		if (playerCharacter)
 		{
 			playerCharacter->UpdateEquippedWeaponMesh();
+
+			if (UAnimMontage* equipMontage = battleSubsystem->GetCurrentWeaponEquipMontage())
+			{
+				if (USkeletalMeshComponent* meshComp = playerCharacter->GetMesh())
+				{
+					if (UAnimInstance* animInstance = meshComp->GetAnimInstance())
+					{
+						animInstance->Montage_Play(equipMontage);
+
+						FOnMontageEnded montageEndedDelegate;
+						montageEndedDelegate.BindUObject(this, &ABattlePlayerController::OnWeaponSwapMontageEnded);
+						animInstance->Montage_SetEndDelegate(montageEndedDelegate, equipMontage);
+					}
+				}
+			}
 		}
 	}
 
@@ -1216,6 +1242,18 @@ void ABattlePlayerController::Internal_CoolTimeTick(float DeltaTime)
 
 void ABattlePlayerController::InitialSkillBase()
 {
+	/*const TMap<FGameplayTag, FDerivedStatModifier>* weaponSlot1OnHitTarget = InBattleData.WeaponOnHitTarget.Find(Arcanum::Items::ItemSlot::Weapon::Slot1);
+	const TMap<FGameplayTag, FDerivedStatModifier>* weaponSlot2OnHitTarget = InBattleData.WeaponOnHitTarget.Find(Arcanum::Items::ItemSlot::Weapon::Slot2);
+	const TMap<FGameplayTag, FDerivedStatModifier>* legendaryWeaponOnHitTarget = InBattleData.WeaponOnHitTarget.Find(Arcanum::Items::ItemSlot::Weapon::Legendary);
+
+	if (weaponSlot1OnHitTarget)
+	{
+		const FDerivedStatModifier* healthModifier = weaponSlot1OnHitTarget->Find(Arcanum::BattleStat::Character::Regen::Health::Value);
+		if (healthModifier)
+		{
+			const float damage = healthModifier->Value.Flat;
+		}
+	}*/
 	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 	UGameDataSubsystem* DataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
 
@@ -1242,7 +1280,20 @@ void ABattlePlayerController::InitialSkillBase()
 
 			if (DTSkillsDataRow)
 			{
-				SkillBaseBack->Initialize(GetPawn(), &DTSkillsDataRow->SkillData, SkillData.SkillLevel, DTSkillsDataRow->SkillData.TargetFilterTag);
+				const TMap<FGameplayTag, FDerivedStatModifier>* weaponSlot1OnHitTarget = BattleSubsystem->GetInBattleData().WeaponOnHitTarget.Find(Arcanum::Items::ItemSlot::Weapon::Slot1);
+				
+				FDerivedStatModifier AddModi;
+				if (weaponSlot1OnHitTarget)
+				{
+					AddModi = weaponSlot1OnHitTarget->Array()[0].Value;
+
+					SkillBaseBack->Initialize(GetPawn(), &DTSkillsDataRow->SkillData, SkillData.SkillLevel, DTSkillsDataRow->SkillData.TargetFilterTag, AddModi);
+				}
+				else
+				{
+					SkillBaseBack->Initialize(GetPawn(), &DTSkillsDataRow->SkillData, SkillData.SkillLevel, DTSkillsDataRow->SkillData.TargetFilterTag, FDerivedStatModifier());
+
+				}
 			}
 		}
 	}
@@ -1267,7 +1318,20 @@ void ABattlePlayerController::InitialSkillBase()
 
 			if (DTSkillsDataRow)
 			{
-				SkillBaseBack->Initialize(GetPawn(), &DTSkillsDataRow->SkillData, SkillData.SkillLevel, DTSkillsDataRow->SkillData.TargetFilterTag);
+				const TMap<FGameplayTag, FDerivedStatModifier>* weaponSlot1OnHitTarget = BattleSubsystem->GetInBattleData().WeaponOnHitTarget.Find(Arcanum::Items::ItemSlot::Weapon::Slot2);
+
+				FDerivedStatModifier AddModi;
+				if (weaponSlot1OnHitTarget)
+				{
+					AddModi = weaponSlot1OnHitTarget->Array()[0].Value;
+
+					SkillBaseBack->Initialize(GetPawn(), &DTSkillsDataRow->SkillData, SkillData.SkillLevel, DTSkillsDataRow->SkillData.TargetFilterTag, AddModi);
+				}
+				else
+				{
+					SkillBaseBack->Initialize(GetPawn(), &DTSkillsDataRow->SkillData, SkillData.SkillLevel, DTSkillsDataRow->SkillData.TargetFilterTag, FDerivedStatModifier());
+
+				}
 			}
 		}
 	}
@@ -1526,7 +1590,7 @@ void ABattlePlayerController::TriggerSkill()
 	//if (bIsUltimateAiming) return;
 
 	FVector targetLocation = playerCharacter->GetUltimateLocation();
-	skillObject->Initialize(playerCharacter, skillInfo, skillData->SkillLevel, skillInfo->TargetFilterTag, nullptr, targetLocation);
+	skillObject->Initialize(playerCharacter, skillInfo, skillData->SkillLevel, skillInfo->TargetFilterTag, FDerivedStatModifier(), nullptr, targetLocation);
 
 	const FTransform spawnTransform = playerCharacter->GetActorTransform();
 	const FVector spawnLocation = spawnTransform.GetLocation();
@@ -1535,8 +1599,8 @@ void ABattlePlayerController::TriggerSkill()
 	AActor* spawnedActor = poolingSubsystem->SpawnFromPool(skillActorClass, spawnTransform);
 	ASkillActor* skillActor = Cast<ASkillActor>(spawnedActor);
 	if (!skillActor) return;
-	if (!SkillCostChecker(skillObject->GetSkillInfo()->SkillNameTag, skillObject->GetCurrentLevelEntry()->Level, true)) return;
-	UseSkillCost(skillObject->GetSkillInfo()->SkillNameTag);
+	if (!SkillCostChecker(skillObject->GetSkillInfo().SkillNameTag, skillObject->GetCurrentLevelEntry()->Level, true)) return;
+	UseSkillCost(skillObject->GetSkillInfo().SkillNameTag);
 
 	skillActor->ActivateSkillActor(skillObject, playerCharacter, spawnLocation, spawnRotation);
 	skillActor->SetTargetActor(nullptr);
@@ -1548,6 +1612,8 @@ void ABattlePlayerController::TriggerSkill()
 
 void ABattlePlayerController::InputBasicAttack()
 {
+	if (bIsWeaponSwapping) return;
+
 	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
 	{
 		const FGameplayTag skillTag = battleSubsystem->GetCurrentBasicAttackSkillTag();
@@ -1566,9 +1632,14 @@ void ABattlePlayerController::InputBasicAttack()
 
 void ABattlePlayerController::InputSkill()
 {
+	if (bIsWeaponSwapping) return;
+
 	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
 	{
 		const FGameplayTag skillTag = battleSubsystem->GetCurrentBasicSkillTag();
+		const int32 skillLevel = battleSubsystem->GetCurrentBasicSkillLevel();
+		if (!SkillCostChecker(skillTag, skillLevel)) return;
+
 		if (GetSkillCooldownRemaining(skillTag) > 0.0f)
 		{
 			return;
@@ -1580,6 +1651,11 @@ void ABattlePlayerController::InputSkill()
 	{
 		playerCharacter->HandleCommonSkillInput();
 	}
+}
+
+void ABattlePlayerController::OnWeaponSwapMontageEnded(UAnimMontage* InMontage, bool bInterrupted)
+{
+	bIsWeaponSwapping = false;
 }
 
 // ========================================================
@@ -1618,6 +1694,7 @@ void ABattlePlayerController::UltimateSkillEnd()
 
 void ABattlePlayerController::UltimateSkillPressed()
 {
+	if (bIsWeaponSwapping) return;
 	if (bIsUltimateAiming) return;
 
 	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();

@@ -1,449 +1,82 @@
 [
 	{
 		"Name": "Army",
-		"Tag":
-		{
-			"TagName": "None"
-		},
-		"UnitData":
-		{
-			"Info":
-			{
-				"InfoSetting": {
-					"Tag": {
-						"TagName": "Arcanum.Unit.Ally.Army"
-					},
-					"CharacterType": "None",
-					"Name": "NSLOCTEXT(\"[63F287018FDD6C8E61DE3D9509F19899]\", \"197BD85044F3D06EE7B74396363BF8C0\", \"아미\")",
-					"Description": "NSLOCTEXT(\"\", \"492761D444466BBA7E1B29B76F6376D6\", \"원거리 공격이 가능하나, 체력이 낮다\")",
-					"Icon": "None",
-					"Portrait": "None",
-					"AllyUnitClass": ""
-				},
-				"AnimSetting":
-				{
-					"AnimMode": "AnimBlueprint",
-					"SkeletalMesh": "/Game/BlackStormAssets/Character/01_Army/SKM_Army.SKM_Army",
-					"StaticMesh": "None",
-					"MeshScale": 3,
-					"MeshAddHeight": 0,
-					"MaterialNum": 2,
-					"StartFramePropertyIDX": 0,
-					"EndFramePropertyIDX": 1,
-					"DefaultAnimFrameRange":
-					{
-						"X": 0,
-						"Y": 44
-					},
-					"AnimInstance": "None",
-					"Idle": "/Script/Engine.AnimSequence'/Game/BlackStormAssets/Character/01_Army/Animations/Army_Base_Idle_Battle.Army_Base_Idle_Battle'",
-					"Run": "/Script/Engine.AnimSequence'/Game/BlackStormAssets/Character/01_Army/Animations/Army_Base_Run.Army_Base_Run'",
-					"IdleATTData": "None",
-					"Attacks": [
-						"/Script/Engine.AnimMontage'/Game/BlackStormAssets/Character/01_Army/Animations/AM_Army_Base_Attack2.AM_Army_Base_Attack2'"
-					],
-					"AttacksATTData": [
-						"None"
-					],
-					"Hits": [],
-					"HitsATTData": [
-						"None"
-					],
-					"Deads": [
-						{
-							"DeadMontage": "/Script/Engine.AnimMontage'/Game/BlackStormAssets/Character/01_Army/Animations/AM_Army_Base_Dead.AM_Army_Base_Dead'",
-							"DeactiveTime": 3
-						}
-					],
-					"DeadsFrameRange": [
-						{
-							"DeadMontage": "None",
-							"DeactiveTime": 3
-						}
-					]
-				},
-				"AISetting":
-				{
-					"bIsElite": false,
-					"bUseLockTarget": true,
-					"MaxTargetCount": 10,
-					"AttackRange": 40000,
-					"AttackRate": 2.5,
-					"BehaviorTree": "/Game/Test/BattleHUD/Unit/BT_AITest.BT_AITest",
-					"TargetPriorityWeightData":
-					{
-						"DetectDistance": 500,
-						"RandomTargetWeightSet":
-						{
-							"bUseWeight": false,
-							"TargetWeight": 0.5
-						},
-						"AttackingTargetNumWeightSet":
-						{
-							"bUseWeight": true,
-							"TargetWeight": 0.3
-						},
-						"DistanceWeightSet":
-						{
-							"bUseWeight": true,
-							"TargetWeight": 1
-						},
-						"AggroWeightSet":
-						{
-							"bUseWeight": true,
-							"TargetWeight": 0.2
-						},
-						"LowHealthWeightSet":
-						{
-							"bUseWeight": true,
-							"TargetWeight": 0.5
-						},
-						"EliteWeightSet":
-						{
-							"bUseWeight": true,
-							"TargetWeight": 1
-						}
-					},
-					"BBTargetActorName": "TargetActor",
-					"AITickParams":
-					{
-						"UpdateIntervalRange":
-						{
-							"X": 0.90000000000000002,
-							"Y": 1.1000000000000001
-						},
-						"InitialDelayRange":
-						{
-							"X": 0,
-							"Y": 0.20000000000000001
-						}
-					}
-				}
-			}
+		"UnitData": {
+			"Tag": {
+				"TagName": "Arcanum.Unit.Ally.Army"
+			},
+			"Name": "아미",
+			"Description": "기본적인 근접 공격을 수행하는 보병 유닛입니다.",
+			"Icon": "/Script/Engine.Texture2D'/Game/Assets/UI/Character/AvatarThumb/Icon_Army_SD_001.Icon_Army_SD_001'",
+			"Portrait": "None",
+			"MeatCost": 10,
+			"CurrentCoolTime": 0,
+			"CoolTime": 2,
+			"UnitClass": "/Game/Character/Ally/BP_Army.BP_Army_C"
 		}
 	},
 	{
 		"Name": "Bard",
-		"Tag":
-		{
-			"TagName": "None"
-		},
-		"UnitData":
-		{
-			"Info":
-			{
-				"InfoSetting":
-				{
-					"Tag":
-					{
-						"TagName": "Arcanum.Unit.Ally.Bard"
-					},
-					"CharacterType": "None",
-					"Name": "NSLOCTEXT(\"[63F287018FDD6C8E61DE3D9509F19899]\", \"F5C31B2F486D9692E963BB805B70946F\", \"바드\")",
-					"Description": "NSLOCTEXT(\"\", \"198D2CE243EF80FDDBEF9F85E701E4F7\", \"원거리 공격이 가능하나, 체력이 낮다\")",
-					"Icon": "None",
-					"Portrait": "None"
-				},
-				"AnimSetting":
-				{
-					"AnimMode": "AnimBlueprint",
-					"SkeletalMesh": "/Game/BlackStormAssets/Character/02_Bard/SKM_Bard.SKM_Bard",
-					"StaticMesh": "None",
-					"MeshScale": 1,
-					"MeshAddHeight": 0,
-					"MaterialNum": 2,
-					"StartFramePropertyIDX": 2,
-					"EndFramePropertyIDX": 3,
-					"DefaultAnimFrameRange":
-					{
-						"X": 0,
-						"Y": 0
-					},
-					"AnimInstance": "None",
-					"Idle": "None",
-					"Run": "None",
-					"IdleATTData": "None",
-					"Attacks": [],
-					"AttacksATTData": [],
-					"Hits": [],
-					"HitsATTData": [],
-					"Deads": [],
-					"DeadsFrameRange": []
-				},
-				"AISetting":
-				{
-					"bIsElite": false,
-					"bUseLockTarget": true,
-					"MaxTargetCount": 10,
-					"AttackRange": 10000,
-					"AttackRate": 1.5,
-					"BehaviorTree": "/Game/Test/BattleHUD/Unit/BT_AITest.BT_AITest",
-					"TargetPriorityWeightData":
-					{
-						"DetectDistance": 500,
-						"RandomTargetWeightSet":
-						{
-							"bUseWeight": false,
-							"TargetWeight": 0.5
-						},
-						"AttackingTargetNumWeightSet":
-						{
-							"bUseWeight": true,
-							"TargetWeight": 0.3
-						},
-						"DistanceWeightSet":
-						{
-							"bUseWeight": true,
-							"TargetWeight": 1
-						},
-						"AggroWeightSet":
-						{
-							"bUseWeight": true,
-							"TargetWeight": 0.2
-						},
-						"LowHealthWeightSet":
-						{
-							"bUseWeight": true,
-							"TargetWeight": 0.5
-						},
-						"EliteWeightSet":
-						{
-							"bUseWeight": true,
-							"TargetWeight": 1
-						}
-					},
-					"BBTargetActorName": "TargetActor",
-					"AITickParams":
-					{
-						"UpdateIntervalRange":
-						{
-							"X": 1.8999999999999999,
-							"Y": 2.1000000000000001
-						},
-						"InitialDelayRange":
-						{
-							"X": 0,
-							"Y": 0.20000000000000001
-						}
-					}
-				}
-			}
+		"UnitData": {
+			"Tag": {
+				"TagName": "Arcanum.Unit.Ally.Bard"
+			},
+			"Name": "바드",
+			"Description": "아군을 보조하며 근접 전투를 수행하는 유닛입니다.",
+			"Icon": "/Script/Engine.Texture2D'/Game/Assets/UI/Character/AvatarThumb/Icon_Bard_SD_001.Icon_Bard_SD_001'",
+			"Portrait": "None",
+			"MeatCost": 10,
+			"CurrentCoolTime": 0,
+			"CoolTime": 3,
+			"UnitClass": "/Game/Character/Ally/BP_Bard.BP_Bard_C"
 		}
 	},
 	{
 		"Name": "Maid",
-		"Tag":
-		{
-			"TagName": "None"
-		},
-		"UnitData":
-		{
-			"Info":
-			{
-				"InfoSetting":
-				{
-					"Tag":
-					{
-						"TagName": "Arcanum.Unit.Ally.Maid"
-					},
-					"CharacterType": "None",
-					"Name": "NSLOCTEXT(\"[63F287018FDD6C8E61DE3D9509F19899]\", \"399D311246C641FF62C0FDB0CCEB445A\", \"메이드\")",
-					"Description": "NSLOCTEXT(\"\", \"7098E8A84DB9206A40581FAD8AEED56C\", \"원거리 공격이 가능하나, 체력이 낮다\")",
-					"Icon": "None",
-					"Portrait": "None"
-				},
-				"AnimSetting":
-				{
-					"AnimMode": "AnimBlueprint",
-					"SkeletalMesh": "/Game/BlackStormAssets/Character/03_Maid/SKM_Maid.SKM_Maid",
-					"StaticMesh": "None",
-					"MeshScale": 1,
-					"MeshAddHeight": 0,
-					"MaterialNum": 2,
-					"StartFramePropertyIDX": 2,
-					"EndFramePropertyIDX": 3,
-					"DefaultAnimFrameRange":
-					{
-						"X": 0,
-						"Y": 0
-					},
-					"AnimInstance": "None",
-					"Idle": "None",
-					"Run": "None",
-					"IdleATTData": "None",
-					"Attacks": [],
-					"AttacksATTData": [],
-					"Hits": [],
-					"HitsATTData": [],
-					"Deads": [],
-					"DeadsFrameRange": []
-				},
-				"AISetting":
-				{
-					"bIsElite": false,
-					"bUseLockTarget": true,
-					"MaxTargetCount": 10,
-					"AttackRange": 10000,
-					"AttackRate": 1.5,
-					"BehaviorTree": "/Game/Test/BattleHUD/Unit/BT_AITest.BT_AITest",
-					"TargetPriorityWeightData":
-					{
-						"DetectDistance": 500,
-						"RandomTargetWeightSet":
-						{
-							"bUseWeight": false,
-							"TargetWeight": 0.5
-						},
-						"AttackingTargetNumWeightSet":
-						{
-							"bUseWeight": true,
-							"TargetWeight": 0.3
-						},
-						"DistanceWeightSet":
-						{
-							"bUseWeight": true,
-							"TargetWeight": 1
-						},
-						"AggroWeightSet":
-						{
-							"bUseWeight": true,
-							"TargetWeight": 0.2
-						},
-						"LowHealthWeightSet":
-						{
-							"bUseWeight": true,
-							"TargetWeight": 0.5
-						},
-						"EliteWeightSet":
-						{
-							"bUseWeight": true,
-							"TargetWeight": 1
-						}
-					},
-					"BBTargetActorName": "TargetActor",
-					"AITickParams":
-					{
-						"UpdateIntervalRange":
-						{
-							"X": 1.8999999999999999,
-							"Y": 2.1000000000000001
-						},
-						"InitialDelayRange":
-						{
-							"X": 0,
-							"Y": 0.20000000000000001
-						}
-					}
-				}
-			}
+		"UnitData": {
+			"Tag": {
+				"TagName": "Arcanum.Unit.Ally.Maid"
+			},
+			"Name": "메이드",
+			"Description": "빠른 속도로 적에게 접근하여 근접 공격을 가하는 유닛입니다.",
+			"Icon": "/Script/Engine.Texture2D'/Game/Assets/UI/Character/AvatarThumb/Icon_Maid_SD_001.Icon_Maid_SD_001'",
+			"Portrait": "None",
+			"MeatCost": 10,
+			"CurrentCoolTime": 0,
+			"CoolTime": 1,
+			"UnitClass": "/Game/Character/Ally/BP_Maid.BP_Maid_C"
 		}
 	},
 	{
 		"Name": "Tinker",
-		"Tag":
-		{
-			"TagName": "None"
-		},
-		"UnitData":
-		{
-			"Info":
-			{
-				"InfoSetting":
-				{
-					"Tag":
-					{
-						"TagName": "Arcanum.Unit.Ally.Tinker"
-					},
-					"CharacterType": "None",
-					"Name": "NSLOCTEXT(\"[63F287018FDD6C8E61DE3D9509F19899]\", \"D915435C4B11EF49C1B843B9C625351D\", \"팅커\")",
-					"Description": "NSLOCTEXT(\"\", \"3A2C30F3430FC460C781AA9883218403\", \"원거리 공격이 가능하나, 체력이 낮다\")",
-					"Icon": "None",
-					"Portrait": "None"
-				},
-				"AnimSetting":
-				{
-					"AnimMode": "AnimBlueprint",
-					"SkeletalMesh": "/Game/BlackStormAssets/Character/04_Tinker/SKM_Tinker.SKM_Tinker",
-					"StaticMesh": "None",
-					"MeshScale": 1,
-					"MeshAddHeight": 0,
-					"MaterialNum": 2,
-					"StartFramePropertyIDX": 2,
-					"EndFramePropertyIDX": 3,
-					"DefaultAnimFrameRange":
-					{
-						"X": 0,
-						"Y": 0
-					},
-					"AnimInstance": "None",
-					"Idle": "None",
-					"Run": "None",
-					"IdleATTData": "None",
-					"Attacks": [],
-					"AttacksATTData": [],
-					"Hits": [],
-					"HitsATTData": [],
-					"Deads": [],
-					"DeadsFrameRange": []
-				},
-				"AISetting":
-				{
-					"bIsElite": false,
-					"bUseLockTarget": true,
-					"MaxTargetCount": 10,
-					"AttackRange": 10000,
-					"AttackRate": 1.5,
-					"BehaviorTree": "/Game/Test/BattleHUD/Unit/BT_AITest.BT_AITest",
-					"TargetPriorityWeightData":
-					{
-						"DetectDistance": 500,
-						"RandomTargetWeightSet":
-						{
-							"bUseWeight": false,
-							"TargetWeight": 0.5
-						},
-						"AttackingTargetNumWeightSet":
-						{
-							"bUseWeight": true,
-							"TargetWeight": 0.3
-						},
-						"DistanceWeightSet":
-						{
-							"bUseWeight": true,
-							"TargetWeight": 1
-						},
-						"AggroWeightSet":
-						{
-							"bUseWeight": true,
-							"TargetWeight": 0.2
-						},
-						"LowHealthWeightSet":
-						{
-							"bUseWeight": true,
-							"TargetWeight": 0.5
-						},
-						"EliteWeightSet":
-						{
-							"bUseWeight": true,
-							"TargetWeight": 1
-						}
-					},
-					"BBTargetActorName": "TargetActor",
-					"AITickParams":
-					{
-						"UpdateIntervalRange":
-						{
-							"X": 1.8999999999999999,
-							"Y": 2.1000000000000001
-						},
-						"InitialDelayRange":
-						{
-							"X": 0,
-							"Y": 0.20000000000000001
-						}
-					}
-				}
-			}
+		"UnitData": {
+			"Tag": {
+				"TagName": "Arcanum.Unit.Ally.Tinker"
+			},
+			"Name": "팅커",
+			"Description": "원거리 공격이 가능하나, 체력이 낮습니다.",
+			"Icon": "/Script/Engine.Texture2D'/Game/Assets/UI/Character/AvatarThumb/Icon_Tinker_SD_001.Icon_Tinker_SD_001'",
+			"Portrait": "None",
+			"MeatCost": 30,
+			"CurrentCoolTime": 0,
+			"CoolTime": 5,
+			"UnitClass": "/Game/Character/Ally/BP_Tinker.BP_Tinker_C"
+		}
+	},
+	{
+		"Name": "PunchMan",
+		"UnitData": {
+			"Tag": {
+				"TagName": "Arcanum.Unit.Ally.PunchMan"
+			},
+			"Name": "펀치맨",
+			"Description": "강력한 주먹으로 적을 타격하는 근접 유닛입니다.",
+			"Icon": "/Script/Engine.Texture2D'/Game/Assets/UI/Character/Icon_ThumbnailBase.Icon_ThumbnailBase'",
+			"Portrait": "None",
+			"MeatCost": 30,
+			"CurrentCoolTime": 0,
+			"CoolTime": 5,
+			"UnitClass": "/Game/Character/Ally/BP_PunchMan.BP_PunchMan_C"
 		}
 	}
 ]

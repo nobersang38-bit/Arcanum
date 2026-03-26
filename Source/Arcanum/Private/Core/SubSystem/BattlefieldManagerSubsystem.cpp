@@ -331,6 +331,9 @@ void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerDa
 						OutInBattleData.EquippedOwnerStats.Empty();
 						EquippedArmorOwnerStats(InPlayerData, OwnedCharacter, OutInBattleData.EquippedOwnerStats);
 
+						OutInBattleData.WeaponOnHitTarget.Empty();
+						EquippedWeaponOnHitTarget(InPlayerData, OwnedCharacter, OutInBattleData.WeaponOnHitTarget);
+
 						UE_LOG(LogTemp, Warning, TEXT("[EquippedOwnerStats] Num=%d"), OutInBattleData.EquippedOwnerStats.Num());
 						for (const FDerivedStatModifier& stat : OutInBattleData.EquippedOwnerStats)
 						{
@@ -467,6 +470,41 @@ void UBattlefieldManagerSubsystem::EquippedArmorOwnerStats(const FPlayerData& In
 				OutEquippedOwnerStats.Append(foundEquip->Equipment.OwnerStats);
 			}
 		}
+	}
+}
+
+void UBattlefieldManagerSubsystem::EquippedWeaponOnHitTarget(const FPlayerData& InPlayerData, const FBattleCharacterData& InSelectedCharacter, TMap<FGameplayTag, TMap<FGameplayTag, FDerivedStatModifier>>& OutWeaponOnHitTarget) const
+{
+	OutWeaponOnHitTarget.Empty();
+
+	auto addWeaponOnHitTarget =
+		[this, &InPlayerData, &OutWeaponOnHitTarget](const FGameplayTag& InWeaponSlotTag, const FGuid& InItemGuid)
+		{
+			if (!InWeaponSlotTag.IsValid()) return;
+			if (!InItemGuid.IsValid()) return;
+
+			if (const FEquipmentInfo* foundEquip = FindEquipmentByGuid(InPlayerData, InItemGuid))
+			{
+				TMap<FGameplayTag, FDerivedStatModifier>& slotOnHitMap = OutWeaponOnHitTarget.FindOrAdd(InWeaponSlotTag);
+
+				for (const FDerivedStatModifier& statModifier : foundEquip->Equipment.OnHitTargetStats)
+				{
+					if (statModifier.StatTag.IsValid())
+					{
+						slotOnHitMap.Add(statModifier.StatTag, statModifier);
+					}
+				}
+			}
+		};
+
+	for (const TPair<FGameplayTag, FGuid>& pair : InSelectedCharacter.WeaponSlots)
+	{
+		addWeaponOnHitTarget(pair.Key, pair.Value);
+	}
+
+	for (const TPair<FGameplayTag, FGuid>& pair : InSelectedCharacter.LegendaryWeaponSlots)
+	{
+		addWeaponOnHitTarget(pair.Key, pair.Value);
 	}
 }
 
@@ -653,7 +691,7 @@ const FSkillInfo* UBattlefieldManagerSubsystem::FindSkillInfoByTag(const FGamepl
 
 	if (const FDTSkillsDataRow* skillRow = gameDataSubsystem->GetRow<FDTSkillsDataRow>(Arcanum::DataTable::SkillData, GetLeafNameFromTag(InSkillTag)))
 	{
-		return &skillRow->SkillData; 
+		return &skillRow->SkillData;
 	}
 
 	return nullptr;
@@ -670,6 +708,47 @@ const FBattleCharacterData* UBattlefieldManagerSubsystem::GetSelectedCharacterDa
 	}
 
 	return nullptr;
+}
+
+UAnimMontage* UBattlefieldManagerSubsystem::GetCurrentWeaponEquipMontage() const
+{
+	const FBattleCharacterData* selectedCharacter = GetSelectedCharacterData();
+	if (!selectedCharacter) return nullptr;
+
+	FGuid itemGuid;
+	const FGameplayTag currentWeaponSlotTag = GetCurrentWeaponSlotTag();
+
+	if (bUsingLegendaryWeapon)
+	{
+		if (const FGuid* foundLegendaryGuid = selectedCharacter->LegendaryWeaponSlots.Find(Arcanum::Items::ItemSlot::Weapon::Legendary))
+		{
+			itemGuid = *foundLegendaryGuid;
+		}
+	}
+	else
+	{
+		if (const FGuid* foundWeaponGuid = selectedCharacter->WeaponSlots.Find(currentWeaponSlotTag))
+		{
+			itemGuid = *foundWeaponGuid;
+		}
+	}
+	if (!itemGuid.IsValid()) return nullptr;
+
+	const FEquipmentInfo* foundEquipment = FindEquipmentByGuid(InBattleData.PlayerData, itemGuid);
+	if (!foundEquipment) return nullptr;
+
+	UGameDataSubsystem* gameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
+	if (!gameDataSubsystem){return nullptr;
+	}
+
+	const FName itemTagLeafName = GetLeafNameFromTag(foundEquipment->ItemTag);
+	const FDTItemCatalogRow* itemCatalogRow = gameDataSubsystem->GetRow<FDTItemCatalogRow>(Arcanum::DataTable::ItemCatalog, itemTagLeafName);
+	if (!itemCatalogRow) return nullptr;
+
+	const FDTEquipmentInfoRow* equipmentRow = gameDataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, itemCatalogRow->DetailRowName);
+	if (!equipmentRow) return nullptr;
+
+	return equipmentRow->EquipMontage.LoadSynchronous();
 }
 
 FGameplayTag UBattlefieldManagerSubsystem::GetCurrentWeaponSlotTag() const

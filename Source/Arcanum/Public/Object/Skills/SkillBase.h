@@ -18,19 +18,22 @@ class USkillBase : public UObject
 public:
     USkillBase();
 
-    virtual void Initialize(AActor* InOwner, const FSkillInfo* InSkillInfo, int32 InLevel, FGameplayTag InTargetFilterTag, AActor* InTargetActor = nullptr, const FVector InTargetLocation = FVector::ZeroVector);
+    virtual void Initialize(AActor* InOwner, const FSkillInfo* InSkillInfo, int32 InLevel, FGameplayTag InTargetFilterTag, const FDerivedStatModifier InAddDerivedStatModifier = FDerivedStatModifier(), AActor* InTargetActor = nullptr, const FVector InTargetLocation = FVector::ZeroVector);
 
     virtual void ActivateSkill(AActor* Instigator);
     virtual void DeactivateSkill(AActor* Instigator);
 
     const FLevelModifierEntry* GetCurrentLevelEntry() const;
-    const FSkillInfo* GetSkillInfo() const;
+    const FSkillInfo& GetSkillInfo() const;
+    const FDerivedStatModifier& GetDerivedStatModifier() const { return AddDerivedStatModifier; }
+    AActor* GetOwnerActor() const { return OwnerActor.Get(); }
 
 protected:
     UPROPERTY()
     TWeakObjectPtr<AActor> OwnerActor;
 
-    const FSkillInfo* SkillInfo;
+    FSkillInfo SkillInfo;
+    FDerivedStatModifier AddDerivedStatModifier;
 
     FSkillState SkillState;
 

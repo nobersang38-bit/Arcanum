@@ -40,6 +40,9 @@ protected:
 	void ChangeStat(const FGameplayTag& InTag, float InValue) override;
 
 public:
+	UFUNCTION()
+	void OuntLineStart(const UCurveFloat* CurveFloat, float InTime, float DeltaTime);
+
 	// ID 태그 바꾸는 함수
 	UFUNCTION(BlueprintCallable, Category = "Tags")
 	void SetIDTag(FGameplayTag NewID);
@@ -60,6 +63,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	USkeletalMeshComponent* GetSourceSkeletaMeshComponent() { return SourceSkeletaMeshComponent; }
 	ABattlePlayerController* GetBattleOwnerController() const;
+	class UCharacterBattleStatsComponent* GetBattleStatComponent() const {return StatComponent;}
+	class UStatusActionComponent* GetStatusActionComponent() const { return StatusActionComponent; }
+
 protected:
 
 	// 스프링암
@@ -135,11 +141,29 @@ protected:
 	FGameplayTag ManaTag = Arcanum::BattleStat::Character::Regen::Mana::Root;
 
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
+	TSubclassOf<class AFloatingDamageText> TextFloatingClass = nullptr;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<class AAIController> CachedAIC = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<ABattlePlayerController> CachedOwnerPC = nullptr;
+
+	float RefOutlineTime = 0.0f;
+
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> OutlineDynamicMI = nullptr;
+	FTimerHandle OutlineTimeHandle;
+
+	UPROPERTY()
+	TArray<UMaterialInterface*> MaterialBackup;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MaterialCurve")
+	TObjectPtr<UCurveFloat> OutLineCurve = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MaterialCurve")
+	float OutLineTime = 0.3f;
 
 #pragma region 무기 교체
 public:

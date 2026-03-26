@@ -30,6 +30,22 @@ public:
 	FBattleWeaponSkillData BattleWeaponSkill;
 	FPlayerBattleData PlayerBattleData;
 	TArray<FDerivedStatModifier> EquippedOwnerStats;
+	TMap<FGameplayTag, TMap<FGameplayTag, FDerivedStatModifier>> WeaponOnHitTarget;
+	
+	/* TODO: 꺼내쓸때
+	const TMap<FGameplayTag, FDerivedStatModifier>* weaponSlot1OnHitTarget = InBattleData.WeaponOnHitTarget.Find(Arcanum::Items::ItemSlot::Weapon::Slot1);
+	const TMap<FGameplayTag, FDerivedStatModifier>* weaponSlot2OnHitTarget = InBattleData.WeaponOnHitTarget.Find(Arcanum::Items::ItemSlot::Weapon::Slot2);
+	const TMap<FGameplayTag, FDerivedStatModifier>* legendaryWeaponOnHitTarget = InBattleData.WeaponOnHitTarget.Find(Arcanum::Items::ItemSlot::Weapon::Legendary);
+
+	if (weaponSlot1OnHitTarget)
+    {
+	    const FDerivedStatModifier* healthModifier = weaponSlot1OnHitTarget->Find(Arcanum::BattleStat::Character::Regen::Health::Value);
+	    if (healthModifier)
+	    { 
+	 	    const float damage = healthModifier->Value.Flat;
+	    }
+    }
+	*/
 };
 
 
@@ -124,13 +140,6 @@ public:
 	플레이어 캐릭터
 	현재 스테이지
 	*/
-
-protected:
-	/* 장착 방어구 OwnerStats 데이터 */
-	void EquippedArmorOwnerStats(
-		const FPlayerData& InPlayerData,
-		const FBattleCharacterData& InSelectedCharacter,
-		TArray<FDerivedStatModifier>& OutEquippedOwnerStats) const;
 #pragma endregion
 
 
@@ -196,6 +205,9 @@ public:
 
 #pragma region 스킬 장비 캐시
 public:
+	/* 현재 무기 장착 몽타주 */
+	UAnimMontage* GetCurrentWeaponEquipMontage() const;
+
 	/* 현재 무기 슬롯 태그 */
 	FGameplayTag GetCurrentWeaponSlotTag() const;
 
@@ -278,6 +290,18 @@ public:
 	const FSkillInfo* FindSkillInfoByTag(const FGameplayTag& InSkillTag) const;
 
 protected:
+	/* 장착 방어구 OwnerStats 데이터 */
+	void EquippedArmorOwnerStats(
+		const FPlayerData& InPlayerData,
+		const FBattleCharacterData& InSelectedCharacter,
+		TArray<FDerivedStatModifier>& OutEquippedOwnerStats) const;
+
+	/* 장착 무기 OnHitTargetStats 데이터 */
+	void EquippedWeaponOnHitTarget(
+		const FPlayerData& InPlayerData,
+		const FBattleCharacterData& InSelectedCharacter,
+		TMap<FGameplayTag, TMap<FGameplayTag, FDerivedStatModifier>>& OutWeaponOnHitTarget) const;
+
 	/* 스킬 캐스트타임 */
 	float FindSkillCastTime(const FGameplayTag& InSkillTag, int32 InSkillLevel) const;
 
@@ -299,7 +323,6 @@ protected:
 	/* 현재 선택 캐릭터가 지정한 세트 루트 태그를 4개 장착했는지 확인 */
 	UFUNCTION()
 	bool HasEquippedFullSet(const FGameplayTag& InSetRootTag) const;
-
 protected:
 	/* 궁극기 사용 이전 무기 슬롯 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Battle|SkillCache")

@@ -41,7 +41,7 @@ public:
 	UFUNCTION() float GetFrameRateLimitValue() const { return GetFrameRateLimit(); }
 	UFUNCTION() void SetFrameRateLimitValue(float InLimit) { SetFrameRateLimit(InLimit); }
 
-	void SetOverallScalabilityLevel(int32 Value) { SetOverallScalabilityLevel(Value); }
+	void SetOverallScalabilityLevel(int32 Value) { Super::SetOverallScalabilityLevel(Value); }
 	void SetGlobalIlluminationQuality(int32 Value) { ScalabilityQuality.GlobalIlluminationQuality = Value; }
 	void SetShadowQuality(int32 Value) { ScalabilityQuality.ShadowQuality = Value; }
 	void SetAntiAliasingQuality(int32 Value) { ScalabilityQuality.AntiAliasingQuality = Value; }

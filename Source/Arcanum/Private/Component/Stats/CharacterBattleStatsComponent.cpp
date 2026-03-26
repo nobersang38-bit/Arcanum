@@ -150,6 +150,16 @@ void UCharacterBattleStatsComponent::SetData(const FGradeStatData& InGradeStatDa
     GradeStatData = InGradeStatData;
     InitComponent();
 }
+void UCharacterBattleStatsComponent::SetCurrentValueMax()
+{
+    for (FRegenStat& Stat : TotalRegenStats)
+    {
+        const float MaxValue = Stat.GetTotalMax();
+        if (FMath::IsNearlyEqual(Stat.Current, MaxValue)) continue;
+        Stat.Current = MaxValue;
+        NotifyRegenStatChanged(Stat);
+    }
+}
 void UCharacterBattleStatsComponent::RebuildTotalStats()
 {
     TotalRegenStats = BaseRegenStats;
@@ -286,13 +296,15 @@ void UCharacterBattleStatsComponent::UpdateFinalStatValue(FGameplayTag Tag)
         }
 
         if (Tag == RStat->Child_Max) {
-            RStat->BonusMax = B_Flat + (RStat->BaseMax * B_Mul);
-            RStat->ModifierMax = C_Flat + (RStat->BaseMax * C_Mul);
+
+            // TODO : 김도현 출력 값이 더해져 더하는 부분 제거
+            RStat->BonusMax = B_Flat /*+ (RStat->BaseMax * B_Mul)*/;
+            RStat->ModifierMax = C_Flat/* + (RStat->BaseMax * C_Mul)*/;
             RStat->Current = FMath::Clamp(RStat->Current, 0.f, RStat->GetTotalMax());
         }
         else if (Tag == RStat->Child_Tick) {
             // TODD: Regen Tick Modifier에서 Mul 값이 반영되지 않아 ModifierTick 계산식 수정
-            // RStat->ModifierTick = C_Flat;
+            //RStat->ModifierTick = C_Flat;
             RStat->ModifierTick = B_Flat + (RStat->BaseTick * B_Mul);
         }
 
@@ -300,7 +312,7 @@ void UCharacterBattleStatsComponent::UpdateFinalStatValue(FGameplayTag Tag)
         return;
     }
 
-    if (FNonRegenStat* NStat = TotalNonRegenStats.FindByPredicate([&](const FNonRegenStat& S) { return S.TagName == Tag; })) {
+    if (FNonRegenStat* NStat = TotalNonRegenStats.FindByPredicate([&](const FNonRegenStat& S) { return Tag.MatchesTag(S.TagName); })) {
         float B_Flat = 0.f, B_Mul = 0.f;
         float C_Flat = 0.f, C_Mul = 0.f;
 
@@ -308,7 +320,7 @@ void UCharacterBattleStatsComponent::UpdateFinalStatValue(FGameplayTag Tag)
             if (Mod.StatTag == Tag) { B_Flat += Mod.Value.Flat; B_Mul += Mod.Value.Mul; }
         }
         NStat->BonusValue = B_Flat + (NStat->BaseValue * B_Mul);
-
+        //NStat->ModifierValue = C_Flat;
         NotifyNonRegenStatChanged(*NStat);
         return;
     }
