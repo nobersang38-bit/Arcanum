@@ -150,6 +150,16 @@ void UCharacterBattleStatsComponent::SetData(const FGradeStatData& InGradeStatDa
     GradeStatData = InGradeStatData;
     InitComponent();
 }
+void UCharacterBattleStatsComponent::SetCurrentValueMax()
+{
+    for (FRegenStat& Stat : TotalRegenStats)
+    {
+        const float MaxValue = Stat.GetTotalMax();
+        if (FMath::IsNearlyEqual(Stat.Current, MaxValue)) continue;
+        Stat.Current = MaxValue;
+        NotifyRegenStatChanged(Stat);
+    }
+}
 void UCharacterBattleStatsComponent::RebuildTotalStats()
 {
     TotalRegenStats = BaseRegenStats;
@@ -286,13 +296,15 @@ void UCharacterBattleStatsComponent::UpdateFinalStatValue(FGameplayTag Tag)
         }
 
         if (Tag == RStat->Child_Max) {
-            RStat->BonusMax = B_Flat + (RStat->BaseMax * B_Mul);
-            RStat->ModifierMax = C_Flat + (RStat->BaseMax * C_Mul);
+
+            // TODO : 김도현 출력 값이 더해져 더하는 부분 제거
+            RStat->BonusMax = B_Flat /*+ (RStat->BaseMax * B_Mul)*/;
+            RStat->ModifierMax = C_Flat/* + (RStat->BaseMax * C_Mul)*/;
             RStat->Current = FMath::Clamp(RStat->Current, 0.f, RStat->GetTotalMax());
         }
         else if (Tag == RStat->Child_Tick) {
             // TODD: Regen Tick Modifier에서 Mul 값이 반영되지 않아 ModifierTick 계산식 수정
-            // RStat->ModifierTick = C_Flat;
+            //RStat->ModifierTick = C_Flat;
             RStat->ModifierTick = B_Flat + (RStat->BaseTick * B_Mul);
         }
 

@@ -7,6 +7,8 @@
 #include "Component/Stats/CharacterBattleStatsComponent.h"
 #include "Interface/TeamInterface.h"
 #include "Engine/OverlapResult.h"
+#include "Character/PlayerCharacter.h"
+#include "Component/StatusActionComponent.h"
 
 AProjectileBase::AProjectileBase()
 {
@@ -208,9 +210,49 @@ void AProjectileBase::CollisionProcess(AActor* OtherActor)
                         StatModifier.Value.Flat = StatModifier.Value.Flat + OwnerSkill->GetDerivedStatModifier().Value.Flat;
                     }
 
+                    if (bUseOwnerStat)
+                    {
+                        if (OwnerSkill->GetOwnerActor())
+                        {
+                            if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OwnerSkill->GetOwnerActor()))
+                            {
+                                if (const FRegenStat* RegenStat = PlayerCharacter->GetBattleStatComponent()->FindRegenStat(UseStatTag))
+                                {
+                                    StatModifier.Value.Flat = StatModifier.Value.Flat + RegenStat->Current;
+                                }
+                                else if (const FNonRegenStat* NonRegenStat = PlayerCharacter->GetBattleStatComponent()->FindNonRegenStat(UseStatTag))
+                                {
+                                    StatModifier.Value.Flat = StatModifier.Value.Flat + NonRegenStat->GetTotalValue();
+                                }
+
+                            }
+                        }
+                    }
+
                     if (StatModifier.Duration <= 0.0f && !StatModifier.bIsPermanent) // 체인지 스탯함수 실행
                     {
-                        Interface->ChangeStat(StatModifier.StatTag, (StatModifier.Value.Flat * StatModifier.Value.Mul));
+                        float ResultValue = StatModifier.Value.Flat * StatModifier.Value.Mul;
+
+                        if (bIsAttack)
+                        {
+                            if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OwnerSkill->GetOwnerActor()))
+                            {
+                                UCharacterBattleStatsComponent* StatComponent = PlayerCharacter->GetBattleStatComponent();
+                                const FNonRegenStat* CriticalStat = StatComponent->FindNonRegenStat(PlayerCharacter->GetStatusActionComponent()->CriticalTag);
+                                if (CriticalStat)
+                                {
+                                    float CriticalPercent = CriticalStat->GetTotalValue();
+                                    bool bIsCriticalSuccess = (FMath::FRandRange(0.0f, 1.0f) <= CriticalPercent);
+
+                                    if (bIsCriticalSuccess)
+                                    {
+                                        ResultValue *= 2.0f;
+                                    }
+                                }
+                            }
+                        }
+
+                        Interface->ChangeStat(StatModifier.StatTag, ResultValue);
                     }
                     else // 모디파이어 추가
                     {
