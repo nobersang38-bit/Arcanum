@@ -265,6 +265,7 @@ void APlayerCharacter::RecievedDamage(AActor* DamagedActor, float Damage, const 
 			}
 			else
 			{
+				Damage = Damage * (1.0f - StatComponent->FindNonRegenStat(Arcanum::BattleStat::Character::NonRegen::DamageReduction::Root)->GetTotalValue());
 				StatComponent->ChangeStatValue(HealthTag, -Damage, DamageCauser);
 			}
 		}
