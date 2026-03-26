@@ -8,7 +8,7 @@
         "SourceTag": "(TagName=\"Arcanum.Items.Potion.Health\")",
         "StatTag": "(TagName=\"Arcanum.BattleStat.Character.Regen.Health.Regen\")",
         "Value": {
-          "Flat": 50.0,
+          "Flat": 5.0,
           "Mul": 1.0
         },
         "bIsPermanent": false,
@@ -27,7 +27,7 @@
         "SourceTag": "(TagName=\"Arcanum.Items.Potion.Mana\")",
         "StatTag": "(TagName=\"Arcanum.BattleStat.Character.Regen.Mana.Regen\")",
         "Value": {
-          "Flat": 50.0,
+          "Flat": 3.0,
           "Mul": 1.0
         },
         "bIsPermanent": false,
