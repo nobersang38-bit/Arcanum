@@ -100,6 +100,22 @@ void AProjectileBase::Tick(float Deltatime)
         }
     }
 
+    TArray<AActor*> DelActors;
+    for (auto& Iter : ActorCollisionCoolTime)
+    {
+        if (Iter.Value <= 0.0f)
+        {
+            DelActors.Add(Iter.Key);
+            continue;
+        }
+
+        Iter.Value -= Deltatime;
+    }
+    for (int i = 0; i < DelActors.Num(); i++)
+    {
+        ActorCollisionCoolTime.Remove(DelActors[i]);
+        CachedActors.Remove(DelActors[i]);
+    }
 }
 void AProjectileBase::DeactivateSkillActor()
 {
@@ -109,6 +125,8 @@ void AProjectileBase::DeactivateSkillActor()
     bIsActive = false;
     SetActorHiddenInGame(true);
     SetActorEnableCollision(false);
+    CachedActors.Empty();
+    ActorCollisionCoolTime.Empty();
     DeactiveItem();
     Super::DeactivateSkillActor();
 }
@@ -120,6 +138,8 @@ void AProjectileBase::ActivateSkillActor(USkillBase* InSkill, AActor* InOwner, c
         bIsFirstStart = false;
         FirstCollisionEnabled = CollisionComponent->GetCollisionEnabled();
     }
+    CachedActors.Empty();
+    ActorCollisionCoolTime.Empty();
     CollisionComponent->OnComponentHit.RemoveDynamic(this, &AProjectileBase::OnHit);
     CollisionComponent->OnComponentHit.AddDynamic(this, &AProjectileBase::OnHit);
 
@@ -252,11 +272,24 @@ void AProjectileBase::CollisionProcess(AActor* OtherActor)
                             }
                         }
 
-                        Interface->ChangeStat(StatModifier.StatTag, ResultValue);
+                        if (bIsAttack)
+                        {
+                            UGameplayStatics::ApplyDamage(OtherActor, ResultValue, nullptr, OwnerSkill->GetOwnerActor(), nullptr);
+                            CachedActors.Add(OtherActor);
+                            ActorCollisionCoolTime.Add(OtherActor, ReOnCollisionTime);
+                        }
+                        else
+                        {
+                            Interface->ChangeStat(StatModifier.StatTag, ResultValue);
+                            CachedActors.Add(OtherActor);
+                            ActorCollisionCoolTime.Add(OtherActor, ReOnCollisionTime);
+                        }
                     }
                     else // 모디파이어 추가
                     {
                         Interface->AddDerivedStatModifier(StatModifier);
+                        CachedActors.Add(OtherActor);
+                        ActorCollisionCoolTime.Add(OtherActor, ReOnCollisionTime);
                     }
                 }
             }
@@ -282,6 +315,8 @@ void AProjectileBase::ActivateOnCollisionProcess(AActor* OtherActor)
 
 bool AProjectileBase::TargetfilterCheck(AActor* OtherActor)
 {
+    if (CachedActors.Contains(OtherActor)) return false;
+
     if (OwnerSkill)
     {
         if (InstigatorActor->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()))

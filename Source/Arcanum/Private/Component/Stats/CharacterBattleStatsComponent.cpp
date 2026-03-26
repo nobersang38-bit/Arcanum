@@ -312,7 +312,7 @@ void UCharacterBattleStatsComponent::UpdateFinalStatValue(FGameplayTag Tag)
         return;
     }
 
-    if (FNonRegenStat* NStat = TotalNonRegenStats.FindByPredicate([&](const FNonRegenStat& S) { return S.TagName == Tag; })) {
+    if (FNonRegenStat* NStat = TotalNonRegenStats.FindByPredicate([&](const FNonRegenStat& S) { return Tag.MatchesTag(S.TagName); })) {
         float B_Flat = 0.f, B_Mul = 0.f;
         float C_Flat = 0.f, C_Mul = 0.f;
 
@@ -320,7 +320,7 @@ void UCharacterBattleStatsComponent::UpdateFinalStatValue(FGameplayTag Tag)
             if (Mod.StatTag == Tag) { B_Flat += Mod.Value.Flat; B_Mul += Mod.Value.Mul; }
         }
         NStat->BonusValue = B_Flat + (NStat->BaseValue * B_Mul);
-
+        //NStat->ModifierValue = C_Flat;
         NotifyNonRegenStatChanged(*NStat);
         return;
     }

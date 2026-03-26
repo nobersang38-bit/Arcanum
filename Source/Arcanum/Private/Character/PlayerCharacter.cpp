@@ -265,8 +265,11 @@ void APlayerCharacter::RecievedDamage(AActor* DamagedActor, float Damage, const 
 			}
 			else
 			{
-				Damage = Damage * (1.0f - StatComponent->FindNonRegenStat(Arcanum::BattleStat::Character::NonRegen::DamageReduction::Root)->GetTotalValue());
-				StatComponent->ChangeStatValue(HealthTag, -Damage, DamageCauser);
+				if (StatComponent->FindNonRegenStat(Arcanum::BattleStat::Character::NonRegen::DamageReduction::Root))
+				{
+					Damage *= (1.0f - StatComponent->FindNonRegenStat(Arcanum::BattleStat::Character::NonRegen::DamageReduction::Root)->GetTotalValue());
+					StatComponent->ChangeStatValue(HealthTag, -Damage, DamageCauser);
+				}
 			}
 		}
 		if (OwnerPC)
@@ -639,7 +642,8 @@ void APlayerCharacter::HandleBasicAttackInput()
 	FOnMontageEnded montageEndedDelegate;
 	montageEndedDelegate.BindUObject(this, &APlayerCharacter::OnBasicAttackMontageEnded);
 
-	animInstance->Montage_Play(montage, StatComponent->FindNonRegenStat(Arcanum::BattleStat::Character::NonRegen::AttackSpeed::Root)->GetTotalValue());
+	float MontagePlayRate = StatComponent->FindNonRegenStat(Arcanum::BattleStat::Character::NonRegen::AttackSpeed::Root)->GetTotalValue();
+	animInstance->Montage_Play(montage, MontagePlayRate);
 	animInstance->Montage_SetEndDelegate(montageEndedDelegate, montage);
 }
 

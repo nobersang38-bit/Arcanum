@@ -62,6 +62,9 @@ protected:
     //UPROPERTY(VisibleAnywhere)
     //TObjectPtr<UProjectileMovementComponent> MovementComponent;
 
+    UPROPERTY(EditDefaultsOnly, Category = "ProjectiIe")
+    float ReOnCollisionTime = 1.0f;
+
     // 공격이라면 공격로직
     UPROPERTY(EditDefaultsOnly, Category = "ProjectiIe")
     bool bIsAttack = true;
@@ -127,5 +130,14 @@ protected:
     float HowitzerTime = 0.0f;
     FTransform HowitzerStartTransform;
     ECollisionEnabled::Type FirstCollisionEnabled;
-    bool bIsFirstStart = true;;
+    bool bIsFirstStart = true;
+
+    UPROPERTY()
+    TSet<AActor*> CachedActors;
+
+    UPROPERTY()
+    TMap<AActor*, float> ActorCollisionCoolTime;
+
+private:
+
 };
