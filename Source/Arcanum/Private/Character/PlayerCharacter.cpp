@@ -639,7 +639,8 @@ void APlayerCharacter::HandleBasicAttackInput()
 	FOnMontageEnded montageEndedDelegate;
 	montageEndedDelegate.BindUObject(this, &APlayerCharacter::OnBasicAttackMontageEnded);
 
-	animInstance->Montage_Play(montage, StatComponent->FindNonRegenStat(Arcanum::BattleStat::Character::NonRegen::AttackSpeed::Root)->GetTotalValue());
+	float MontagePlayRate = StatComponent->FindNonRegenStat(Arcanum::BattleStat::Character::NonRegen::AttackSpeed::Root)->GetTotalValue();
+	animInstance->Montage_Play(montage, MontagePlayRate);
 	animInstance->Montage_SetEndDelegate(montageEndedDelegate, montage);
 }
 
