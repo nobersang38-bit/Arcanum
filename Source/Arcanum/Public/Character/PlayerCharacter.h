@@ -40,6 +40,9 @@ protected:
 	void ChangeStat(const FGameplayTag& InTag, float InValue) override;
 
 public:
+	UFUNCTION()
+	void OuntLineStart(const UCurveFloat* CurveFloat, float InTime, float DeltaTime);
+
 	// ID 태그 바꾸는 함수
 	UFUNCTION(BlueprintCallable, Category = "Tags")
 	void SetIDTag(FGameplayTag NewID);
@@ -146,6 +149,21 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<ABattlePlayerController> CachedOwnerPC = nullptr;
+
+	float RefOutlineTime = 0.0f;
+
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> OutlineDynamicMI = nullptr;
+	FTimerHandle OutlineTimeHandle;
+
+	UPROPERTY()
+	TArray<UMaterialInterface*> MaterialBackup;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MaterialCurve")
+	TObjectPtr<UCurveFloat> OutLineCurve = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MaterialCurve")
+	float OutLineTime = 0.3f;
 
 #pragma region 무기 교체
 public:

@@ -106,10 +106,10 @@ void ABasement::RecievedDamage(AActor* DamagedActor, float Damage, const UDamage
 		UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 		if (BattleSubsystem)
 		{
-			if (GetOwner()->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()))
+			/*if (GetOwner()->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()))
 			{
-				auto Interface = Cast<ITeamInterface>(GetOwner());
-				FGameplayTag OwnerTag = Interface->GetTeamTag();
+				auto Interface = Cast<ITeamInterface>(GetOwner());*/
+				FGameplayTag OwnerTag = GetTeamTag();
 
 				if (OwnerTag.IsValid())
 				{
@@ -127,7 +127,7 @@ void ABasement::RecievedDamage(AActor* DamagedActor, float Damage, const UDamage
 					MatchData.EndTimeSecond = BattleSubsystem->GetCurrentMatchData().EndTimeSecond;
 					BattleSubsystem->OnMatchEnded.Broadcast(MatchData);
 				}
-			}
+			//}
 		}
 	}
 }

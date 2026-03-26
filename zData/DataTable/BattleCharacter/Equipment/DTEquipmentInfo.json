@@ -971,11 +971,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.01,
               "Mul": 0.01
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.05,
               "Mul": 0.05
             }
           }
@@ -1004,11 +1004,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.06,
               "Mul": 0.06
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.1,
               "Mul": 0.1
             }
           }
@@ -1037,11 +1037,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.11,
               "Mul": 0.11
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.15,
               "Mul": 0.15
             }
           }
@@ -1070,11 +1070,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.16,
               "Mul": 0.16
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.2,
               "Mul": 0.2
             }
           }
@@ -1103,11 +1103,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.21,
               "Mul": 0.21
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.25,
               "Mul": 0.25
             }
           }
@@ -1136,11 +1136,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.26,
               "Mul": 0.26
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.3,
               "Mul": 0.3
             }
           }
@@ -1189,11 +1189,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.01,
               "Mul": 0.01
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.05,
               "Mul": 0.05
             }
           }
@@ -1222,11 +1222,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.06,
               "Mul": 0.06
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.1,
               "Mul": 0.1
             }
           }
@@ -1255,11 +1255,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.11,
               "Mul": 0.11
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.15,
               "Mul": 0.15
             }
           }
@@ -1288,11 +1288,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.16,
               "Mul": 0.16
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.2,
               "Mul": 0.2
             }
           }
@@ -1321,11 +1321,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.21,
               "Mul": 0.21
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.25,
               "Mul": 0.25
             }
           }
@@ -1354,11 +1354,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.26,
               "Mul": 0.26
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.3,
               "Mul": 0.3
             }
           }
@@ -1396,22 +1396,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.01,
               "Mul": 0.01
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.05,
               "Mul": 0.05
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.01,
               "Mul": 0.01
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.05,
               "Mul": 0.05
             }
           }
@@ -1429,22 +1429,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.06,
               "Mul": 0.06
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.1,
               "Mul": 0.1
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.06,
               "Mul": 0.06
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.1,
               "Mul": 0.1
             }
           }
@@ -1462,22 +1462,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.11,
               "Mul": 0.11
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.15,
               "Mul": 0.15
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.11,
               "Mul": 0.11
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.15,
               "Mul": 0.15
             }
           }
@@ -1495,22 +1495,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.16,
               "Mul": 0.16
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.2,
               "Mul": 0.2
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.16,
               "Mul": 0.16
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.2,
               "Mul": 0.2
             }
           }
@@ -1528,22 +1528,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.21,
               "Mul": 0.21
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.25,
               "Mul": 0.25
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.21,
               "Mul": 0.21
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.25,
               "Mul": 0.25
             }
           }
@@ -1561,22 +1561,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.26,
               "Mul": 0.26
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.3,
               "Mul": 0.3
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.26,
               "Mul": 0.26
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.3,
               "Mul": 0.3
             }
           }
@@ -1614,22 +1614,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.01,
               "Mul": 0.01
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.05,
               "Mul": 0.05
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.01,
               "Mul": 0.01
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.05,
               "Mul": 0.05
             }
           }
@@ -1647,22 +1647,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.06,
               "Mul": 0.06
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.1,
               "Mul": 0.1
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.06,
               "Mul": 0.06
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.1,
               "Mul": 0.1
             }
           }
@@ -1680,22 +1680,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.11,
               "Mul": 0.11
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.15,
               "Mul": 0.15
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.11,
               "Mul": 0.11
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.15,
               "Mul": 0.15
             }
           }
@@ -1713,22 +1713,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.16,
               "Mul": 0.16
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.2,
               "Mul": 0.2
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.16,
               "Mul": 0.16
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.2,
               "Mul": 0.2
             }
           }
@@ -1746,22 +1746,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.21,
               "Mul": 0.21
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.25,
               "Mul": 0.25
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.21,
               "Mul": 0.21
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.25,
               "Mul": 0.25
             }
           }
@@ -1779,22 +1779,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.26,
               "Mul": 0.26
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.3,
               "Mul": 0.3
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.26,
               "Mul": 0.26
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.3,
               "Mul": 0.3
             }
           }
@@ -1843,11 +1843,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.01,
               "Mul": 0.01
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.05,
               "Mul": 0.05
             }
           }
@@ -1876,11 +1876,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.06,
               "Mul": 0.06
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.1,
               "Mul": 0.1
             }
           }
@@ -1909,11 +1909,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.11,
               "Mul": 0.11
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.15,
               "Mul": 0.15
             }
           }
@@ -1942,11 +1942,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.16,
               "Mul": 0.16
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.2,
               "Mul": 0.2
             }
           }
@@ -1975,11 +1975,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.21,
               "Mul": 0.21
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.25,
               "Mul": 0.25
             }
           }
@@ -2008,11 +2008,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.26,
               "Mul": 0.26
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.3,
               "Mul": 0.3
             }
           }
@@ -2061,11 +2061,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.01,
               "Mul": 0.01
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.05,
               "Mul": 0.05
             }
           }
@@ -2094,11 +2094,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.06,
               "Mul": 0.06
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.1,
               "Mul": 0.1
             }
           }
@@ -2127,11 +2127,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.11,
               "Mul": 0.11
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.15,
               "Mul": 0.15
             }
           }
@@ -2160,11 +2160,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.16,
               "Mul": 0.16
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.2,
               "Mul": 0.2
             }
           }
@@ -2193,11 +2193,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.21,
               "Mul": 0.21
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.25,
               "Mul": 0.25
             }
           }
@@ -2226,11 +2226,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.26,
               "Mul": 0.26
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.3,
               "Mul": 0.3
             }
           }
@@ -2268,22 +2268,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.01,
               "Mul": 0.01
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.05,
               "Mul": 0.05
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.01,
               "Mul": 0.01
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.05,
               "Mul": 0.05
             }
           }
@@ -2301,22 +2301,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.06,
               "Mul": 0.06
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.1,
               "Mul": 0.1
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.06,
               "Mul": 0.06
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.1,
               "Mul": 0.1
             }
           }
@@ -2334,22 +2334,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.11,
               "Mul": 0.11
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.15,
               "Mul": 0.15
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.11,
               "Mul": 0.11
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.15,
               "Mul": 0.15
             }
           }
@@ -2367,22 +2367,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.16,
               "Mul": 0.16
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.2,
               "Mul": 0.2
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.16,
               "Mul": 0.16
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.2,
               "Mul": 0.2
             }
           }
@@ -2400,22 +2400,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.21,
               "Mul": 0.21
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.25,
               "Mul": 0.25
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.21,
               "Mul": 0.21
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.25,
               "Mul": 0.25
             }
           }
@@ -2433,22 +2433,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.26,
               "Mul": 0.26
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.3,
               "Mul": 0.3
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.26,
               "Mul": 0.26
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.3,
               "Mul": 0.3
             }
           }
@@ -2486,22 +2486,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.01,
               "Mul": 0.01
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.05,
               "Mul": 0.05
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.01,
               "Mul": 0.01
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.05,
               "Mul": 0.05
             }
           }
@@ -2519,22 +2519,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.06,
               "Mul": 0.06
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.1,
               "Mul": 0.1
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.06,
               "Mul": 0.06
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.1,
               "Mul": 0.1
             }
           }
@@ -2552,22 +2552,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.11,
               "Mul": 0.11
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.15,
               "Mul": 0.15
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.11,
               "Mul": 0.11
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.15,
               "Mul": 0.15
             }
           }
@@ -2585,22 +2585,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.16,
               "Mul": 0.16
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.2,
               "Mul": 0.2
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.16,
               "Mul": 0.16
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.2,
               "Mul": 0.2
             }
           }
@@ -2618,22 +2618,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.21,
               "Mul": 0.21
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.25,
               "Mul": 0.25
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.21,
               "Mul": 0.21
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.25,
               "Mul": 0.25
             }
           }
@@ -2651,22 +2651,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.26,
               "Mul": 0.26
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.3,
               "Mul": 0.3
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.26,
               "Mul": 0.26
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.3,
               "Mul": 0.3
             }
           }
@@ -2715,11 +2715,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.01,
               "Mul": 0.01
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.05,
               "Mul": 0.05
             }
           }
@@ -2748,11 +2748,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.06,
               "Mul": 0.06
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.1,
               "Mul": 0.1
             }
           }
@@ -2781,11 +2781,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.11,
               "Mul": 0.11
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.15,
               "Mul": 0.15
             }
           }
@@ -2814,11 +2814,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.16,
               "Mul": 0.16
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.2,
               "Mul": 0.2
             }
           }
@@ -2847,11 +2847,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.21,
               "Mul": 0.21
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.25,
               "Mul": 0.25
             }
           }
@@ -2880,11 +2880,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.26,
               "Mul": 0.26
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.3,
               "Mul": 0.3
             }
           }
@@ -2933,11 +2933,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.01,
               "Mul": 0.01
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.05,
               "Mul": 0.05
             }
           }
@@ -2966,11 +2966,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.06,
               "Mul": 0.06
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.1,
               "Mul": 0.1
             }
           }
@@ -2999,11 +2999,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.11,
               "Mul": 0.11
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.15,
               "Mul": 0.15
             }
           }
@@ -3032,11 +3032,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.16,
               "Mul": 0.16
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.2,
               "Mul": 0.2
             }
           }
@@ -3065,11 +3065,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.21,
               "Mul": 0.21
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.25,
               "Mul": 0.25
             }
           }
@@ -3098,11 +3098,11 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.DamageReduction.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.26,
               "Mul": 0.26
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.3,
               "Mul": 0.3
             }
           }
@@ -3140,22 +3140,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.01,
               "Mul": 0.01
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.05,
               "Mul": 0.05
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.01,
               "Mul": 0.01
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.05,
               "Mul": 0.05
             }
           }
@@ -3173,22 +3173,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.06,
               "Mul": 0.06
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.1,
               "Mul": 0.1
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.06,
               "Mul": 0.06
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.1,
               "Mul": 0.1
             }
           }
@@ -3206,22 +3206,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.11,
               "Mul": 0.11
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.15,
               "Mul": 0.15
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.11,
               "Mul": 0.11
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.15,
               "Mul": 0.15
             }
           }
@@ -3239,22 +3239,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.16,
               "Mul": 0.16
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.2,
               "Mul": 0.2
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.16,
               "Mul": 0.16
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.2,
               "Mul": 0.2
             }
           }
@@ -3272,22 +3272,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.21,
               "Mul": 0.21
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.25,
               "Mul": 0.25
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.21,
               "Mul": 0.21
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.25,
               "Mul": 0.25
             }
           }
@@ -3305,22 +3305,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.26,
               "Mul": 0.26
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.3,
               "Mul": 0.3
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.26,
               "Mul": 0.26
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.3,
               "Mul": 0.3
             }
           }
@@ -3358,22 +3358,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.01,
               "Mul": 0.01
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.05,
               "Mul": 0.05
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.01,
               "Mul": 0.01
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.05,
               "Mul": 0.05
             }
           }
@@ -3391,22 +3391,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.06,
               "Mul": 0.06
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.1,
               "Mul": 0.1
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.06,
               "Mul": 0.06
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.1,
               "Mul": 0.1
             }
           }
@@ -3424,22 +3424,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.11,
               "Mul": 0.11
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.15,
               "Mul": 0.15
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.11,
               "Mul": 0.11
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.15,
               "Mul": 0.15
             }
           }
@@ -3457,22 +3457,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.16,
               "Mul": 0.16
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.2,
               "Mul": 0.2
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.16,
               "Mul": 0.16
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.2,
               "Mul": 0.2
             }
           }
@@ -3490,22 +3490,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.21,
               "Mul": 0.21
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.25,
               "Mul": 0.25
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.21,
               "Mul": 0.21
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.25,
               "Mul": 0.25
             }
           }
@@ -3523,22 +3523,22 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.26,
               "Mul": 0.26
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.3,
               "Mul": 0.3
             }
           },
           {
             "StatTag": "Arcanum.BattleStat.Character.NonRegen.Evasion.BonusValue",
             "MinValue": {
-              "Flat": 0.0,
+              "Flat": 0.26,
               "Mul": 0.26
             },
             "MaxValue": {
-              "Flat": 0.0,
+              "Flat": 0.3,
               "Mul": 0.3
             }
           }

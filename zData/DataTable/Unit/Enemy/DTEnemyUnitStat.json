@@ -1,0 +1,732 @@
+[
+	{
+		"Name": "Macaron",
+		"BattleCharacterTag": {
+			"TagName": "Arcanum.Unit.Enemy.Macaron"
+		},
+		"GradeDataSteps": [
+			{
+				"RegenStats": [
+					{
+						"ParentTag": {
+							"TagName": "Arcanum.BattleStat.Character.Regen.Health"
+						},
+						"Current": 110,
+						"BaseMax": 110,
+						"BaseTick": 0,
+						"BonusMax": 0,
+						"ModifierMax": 0,
+						"ModifierTick": 0
+					}
+				],
+				"NonRegenStats": [
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.AttackPower"
+						},
+						"BaseValue": 15.0,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed"
+						},
+						"BaseValue": 1.0,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.CritChance"
+						},
+						"BaseValue": 0.05,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.DamageReduction"
+						},
+						"BaseValue": 0.05,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.Evasion"
+						},
+						"BaseValue": 0.05,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed"
+						},
+						"BaseValue": 400,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					}
+				]
+			}
+		]
+	},
+	{
+		"Name": "Leech",
+		"BattleCharacterTag": {
+			"TagName": "Arcanum.Unit.Enemy.Leech"
+		},
+		"GradeDataSteps": [
+			{
+				"RegenStats": [
+					{
+						"ParentTag": {
+							"TagName": "Arcanum.BattleStat.Character.Regen.Health"
+						},
+						"Current": 130,
+						"BaseMax": 130,
+						"BaseTick": 0,
+						"BonusMax": 0,
+						"ModifierMax": 0,
+						"ModifierTick": 0
+					}
+				],
+				"NonRegenStats": [
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.AttackPower"
+						},
+						"BaseValue": 12.0,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed"
+						},
+						"BaseValue": 1.2,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.CritChance"
+						},
+						"BaseValue": 0.08,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.DamageReduction"
+						},
+						"BaseValue": 0.1,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.Evasion"
+						},
+						"BaseValue": 0.1,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed"
+						},
+						"BaseValue": 450,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					}
+				]
+			}
+		]
+	},
+	{
+		"Name": "GhostMacaron",
+		"BattleCharacterTag": {
+			"TagName": "Arcanum.Unit.Enemy.GhostMacaron"
+		},
+		"GradeDataSteps": [
+			{
+				"RegenStats": [
+					{
+						"ParentTag": {
+							"TagName": "Arcanum.BattleStat.Character.Regen.Health"
+						},
+						"Current": 80,
+						"BaseMax": 80,
+						"BaseTick": 0,
+						"BonusMax": 0,
+						"ModifierMax": 0,
+						"ModifierTick": 0
+					}
+				],
+				"NonRegenStats": [
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.AttackPower"
+						},
+						"BaseValue": 18.0,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed"
+						},
+						"BaseValue": 0.8,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.CritChance"
+						},
+						"BaseValue": 0.1,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.DamageReduction"
+						},
+						"BaseValue": 0.0,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.Evasion"
+						},
+						"BaseValue": 0.3,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed"
+						},
+						"BaseValue": 600,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					}
+				]
+			}
+		]
+	},
+	{
+		"Name": "Bat",
+		"BattleCharacterTag": {
+			"TagName": "Arcanum.Unit.Enemy.Bat"
+		},
+		"GradeDataSteps": [
+			{
+				"RegenStats": [
+					{
+						"ParentTag": {
+							"TagName": "Arcanum.BattleStat.Character.Regen.Health"
+						},
+						"Current": 50,
+						"BaseMax": 50,
+						"BaseTick": 0,
+						"BonusMax": 0,
+						"ModifierMax": 0,
+						"ModifierTick": 0
+					}
+				],
+				"NonRegenStats": [
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.AttackPower"
+						},
+						"BaseValue": 10.0,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed"
+						},
+						"BaseValue": 1.5,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.CritChance"
+						},
+						"BaseValue": 0.15,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.DamageReduction"
+						},
+						"BaseValue": 0.0,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.Evasion"
+						},
+						"BaseValue": 0.25,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed"
+						},
+						"BaseValue": 900,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					}
+				]
+			}
+		]
+	},
+	{
+		"Name": "Cell",
+		"BattleCharacterTag": {
+			"TagName": "Arcanum.Unit.Enemy.Cell"
+		},
+		"GradeDataSteps": [
+			{
+				"RegenStats": [
+					{
+						"ParentTag": {
+							"TagName": "Arcanum.BattleStat.Character.Regen.Health"
+						},
+						"Current": 60,
+						"BaseMax": 60,
+						"BaseTick": 0,
+						"BonusMax": 0,
+						"ModifierMax": 0,
+						"ModifierTick": 0
+					}
+				],
+				"NonRegenStats": [
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.AttackPower"
+						},
+						"BaseValue": 8.0,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed"
+						},
+						"BaseValue": 0.9,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.CritChance"
+						},
+						"BaseValue": 0.02,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.DamageReduction"
+						},
+						"BaseValue": 0.0,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.Evasion"
+						},
+						"BaseValue": 0.1,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed"
+						},
+						"BaseValue": 300,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					}
+				]
+			}
+		]
+	},
+	{
+		"Name": "Mask",
+		"BattleCharacterTag": {
+			"TagName": "Arcanum.Unit.Enemy.Mask"
+		},
+		"GradeDataSteps": [
+			{
+				"RegenStats": [
+					{
+						"ParentTag": {
+							"TagName": "Arcanum.BattleStat.Character.Regen.Health"
+						},
+						"Current": 170,
+						"BaseMax": 170,
+						"BaseTick": 0,
+						"BonusMax": 0,
+						"ModifierMax": 0,
+						"ModifierTick": 0
+					}
+				],
+				"NonRegenStats": [
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.AttackPower"
+						},
+						"BaseValue": 20.0,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed"
+						},
+						"BaseValue": 0.6,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.CritChance"
+						},
+						"BaseValue": 0.05,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.DamageReduction"
+						},
+						"BaseValue": 0.3,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.Evasion"
+						},
+						"BaseValue": 0.0,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed"
+						},
+						"BaseValue": 220,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					}
+				]
+			}
+		]
+	},
+	{
+		"Name": "Wolfron",
+		"BattleCharacterTag": {
+			"TagName": "Arcanum.Unit.Enemy.Wolfron"
+		},
+		"GradeDataSteps": [
+			{
+				"RegenStats": [
+					{
+						"ParentTag": {
+							"TagName": "Arcanum.BattleStat.Character.Regen.Health"
+						},
+						"Current": 150,
+						"BaseMax": 150,
+						"BaseTick": 0,
+						"BonusMax": 0,
+						"ModifierMax": 0,
+						"ModifierTick": 0
+					}
+				],
+				"NonRegenStats": [
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.AttackPower"
+						},
+						"BaseValue": 25.0,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed"
+						},
+						"BaseValue": 1.1,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.CritChance"
+						},
+						"BaseValue": 0.12,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.DamageReduction"
+						},
+						"BaseValue": 0.15,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.Evasion"
+						},
+						"BaseValue": 0.08,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed"
+						},
+						"BaseValue": 650,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					}
+				]
+			}
+		]
+	},
+	{
+		"Name": "MageMacaron",
+		"BattleCharacterTag": {
+			"TagName": "Arcanum.Unit.Enemy.MageMacaron"
+		},
+		"GradeDataSteps": [
+			{
+				"RegenStats": [
+					{
+						"ParentTag": {
+							"TagName": "Arcanum.BattleStat.Character.Regen.Health"
+						},
+						"Current": 80,
+						"BaseMax": 80,
+						"BaseTick": 0,
+						"BonusMax": 0,
+						"ModifierMax": 0,
+						"ModifierTick": 0
+					}
+				],
+				"NonRegenStats": [
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.AttackPower"
+						},
+						"BaseValue": 30.0,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed"
+						},
+						"BaseValue": 0.7,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.CritChance"
+						},
+						"BaseValue": 0.2,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.DamageReduction"
+						},
+						"BaseValue": 0.05,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.Evasion"
+						},
+						"BaseValue": 0.05,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed"
+						},
+						"BaseValue": 350,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					}
+				]
+			}
+		]
+	},
+	{
+		"Name": "Felice",
+		"BattleCharacterTag": {
+			"TagName": "Arcanum.Unit.Enemy.Felice"
+		},
+		"GradeDataSteps": [
+			{
+				"RegenStats": [
+					{
+						"ParentTag": {
+							"TagName": "Arcanum.BattleStat.Character.Regen.Health"
+						},
+						"Current": 120,
+						"BaseMax": 120,
+						"BaseTick": 0,
+						"BonusMax": 0,
+						"ModifierMax": 0,
+						"ModifierTick": 0
+					}
+				],
+				"NonRegenStats": [
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.AttackPower"
+						},
+						"BaseValue": 14.0,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed"
+						},
+						"BaseValue": 1.4,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.CritChance"
+						},
+						"BaseValue": 0.1,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.DamageReduction"
+						},
+						"BaseValue": 0.1,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.Evasion"
+						},
+						"BaseValue": 0.2,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed"
+						},
+						"BaseValue": 550,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					}
+				]
+			}
+		]
+	},
+	{
+		"Name": "CupFelice",
+		"BattleCharacterTag": {
+			"TagName": "Arcanum.Unit.Enemy.CupFelice"
+		},
+		"GradeDataSteps": [
+			{
+				"RegenStats": [
+					{
+						"ParentTag": {
+							"TagName": "Arcanum.BattleStat.Character.Regen.Health"
+						},
+						"Current": 160,
+						"BaseMax": 160,
+						"BaseTick": 0,
+						"BonusMax": 0,
+						"ModifierMax": 0,
+						"ModifierTick": 0
+					}
+				],
+				"NonRegenStats": [
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.AttackPower"
+						},
+						"BaseValue": 5.0,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.AttackSpeed"
+						},
+						"BaseValue": 0.5,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.CritChance"
+						},
+						"BaseValue": 0.0,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.DamageReduction"
+						},
+						"BaseValue": 0.25,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.Evasion"
+						},
+						"BaseValue": 0.05,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					},
+					{
+						"TagName": {
+							"TagName": "Arcanum.BattleStat.Character.NonRegen.MoveSpeed"
+						},
+						"BaseValue": 280,
+						"BonusValue": 0,
+						"ModifierValue": 0
+					}
+				]
+			}
+		]
+	}
+]
