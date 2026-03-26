@@ -332,4 +332,20 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Battle|SkillCache")
 	bool bUsingLegendaryWeapon = false;
 #pragma endregion
+
+#pragma region 물약
+public:
+	UFUNCTION(BlueprintCallable)
+	void BuildBattlePotionCache(FInBattleData& OutInBattleData);
+
+	UFUNCTION(BlueprintCallable)
+	void DecreaseBattlePotionCount(int32 InSlotIndex);
+
+	UFUNCTION(BlueprintCallable)
+	const TArray<FBattlePotionRuntimeSlotData>& GetBattlePotionRuntimeSlots() const;
+
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Potion", meta = (AllowPrivateAccess = "true"))
+	TArray<FBattlePotionRuntimeSlotData> BattlePotionRuntimeSlots;
+#pragma endregion
 };

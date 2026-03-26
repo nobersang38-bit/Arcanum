@@ -24,6 +24,7 @@ public:
 	APlayerCharacter();
 
 	void SetAutoMode(class ABattlePlayerController* MainController, bool bIsAuto);
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
@@ -65,6 +66,9 @@ public:
 	ABattlePlayerController* GetBattleOwnerController() const;
 	class UCharacterBattleStatsComponent* GetBattleStatComponent() const {return StatComponent;}
 	class UStatusActionComponent* GetStatusActionComponent() const { return StatusActionComponent; }
+
+	UFUNCTION(BlueprintCallable)
+	void ApplyPotionModifier(const FDerivedStatModifier& InModifier) { AddDerivedStatModifier(InModifier); }
 
 protected:
 

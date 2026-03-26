@@ -6,13 +6,13 @@
     "Modifiers": [
       {
         "SourceTag": "(TagName=\"Arcanum.Items.Potion.Health\")",
-        "StatTag": "(TagName=\"Arcanum.BattleStat.Character.Regen.Health.Regen\")",
+        "StatTag": "(TagName=\"Arcanum.BattleStat.Character.Regen.Health\")",
         "Value": {
-          "Flat": 5.0,
-          "Mul": 1.0
+          "Flat": 0.0,
+          "Mul": 0.4
         },
-        "bIsPermanent": false,
-        "Duration": 10.0,
+        "bIsPermanent": true,
+        "Duration": 0.0,
         "ModifierPolicy": "Refresh",
         "MaxStack": 1
       }

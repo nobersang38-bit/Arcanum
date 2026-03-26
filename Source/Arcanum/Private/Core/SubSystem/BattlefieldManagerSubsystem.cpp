@@ -433,6 +433,7 @@ void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerDa
 	//OutInBattleData.PlayerBattleStat = 
 
 	BuildBattleWeaponSkillCache(OutInBattleData);
+	BuildBattlePotionCache(OutInBattleData);
 }
 
 void UBattlefieldManagerSubsystem::MatchEnded(const FMatchData& MatchData)
@@ -1215,4 +1216,49 @@ UTexture2D* UBattlefieldManagerSubsystem::FindSkillIcon(const FGameplayTag& InSk
 	}
 
 	return nullptr;
+}
+
+void UBattlefieldManagerSubsystem::BuildBattlePotionCache(FInBattleData& OutInBattleData)
+{
+	BattlePotionRuntimeSlots.Empty();
+
+	const FPlayerData& playerData = OutInBattleData.PlayerData;
+
+	if (UGameDataSubsystem* gameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>())
+	{
+		for (const FBattlePotionSlotData& potionSlot : playerData.BattlePotionSlots)
+		{
+			FBattlePotionRuntimeSlotData runtimeSlot;
+			runtimeSlot.PotionTag = potionSlot.PotionTag;
+			runtimeSlot.Count = potionSlot.Count;
+			runtimeSlot.ItemCooldown = 0.0f;
+
+			if (potionSlot.PotionTag.IsValid())
+			{
+				if (FDTItemCatalogRow* catalogRow = gameDataSubsystem->GetRow<FDTItemCatalogRow>(Arcanum::DataTable::ItemCatalog, potionSlot.PotionTag.GetTagName()))
+				{
+					runtimeSlot.Icon = catalogRow->Icon;
+				}
+			}
+
+			BattlePotionRuntimeSlots.Add(runtimeSlot);
+		}
+	}
+}
+
+void UBattlefieldManagerSubsystem::DecreaseBattlePotionCount(int32 InSlotIndex)
+{
+	if (InBattleData.PlayerData.BattlePotionSlots.IsValidIndex(InSlotIndex))
+	{
+		FBattlePotionSlotData& potionSlot = InBattleData.PlayerData.BattlePotionSlots[InSlotIndex];
+		if (potionSlot.Count > 0)
+		{
+			potionSlot.Count--;
+		}
+	}
+}
+
+const TArray<FBattlePotionRuntimeSlotData>& UBattlefieldManagerSubsystem::GetBattlePotionRuntimeSlots() const
+{
+	return BattlePotionRuntimeSlots;
 }

@@ -127,7 +127,10 @@ protected:
 	UFUNCTION()
 	void Item2();
 
-	//UFUNCTION()
+	UFUNCTION()
+	void UseBattlePotion(int32 InSlotIndex);
+
+    //UFUNCTION()
 	//bool SkillStarter(FGameplayTag InSkillTag, int32 InLevel, bool bIsUltimate = false);
 
 	UFUNCTION()

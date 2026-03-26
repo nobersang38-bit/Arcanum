@@ -28,7 +28,6 @@
 #include "UI/Battle/SubLayout/BattleActionButtonWidget.h"
 #include "Camera/CameraComponent.h"
 
-
 // ========================================================
 // 언리얼 기본 생성
 // ========================================================
@@ -858,6 +857,37 @@ void ABattlePlayerController::Item2()
 	SkillCancel();
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Item2"));
 	//Todo : 아이템2
+}
+
+void ABattlePlayerController::UseBattlePotion(int32 InSlotIndex)
+{
+	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (!battleSubsystem) return;
+
+	const FInBattleData& inBattleData = battleSubsystem->GetInBattleData();
+	if (!inBattleData.PlayerData.BattlePotionSlots.IsValidIndex(InSlotIndex)) return;
+
+	const FBattlePotionSlotData& potionSlot = inBattleData.PlayerData.BattlePotionSlots[InSlotIndex];
+	if (!potionSlot.PotionTag.IsValid() || potionSlot.Count <= 0) return;
+
+	UGameDataSubsystem* gameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
+	if (!gameDataSubsystem) return;
+
+	FDTItemCatalogRow* catalogRow = gameDataSubsystem->GetRow<FDTItemCatalogRow>(Arcanum::DataTable::ItemCatalog, potionSlot.PotionTag.GetTagName());
+	if (!catalogRow) return;
+
+	FDTPotionInfoRow* potionRow = gameDataSubsystem->GetRow<FDTPotionInfoRow>(catalogRow->DetailTableTag, catalogRow->DetailRowName);
+	if (!potionRow) return;
+
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
+	if (!playerCharacter) return;
+
+	for (const FDerivedStatModifier& modifier : potionRow->Modifiers)
+	{
+		playerCharacter->ApplyPotionModifier(modifier);
+	}
+
+	battleSubsystem->DecreaseBattlePotionCount(InSlotIndex);
 }
 
 void ABattlePlayerController::AutoManualModeMobile(bool bIsChecked)
