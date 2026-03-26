@@ -99,7 +99,8 @@ void APlayerCharacter::BeginPlay()
 		for (int i = 0; i < BattleSubsystem->GetInBattleData().EquippedOwnerStats.Num(); i++)
 		{
 			FDerivedStatModifier DerivedStatModifier = BattleSubsystem->GetInBattleData().EquippedOwnerStats[i];
-			DerivedStatModifier.bIsPermanent = true;
+			//DerivedStatModifier.bIsPermanent = true;
+			;
 			StatComponent->ApplyDurationModifier(DerivedStatModifier);
 		}
 		StatComponent->SetCurrentValueMax();
