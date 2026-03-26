@@ -218,11 +218,11 @@ void AProjectileBase::CollisionProcess(AActor* OtherActor)
                             {
                                 if (const FRegenStat* RegenStat = PlayerCharacter->GetBattleStatComponent()->FindRegenStat(UseStatTag))
                                 {
-                                    StatModifier.Value.Flat = StatModifier.Value.Flat + RegenStat->Current;
+                                    StatModifier.Value.Flat = StatModifier.Value.Flat + (bIsAttack ? -FMath::Abs(RegenStat->Current) : RegenStat->Current);
                                 }
                                 else if (const FNonRegenStat* NonRegenStat = PlayerCharacter->GetBattleStatComponent()->FindNonRegenStat(UseStatTag))
                                 {
-                                    StatModifier.Value.Flat = StatModifier.Value.Flat + NonRegenStat->GetTotalValue();
+                                    StatModifier.Value.Flat = StatModifier.Value.Flat + (bIsAttack ? -FMath::Abs(NonRegenStat->GetTotalValue()) : NonRegenStat->GetTotalValue());
                                 }
 
                             }
