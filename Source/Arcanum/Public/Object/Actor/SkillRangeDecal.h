@@ -33,6 +33,7 @@ protected:
 
 public:
 	void SkillRangeDecalOn(float InRadius, AActor* InTargetActor, const FVector& InCursorLocation);
+	void SkillRangeDecalOn(float InRadius);
 	void SkillRangeDecalOff();
 	FVector SetCursorLocation(const FVector& InCursorLocation);
 

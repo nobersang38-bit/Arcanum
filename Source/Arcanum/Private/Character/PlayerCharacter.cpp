@@ -81,6 +81,14 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	OutlineDynamicMI = UMaterialInstanceDynamic::Create(GetMesh()->GetOverlayMaterial(), this);
+	GetMesh()->SetOverlayMaterial(OutlineDynamicMI);
+	MaterialBackup.Empty();
+	for (int32 i = 0; i < GetMesh()->GetMaterials().Num(); i++)
+	{
+		MaterialBackup.Add(GetMesh()->GetMaterials()[i]);
+	}
+
 	if (AIControllerClass)
 	{
 		CachedAIC = GetWorld()->SpawnActor<AAIController>(AIControllerClass);
@@ -131,6 +139,31 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void APlayerCharacter::OuntLineStart(const UCurveFloat* CurveFloat, float InTime, float DeltaTime)
+{
+	RefOutlineTime = 0.0f;
+	FTimerDelegate OutlineDelegate;
+	OutlineDelegate.BindWeakLambda(this, [this, CurveFloat, InTime, DeltaTime]()
+		{
+			if (OutlineDynamicMI)
+			{
+				float Time = FMath::Clamp(RefOutlineTime / InTime, 0.0f, 1.0f);
+				float Value = CurveFloat->GetFloatValue(Time);
+				OutlineDynamicMI->SetScalarParameterValue(FName("Weight0"), Value);
+				RefOutlineTime += DeltaTime;
+
+				if (Time >= 1.0f)
+				{
+					OutlineDynamicMI->SetScalarParameterValue(FName("Weight0"), 0.0f);
+					GetWorld()->GetTimerManager().ClearTimer(OutlineTimeHandle);
+				}
+			}
+		});
+
+	GetWorld()->GetTimerManager().ClearTimer(OutlineTimeHandle);
+	GetWorld()->GetTimerManager().SetTimer(OutlineTimeHandle, OutlineDelegate, DeltaTime, true);
 }
 
 void APlayerCharacter::SetAutoMode(ABattlePlayerController* MainController, bool bIsAuto)
@@ -269,6 +302,20 @@ void APlayerCharacter::RecievedDamage(AActor* DamagedActor, float Damage, const 
 				{
 					Damage *= (1.0f - StatComponent->FindNonRegenStat(Arcanum::BattleStat::Character::NonRegen::DamageReduction::Root)->GetTotalValue());
 					StatComponent->ChangeStatValue(HealthTag, -Damage, DamageCauser);
+					OuntLineStart(OutLineCurve, OutLineTime, 0.005f);
+
+					UPoolingSubsystem* PoolingSystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
+					if (PoolingSystem && TextFloatingClass)
+					{
+						FTransform Transform;
+						Transform.SetLocation((GetActorLocation() + (GetActorUpVector() * 60.0f)) + (FMath::VRand() * 20.0f));
+						AActor* FloatingActor = PoolingSystem->SpawnFromPool(TextFloatingClass, Transform);
+						if (AFloatingDamageText* FloatingText = Cast<AFloatingDamageText>(FloatingActor))
+						{
+							FString ResultString = FString::Printf(TEXT("%.0f"), -FMath::Abs(Damage));
+							FloatingText->SetText(FText::FromString(ResultString));
+						}
+					}
 				}
 			}
 		}
