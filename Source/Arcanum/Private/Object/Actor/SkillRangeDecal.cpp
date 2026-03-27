@@ -47,6 +47,16 @@ void ASkillRangeDecal::SkillRangeDecalOn(float InRadius, AActor* InTargetActor, 
 	TargetActor = InTargetActor;
 	SetCursorLocation(InCursorLocation);
 	SetActorHiddenInGame(false);
+	AttachToActor(GetOwner(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+}
+
+void ASkillRangeDecal::SkillRangeDecalOn(float InRadius)
+{
+	bIsOn = true;
+	MainRadius = InRadius;
+	DecalComponent->DecalSize = FVector(DecalComponent->DecalSize.X, MainRadius, MainRadius);
+	SetActorHiddenInGame(false);
+	AttachToActor(GetOwner(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 }
 
 void ASkillRangeDecal::SkillRangeDecalOff()

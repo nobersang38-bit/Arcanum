@@ -49,6 +49,7 @@ void ABattlePlayerController::BeginPlay()
 		FTransform Transform;
 		Transform.SetLocation(FVector(0.0f, 0.0f, -9999.0f));
 		SkillRangeDecalInstance = GetWorld()->SpawnActor<ASkillRangeDecal>(SkillRangeDecalClass, Transform);
+		SkillRangeDecalInstance->SetOwner(GetCharacter());
 	}
 
 	if (HUDWidgetClass)
@@ -831,6 +832,10 @@ void ABattlePlayerController::WeaponSwap()
 					}
 				}
 			}
+			else
+			{
+				bIsWeaponSwapping = false;
+			}
 		}
 	}
 
@@ -1412,6 +1417,20 @@ void ABattlePlayerController::InitialSkillBase()
 	}
 }
 
+void ABattlePlayerController::RangeDecalOn(float DecalSize)
+{
+	SkillRangeDecalInstance->SkillRangeDecalOn(DecalSize);
+	FTimerDelegate TimerDelegate;
+	TimerDelegate.BindUObject(this, &ABattlePlayerController::Internal_RangeDecalOn, DecalSize);
+	GetWorld()->GetTimerManager().ClearTimer(RangeDecalTimerHandle);
+	GetWorld()->GetTimerManager().SetTimer(RangeDecalTimerHandle, TimerDelegate, RangeTime, false, RangeTime);
+}
+
+void ABattlePlayerController::Internal_RangeDecalOn(float DecalSize)
+{
+	SkillRangeDecalInstance->SkillRangeDecalOff();
+}
+
 // ========================================================
 // 인풋모드 설정
 // ========================================================
@@ -1436,8 +1455,6 @@ void ABattlePlayerController::SetupInputMode()
 	//InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
 	SetInputMode(InputMode);
 }
-
-
 
 // ========================================================
 // 입력 관련
@@ -1540,6 +1557,8 @@ void ABattlePlayerController::TriggerBasicAttackHit()
 	ASkillActor* skillActor = Cast<ASkillActor>(spawnedActor);
 	if (!skillActor) return;
 
+	RangeDecalOn(skillObject->GetSkillInfo().EnabledRange);
+
 	skillActor->ActivateSkillActor(skillObject, playerCharacter, spawnLocation, spawnRotation);
 
 	StartBasicAttackCooldown();
@@ -1601,6 +1620,8 @@ void ABattlePlayerController::TriggerSkill()
 	if (!skillActor) return;
 	if (!SkillCostChecker(skillObject->GetSkillInfo().SkillNameTag, skillObject->GetCurrentLevelEntry()->Level, true)) return;
 	UseSkillCost(skillObject->GetSkillInfo().SkillNameTag);
+
+	RangeDecalOn(skillObject->GetSkillInfo().EnabledRange);
 
 	skillActor->ActivateSkillActor(skillObject, playerCharacter, spawnLocation, spawnRotation);
 	skillActor->SetTargetActor(nullptr);

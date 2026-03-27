@@ -208,12 +208,23 @@ protected:
 
 #pragma endregion
 
+#pragma region 범위
+protected:
+	void RangeDecalOn(float DecalSize);
+	void Internal_RangeDecalOn(float DecalSize);
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "RangeTime")
+	float RangeTime = 1.0f;
+
+	FTimerHandle RangeDecalTimerHandle;
+#pragma endregion
+
+
 
 #pragma region 인풋모드 설정
 protected:
 	void SetupInputMode();
 #pragma endregion
-
 
 #pragma region 입력 관련
 protected:
@@ -320,7 +331,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
 	FGameplayTag ManaTag = Arcanum::BattleStat::Character::Regen::Mana::Root;
-
 
 private:
 	FTimerHandle PlayerLocationProgressTimeHandle;
