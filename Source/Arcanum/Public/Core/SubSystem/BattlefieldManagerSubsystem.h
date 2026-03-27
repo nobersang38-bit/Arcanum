@@ -31,21 +31,6 @@ public:
 	FPlayerBattleData PlayerBattleData;
 	TArray<FDerivedStatModifier> EquippedOwnerStats;
 	TMap<FGameplayTag, TMap<FGameplayTag, FDerivedStatModifier>> WeaponOnHitTarget;
-	
-	/* TODO: 꺼내쓸때
-	const TMap<FGameplayTag, FDerivedStatModifier>* weaponSlot1OnHitTarget = InBattleData.WeaponOnHitTarget.Find(Arcanum::Items::ItemSlot::Weapon::Slot1);
-	const TMap<FGameplayTag, FDerivedStatModifier>* weaponSlot2OnHitTarget = InBattleData.WeaponOnHitTarget.Find(Arcanum::Items::ItemSlot::Weapon::Slot2);
-	const TMap<FGameplayTag, FDerivedStatModifier>* legendaryWeaponOnHitTarget = InBattleData.WeaponOnHitTarget.Find(Arcanum::Items::ItemSlot::Weapon::Legendary);
-
-	if (weaponSlot1OnHitTarget)
-    {
-	    const FDerivedStatModifier* healthModifier = weaponSlot1OnHitTarget->Find(Arcanum::BattleStat::Character::Regen::Health::Value);
-	    if (healthModifier)
-	    { 
-	 	    const float damage = healthModifier->Value.Flat;
-	    }
-    }
-	*/
 };
 
 
@@ -342,7 +327,7 @@ public:
 	void DecreaseBattlePotionCount(int32 InSlotIndex);
 
 	UFUNCTION(BlueprintCallable)
-	const TArray<FBattlePotionRuntimeSlotData>& GetBattlePotionRuntimeSlots() const;
+	TArray<FBattlePotionRuntimeSlotData>& GetBattlePotionRuntimeSlots();
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Potion", meta = (AllowPrivateAccess = "true"))

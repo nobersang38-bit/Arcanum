@@ -531,7 +531,7 @@ protected:
 	void StartUltimateCooldown();
 
 	/* 스킬 쿨타임 UI 갱신 */
-	void RefreshSkillCooldownUI();
+	void RefreshSkillCooldown();
 
 	/* 플레이어 스킬 쿨타임 타이머 핸들 */
 	FTimerHandle SkillCooldownTimerHandle;
@@ -555,5 +555,22 @@ protected:
 	float UltimateCooldown = 0.0f;
 
 	float SkillCooldownTickInterval = 0.02f;
+#pragma endregion
+
+#pragma region 물약
+protected:
+	/* 전투 물약 UI 갱신 */
+	UFUNCTION()
+	void RefreshBattlePotion();
+
+	/* 전투 물약 쿨타임 갱신 */
+	UFUNCTION()
+	void UpdateBattlePotionCooldown(float InDeltaTime);
+
+protected:
+	FTimerHandle BattlePotionCooldownTimer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Potion")
+	float BattlePotionCooldownTickInterval = 0.02f;
 #pragma endregion
 };

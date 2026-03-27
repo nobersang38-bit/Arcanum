@@ -27,6 +27,7 @@
 #include "Engine/PostProcessVolume.h"
 #include "UI/Battle/SubLayout/BattleActionButtonWidget.h"
 #include "Camera/CameraComponent.h"
+#include "Component/Stats/CharacterBattleStatsComponent.h"
 
 // ========================================================
 // 언리얼 기본 생성
@@ -65,7 +66,8 @@ void ABattlePlayerController::BeginPlay()
 	}
 	SetupMainHUDWidget();
 	SetupInputMode();
-	RefreshSkillCooldownUI();
+	RefreshSkillCooldown();
+	RefreshBattlePotion();
 
 	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 	if (BattleSubsystem)
@@ -140,6 +142,11 @@ void ABattlePlayerController::BeginPlay()
 	CoolTimeDelegate.BindUObject(this, &ABattlePlayerController::Internal_CoolTimeTick, CoolTImeTickInterval);
 	GetWorld()->GetTimerManager().ClearTimer(CoolTimeTimer);
 	GetWorld()->GetTimerManager().SetTimer(CoolTimeTimer, CoolTimeDelegate, CoolTImeTickInterval, true);
+
+	FTimerDelegate BattlePotionCooldown;
+	BattlePotionCooldown.BindUObject(this, &ABattlePlayerController::UpdateBattlePotionCooldown, BattlePotionCooldownTickInterval);
+	GetWorld()->GetTimerManager().ClearTimer(BattlePotionCooldownTimer);
+	GetWorld()->GetTimerManager().SetTimer(BattlePotionCooldownTimer, BattlePotionCooldown, BattlePotionCooldownTickInterval, true);
 
 	SetBossHealthProgress(0.0f, 0.0f);
 
@@ -801,7 +808,7 @@ void ABattlePlayerController::WeaponSwap()
 			battleSubsystem->SetCurrentWeaponSlotTag(Arcanum::Items::ItemSlot::Weapon::Slot1);
 		}
 
-		UE_LOG(LogTemp, Warning, TEXT("WeaponSwap CurrentSlot=%s"), *battleSubsystem->GetCurrentWeaponSlotTag().ToString());\
+		UE_LOG(LogTemp, Warning, TEXT("WeaponSwap CurrentSlot=%s"), *battleSubsystem->GetCurrentWeaponSlotTag().ToString()); \
 			if (UAnimMontage* equipMontage = battleSubsystem->GetCurrentWeaponEquipMontage())
 			{
 				UE_LOG(LogTemp, Warning, TEXT("EquipMontage=%s"), *equipMontage->GetName());
@@ -848,15 +855,41 @@ void ABattlePlayerController::WeaponSwap()
 void ABattlePlayerController::Item1()
 {
 	SkillCancel();
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Item1"));
-	//Todo : 아이템1
+
+	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (!battleSubsystem) return;
+
+	TArray<FBattlePotionRuntimeSlotData>& battlePotionSlots = battleSubsystem->GetBattlePotionRuntimeSlots();
+	if (!battlePotionSlots.IsValidIndex(0)) return;
+
+	FBattlePotionRuntimeSlotData& potionSlot = battlePotionSlots[0];
+	if (!potionSlot.PotionTag.IsValid()) return;
+	if (potionSlot.Count <= 0) return;
+	if (potionSlot.CurrentCooldown > 0.0f) return;
+
+	UseBattlePotion(0);
+	potionSlot.CurrentCooldown = potionSlot.MaxCooldown;
+	RefreshBattlePotion();
 }
 
 void ABattlePlayerController::Item2()
 {
 	SkillCancel();
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Item2"));
-	//Todo : 아이템2
+
+	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (!battleSubsystem) return;
+
+	TArray<FBattlePotionRuntimeSlotData>& battlePotionSlots = battleSubsystem->GetBattlePotionRuntimeSlots();
+	if (!battlePotionSlots.IsValidIndex(1)) return;
+
+	FBattlePotionRuntimeSlotData& potionSlot = battlePotionSlots[1];
+	if (!potionSlot.PotionTag.IsValid()) return;
+	if (potionSlot.Count <= 0) return;
+	if (potionSlot.CurrentCooldown > 0.0f) return;
+
+	UseBattlePotion(1);
+	potionSlot.CurrentCooldown = potionSlot.MaxCooldown;
+	RefreshBattlePotion();
 }
 
 void ABattlePlayerController::UseBattlePotion(int32 InSlotIndex)
@@ -870,11 +903,11 @@ void ABattlePlayerController::UseBattlePotion(int32 InSlotIndex)
 	const FBattlePotionSlotData& potionSlot = inBattleData.PlayerData.BattlePotionSlots[InSlotIndex];
 	if (!potionSlot.PotionTag.IsValid() || potionSlot.Count <= 0) return;
 
+	const FDTItemCatalogRow* catalogRow = FPlayerAccountService::FindItemCatalogRowByTag(this, potionSlot.PotionTag);
+	if (!catalogRow) return;
+
 	UGameDataSubsystem* gameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
 	if (!gameDataSubsystem) return;
-
-	FDTItemCatalogRow* catalogRow = gameDataSubsystem->GetRow<FDTItemCatalogRow>(Arcanum::DataTable::ItemCatalog, potionSlot.PotionTag.GetTagName());
-	if (!catalogRow) return;
 
 	FDTPotionInfoRow* potionRow = gameDataSubsystem->GetRow<FDTPotionInfoRow>(catalogRow->DetailTableTag, catalogRow->DetailRowName);
 	if (!potionRow) return;
@@ -882,9 +915,52 @@ void ABattlePlayerController::UseBattlePotion(int32 InSlotIndex)
 	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
 	if (!playerCharacter) return;
 
-	for (const FDerivedStatModifier& modifier : potionRow->Modifiers)
+	if (potionRow->EffectType == EPotionEffectType::Instant)
 	{
-		playerCharacter->ApplyPotionModifier(modifier);
+		UCharacterBattleStatsComponent* statComponent = playerCharacter->FindComponentByClass<UCharacterBattleStatsComponent>();
+		if (!statComponent) return;
+
+		float instantValue = potionRow->InstantModifier.Value.Flat;
+
+		if (potionRow->InstantModifier.StatTag == Arcanum::BattleStat::Character::Regen::Health::Root)
+		{
+			const TArray<FRegenStat>& regenStats = statComponent->GetRegenStats();
+
+			for (const FRegenStat& regenStat : regenStats)
+			{
+				if (regenStat.ParentTag == Arcanum::BattleStat::Character::Regen::Health::Root)
+				{
+					instantValue = regenStat.GetTotalMax() * potionRow->InstantModifier.Value.Flat;
+					break;
+				}
+			}
+		}
+
+		//
+		UE_LOG(LogTemp, Warning, TEXT("[Potion Instant] Potion=%s Stat=%s Flat=%f Mul=%f FinalValue=%f"),
+			*potionSlot.PotionTag.ToString(),
+			*potionRow->InstantModifier.StatTag.ToString(),
+			potionRow->InstantModifier.Value.Flat,
+			potionRow->InstantModifier.Value.Mul,
+			instantValue);
+
+		playerCharacter->ChangeStat(potionRow->InstantModifier.StatTag, instantValue);
+	}
+	else
+	{
+		for (const FDerivedStatModifier& modifier : potionRow->Modifiers)
+		{
+			//
+			UE_LOG(LogTemp, Warning, TEXT("[Potion Duration] Potion=%s Stat=%s Flat=%f Mul=%f Duration=%f Permanent=%d"),
+				*potionSlot.PotionTag.ToString(),
+				*modifier.StatTag.ToString(),
+				modifier.Value.Flat,
+				modifier.Value.Mul,
+				modifier.Duration,
+				modifier.bIsPermanent);
+
+			playerCharacter->ApplyPotionModifier(modifier);
+		}
 	}
 
 	battleSubsystem->DecreaseBattlePotionCount(InSlotIndex);
@@ -1311,7 +1387,7 @@ void ABattlePlayerController::InitialSkillBase()
 			if (DTSkillsDataRow)
 			{
 				const TMap<FGameplayTag, FDerivedStatModifier>* weaponSlot1OnHitTarget = BattleSubsystem->GetInBattleData().WeaponOnHitTarget.Find(Arcanum::Items::ItemSlot::Weapon::Slot1);
-				
+
 				FDerivedStatModifier AddModi;
 				if (weaponSlot1OnHitTarget)
 				{
@@ -1933,7 +2009,7 @@ void ABattlePlayerController::StartSkillCooldown(const FGameplayTag& InSkillTag,
 	SkillCooldownMap.FindOrAdd(InSkillTag) = InCooldown;
 	SkillCooldownRemainingMap.FindOrAdd(InSkillTag) = InCooldown;
 
-	RefreshSkillCooldownUI();
+	RefreshSkillCooldown();
 
 	GetWorldTimerManager().SetTimer(
 		SkillCooldownTimerHandle,
@@ -1985,7 +2061,7 @@ void ABattlePlayerController::UpdateSkillCooldown()
 		SkillCooldownMap.Remove(expiredSkillTag);
 	}
 
-	RefreshSkillCooldownUI();
+	RefreshSkillCooldown();
 
 	if (SkillCooldownRemainingMap.IsEmpty())
 	{
@@ -2024,7 +2100,7 @@ void ABattlePlayerController::StartUltimateCooldown()
 	}
 }
 
-void ABattlePlayerController::RefreshSkillCooldownUI()
+void ABattlePlayerController::RefreshSkillCooldown()
 {
 	if (HUDWidgetInstance)
 	{
@@ -2060,4 +2136,55 @@ void ABattlePlayerController::RefreshSkillCooldownUI()
 			HUDWidgetInstance->SetUltimateCooldown(ultimatePercent);
 		}
 	}
+}
+
+void ABattlePlayerController::RefreshBattlePotion()
+{
+	if (!HUDWidgetInstance) return;
+
+	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (!battleSubsystem) return;
+
+	TArray<FBattlePotionRuntimeSlotData>& battlePotionSlots = battleSubsystem->GetBattlePotionRuntimeSlots();
+
+	if (battlePotionSlots.IsValidIndex(0))
+	{
+		HUDWidgetInstance->SetBattlePotionSlot(0, battlePotionSlots[0]);
+	}
+	else
+	{
+		HUDWidgetInstance->SetBattlePotionSlot(0, FBattlePotionRuntimeSlotData());
+	}
+
+	if (battlePotionSlots.IsValidIndex(1))
+	{
+		HUDWidgetInstance->SetBattlePotionSlot(1, battlePotionSlots[1]);
+	}
+	else
+	{
+		HUDWidgetInstance->SetBattlePotionSlot(1, FBattlePotionRuntimeSlotData());
+	}
+}
+
+void ABattlePlayerController::UpdateBattlePotionCooldown(float InDeltaTime)
+{
+	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
+	{
+		TArray<FBattlePotionRuntimeSlotData>& battlePotionSlots = battleSubsystem->GetBattlePotionRuntimeSlots();
+
+		for (FBattlePotionRuntimeSlotData& potionSlot : battlePotionSlots)
+		{
+			if (potionSlot.CurrentCooldown > 0.0f)
+			{
+				potionSlot.CurrentCooldown -= InDeltaTime;
+
+				if (potionSlot.CurrentCooldown < 0.0f)
+				{
+					potionSlot.CurrentCooldown = 0.0f;
+				}
+			}
+		}
+	}
+
+	RefreshBattlePotion();
 }

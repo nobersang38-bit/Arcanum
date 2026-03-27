@@ -35,9 +35,9 @@ protected:
 
 	UFUNCTION()
 	void RecievedDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
-
 	void AddLevelModifierEntry(const FLevelModifierEntry& LevelModifierEntry) override;
 	void AddDerivedStatModifier(const FDerivedStatModifier& DerivedStatModifier) override;
+public:
 	void ChangeStat(const FGameplayTag& InTag, float InValue) override;
 
 public:

@@ -30,16 +30,20 @@ void UBattleActionButtonWidget::NativeConstruct()
 		SkillCooldownMID = SkillCooldownImage->GetDynamicMaterial();
 		SkillCooldownImage->SetVisibility(ESlateVisibility::Hidden);
 	}
+
 	SetProgressesVisible(false);
 
 	if (!bUseDisableImage)
 	{
 		DisabledImage->SetVisibility(ESlateVisibility::Hidden);
 	}
-
 	if (!bUseCoolTimeProgressBar)
 	{
 		CoolTimeProgress->SetVisibility(ESlateVisibility::Hidden);
+	}
+	if (StackCountText)
+	{
+		StackCountText->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
 
@@ -90,7 +94,7 @@ void UBattleActionButtonWidget::SetActivateCost(bool InIsDisable)
 			DisabledImage->SetVisibility(ESlateVisibility::Hidden);
 		}
 	}
-	
+
 }
 
 void UBattleActionButtonWidget::SetCoolTimeProgress(float CurrentProgress, float MaxProgress)
@@ -194,5 +198,24 @@ void UBattleActionButtonWidget::SetSkillCooldownPercent(float InPercent)
 		{
 			SkillCooldownImage->SetVisibility(ESlateVisibility::Hidden);
 		}
+	}
+}
+
+
+void UBattleActionButtonWidget::SetStackCount(int32 InCount)
+{
+	if (StackCountText)
+	{
+		StackCountText->SetText(FText::AsNumber(InCount));
+		StackCountText->SetVisibility(ESlateVisibility::HitTestInvisible);
+	}
+}
+
+void UBattleActionButtonWidget::ClearStackCount()
+{
+	if (StackCountText)
+	{
+		StackCountText->SetText(FText::GetEmpty());
+		StackCountText->SetVisibility(ESlateVisibility::Hidden);
 	}
 }

@@ -292,7 +292,7 @@
     "ItemTag": "(TagName=\"Arcanum.Items.Potion.Health\")",
     "ItemTypeTag": "(TagName=\"Arcanum.Items.Type.Potion\")",
     "DisplayName": "체력 포션",
-    "Desc": "체력 회복",
+    "Desc": "체력 즉시 회복",
     "Icon": "Texture2D'/Game/Assets/Potion/Textures/Icon_Potion_Health.Icon_Potion_Health'",
     "BuyPrice": 200,
     "SellPrice": 20,

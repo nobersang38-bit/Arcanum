@@ -1224,25 +1224,31 @@ void UBattlefieldManagerSubsystem::BuildBattlePotionCache(FInBattleData& OutInBa
 
 	const FPlayerData& playerData = OutInBattleData.PlayerData;
 
-	if (UGameDataSubsystem* gameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>())
-	{
-		for (const FBattlePotionSlotData& potionSlot : playerData.BattlePotionSlots)
-		{
-			FBattlePotionRuntimeSlotData runtimeSlot;
-			runtimeSlot.PotionTag = potionSlot.PotionTag;
-			runtimeSlot.Count = potionSlot.Count;
-			runtimeSlot.ItemCooldown = 0.0f;
+	UGameDataSubsystem* gameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
+	if (!gameDataSubsystem) return;
 
-			if (potionSlot.PotionTag.IsValid())
+	for (const FBattlePotionSlotData& potionSlot : playerData.BattlePotionSlots)
+	{
+		FBattlePotionRuntimeSlotData runtimeSlot;
+		runtimeSlot.PotionTag = potionSlot.PotionTag;
+		runtimeSlot.Count = potionSlot.Count;
+		runtimeSlot.CurrentCooldown = 0.0f;
+		runtimeSlot.MaxCooldown = 0.0f;
+
+		if (potionSlot.PotionTag.IsValid())
+		{
+			if (const FDTItemCatalogRow* catalogRow = FPlayerAccountService::FindItemCatalogRowByTag(this, potionSlot.PotionTag))
 			{
-				if (FDTItemCatalogRow* catalogRow = gameDataSubsystem->GetRow<FDTItemCatalogRow>(Arcanum::DataTable::ItemCatalog, potionSlot.PotionTag.GetTagName()))
+				runtimeSlot.Icon = catalogRow->Icon;
+
+				if (FDTPotionInfoRow* potionRow = gameDataSubsystem->GetRow<FDTPotionInfoRow>(catalogRow->DetailTableTag, catalogRow->DetailRowName))
 				{
-					runtimeSlot.Icon = catalogRow->Icon;
+					runtimeSlot.MaxCooldown = potionRow->CooldownSeconds;
 				}
 			}
-
-			BattlePotionRuntimeSlots.Add(runtimeSlot);
 		}
+
+		BattlePotionRuntimeSlots.Add(runtimeSlot);
 	}
 }
 
@@ -1256,9 +1262,18 @@ void UBattlefieldManagerSubsystem::DecreaseBattlePotionCount(int32 InSlotIndex)
 			potionSlot.Count--;
 		}
 	}
+
+	if (BattlePotionRuntimeSlots.IsValidIndex(InSlotIndex))
+	{
+		FBattlePotionRuntimeSlotData& runtimeSlot = BattlePotionRuntimeSlots[InSlotIndex];
+		if (runtimeSlot.Count > 0)
+		{
+			runtimeSlot.Count--;
+		}
+	}
 }
 
-const TArray<FBattlePotionRuntimeSlotData>& UBattlefieldManagerSubsystem::GetBattlePotionRuntimeSlots() const
+TArray<FBattlePotionRuntimeSlotData>& UBattlefieldManagerSubsystem::GetBattlePotionRuntimeSlots()
 {
 	return BattlePotionRuntimeSlots;
 }

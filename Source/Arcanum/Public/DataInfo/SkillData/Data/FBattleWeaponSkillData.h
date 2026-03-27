@@ -92,5 +92,8 @@ struct FBattlePotionRuntimeSlotData
 	TSoftObjectPtr<UTexture2D> Icon;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float ItemCooldown = 0.0f;
+	float MaxCooldown = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float CurrentCooldown = 0.0f;
 };
