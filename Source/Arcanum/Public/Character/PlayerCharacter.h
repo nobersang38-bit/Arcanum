@@ -24,6 +24,7 @@ public:
 	APlayerCharacter();
 
 	void SetAutoMode(class ABattlePlayerController* MainController, bool bIsAuto);
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
@@ -34,9 +35,9 @@ protected:
 
 	UFUNCTION()
 	void RecievedDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
-
 	void AddLevelModifierEntry(const FLevelModifierEntry& LevelModifierEntry) override;
 	void AddDerivedStatModifier(const FDerivedStatModifier& DerivedStatModifier) override;
+public:
 	void ChangeStat(const FGameplayTag& InTag, float InValue) override;
 
 public:
@@ -65,6 +66,9 @@ public:
 	ABattlePlayerController* GetBattleOwnerController() const;
 	class UCharacterBattleStatsComponent* GetBattleStatComponent() const {return StatComponent;}
 	class UStatusActionComponent* GetStatusActionComponent() const { return StatusActionComponent; }
+
+	UFUNCTION(BlueprintCallable)
+	void ApplyPotionModifier(const FDerivedStatModifier& InModifier) { AddDerivedStatModifier(InModifier); }
 
 protected:
 

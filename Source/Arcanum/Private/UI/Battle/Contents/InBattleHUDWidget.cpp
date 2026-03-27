@@ -10,7 +10,7 @@
 #include "UI/Battle/SubLayout/BattleStageProgressWidget.h"
 #include "UI/Battle/SubLayout/BattleToggleWidget.h"
 #include "Object/Operation/UnitDragDropOperation.h"
-#include "UI/Battle/SubLayout/BattleAllyUnitSlotWidget.h"
+#include "DataInfo/SkillData/Data/FBattleWeaponSkillData.h"
 
 // ========================================================
 // 언리얼 기본 생성 및 초기화
@@ -212,4 +212,39 @@ void UInBattleHUDWidget::SetUltimateCooldown(float InPercent)
 	{
 		UltimateSkill->SetSkillCooldownPercent(InPercent);
 	}
+}
+
+void UInBattleHUDWidget::SetBattlePotionSlot(int32 InSlotIndex, const FBattlePotionRuntimeSlotData& InSlotData)
+{
+	UBattleActionButtonWidget* targetButton = nullptr;
+
+	if (InSlotIndex == 0)
+	{
+		targetButton = Item1;
+	}
+	else if (InSlotIndex == 1)
+	{
+		targetButton = Item2;
+	}
+	if (!targetButton) return;
+
+	if (!InSlotData.PotionTag.IsValid())
+	{
+		targetButton->SetImage(nullptr);
+		targetButton->ClearStackCount();
+		targetButton->SetSkillCooldownPercent(0.0f);
+		targetButton->SetActivateCost(true);
+		return;
+	}
+
+	targetButton->SetImage(InSlotData.Icon.LoadSynchronous());
+	targetButton->SetStackCount(InSlotData.Count);
+
+	float cooldownPercent = 0.0f;
+	if (InSlotData.MaxCooldown > 0.0f)
+	{
+		cooldownPercent = InSlotData.CurrentCooldown / InSlotData.MaxCooldown;
+	}
+
+	targetButton->SetSkillCooldownPercent(cooldownPercent);
 }
