@@ -52,6 +52,9 @@ public:
 	// 전투 스테이지가 종료되면 호출, 결과 정보 = FMatchResultData
 	FOnMatchEnded OnMatchEnded;
 
+	bool GetIsDebugMode() const { return bIsDebug; }
+	void SetIsDebugMode(bool InUseDebug) { bIsDebug = InUseDebug; }
+
 public:
 #pragma region 스테이지 기본설정
 	UFUNCTION()
@@ -172,6 +175,8 @@ protected:
 
 #pragma endregion
 
+private:
+	bool bIsDebug = true;
 
 protected:
 #pragma region 디버그(나중에 삭제)
