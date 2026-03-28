@@ -2488,6 +2488,9 @@ void ABattlePlayerController::BindBuffUI()
 	{
 		if (UCharacterBattleStatsComponent* statComponent = playerCharacter->FindComponentByClass<UCharacterBattleStatsComponent>())
 		{
+			statComponent->OnBuffUpdated.RemoveAll(this);
+			statComponent->OnBuffRemoved.RemoveAll(this);
+
 			statComponent->OnBuffUpdated.AddUObject(this, &ABattlePlayerController::HandleBuffUpdated);
 			statComponent->OnBuffRemoved.AddUObject(this, &ABattlePlayerController::HandleBuffRemoved);
 		}

@@ -254,6 +254,7 @@ void UCharacterBattleStatsComponent::ApplyDurationModifier(const FDerivedStatMod
 	}
 
 	FDerivedStatModifier NewMod = Modifier;
+	NewMod.ModifierId = FGuid::NewGuid();
 	ActiveModifiers.Add(NewMod);
 	UpdateFinalStatValue(NewMod.StatTag);
 	StartModifierTimer(NewMod);
@@ -283,6 +284,10 @@ void UCharacterBattleStatsComponent::StartModifierTimer(const FDerivedStatModifi
 				StrongThis->OnBuffUpdated.Broadcast(SourceTag, durationPercent);
 
 				if (remainTime <= 0.0f) {
+					if (FTimerHandle* TimerHandle = StrongThis->ModifierTimers.Find(ModifierId))
+					{
+						StrongThis->GetWorld()->GetTimerManager().ClearTimer(*TimerHandle);
+					}
 					int32 Index = StrongThis->ActiveModifiers.IndexOfByPredicate([&](const FDerivedStatModifier& M) {
 						return M.ModifierId == ModifierId;
 						});
@@ -293,6 +298,7 @@ void UCharacterBattleStatsComponent::StartModifierTimer(const FDerivedStatModifi
 						StrongThis->UpdateFinalStatValue(StatTag);
 						StrongThis->OnBuffRemoved.Broadcast(SourceTag);
 					}
+					return;
 				}
 			}
 		}, 0.05f, true); // Mod.Duration, false);
