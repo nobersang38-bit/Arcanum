@@ -67,7 +67,7 @@ public:
 	class UStatusActionComponent* GetStatusActionComponent() const { return StatusActionComponent; }
 
 	UFUNCTION(BlueprintCallable)
-	void ApplyPotionModifier(const FDerivedStatModifier& InModifier) { AddDerivedStatModifier(InModifier); }
+	void ApplyPotionModifier(const FDerivedStatModifier& InModifier);
 
 protected:
 

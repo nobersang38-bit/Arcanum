@@ -66,10 +66,12 @@ void ABattlePlayerController::BeginPlay()
 			}
 		}
 	}
+
 	SetupMainHUDWidget();
 	SetupInputMode();
 	RefreshSkillCooldown();
 	RefreshBattlePotion();
+	BindBuffUI();
 
 	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 	if (BattleSubsystem)
@@ -1106,6 +1108,14 @@ void ABattlePlayerController::UseBattlePotion(int32 InSlotIndex)
 		for (const FDerivedStatModifier& modifier : potionRow->Modifiers)
 		{
 			playerCharacter->ApplyPotionModifier(modifier);
+		}
+
+		if (HUDWidgetInstance && battleSubsystem->GetBattlePotionRuntimeSlots().IsValidIndex(InSlotIndex))
+		{
+			if (UTexture2D* buffIcon = battleSubsystem->GetBattlePotionRuntimeSlots()[InSlotIndex].Icon)
+			{
+				HUDWidgetInstance->AddBuffSlot(potionSlot.PotionTag, 1.0f, buffIcon);
+			}
 		}
 	}
 
@@ -2470,4 +2480,32 @@ bool ABattlePlayerController::TryExecuteBattleAction(EBattleActionType InActionT
 	}
 
 	return true;
+}
+
+void ABattlePlayerController::BindBuffUI()
+{
+	if (APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn()))
+	{
+		if (UCharacterBattleStatsComponent* statComponent = playerCharacter->FindComponentByClass<UCharacterBattleStatsComponent>())
+		{
+			statComponent->OnBuffUpdated.AddUObject(this, &ABattlePlayerController::HandleBuffUpdated);
+			statComponent->OnBuffRemoved.AddUObject(this, &ABattlePlayerController::HandleBuffRemoved);
+		}
+	}
+}
+
+void ABattlePlayerController::HandleBuffUpdated(const FGameplayTag& InBuffTag, float InPercent)
+{
+	if (HUDWidgetInstance)
+	{
+		HUDWidgetInstance->UpdateBuffSlot(InBuffTag, InPercent);
+	}
+}
+
+void ABattlePlayerController::HandleBuffRemoved(const FGameplayTag& InBuffTag)
+{
+	if (HUDWidgetInstance)
+	{
+		HUDWidgetInstance->RemoveBuffSlot(InBuffTag);
+	}
 }

@@ -9,8 +9,11 @@
 #include "UI/Battle/SubLayout/BattleHealthBarWidget.h"
 #include "UI/Battle/SubLayout/BattleStageProgressWidget.h"
 #include "UI/Battle/SubLayout/BattleToggleWidget.h"
+#include "UI/Battle/SubLayout/BattleBuffSlotWidget.h"
 #include "Object/Operation/UnitDragDropOperation.h"
 #include "DataInfo/SkillData/Data/FBattleWeaponSkillData.h"
+#include "Components/WrapBox.h"
+
 
 // ========================================================
 // 언리얼 기본 생성 및 초기화
@@ -237,7 +240,7 @@ void UInBattleHUDWidget::SetBattlePotionSlot(int32 InSlotIndex, const FBattlePot
 		return;
 	}
 
-	targetButton->SetImage(InSlotData.Icon.LoadSynchronous());
+	targetButton->SetImage(InSlotData.Icon);
 	targetButton->SetStackCount(InSlotData.Count);
 
 	float cooldownPercent = 0.0f;
@@ -247,4 +250,59 @@ void UInBattleHUDWidget::SetBattlePotionSlot(int32 InSlotIndex, const FBattlePot
 	}
 
 	targetButton->SetSkillCooldownPercent(cooldownPercent);
+}
+
+void UInBattleHUDWidget::AddBuffSlot(const FGameplayTag& InBuffTag, float InPercent, UTexture2D* InIcon)
+{
+	if (!BuffWrapBox) return;
+	if (!BuffSlotWidgetClass) return;
+
+	if (ActiveBuffSlots.Contains(InBuffTag))
+	{
+		UpdateBuffSlot(InBuffTag, InPercent);
+		return;
+	}
+
+	if (UBattleBuffSlotWidget* buffSlot = CreateWidget<UBattleBuffSlotWidget>(this, BuffSlotWidgetClass))
+	{
+		buffSlot->SetBuffIcon(InIcon);
+		buffSlot->SetDurationPercent(InPercent);
+
+		BuffWrapBox->AddChildToWrapBox(buffSlot);
+		ActiveBuffSlots.Add(InBuffTag, buffSlot);
+	}
+}
+
+void UInBattleHUDWidget::UpdateBuffSlot(const FGameplayTag& InBuffTag, float InPercent)
+{
+	if (TObjectPtr<UBattleBuffSlotWidget>* foundSlot = ActiveBuffSlots.Find(InBuffTag))
+	{
+		if (*foundSlot)
+		{
+			(*foundSlot)->SetDurationPercent(InPercent);
+		}
+	}
+}
+
+void UInBattleHUDWidget::RemoveBuffSlot(const FGameplayTag& InBuffTag)
+{
+	if (TObjectPtr<UBattleBuffSlotWidget>* foundSlot = ActiveBuffSlots.Find(InBuffTag))
+	{
+		if (*foundSlot)
+		{
+			BuffWrapBox->RemoveChild(*foundSlot);
+		}
+
+		ActiveBuffSlots.Remove(InBuffTag);
+	}
+}
+
+void UInBattleHUDWidget::ClearBuffSlots()
+{
+	if (BuffWrapBox)
+	{
+		BuffWrapBox->ClearChildren();
+	}
+
+	ActiveBuffSlots.Empty();
 }

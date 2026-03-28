@@ -608,4 +608,16 @@ private:
 	bool TryExecuteBattleAction(EBattleActionType InActionType);
 #pragma endregion
 
+#pragma region 버프
+protected:
+	UFUNCTION()
+	void BindBuffUI();
+
+	UFUNCTION()
+	void HandleBuffUpdated(const FGameplayTag& InBuffTag, float InPercent);
+
+	UFUNCTION()
+	void HandleBuffRemoved(const FGameplayTag& InBuffTag);
+#pragma endregion
+
 };
