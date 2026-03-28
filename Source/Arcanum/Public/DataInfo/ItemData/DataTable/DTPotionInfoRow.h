@@ -66,7 +66,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FDerivedStatModifier InstantModifier;
 
-
 	/* 포션 지속 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FDerivedStatModifier> Modifiers;

@@ -51,6 +51,8 @@ public:
 	/* 장작 슬롯 화면 갱신 */
 	void RefreshBattlePotionSlots();
 
+	/* 물약 인벤토리 닫기 */
+	void HidePotionInventory();
 private:
 	/* 물약 슬롯 클릭 */
 	UFUNCTION()
@@ -73,9 +75,6 @@ private:
 
 	/* 물약 인벤토리 열기 */
 	void ShowPotionInventory();
-
-	/* 물약 인벤토리 닫기 */
-	void HidePotionInventory();
 
 	/* 장착 슬롯 선택 강조 갱신 */
 	void RefreshEquippedPotionSlotSelection();

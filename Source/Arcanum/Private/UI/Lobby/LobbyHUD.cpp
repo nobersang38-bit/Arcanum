@@ -179,6 +179,7 @@ void ULobbyHUD::ClickBattleMenuBtn()
 void ULobbyHUD::ClickCharacterMenuBtn()
 {
 	UpdateButtonSelection(CharacterMenuBtn);
+	ClosePanels();
 
 	if (UCharacterHUDWidget* CharacterWidget = Cast<UCharacterHUDWidget>(WidgetSwitcher->GetWidgetAtIndex(1))) {
 		CharacterWidget->SetParentLobby(this);
@@ -192,6 +193,8 @@ void ULobbyHUD::ClickCharacterMenuBtn()
 void ULobbyHUD::ClickEnhancementMenuBtn()
 {
 	UpdateButtonSelection(EnhancementMenuBtn);
+	ClosePanels();
+
 	if (EnhancementHUDWidget)
 	{
 		EnhancementHUDWidget->RefreshEquipmentInventory();
@@ -207,6 +210,8 @@ void ULobbyHUD::ClickEnhancementMenuBtn()
 void ULobbyHUD::ClickShopMenuBtn()
 {
 	UpdateButtonSelection(ShopMenuBtn);
+	ClosePanels();
+
 	if (InventoryHUDWidget)
 	{
 		InventoryHUDWidget->SetCurrentFilter(EInventoryCategoryFilter::All);
@@ -224,6 +229,8 @@ void ULobbyHUD::ClickShopMenuBtn()
 void ULobbyHUD::ClickGachaMenuBtn()
 {
 	UpdateButtonSelection(GachaMenuBtn);
+	ClosePanels();
+
 	if (UGachaHUDWidget* GachaWidget = Cast<UGachaHUDWidget>(WidgetSwitcher->GetWidgetAtIndex(4))) {
 		GachaWidget->SetParentLobby(this);
 		WidgetSwitcher->SetActiveWidget(GachaWidget);
@@ -354,5 +361,13 @@ void ULobbyHUD::OnExitCommonDialog(EDialogResult res)
 		{
 			CurrencyWidget->SetVisibility(ESlateVisibility::Visible);
 		}
+	}
+}
+
+void ULobbyHUD::ClosePanels()
+{
+	if (BattleHUDWidget)
+	{
+		BattleHUDWidget->HidePotionInventory();
 	}
 }
