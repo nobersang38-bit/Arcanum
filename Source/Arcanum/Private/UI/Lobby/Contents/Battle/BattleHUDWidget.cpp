@@ -6,9 +6,9 @@
 #include "UI/Lobby/Contents/Battle/ItemSlot.h"
 #include "UI/Common/CommonBtnWidget.h"
 #include "UI/Lobby/Contents/Battle/StageList.h"
+#include "UI/Common/CommonDialog.h"
 #include "Components/ScrollBox.h"
 #include "Components/Spacer.h"
-
 #include "Core/ARGameInstance.h"
 #include "Core/ARPlayerAccountService.h"
 
@@ -62,17 +62,26 @@ void UBattleHUDWidget::NativeConstruct()
 	EquippedUnitSlot3->OnSlotClicked.AddDynamic(this, &UBattleHUDWidget::OnBattleSlotClicked);
 	EquippedUnitSlot4->OnSlotClicked.AddDynamic(this, &UBattleHUDWidget::OnBattleSlotClicked);
 
+	if (UnitListSlot)
+	{
+		UnitListSlot->OnSetItemBtnClicked.RemoveDynamic(this, &UBattleHUDWidget::SetUnit);
+		UnitListSlot->OnSetItemBtnClicked.AddDynamic(this, &UBattleHUDWidget::SetUnit);
+	}
+
 	// 게임 시작
 	if (EnterGameBtn) {
 		EnterGameBtn->OnClicked.RemoveDynamic(this, &UBattleHUDWidget::EnterGame);
 		EnterGameBtn->OnClicked.AddDynamic(this, &UBattleHUDWidget::EnterGame);
 	}
 
-	if (UnitListSlot)
+	if (WeaponRequiredDialog)
 	{
-		UnitListSlot->OnSetItemBtnClicked.RemoveDynamic(this, &UBattleHUDWidget::SetUnit);
-		UnitListSlot->OnSetItemBtnClicked.AddDynamic(this, &UBattleHUDWidget::SetUnit);
+		WeaponRequiredDialog->SetVisibility(ESlateVisibility::Collapsed);
+		WeaponRequiredDialog->OnResult.RemoveDynamic(this, &UBattleHUDWidget::HandleWeaponRequiredDialogResult);
+		WeaponRequiredDialog->OnResult.AddDynamic(this, &UBattleHUDWidget::HandleWeaponRequiredDialogResult);
 	}
+
+
 
 	if (FPlayerAccountService::GetStageData(this, StageDatas)) {
 		if (!StageScrollBox || !StageListClass) return;
@@ -144,6 +153,15 @@ void UBattleHUDWidget::OnBattleSlotClicked(USquareSlotWidget* ClickedSlot, int32
 
 void UBattleHUDWidget::EnterGame()
 {
+	if (!HasAllBattleWeaponsEquipped())
+	{
+		if (WeaponRequiredDialog)
+		{
+			WeaponRequiredDialog->SetVisibility(ESlateVisibility::Visible);
+		}
+		return;
+	}
+
 	FPlayerAccountService::SetHUDIndex(this, EHUDIndex::BattleMenu);
 	FPlayerAccountService::SetCurrentStageTag(this, CurrentSelectedStage->StageTag);
 
@@ -338,6 +356,47 @@ void UBattleHUDWidget::RefreshEquippedPotionSlotSelection()
 		if (UInventoryItemSlotWidget* slot = EquippedPotionSlots[slotIndex])
 		{
 			slot->SetSelected(slotIndex == SelectedPotionSlotIndex);
+		}
+	}
+}
+
+bool UBattleHUDWidget::HasAllBattleWeaponsEquipped() const
+{
+	if (!ParentLobby) return false;
+
+	const FPlayerData& playerData = ParentLobby->GetCachedPlayerData();
+
+	const FBattleCharacterData* selectedCharacter = nullptr;
+	for (const FBattleCharacterData& characterData : playerData.OwnedCharacters)
+	{
+		if (characterData.bSelection)
+		{
+			selectedCharacter = &characterData;
+			break;
+		}
+	}
+
+	if (!selectedCharacter)	return false;
+
+	const FGuid* slot1Guid = selectedCharacter->WeaponSlots.Find(Arcanum::Items::ItemSlot::Weapon::Slot1);
+	if (!slot1Guid || !slot1Guid->IsValid()) return false;
+
+	const FGuid* slot2Guid = selectedCharacter->WeaponSlots.Find(Arcanum::Items::ItemSlot::Weapon::Slot2);
+	if (!slot2Guid || !slot2Guid->IsValid()) return false;
+
+	const FGuid* legendaryGuid = selectedCharacter->LegendaryWeaponSlots.Find(Arcanum::Items::ItemSlot::Weapon::Legendary);
+	if (!legendaryGuid || !legendaryGuid->IsValid()) return false;
+
+	return true;
+}
+
+void UBattleHUDWidget::HandleWeaponRequiredDialogResult(EDialogResult InResult)
+{
+	if (InResult == EDialogResult::OK)
+	{
+		if (WeaponRequiredDialog)
+		{
+			WeaponRequiredDialog->SetVisibility(ESlateVisibility::Collapsed);
 		}
 	}
 }

@@ -12,7 +12,7 @@
       ],
       "Icon": "",
       "EnabledRange": 500.0,
-      "SkillClass": "",
+      "SkillClass": "BlueprintGeneratedClass'/Game/Object/Skill/BP_MelleeAttack.BP_MelleeAttack_C'",
       "LevelModifiers": [
         {
           "Level": 1,
@@ -31,7 +31,7 @@
               "SourceTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
               "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
               "Value": {
-                "Flat": -10.0,
+                "Flat": 0.0,
                 "Mul": 1.0
               },
               "bIsPermanent": false,
@@ -59,7 +59,7 @@
               "SourceTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
               "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
               "Value": {
-                "Flat": -15.0,
+                "Flat": 0.0,
                 "Mul": 1.0
               },
               "bIsPermanent": false,
@@ -87,7 +87,7 @@
               "SourceTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
               "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
               "Value": {
-                "Flat": -20.0,
+                "Flat": 0.0,
                 "Mul": 1.0
               },
               "bIsPermanent": false,
@@ -115,7 +115,7 @@
               "SourceTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
               "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
               "Value": {
-                "Flat": -25.0,
+                "Flat": 0.0,
                 "Mul": 1.0
               },
               "bIsPermanent": false,
@@ -143,7 +143,7 @@
               "SourceTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
               "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
               "Value": {
-                "Flat": -30.0,
+                "Flat": 0.0,
                 "Mul": 1.0
               },
               "bIsPermanent": false,
@@ -178,7 +178,7 @@
       ],
       "Icon": "",
       "EnabledRange": 500.0,
-      "SkillClass": "",
+      "SkillClass": "BlueprintGeneratedClass'/Game/Object/Skill/BP_RangedAttack.BP_RangedAttack_C'",
       "LevelModifiers": [
         {
           "Level": 1,
@@ -197,7 +197,7 @@
               "SourceTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
               "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
               "Value": {
-                "Flat": -10.0,
+                "Flat": 0.0,
                 "Mul": 1.0
               },
               "bIsPermanent": false,
@@ -225,7 +225,7 @@
               "SourceTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
               "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
               "Value": {
-                "Flat": -15.0,
+                "Flat": 0.0,
                 "Mul": 1.0
               },
               "bIsPermanent": false,
@@ -253,7 +253,7 @@
               "SourceTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
               "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
               "Value": {
-                "Flat": -20.0,
+                "Flat": 0.0,
                 "Mul": 1.0
               },
               "bIsPermanent": false,
@@ -281,7 +281,7 @@
               "SourceTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
               "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
               "Value": {
-                "Flat": -25.0,
+                "Flat": 0.0,
                 "Mul": 1.0
               },
               "bIsPermanent": false,
@@ -309,7 +309,7 @@
               "SourceTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
               "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
               "Value": {
-                "Flat": -30.0,
+                "Flat": 0.0,
                 "Mul": 1.0
               },
               "bIsPermanent": false,
@@ -344,7 +344,7 @@
       ],
       "Icon": "/Game/Assets/UI/Icon/Skill/Icon_ShockWave.Icon_ShockWave",
       "EnabledRange": 500.0,
-      "SkillClass": "",
+      "SkillClass": "BlueprintGeneratedClass'/Game/Object/Skill/BP_ShockWave.BP_ShockWave_C'",
       "LevelModifiers": [
         {
           "Level": 1,
@@ -601,7 +601,7 @@
       ],
       "Icon": "/Game/Assets/UI/Icon/Skill/Icon_ChainBolt.Icon_ChainBolt",
       "EnabledRange": 500.0,
-      "SkillClass": "",
+      "SkillClass": "BlueprintGeneratedClass'/Game/Object/Skill/BP_ChainBolt.BP_ChainBolt_C'",
       "LevelModifiers": [
         {
           "Level": 1,
@@ -858,7 +858,7 @@
       ],
       "Icon": "/Game/Assets/UI/Icon/Skill/Icon_SolarFlare.Icon_SolarFlare",
       "EnabledRange": 500.0,
-      "SkillClass": "",
+      "SkillClass": "BlueprintGeneratedClass'/Game/Object/Skill/BP_SolarFlare.BP_SolarFlare_C'",
       "LevelModifiers": [
         {
           "Level": 1,

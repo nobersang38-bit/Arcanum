@@ -5,6 +5,7 @@
 #include "DataInfo/StageData/StageInfo/Data/FStageDataInfo.h"
 #include "DataInfo/StageData/StageInfo/DataTable/FDTStageDataRow.h"
 #include "DataInfo/InventoryData/Data/FInventoryViewSlot.h"
+#include "UI/DataType/EDialogResult.h"
 #include "BattleHUDWidget.generated.h"
 
 class ULobbyHUD;
@@ -14,6 +15,7 @@ class UScrollBox;
 class UItemSlot;
 class UInventoryItemSlotWidget;
 class USquareSlotWidget;
+class UCommonDialog;
 
 /* 배틀 슬롯 클릭 알림 */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnShowUnitList, int32, InIndex);
@@ -149,5 +151,19 @@ private:
 	UFUNCTION() void OnStageClicked(UStageList* ClickedStage);
 	TArray<UStageList*> StageWidgets;
 	UStageList* CurrentSelectedStage = nullptr;
+#pragma endregion
+
+#pragma region 전투 입장 제한
+private:
+	/* 무기 장착 여부 검사 */
+	bool HasAllBattleWeaponsEquipped() const;
+
+	/* 무기 미장착 알림창 */
+	UFUNCTION()
+	void HandleWeaponRequiredDialogResult(EDialogResult InResult);
+
+protected:
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UCommonDialog> WeaponRequiredDialog;
 #pragma endregion
 };

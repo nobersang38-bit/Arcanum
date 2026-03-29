@@ -260,6 +260,10 @@ void AProjectileBase::CollisionProcess(AActor* OtherActor)
                                 else if (const FNonRegenStat* NonRegenStat = PlayerCharacter->GetBattleStatComponent()->FindNonRegenStat(UseStatTag))
                                 {
                                     StatModifier.Value.Flat = StatModifier.Value.Flat + (bIsAttack ? -FMath::Abs(NonRegenStat->GetTotalValue()) : NonRegenStat->GetTotalValue());
+                                    UE_LOG(LogTemp, Warning, TEXT("Flat=%.2f OwnerStat=%.2f AddModi=%.2f"),
+                                        StatModifier.Value.Flat,
+                                        NonRegenStat->GetTotalValue(),
+                                        OwnerSkill->GetDerivedStatModifier().Value.Flat);
                                 }
 
                             }

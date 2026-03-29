@@ -197,11 +197,11 @@ private:
     }*/
 
     UFUNCTION(BlueprintCallable)
-    bool AddTestGold();
+    bool AddTestGold(int32 InAmount);
     UFUNCTION(BlueprintCallable)
-    bool AddTestSoul();
+    bool AddTestSoul(int32 InAmount);
     UFUNCTION(BlueprintCallable)
-    bool AddTestShard();
+    bool AddTestShard(int32 InAmount);
     UFUNCTION(BlueprintCallable)
     bool AddTestEquipmentSet();
 #pragma endregion
