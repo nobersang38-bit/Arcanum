@@ -116,9 +116,6 @@ public:
 	void SetPlayerHealthProgress(float CurrentHealth, float MaxHealth);
 
 	UFUNCTION()
-	void SetBossHealthProgress(float CurrentHealth, float MaxHealth);
-
-	UFUNCTION()
 	bool SkillCostChecker(FGameplayTag InSkillTag, int32 InLevel, bool bIsOnlyManaCheck = false);
 
 #pragma endregion
@@ -222,6 +219,9 @@ protected:
 
 	UFUNCTION()
 	void InitialSkillBase();
+
+	UFUNCTION()
+	void RefreshCost();
 
 #pragma endregion
 

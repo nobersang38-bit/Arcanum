@@ -35,6 +35,7 @@ public:
 
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnMatchEnded, const FMatchData&)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealthBarProgress, float, InCurrent, float, InMax);
 
 // 김도현
 // 전투 스테이지에 관련된 기능
@@ -55,8 +56,14 @@ public:
 	bool GetIsDebugMode() const { return bIsDebug; }
 	void SetIsDebugMode(bool InUseDebug) { bIsDebug = InUseDebug; }
 
+#pragma region 체력관련 프로그래스바
 public:
+	FOnHealthBarProgress OnChangeEnemyBaseHealth;
+	FOnHealthBarProgress OnChangeAllyBaseHealth;
+#pragma endregion
+
 #pragma region 스테이지 기본설정
+public:
 	UFUNCTION()
 	AActor* GetAllyBasement() const;
 

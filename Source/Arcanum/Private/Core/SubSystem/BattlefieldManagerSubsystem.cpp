@@ -365,7 +365,11 @@ void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerDa
 
 	//스테이지 데이터 설정 부분
 	UGameDataSubsystem* GameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
-	FGameplayTag StageTag = Arcanum::BattleStage::Normal::Stage1;
+	FGameplayTag StageTag;
+	if (UARGameInstance* GameInstance = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(this)))
+	{
+		StageTag = GameInstance->CurrentStageTag;
+	}
 
 	if (GameDataSubsystem)
 	{
