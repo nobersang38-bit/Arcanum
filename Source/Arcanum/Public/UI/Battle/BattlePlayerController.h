@@ -62,9 +62,6 @@ protected:
 	void DebugPlayPlayerCharacterHealthBar(float CurrentHealth, float MaxHealth);
 
 	UFUNCTION(Exec)
-	void DebugBossHealthBar(float CurrentHealth, float MaxHealth);
-
-	UFUNCTION(Exec)
 	void DebugAddPlayerInfoPanelSlot();
 
 	UFUNCTION(Exec)
@@ -114,9 +111,6 @@ protected:
 public:
 	UFUNCTION()
 	void SetPlayerHealthProgress(float CurrentHealth, float MaxHealth);
-
-	UFUNCTION()
-	void SetBossHealthProgress(float CurrentHealth, float MaxHealth);
 
 	UFUNCTION()
 	bool SkillCostChecker(FGameplayTag InSkillTag, int32 InLevel, bool bIsOnlyManaCheck = false);
@@ -579,6 +573,11 @@ protected:
 	float UltimateCooldown = 0.0f;
 
 	float SkillCooldownTickInterval = 0.02f;
+#pragma endregion
+
+#pragma region 스킬 마나 코스트
+	/* 스킬 마나 코스트 UI 갱신 */
+	void RefreshSkillCost();
 #pragma endregion
 
 #pragma region 물약

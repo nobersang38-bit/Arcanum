@@ -365,7 +365,11 @@ void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerDa
 
 	//스테이지 데이터 설정 부분
 	UGameDataSubsystem* GameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
-	FGameplayTag StageTag = Arcanum::BattleStage::Normal::Stage1;
+	FGameplayTag StageTag;
+	if (UARGameInstance* GameInstance = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(this)))
+	{
+		StageTag = GameInstance->CurrentStageTag;
+	}
 
 	if (GameDataSubsystem)
 	{
@@ -560,6 +564,7 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 				OutBasicAttackSkill.SkillLevel = basicAttackSkillLevel;
 				OutBasicAttackSkill.SkillIcon = FindSkillIcon(OutBasicAttackSkill.SkillTag);
 				OutBasicAttackSkill.Cooldown = FindSkillCooldown(OutBasicAttackSkill.SkillTag, OutBasicAttackSkill.SkillLevel);
+				OutBasicAttackSkill.ManaCost = FindSkillManaCost(OutBasicAttackSkill.SkillTag, OutBasicAttackSkill.SkillLevel);
 
 				for (const TPair<FGameplayTag, int32>& skillPair : InEquipInfo->Equipment.Skills)
 				{
@@ -583,6 +588,7 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 					OutBasicSkill.SkillIcon = FindSkillIcon(OutBasicSkill.SkillTag);
 					OutBasicSkill.CastTime = FindSkillCastTime(OutBasicSkill.SkillTag, OutBasicSkill.SkillLevel);
 					OutBasicSkill.Cooldown = FindSkillCooldown(OutBasicSkill.SkillTag, OutBasicSkill.SkillLevel);
+					OutBasicSkill.ManaCost = FindSkillManaCost(OutBasicSkill.SkillTag, OutBasicSkill.SkillLevel);
 
 					break;
 				}
@@ -620,6 +626,7 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 					OutUltimateSkill.SkillIcon = FindSkillIcon(OutUltimateSkill.SkillTag);
 					OutUltimateSkill.CastTime = FindSkillCastTime(OutUltimateSkill.SkillTag, OutUltimateSkill.SkillLevel);
 					OutUltimateSkill.Cooldown = FindSkillCooldown(OutUltimateSkill.SkillTag, OutUltimateSkill.SkillLevel);
+					OutUltimateSkill.ManaCost = FindSkillManaCost(OutUltimateSkill.SkillTag, OutUltimateSkill.SkillLevel);
 
 					break;
 				}
@@ -1165,6 +1172,35 @@ float UBattlefieldManagerSubsystem::FindSkillCooldown(const FGameplayTag& InSkil
 		if (levelModifier.Level == InSkillLevel)
 		{
 			return levelModifier.Cooldown;
+		}
+	}
+
+	return 0.0f;
+}
+
+float UBattlefieldManagerSubsystem::FindSkillManaCost(const FGameplayTag& InSkillTag, int32 InSkillLevel) const
+{
+	if (!InSkillTag.IsValid()) return 0.0f;
+
+	UGameDataSubsystem* gameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
+	if (!gameDataSubsystem) return 0.0;
+
+	const FDTSkillsDataRow* skillRow = gameDataSubsystem->GetRow<FDTSkillsDataRow>(Arcanum::DataTable::SkillData, GetLeafNameFromTag(InSkillTag));
+	if (!skillRow) return 0.0;
+
+	const FSkillInfo& skillInfo = skillRow->SkillData;
+
+	for (const FLevelModifierEntry& levelModifier : skillInfo.LevelModifiers)
+	{
+		if (levelModifier.Level == InSkillLevel)
+		{
+			for (const FDerivedStatModifier& costModifier : levelModifier.Cost)
+			{
+				if (costModifier.StatTag == Arcanum::BattleStat::Character::Regen::Mana::Value)
+				{
+					return FMath::Abs(costModifier.Value.Flat);
+				}
+			}
 		}
 	}
 

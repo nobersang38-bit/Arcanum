@@ -68,8 +68,28 @@ void ABasement::BeginPlay()
 			//CharacterBattleStatsComponent->OnCharacterRegenStatChanged.Remove(TempHealthWidget, &UUnitHealthWidget::SetPercent);
 			CharacterBattleStatsComponent->OnCharacterRegenStatChanged.AddUObject(TempHealthWidget, &UUnitHealthWidget::SetPercent);
 
-			const FRegenStat* Stat = CharacterBattleStatsComponent->FindRegenStat(Arcanum::BattleStat::Character::Regen::Health::Root);
+			const FRegenStat* Stat = CharacterBattleStatsComponent->FindRegenStat(HealthTag);
 			TempHealthWidget->SetPercentFloat(Stat->Current, Stat->BaseMax);
+
+			FTimerDelegate Lambda;
+			Lambda.BindWeakLambda(this, [this, Stat]()
+				{
+					UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+					if (BattleSubsystem)
+					{
+						if (GetTeamTag() == BattleSubsystem->AllyTeamTag)
+						{
+							BattleSubsystem->OnChangeAllyBaseHealth.Broadcast(Stat->Current, Stat->BaseMax);
+						}
+						else if (GetTeamTag() == BattleSubsystem->EnemyTeamTag)
+						{
+							BattleSubsystem->OnChangeEnemyBaseHealth.Broadcast(Stat->Current, Stat->BaseMax);
+						}
+					}
+				});
+
+			GetWorld()->GetTimerManager().SetTimerForNextTick(Lambda);
+			
 		}
 	}
 }
@@ -96,6 +116,8 @@ void ABasement::ChangeStat(const FGameplayTag& InTag, float InValue)
 
 void ABasement::RecievedDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
+	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (!BattleSubsystem) return;
 	CharacterBattleStatsComponent->ChangeStatValue(Arcanum::BattleStat::Character::Regen::Health::Root, -FMath::Abs(Damage), DamageCauser);
 
 	const FRegenStat* HealthStat = CharacterBattleStatsComponent->FindRegenStat(Arcanum::BattleStat::Character::Regen::Health::Root);
@@ -103,7 +125,7 @@ void ABasement::RecievedDamage(AActor* DamagedActor, float Damage, const UDamage
 
 	if (HealthStat->Current <= 0.0f)
 	{
-		UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+		
 		if (BattleSubsystem)
 		{
 			/*if (GetOwner()->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()))
