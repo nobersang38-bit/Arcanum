@@ -4,8 +4,10 @@
 #include "Blueprint/UserWidget.h"
 #include "UI/DataType/EDialogResult.h"
 #include "UI/Lobby/Contents/Character/CharacterHUDWidget.h"
+
 #include "DataInfo/PlayerData/FPlayerData.h"
 #include "DataInfo/InventoryData/Data/FInventoryViewSlot.h"
+#include "DataInfo/GachaData/DataTable/DTGachaBannerData.h"
 #include "LobbyHUD.generated.h"
 
 /*
@@ -193,7 +195,7 @@ protected:
 #pragma endregion
 
 #pragma region 가챠
-
+	UPROPERTY() TArray<FDTGachaBannerDataRow> ActiveBannerDataList;
 #pragma endregion
 
 #pragma region 설정

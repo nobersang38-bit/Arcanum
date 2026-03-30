@@ -235,6 +235,19 @@ void ULobbyHUD::ClickGachaMenuBtn()
 		GachaWidget->SetParentLobby(this);
 		WidgetSwitcher->SetActiveWidget(GachaWidget);
 
+		TArray<const FDTGachaBannerDataRow*> TempRows;
+		FPlayerAccountService::GetActiveGachaBannerRows(this, TempRows);
+		ActiveBannerDataList.Empty();
+		for (const FDTGachaBannerDataRow* RowPtr : TempRows) {
+			if (RowPtr) {
+				ActiveBannerDataList.Add(*RowPtr);
+				FPlayerAccountService::InitGachaBannerData(this, RowPtr->BannerTag);
+			}
+		}
+		if (ActiveBannerDataList.Num() > 0) {
+			GachaWidget->OnBannerSelected(ActiveBannerDataList[0].BannerTag);
+		}
+
 		if (TimeSubsystem) TimeSubsystem->bBannerActive = true;
 	}
 }

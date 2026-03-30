@@ -35,6 +35,9 @@ private:
 #pragma endregion
 
 #pragma region 배너 버튼 관련
+public:
+    /** 버튼 클릭 시 호출될 함수 */
+    void OnBannerSelected(FGameplayTag SelectedBannerTag);
 protected:
     UPROPERTY(meta = (BindWidget)) TObjectPtr<UVerticalBox> BannerVerticalBox;
 
@@ -50,8 +53,7 @@ private:
     UPROPERTY() TArray<TObjectPtr<UGachaBannerButtonWidget>> BannerButtons;
     /** 현재 선택된 배너 버튼 보관 */
     UPROPERTY() TObjectPtr<UGachaBannerButtonWidget> CurrentSelectedButton;
-    /** 버튼 클릭 시 호출될 함수 */
-    void OnBannerSelected(FGameplayTag SelectedBannerTag);
+   
     void UpdateDetailedView(const FDTGachaBannerDataRow* InData);
     /** 상세 이미지를 부드럽게 교체하기 위한 텍스처 설정 함수 */
     void UpdateDetailedImage(TSoftObjectPtr<UTexture2D> NewTexture);
