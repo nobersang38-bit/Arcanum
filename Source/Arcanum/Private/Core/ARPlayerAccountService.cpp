@@ -377,7 +377,7 @@ bool FPlayerAccountService::EquipItemToCharacter(const UObject* WorldContextObje
 
 	FBattleCharacterData* foundCharacter = FindOwnedCharacterByName(playerData, InCharacterName);
 	if (!foundCharacter) return false;
-	if (!foundCharacter->bSelection) return false;
+	// if (!foundCharacter->bSelection) return false;
 
 	TMap<FGameplayTag, FGuid>* slotMap = GetEquipmentSlotMapBySlotTag(*foundCharacter, InEquipSlotTag);
 	if (!slotMap) return false;
@@ -566,6 +566,27 @@ bool FPlayerAccountService::UpdateCharacter(const UObject* WorldContextObject, c
 		}
 	}
 	return false;
+}
+
+bool FPlayerAccountService::SetSelectedCharacter(const UObject* WorldContextObject, const FName& InCharacterName)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return false;
+	if (InCharacterName.IsNone()) return false;
+
+	FPlayerData& playerData = GI->GetPlayerData();
+
+	FBattleCharacterData* foundCharacter = FindOwnedCharacterByName(playerData, InCharacterName);
+	if (!foundCharacter) return false;
+
+	for (FBattleCharacterData& characterData : playerData.OwnedCharacters)
+	{
+		characterData.bSelection = false;
+	}
+
+	foundCharacter->bSelection = true;
+
+	return SavePlayerData(GI);
 }
 
 // ========================================================

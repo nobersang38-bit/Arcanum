@@ -155,6 +155,9 @@ public:
 
 	/* 캐릭터 업데이트 */
 	static bool UpdateCharacter(const UObject* WorldContextObject, const FGameplayTag CharacterTag);
+
+	/* 선택 캐릭터 변경 */
+	static bool SetSelectedCharacter(const UObject* WorldContextObject, const FName& InCharacterName);
 #pragma endregion
 
 #pragma region Enhancement Widget 관련

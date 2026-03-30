@@ -508,23 +508,29 @@ void UCharacterHUDWidget::CharacterEnhancement(FText InCharacterName, int32 InRe
 // ========================================================
 void UCharacterHUDWidget::SetPlayerCharacter(FText CharacterName)
 {
-	// 클릭한 캐릭터 bSelection true로 변경
-	for (int32 i = 0; i < ParentLobby->CachedPlayerData.OwnedCharacters.Num(); i++)
+	if (FPlayerAccountService::SetSelectedCharacter(this, FName(*CharacterName.ToString())))
 	{
-		FBattleCharacterData& TargetData = ParentLobby->CachedPlayerData.OwnedCharacters[i];
-
-		FGameplayTag CharacterTag = TargetData.CharacterInfo.BattleCharacterInitData.CharacterTag;
-		FName SetPlayerName = GetLeafNameFromTag(CharacterTag);
-
-		if (CharacterName.ToString().Equals(SetPlayerName.ToString()))
-		{
-			TargetData.bSelection = true;
-		}
-		else {
-			TargetData.bSelection = false;
-		}
+		ParentLobby->CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
+		InitCharacterHUD();
 	}
-	InitCharacterHUD();
+
+	//// 클릭한 캐릭터 bSelection true로 변경
+	//for (int32 i = 0; i < ParentLobby->CachedPlayerData.OwnedCharacters.Num(); i++)
+	//{
+	//	FBattleCharacterData& TargetData = ParentLobby->CachedPlayerData.OwnedCharacters[i];
+
+	//	FGameplayTag CharacterTag = TargetData.CharacterInfo.BattleCharacterInitData.CharacterTag;
+	//	FName SetPlayerName = GetLeafNameFromTag(CharacterTag);
+
+	//	if (CharacterName.ToString().Equals(SetPlayerName.ToString()))
+	//	{
+	//		TargetData.bSelection = true;
+	//	}
+	//	else {
+	//		TargetData.bSelection = false;
+	//	}
+	//}
+	//InitCharacterHUD();
 }
 
 // ========================================================
