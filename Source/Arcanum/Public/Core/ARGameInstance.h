@@ -207,5 +207,8 @@ private:
     bool AddTestShard(int32 InAmount);
     UFUNCTION(BlueprintCallable)
     bool AddTestEquipmentSet();
+public:
+    UPROPERTY(BlueprintReadWrite)
+    bool bTestGiven = false;
 #pragma endregion
 };
