@@ -581,6 +581,11 @@ protected:
 	float SkillCooldownTickInterval = 0.02f;
 #pragma endregion
 
+#pragma region 스킬 마나 코스트
+	/* 스킬 마나 코스트 UI 갱신 */
+	void RefreshSkillCost();
+#pragma endregion
+
 #pragma region 물약
 protected:
 	/* 전투 물약 UI 갱신 */

@@ -738,6 +738,8 @@ void ABattlePlayerController::SetupMainHUDWidget()
 			battleSubsystem->GetCurrentWeaponIcon(),
 			battleSubsystem->GetCurrentBasicSkillIcon(),
 			battleSubsystem->GetLegendaryWeaponIcon());
+
+		RefreshSkillCost();
 	}
 }
 
@@ -967,6 +969,8 @@ void ABattlePlayerController::WeaponSwap()
 			battleSubsystem->GetCurrentWeaponIcon(),
 			battleSubsystem->GetCurrentBasicSkillIcon(),
 			battleSubsystem->GetLegendaryWeaponIcon());
+
+		RefreshSkillCost();
 
 		if (UBattleActionButtonWidget* BasicSkillButton = HUDWidgetInstance->GetBasicSkill())
 		{
@@ -2395,6 +2399,50 @@ void ABattlePlayerController::RefreshSkillCooldown()
 			HUDWidgetInstance->SetBasicAttackCooldown(basicAttackPercent);
 			HUDWidgetInstance->SetBasicSkillCooldown(basicSkillPercent);
 			HUDWidgetInstance->SetUltimateCooldown(ultimatePercent);
+		}
+	}
+}
+
+void ABattlePlayerController::RefreshSkillCost()
+{
+	if (!HUDWidgetInstance) return;
+
+	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (!battleSubsystem) return;
+
+	if (UBattleActionButtonWidget* basicAttackButton = HUDWidgetInstance->GetBasicAttack())
+	{
+		if (const FBattleSkillData* skillData = battleSubsystem->GetCurrentBasicAttackSkillData())
+		{
+			basicAttackButton->SetCostText(FText::AsNumber(FMath::RoundToInt(skillData->ManaCost)));
+		}
+		else
+		{
+			basicAttackButton->SetCostText(FText::GetEmpty());
+		}
+	}
+
+	if (UBattleActionButtonWidget* basicSkillButton = HUDWidgetInstance->GetBasicSkill())
+	{
+		if (const FBattleSkillData* skillData = battleSubsystem->GetCurrentBasicSkillData())
+		{
+			basicSkillButton->SetCostText(FText::AsNumber(FMath::RoundToInt(skillData->ManaCost)));
+		}
+		else
+		{
+			basicSkillButton->SetCostText(FText::GetEmpty());
+		}
+	}
+
+	if (UBattleActionButtonWidget* ultimateSkillButton = HUDWidgetInstance->GetUltimateSkill())
+	{
+		if (const FBattleSkillData* skillData = battleSubsystem->GetCurrentLegendarySkillData())
+		{
+			ultimateSkillButton->SetCostText(FText::AsNumber(FMath::RoundToInt(skillData->ManaCost)));
+		}
+		else
+		{
+			ultimateSkillButton->SetCostText(FText::GetEmpty());
 		}
 	}
 }

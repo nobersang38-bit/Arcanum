@@ -27,6 +27,9 @@ struct FBattleSkillData
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float Cooldown = 0.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float ManaCost = 0.0f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UTexture2D> SkillIcon = nullptr;
 
