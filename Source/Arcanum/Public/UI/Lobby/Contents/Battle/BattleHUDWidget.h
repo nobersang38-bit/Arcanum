@@ -98,6 +98,11 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UItemSlot> ItemListSlot;
 
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+    //TSubclassOf<UUserWidget> LoadingWidgetClass;
+
+    //UUserWidget* LoadingWidgetInstance;
+
 private:
 	/* 화면 슬롯 위젯 배열 */
 	UPROPERTY()
