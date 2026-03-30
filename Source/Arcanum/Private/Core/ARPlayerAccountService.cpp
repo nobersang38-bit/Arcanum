@@ -1503,7 +1503,7 @@ bool FPlayerAccountService::ExecuteGacha(const UObject* WorldContextObject, cons
 		
 		FGachaData& GachaState = GI->GetPlayerData().GachaState;
 		FGachaBannerState& TargetState = GachaState.BannerStates.FindOrAdd(BannerTag);
-		TargetState.PityCount += PullCount;
+		//TargetState.PityCount += PullCount;
 		SavePlayerData(GI);
 		
 		res = true;
