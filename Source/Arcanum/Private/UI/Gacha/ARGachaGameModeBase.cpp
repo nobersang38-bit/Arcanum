@@ -176,8 +176,8 @@ void AARGachaGameModeBase::OpenChildActorAll()
 
 	for (AResultStarChild* Star : ActiveResultStar->GetStarActors()) {
 		if (Star) {
-			if (CurrentState == EGachaSequenceState::Finished) Star->OpenStar(true);
-			else Star->OpenStar();
+			//if (CurrentState == EGachaSequenceState::Finished) Star->OpenStar(true);
+			Star->OpenStar(true);
 		}
 	}
 }

@@ -73,7 +73,7 @@ void AResultStarChild::EndOpenAnimation()
 
     HideStarParts();
 
-    if (IsHighGrade() && bIsSkiped) {
+    if (IsHighGrade() && !bIsSkiped) {
         SpawnHighGradeWidget();
         PlayResultFX();
     }
