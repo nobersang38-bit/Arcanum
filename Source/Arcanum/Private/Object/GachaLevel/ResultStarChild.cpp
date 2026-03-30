@@ -49,8 +49,11 @@ void AResultStarChild::SetResultData(const FGachaItemResult& InData)
 }
 void AResultStarChild::OnNotifyClicked(AActor* TouchedActor, FKey ButtonPressed)
 {
+    OpenStar();
+}
+void AResultStarChild::OpenStar()
+{
     if (IsClicked) return;
-
     APlayerCameraManager* CamManager = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
     if (CamManager) {
         FVector CameraLoc = CamManager->GetCameraLocation();
@@ -59,7 +62,7 @@ void AResultStarChild::OnNotifyClicked(AActor* TouchedActor, FKey ButtonPressed)
         SetActorRotation(LookAtRot);
     }
 
-    IsClicked = !IsClicked;
+    IsClicked = true;
     OnStarClicked.Broadcast(this);
     PlayOpenAnimation(ResultData);
 }
@@ -73,7 +76,11 @@ void AResultStarChild::EndOpenAnimation()
         SpawnHighGradeWidget();
         PlayResultFX();
     }
-    else PlayResultFX();
+    else {
+        PlayResultFX();
+        AARGachaController* PC = Cast<AARGachaController>(GetWorld()->GetFirstPlayerController());
+        if (PC) PC->HandleGachaFinished();
+    }
 }
 void AResultStarChild::DeactivateResultNiagara()
 {

@@ -13,6 +13,8 @@ class UVerticalBox;
 class UGachaPullButtonWidget;
 class UGachaProbabilityWidget;
 class UGachaBannerButtonWidget;
+class UGachaProbabilityRowWidget;
+class UGachaProgressWidget;
 
 UCLASS()
 class ARCANUM_API UGachaHUDWidget : public UUserWidget
@@ -73,10 +75,20 @@ protected:
     UPROPERTY(meta = (BindWidget)) TObjectPtr<UButton> ProbabilityInfoButton;
     UPROPERTY(meta = (BindWidget)) TObjectPtr<UGachaProbabilityWidget> ProbabilityWidget;
 
-    private:
+private:
     /** 확률 버튼 클릭 핸들러 */
     UFUNCTION() void HandleProbabilityButtonClicked();
 #pragma endregion
+
+#pragma region 가챠 진행 위젯
+protected:
+    /** 가챠 진행도 위젯 */
+    UPROPERTY(meta = (BindWidget)) TObjectPtr<UGachaProgressWidget> GachaProgressWidget;
+private:
+    /** 배너 변경시 가챠 진행도 불러올 함수 */
+    UFUNCTION() void UpdateGachaProgressWidget(int32 curr, int32 max);
+#pragma endregion
+
 
 #pragma region 가챠 맵
 protected:

@@ -21,7 +21,8 @@ class UWidgetAnimation;
 struct FGachaItemResult;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSilhouetteStart);
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSkipRequested);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGachaFinished);
 UCLASS()
 class ARCANUM_API UGachaHighgradeWidget : public UUserWidget
 {
@@ -29,6 +30,8 @@ class ARCANUM_API UGachaHighgradeWidget : public UUserWidget
 	
 public:
 	UPROPERTY(BlueprintAssignable) FOnSilhouetteStart OnSilhouetteStart;
+	UPROPERTY(BlueprintAssignable) FOnSkipRequested OnSkipRequested;
+	UPROPERTY(BlueprintAssignable) FOnGachaFinished OnGachaFinished;
 	
 	virtual void NativeConstruct() override;
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;

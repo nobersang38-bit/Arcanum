@@ -1,11 +1,12 @@
 #include "UI/Gacha/ARGachaGameModeBase.h"
+#include "UI/Gacha/ARGachaController.h"
 #include "Object/GachaLevel/ShootingStarActor.h"
 #include "Object/GachaLevel/ASplinePathActor.h"
-#include "Object/GachaLevel/GachaCamera.h"
 
 #include "Core/ARGameInstance.h"
 #include "Core/ARPlayerAccountService.h"
 #include "Object/GachaLevel/ResultStarActor.h"
+#include "Object/GachaLevel/ResultStarChild.h"
 
 #include "Camera/CameraComponent.h"
 #include <Kismet/GameplayStatics.h>
@@ -78,11 +79,7 @@ void AARGachaGameModeBase::EnterResultState()
 {
 	CurrentState = EGachaSequenceState::Result;
 	ActiveResultStar = SpawnResultActor();
-	if (ActiveResultStar) {
-		ActiveResultStar->OnResultStarFinished.RemoveDynamic(this, &ThisClass::OnSingleResultFinished);
-		ActiveResultStar->OnResultStarFinished.AddDynamic(this, &ThisClass::OnSingleResultFinished);
-		ActiveResultStar->StartResultSequence();
-	}
+	if (ActiveResultStar) ActiveResultStar->StartResultSequence();
 }
 void AARGachaGameModeBase::EnterFinishedState()
 {
@@ -108,16 +105,18 @@ AResultStarActor* AARGachaGameModeBase::SpawnResultActor()
 {
 	if (!ResultStarClass) return nullptr;
 
-	AResultStarActor* Result = GetWorld()->SpawnActor<AResultStarActor>(ResultStarClass);
-	if (Result) {
+	ActiveResultStar = GetWorld()->SpawnActor<AResultStarActor>(ResultStarClass);
+	if (ActiveResultStar) {
 		AASplinePathActor* Spline = GetSpline(ESplinePathType::ResultStar);
 		if (Spline) {
-			Result->SetSplineActor(Spline);
-			Result->SetGachaResults(GachaItemResult);
+			ActiveResultStar->SetSplineActor(Spline);
+			ActiveResultStar->SetGachaResults(GachaItemResult);
 			SetupStaticSplineCamera(Spline);
 		}
+
+		BindResultActorDelegates(ActiveResultStar);
 	}
-	return Result;
+	return ActiveResultStar;
 }
 // ========================================================
 // 이벤트
@@ -134,12 +133,32 @@ void AARGachaGameModeBase::OnSingleResultFinished(AResultStarActor* FinishedActo
 {
 	EnterFinishedState();
 }
+void AARGachaGameModeBase::OnAllResultFinished()
+{
+	AARGachaController* PC = Cast<AARGachaController>(GetWorld()->GetFirstPlayerController());
+	if (PC) PC->ShowFinalResultUI(GachaItemResult);
+}
+void AARGachaGameModeBase::BindResultActorDelegates(AResultStarActor* ResultActor)
+{
+	if (!ResultActor) return;
+
+	ResultActor->OnResultStarFinished.RemoveDynamic(this, &ThisClass::OnSingleResultFinished);
+	ResultActor->OnResultStarFinished.AddDynamic(this, &ThisClass::OnSingleResultFinished);
+
+	ResultActor->OnAllResultFinished.RemoveDynamic(this, &ThisClass::OnAllResultFinished);
+	ResultActor->OnAllResultFinished.AddDynamic(this, &ThisClass::OnAllResultFinished);
+}
 // ========================================================
 // Skip
 // ========================================================
 void AARGachaGameModeBase::SkipGacha()
 {
-	if (CurrentState == EGachaSequenceState::Finished) return;
+	if (CurrentState == EGachaSequenceState::OpenAllActor) return;
+	if (CurrentState == EGachaSequenceState::Finished) {
+		CurrentState = EGachaSequenceState::OpenAllActor;
+		OpenChildActorAll();
+		return;
+	}
 
 	SkipToFinal();
 }
@@ -151,19 +170,27 @@ void AARGachaGameModeBase::SkipToFinal()
 	EnterFinishedState();
 	SpawnFinalResultInstant();
 }
+void AARGachaGameModeBase::OpenChildActorAll()
+{
+	if (!ActiveResultStar) return;
+
+	for (AResultStarChild* Star : ActiveResultStar->GetStarActors()) {
+		if (Star) Star->OpenStar();
+	}
+}
 // ========================================================
 // 즉시 결과 생성 (핵심)
 // ========================================================
 void AARGachaGameModeBase::SpawnFinalResultInstant()
 {
-	AResultStarActor* Result = SpawnResultActor();
-	if (Result) {
+	ActiveResultStar = SpawnResultActor();
+	if (ActiveResultStar) {
 		AASplinePathActor* SplineActor = GetSpline(ESplinePathType::ResultStar);
 		if (SplineActor) {
 			float MaxDistance = SplineActor->GetSplineLength();
 			FVector FinalLoc = SplineActor->GetLocationAtDistance(MaxDistance);
 			FRotator FinalRot{ 0,0,0 };
-			Result->SetActorLocationAndRotation(FinalLoc, FinalRot);
+			ActiveResultStar->SetActorLocationAndRotation(FinalLoc, FinalRot);
 		}
 	}
 }

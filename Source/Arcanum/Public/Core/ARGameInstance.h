@@ -48,6 +48,9 @@ struct FGachaItemResult
     FGameplayTag GradeTag;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    FText ItemName;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
     TSoftObjectPtr<UDataTable> SourceTable;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)

@@ -181,3 +181,9 @@ void AResultStarActor::SpawnAllAtEnd()
 
     OnResultStarFinished.Broadcast(this);
 }
+
+void AResultStarActor::NotifyOneResultFinished()
+{
+    FinishedCount++;
+    if (FinishedCount >= StarActors.Num()) OnAllResultFinished.Broadcast();
+}
