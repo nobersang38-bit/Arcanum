@@ -62,9 +62,6 @@ protected:
 	void DebugPlayPlayerCharacterHealthBar(float CurrentHealth, float MaxHealth);
 
 	UFUNCTION(Exec)
-	void DebugBossHealthBar(float CurrentHealth, float MaxHealth);
-
-	UFUNCTION(Exec)
 	void DebugAddPlayerInfoPanelSlot();
 
 	UFUNCTION(Exec)
@@ -219,9 +216,6 @@ protected:
 
 	UFUNCTION()
 	void InitialSkillBase();
-
-	UFUNCTION()
-	void RefreshCost();
 
 #pragma endregion
 

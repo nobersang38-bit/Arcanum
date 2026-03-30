@@ -74,6 +74,8 @@ void ABattlePlayerController::BeginPlay()
 	BindBuffUI();
 
 	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (!BattleSubsystem) return;
+
 	if (BattleSubsystem)
 	{
 		const TArray<FRegenStat>& PlayerBattleRegenStat = BattleSubsystem->GetInBattleData().PlayerBattleData.PlayerBattleRegenStat;
@@ -152,8 +154,6 @@ void ABattlePlayerController::BeginPlay()
 	GetWorld()->GetTimerManager().ClearTimer(BattlePotionCooldownTimer);
 	GetWorld()->GetTimerManager().SetTimer(BattlePotionCooldownTimer, BattlePotionCooldown, BattlePotionCooldownTickInterval, true);
 
-	SetBossHealthProgress(0.0f, 0.0f);
-
 	GetWorld()->GetTimerManager().ClearTimer(PlayerLocationProgressTimeHandle);
 	GetWorld()->GetTimerManager().SetTimer(PlayerLocationProgressTimeHandle, this, &ABattlePlayerController::UpdatePlayerLocationProgress, PlayerLocationProgressUpdateInterval, true, 0.0f);
 
@@ -170,6 +170,13 @@ void ABattlePlayerController::BeginPlay()
 		UltimatePostProcessVolume->BlendWeight = 0.0f;
 		UltimatePostProcessVolume->bUnbound = false;
 	}
+
+	if (HUDWidgetInstance)
+	{
+		BattleSubsystem->OnChangeAllyBaseHealth.AddDynamic(HUDWidgetInstance, &UInBattleHUDWidget::SetAllyBaseHealthBarProgress);
+		BattleSubsystem->OnChangeEnemyBaseHealth.AddDynamic(HUDWidgetInstance, &UInBattleHUDWidget::SetEnemyBaseHealthBarProgress);
+	}
+
 }
 
 void ABattlePlayerController::SetupInputComponent()
@@ -310,11 +317,11 @@ void ABattlePlayerController::DebugPlayPlayerCharacterHealthBar(float CurrentHea
 	HUDWidgetInstance->SetPlayerCharacterHealthBarProgress(CurrentHealth, MaxHealth);
 }
 
-void ABattlePlayerController::DebugBossHealthBar(float CurrentHealth, float MaxHealth)
-{
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("DebugBossHealthBar"));
-	HUDWidgetInstance->SetBossHealthBarProgress(CurrentHealth, MaxHealth);
-}
+//void ABattlePlayerController::DebugBossHealthBar(float CurrentHealth, float MaxHealth)
+//{
+//	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("DebugBossHealthBar"));
+//	HUDWidgetInstance->SetBossHealthBarProgress(CurrentHealth, MaxHealth);
+//}
 
 void ABattlePlayerController::DebugAddPlayerInfoPanelSlot()
 {
@@ -880,11 +887,6 @@ void ABattlePlayerController::UpdateManaValue(float DeltaTime)
 void ABattlePlayerController::SetPlayerHealthProgress(float CurrentHealth, float MaxHealth)
 {
 	HUDWidgetInstance->SetPlayerCharacterHealthBarProgress(CurrentHealth, MaxHealth);
-}
-
-void ABattlePlayerController::SetBossHealthProgress(float CurrentHealth, float MaxHealth)
-{
-	HUDWidgetInstance->SetBossHealthBarProgress(CurrentHealth, MaxHealth);
 }
 
 // ========================================================
