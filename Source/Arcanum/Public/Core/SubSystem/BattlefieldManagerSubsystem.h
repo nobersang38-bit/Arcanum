@@ -176,7 +176,7 @@ protected:
 #pragma endregion
 
 private:
-	bool bIsDebug = true;
+	bool bIsDebug = false;
 
 protected:
 #pragma region 디버그(나중에 삭제)
