@@ -256,6 +256,10 @@ void ABaseUnitCharacter::RecievedDamage(AActor* DamagedActor, float Damage, cons
 	}
 
 	float ResultDamage = -(FMath::Abs(Damage));
+	if (GetStatComponent()->FindNonRegenStat(Arcanum::BattleStat::Character::NonRegen::DamageReduction::Root))
+	{
+		ResultDamage *= (1.0f - GetStatComponent()->FindNonRegenStat(Arcanum::BattleStat::Character::NonRegen::DamageReduction::Root)->GetTotalValue());
+	}
 	GetCharacterBattleStatsComponent()->ChangeStatValue(Arcanum::BattleStat::Character::Regen::Health::Root, ResultDamage, DamageCauser);
 	//UnitCombatComponent->LightHitReaction(Damage);
 	//OuntLineStart(OutLineCurve, OutLineTime, 0.005f, OutlineTimeHandle, OutlineDynamicMI, RefOutlineTime);

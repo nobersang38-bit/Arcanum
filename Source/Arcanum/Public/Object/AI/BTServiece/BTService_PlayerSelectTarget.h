@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/Services/BTService_BlackboardBase.h"
+#include "Data/DataAssets/DATargetPriorityWeight.h"
 #include "BTService_PlayerSelectTarget.generated.h"
 
 /**
@@ -17,10 +18,24 @@ public:
 	UBTService_PlayerSelectTarget();
 
 protected:
-	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 	virtual void InitializeFromAsset(UBehaviorTree& Asset) override;
+	virtual void OnSearchStart(FBehaviorTreeSearchData& SearchData) override;
+	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FBlackboardKeySelector CurrentDistance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FBlackboardKeySelector IsMoveKey;
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TWeakObjectPtr<class APlayerCharacter> CachedPlayerCharacter = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TWeakObjectPtr<class ABattlePlayerController> CachedPlayerController = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FTargetPriorityWeightData TargetPriorityWeightData;
 };

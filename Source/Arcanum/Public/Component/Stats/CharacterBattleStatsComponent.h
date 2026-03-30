@@ -69,6 +69,10 @@ public:
 	UFUNCTION()
 	void SetData(const FGradeStatData& InGradeStatData);
 
+	// 20260325 김도현 : 스탯 Current 최대로
+	UFUNCTION()
+	void SetCurrentValueMax();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "0_Stats|Base")
 	float TimerTick = 1.f;
 public:

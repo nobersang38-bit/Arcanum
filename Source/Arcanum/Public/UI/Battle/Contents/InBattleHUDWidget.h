@@ -20,6 +20,7 @@ class UBattleCostBarWidget;
 class UBattleHealthBarWidget;
 class UBattleStageProgressWidget;
 class UBattleBattleEndWidget;
+struct FBattlePotionRuntimeSlotData;
 
 UCLASS()
 class ARCANUM_API UInBattleHUDWidget : public UUserWidget
@@ -170,7 +171,7 @@ public:
 	void SetLegendaryButtonIcon(UTexture2D* InIcon);
 
 
-#pragma region 쿨타임
+#pragma region 스킬 쿨타임
 public:
 	/* 기본 공격 쿨타임 진행도 갱신 */
 	void SetBasicAttackCooldown(float InPercent);
@@ -180,5 +181,11 @@ public:
 
 	/* 궁극기 쿨타임 진행도 갱신 */
 	void SetUltimateCooldown(float InPercent);
+#pragma endregion
+
+#pragma region 물약
+public:
+	/* 물약 슬롯 갱신 */
+	void SetBattlePotionSlot(int32 InSlotIndex, const FBattlePotionRuntimeSlotData& InSlotData); 
 #pragma endregion
 };

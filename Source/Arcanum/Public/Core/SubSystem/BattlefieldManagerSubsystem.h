@@ -29,6 +29,8 @@ public:
 	FGradeStatData PlayerBattleStat;
 	FBattleWeaponSkillData BattleWeaponSkill;
 	FPlayerBattleData PlayerBattleData;
+	TArray<FDerivedStatModifier> EquippedOwnerStats;
+	TMap<FGameplayTag, TMap<FGameplayTag, FDerivedStatModifier>> WeaponOnHitTarget;
 };
 
 
@@ -49,6 +51,9 @@ protected:
 public:
 	// 전투 스테이지가 종료되면 호출, 결과 정보 = FMatchResultData
 	FOnMatchEnded OnMatchEnded;
+
+	bool GetIsDebugMode() const { return bIsDebug; }
+	void SetIsDebugMode(bool InUseDebug) { bIsDebug = InUseDebug; }
 
 public:
 #pragma region 스테이지 기본설정
@@ -170,6 +175,8 @@ protected:
 
 #pragma endregion
 
+private:
+	bool bIsDebug = true;
 
 protected:
 #pragma region 디버그(나중에 삭제)
@@ -188,6 +195,9 @@ public:
 
 #pragma region 스킬 장비 캐시
 public:
+	/* 현재 무기 장착 몽타주 */
+	UAnimMontage* GetCurrentWeaponEquipMontage() const;
+
 	/* 현재 무기 슬롯 태그 */
 	FGameplayTag GetCurrentWeaponSlotTag() const;
 
@@ -270,6 +280,18 @@ public:
 	const FSkillInfo* FindSkillInfoByTag(const FGameplayTag& InSkillTag) const;
 
 protected:
+	/* 장착 방어구 OwnerStats 데이터 */
+	void EquippedArmorOwnerStats(
+		const FPlayerData& InPlayerData,
+		const FBattleCharacterData& InSelectedCharacter,
+		TArray<FDerivedStatModifier>& OutEquippedOwnerStats) const;
+
+	/* 장착 무기 OnHitTargetStats 데이터 */
+	void EquippedWeaponOnHitTarget(
+		const FPlayerData& InPlayerData,
+		const FBattleCharacterData& InSelectedCharacter,
+		TMap<FGameplayTag, TMap<FGameplayTag, FDerivedStatModifier>>& OutWeaponOnHitTarget) const;
+
 	/* 스킬 캐스트타임 */
 	float FindSkillCastTime(const FGameplayTag& InSkillTag, int32 InSkillLevel) const;
 
@@ -291,7 +313,6 @@ protected:
 	/* 현재 선택 캐릭터가 지정한 세트 루트 태그를 4개 장착했는지 확인 */
 	UFUNCTION()
 	bool HasEquippedFullSet(const FGameplayTag& InSetRootTag) const;
-
 protected:
 	/* 궁극기 사용 이전 무기 슬롯 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Battle|SkillCache")
@@ -300,5 +321,21 @@ protected:
 	/* 현재 궁극기 사용 중 여부 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Battle|SkillCache")
 	bool bUsingLegendaryWeapon = false;
+#pragma endregion
+
+#pragma region 물약
+public:
+	UFUNCTION(BlueprintCallable)
+	void BuildBattlePotionCache(FInBattleData& OutInBattleData);
+
+	UFUNCTION(BlueprintCallable)
+	void DecreaseBattlePotionCount(int32 InSlotIndex);
+
+	UFUNCTION(BlueprintCallable)
+	TArray<FBattlePotionRuntimeSlotData>& GetBattlePotionRuntimeSlots();
+
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Potion", meta = (AllowPrivateAccess = "true"))
+	TArray<FBattlePotionRuntimeSlotData> BattlePotionRuntimeSlots;
 #pragma endregion
 };

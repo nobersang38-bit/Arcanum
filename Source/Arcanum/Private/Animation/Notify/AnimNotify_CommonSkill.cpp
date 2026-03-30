@@ -10,7 +10,7 @@ void UAnimNotify_CommonSkill::Notify(USkeletalMeshComponent* MeshComp, UAnimSequ
 	{
 		if (APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(MeshComp->GetOwner()))
 		{
-			if (ABattlePlayerController* battlePlayerController = playerCharacter->GetController<ABattlePlayerController>())
+			if (ABattlePlayerController* battlePlayerController = playerCharacter->GetBattleOwnerController())
 			{
 				battlePlayerController->TriggerSkill();
 			}

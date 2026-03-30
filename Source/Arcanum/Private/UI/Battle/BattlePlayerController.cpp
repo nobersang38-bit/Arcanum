@@ -27,7 +27,7 @@
 #include "Engine/PostProcessVolume.h"
 #include "UI/Battle/SubLayout/BattleActionButtonWidget.h"
 #include "Camera/CameraComponent.h"
-
+#include "Component/Stats/CharacterBattleStatsComponent.h"
 
 // ========================================================
 // 언리얼 기본 생성
@@ -49,6 +49,7 @@ void ABattlePlayerController::BeginPlay()
 		FTransform Transform;
 		Transform.SetLocation(FVector(0.0f, 0.0f, -9999.0f));
 		SkillRangeDecalInstance = GetWorld()->SpawnActor<ASkillRangeDecal>(SkillRangeDecalClass, Transform);
+		SkillRangeDecalInstance->SetOwner(GetCharacter());
 	}
 
 	if (HUDWidgetClass)
@@ -66,7 +67,8 @@ void ABattlePlayerController::BeginPlay()
 	}
 	SetupMainHUDWidget();
 	SetupInputMode();
-	RefreshSkillCooldownUI();
+	RefreshSkillCooldown();
+	RefreshBattlePotion();
 
 	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 	if (BattleSubsystem)
@@ -138,9 +140,14 @@ void ABattlePlayerController::BeginPlay()
 
 	float CoolTImeTickInterval = 0.05f;
 	FTimerDelegate CoolTimeDelegate;
-	//CoolTimeDelegate.BindUObject(this, &ABattlePlayerController::Internal_CoolTimeTick, CoolTImeTickInterval);
+	CoolTimeDelegate.BindUObject(this, &ABattlePlayerController::Internal_CoolTimeTick, CoolTImeTickInterval);
 	GetWorld()->GetTimerManager().ClearTimer(CoolTimeTimer);
 	GetWorld()->GetTimerManager().SetTimer(CoolTimeTimer, CoolTimeDelegate, CoolTImeTickInterval, true);
+
+	FTimerDelegate BattlePotionCooldown;
+	BattlePotionCooldown.BindUObject(this, &ABattlePlayerController::UpdateBattlePotionCooldown, BattlePotionCooldownTickInterval);
+	GetWorld()->GetTimerManager().ClearTimer(BattlePotionCooldownTimer);
+	GetWorld()->GetTimerManager().SetTimer(BattlePotionCooldownTimer, BattlePotionCooldown, BattlePotionCooldownTickInterval, true);
 
 	SetBossHealthProgress(0.0f, 0.0f);
 
@@ -465,20 +472,20 @@ void ABattlePlayerController::ReadySkillSet(FGameplayTag InSkillTag, int32 InLev
 		CurrentSelectedSkillBase = SkillBaseBack;
 	}
 
-	if (CurrentSelectedSkillBase.IsValid() && CurrentSelectedSkillBase->GetSkillInfo())
+	if (CurrentSelectedSkillBase.IsValid())
 	{
-		if (!SkillCostChecker(CurrentSelectedSkillBase->GetSkillInfo()->SkillNameTag, InLevel))
+		if (!SkillCostChecker(CurrentSelectedSkillBase->GetSkillInfo().SkillNameTag, InLevel))
 		{
 			SkillCancel();
 			return;
 		}
 	}
 
-	if (SkillRangeDecalInstance && SkillBaseBack && SkillBaseBack->GetSkillInfo())
+	if (SkillRangeDecalInstance && SkillBaseBack)
 	{
 		FHitResult HitResult;
 		GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, HitResult);
-		SkillRangeDecalInstance->SkillRangeDecalOn(SkillBaseBack->GetSkillInfo()->EnabledRange, GetPawn(), HitResult.ImpactPoint);
+		SkillRangeDecalInstance->SkillRangeDecalOn(SkillBaseBack->GetSkillInfo().EnabledRange, GetPawn(), HitResult.ImpactPoint);
 	}
 
 	if (bIsAutoManual)
@@ -610,7 +617,7 @@ bool ABattlePlayerController::SkillCostChecker(FGameplayTag InSkillTag, int32 In
 						return false;
 					}
 				}
-				
+
 			}
 		}
 	}
@@ -788,7 +795,10 @@ void ABattlePlayerController::WeaponSwap()
 	SkillCancel();
 	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
 	{
+		if (bIsWeaponSwapping) return;
+
 		const FGameplayTag currentSlotTag = battleSubsystem->GetCurrentWeaponSlotTag();
+		bIsWeaponSwapping = true;
 
 		if (currentSlotTag == Arcanum::Items::ItemSlot::Weapon::Slot1)
 		{
@@ -799,12 +809,39 @@ void ABattlePlayerController::WeaponSwap()
 			battleSubsystem->SetCurrentWeaponSlotTag(Arcanum::Items::ItemSlot::Weapon::Slot1);
 		}
 
-		UE_LOG(LogTemp, Warning, TEXT("WeaponSwap CurrentSlot=%s"), *battleSubsystem->GetCurrentWeaponSlotTag().ToString());
+		UE_LOG(LogTemp, Warning, TEXT("WeaponSwap CurrentSlot=%s"), *battleSubsystem->GetCurrentWeaponSlotTag().ToString()); \
+			if (UAnimMontage* equipMontage = battleSubsystem->GetCurrentWeaponEquipMontage())
+			{
+				UE_LOG(LogTemp, Warning, TEXT("EquipMontage=%s"), *equipMontage->GetName());
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("EquipMontage=null"));
+			}
 
 		APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
 		if (playerCharacter)
 		{
 			playerCharacter->UpdateEquippedWeaponMesh();
+
+			if (UAnimMontage* equipMontage = battleSubsystem->GetCurrentWeaponEquipMontage())
+			{
+				if (USkeletalMeshComponent* meshComp = playerCharacter->GetMesh())
+				{
+					if (UAnimInstance* animInstance = meshComp->GetAnimInstance())
+					{
+						animInstance->Montage_Play(equipMontage);
+
+						FOnMontageEnded montageEndedDelegate;
+						montageEndedDelegate.BindUObject(this, &ABattlePlayerController::OnWeaponSwapMontageEnded);
+						animInstance->Montage_SetEndDelegate(montageEndedDelegate, equipMontage);
+					}
+				}
+			}
+			else
+			{
+				bIsWeaponSwapping = false;
+			}
 		}
 	}
 
@@ -823,15 +860,115 @@ void ABattlePlayerController::WeaponSwap()
 void ABattlePlayerController::Item1()
 {
 	SkillCancel();
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Item1"));
-	//Todo : 아이템1
+
+	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (!battleSubsystem) return;
+
+	TArray<FBattlePotionRuntimeSlotData>& battlePotionSlots = battleSubsystem->GetBattlePotionRuntimeSlots();
+	if (!battlePotionSlots.IsValidIndex(0)) return;
+
+	FBattlePotionRuntimeSlotData& potionSlot = battlePotionSlots[0];
+	if (!potionSlot.PotionTag.IsValid()) return;
+	if (potionSlot.Count <= 0) return;
+	if (potionSlot.CurrentCooldown > 0.0f) return;
+
+	UseBattlePotion(0);
+	potionSlot.CurrentCooldown = potionSlot.MaxCooldown;
+	RefreshBattlePotion();
 }
 
 void ABattlePlayerController::Item2()
 {
 	SkillCancel();
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Item2"));
-	//Todo : 아이템2
+
+	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (!battleSubsystem) return;
+
+	TArray<FBattlePotionRuntimeSlotData>& battlePotionSlots = battleSubsystem->GetBattlePotionRuntimeSlots();
+	if (!battlePotionSlots.IsValidIndex(1)) return;
+
+	FBattlePotionRuntimeSlotData& potionSlot = battlePotionSlots[1];
+	if (!potionSlot.PotionTag.IsValid()) return;
+	if (potionSlot.Count <= 0) return;
+	if (potionSlot.CurrentCooldown > 0.0f) return;
+
+	UseBattlePotion(1);
+	potionSlot.CurrentCooldown = potionSlot.MaxCooldown;
+	RefreshBattlePotion();
+}
+
+void ABattlePlayerController::UseBattlePotion(int32 InSlotIndex)
+{
+	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (!battleSubsystem) return;
+
+	const FInBattleData& inBattleData = battleSubsystem->GetInBattleData();
+	if (!inBattleData.PlayerData.BattlePotionSlots.IsValidIndex(InSlotIndex)) return;
+
+	const FBattlePotionSlotData& potionSlot = inBattleData.PlayerData.BattlePotionSlots[InSlotIndex];
+	if (!potionSlot.PotionTag.IsValid() || potionSlot.Count <= 0) return;
+
+	const FDTItemCatalogRow* catalogRow = FPlayerAccountService::FindItemCatalogRowByTag(this, potionSlot.PotionTag);
+	if (!catalogRow) return;
+
+	UGameDataSubsystem* gameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
+	if (!gameDataSubsystem) return;
+
+	FDTPotionInfoRow* potionRow = gameDataSubsystem->GetRow<FDTPotionInfoRow>(catalogRow->DetailTableTag, catalogRow->DetailRowName);
+	if (!potionRow) return;
+
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
+	if (!playerCharacter) return;
+
+	if (potionRow->EffectType == EPotionEffectType::Instant)
+	{
+		UCharacterBattleStatsComponent* statComponent = playerCharacter->FindComponentByClass<UCharacterBattleStatsComponent>();
+		if (!statComponent) return;
+
+		float instantValue = potionRow->InstantModifier.Value.Flat;
+
+		if (potionRow->InstantModifier.StatTag == Arcanum::BattleStat::Character::Regen::Health::Root)
+		{
+			const TArray<FRegenStat>& regenStats = statComponent->GetRegenStats();
+
+			for (const FRegenStat& regenStat : regenStats)
+			{
+				if (regenStat.ParentTag == Arcanum::BattleStat::Character::Regen::Health::Root)
+				{
+					instantValue = regenStat.GetTotalMax() * potionRow->InstantModifier.Value.Flat;
+					break;
+				}
+			}
+		}
+
+		//
+		UE_LOG(LogTemp, Warning, TEXT("[Potion Instant] Potion=%s Stat=%s Flat=%f Mul=%f FinalValue=%f"),
+			*potionSlot.PotionTag.ToString(),
+			*potionRow->InstantModifier.StatTag.ToString(),
+			potionRow->InstantModifier.Value.Flat,
+			potionRow->InstantModifier.Value.Mul,
+			instantValue);
+
+		playerCharacter->ChangeStat(potionRow->InstantModifier.StatTag, instantValue);
+	}
+	else
+	{
+		for (const FDerivedStatModifier& modifier : potionRow->Modifiers)
+		{
+			//
+			UE_LOG(LogTemp, Warning, TEXT("[Potion Duration] Potion=%s Stat=%s Flat=%f Mul=%f Duration=%f Permanent=%d"),
+				*potionSlot.PotionTag.ToString(),
+				*modifier.StatTag.ToString(),
+				modifier.Value.Flat,
+				modifier.Value.Mul,
+				modifier.Duration,
+				modifier.bIsPermanent);
+
+			playerCharacter->ApplyPotionModifier(modifier);
+		}
+	}
+
+	battleSubsystem->DecreaseBattlePotionCount(InSlotIndex);
 }
 
 void ABattlePlayerController::AutoManualModeMobile(bool bIsChecked)
@@ -1174,48 +1311,60 @@ bool ABattlePlayerController::UsingUnitCost(FGameplayTag InTag)
 
 	return true;
 }
-//
-//void ABattlePlayerController::Internal_CoolTimeTick(float DeltaTime)
-//{
-//	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
-//
-//	for (auto& UsingAllyUnit : UsingAllyUnits)
-//	{
-//		if (UsingAllyUnit.Value.CurrentCoolTime > 0.0f)
-//		{
-//			float& CurrentCoolTime = UsingAllyUnit.Value.CurrentCoolTime;
-//			const float& MaxCoolTime = UsingAllyUnit.Value.CoolTime;
-//
-//			CurrentCoolTime -= DeltaTime;
-//
-//			if (UBattleAllyUnitSlotWidget** SlotWidget = UsingAllyUnitSlots.Find(UsingAllyUnit.Key))
-//			{
-//				(*SlotWidget)->SetCoolTimeProgress(CurrentCoolTime, MaxCoolTime);
-//			}
-//		}
-//	}
-//
-//	for (auto& SkillCoolTime : SkillCoolTimes)
-//	{
-//		SkillCoolTime.Value -= DeltaTime;
-//		if (SkillCoolTime.Key == BattleSubsystem->GetCurrentBasicAttackSkillTag())
-//		{
-//			HUDWidgetInstance->GetBasicAttack()->SetCoolTimeProgress(SkillCoolTime.Value, (*SkillBaseInstances.Find(SkillCoolTime.Key))->GetCurrentLevelEntry()->Cooldown);
-//		}
-//		else if (SkillCoolTime.Key == BattleSubsystem->GetCurrentBasicSkillTag())
-//		{
-//			HUDWidgetInstance->GetBasicSkill()->SetCoolTimeProgress(SkillCoolTime.Value, (*SkillBaseInstances.Find(SkillCoolTime.Key))->GetCurrentLevelEntry()->Cooldown);
-//
-//		}
-//		else if (SkillCoolTime.Key == BattleSubsystem->GetLegendaryUltimateSkillTag())
-//		{
-//			HUDWidgetInstance->GetUltimateSkill()->SetCoolTimeProgress(SkillCoolTime.Value, (*SkillBaseInstances.Find(SkillCoolTime.Key))->GetCurrentLevelEntry()->Cooldown);
-//		}
-//	}
-//}
+
+void ABattlePlayerController::Internal_CoolTimeTick(float DeltaTime)
+{
+	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+
+	for (auto& UsingAllyUnit : UsingAllyUnits)
+	{
+		if (UsingAllyUnit.Value.CurrentCoolTime > 0.0f)
+		{
+			float& CurrentCoolTime = UsingAllyUnit.Value.CurrentCoolTime;
+			const float& MaxCoolTime = UsingAllyUnit.Value.CoolTime;
+
+			CurrentCoolTime -= DeltaTime;
+
+			if (UBattleAllyUnitSlotWidget** SlotWidget = UsingAllyUnitSlots.Find(UsingAllyUnit.Key))
+			{
+				(*SlotWidget)->SetCoolTimeProgress(CurrentCoolTime, MaxCoolTime);
+			}
+		}
+	}
+
+	for (auto& SkillCoolTime : SkillCoolTimes)
+	{
+		SkillCoolTime.Value -= DeltaTime;
+		/*if (SkillCoolTime.Key == BattleSubsystem->GetCurrentBasicAttackSkillTag())
+		{
+			HUDWidgetInstance->GetBasicAttack()->SetCoolTimeProgress(SkillCoolTime.Value, (*SkillBaseInstances.Find(SkillCoolTime.Key))->GetCurrentLevelEntry()->Cooldown);
+		}
+		else if (SkillCoolTime.Key == BattleSubsystem->GetCurrentBasicSkillTag())
+		{
+			HUDWidgetInstance->GetBasicSkill()->SetCoolTimeProgress(SkillCoolTime.Value, (*SkillBaseInstances.Find(SkillCoolTime.Key))->GetCurrentLevelEntry()->Cooldown);
+
+		}
+		else if (SkillCoolTime.Key == BattleSubsystem->GetLegendaryUltimateSkillTag())
+		{
+			HUDWidgetInstance->GetUltimateSkill()->SetCoolTimeProgress(SkillCoolTime.Value, (*SkillBaseInstances.Find(SkillCoolTime.Key))->GetCurrentLevelEntry()->Cooldown);
+		}*/
+	}
+}
 
 void ABattlePlayerController::InitialSkillBase()
 {
+	/*const TMap<FGameplayTag, FDerivedStatModifier>* weaponSlot1OnHitTarget = InBattleData.WeaponOnHitTarget.Find(Arcanum::Items::ItemSlot::Weapon::Slot1);
+	const TMap<FGameplayTag, FDerivedStatModifier>* weaponSlot2OnHitTarget = InBattleData.WeaponOnHitTarget.Find(Arcanum::Items::ItemSlot::Weapon::Slot2);
+	const TMap<FGameplayTag, FDerivedStatModifier>* legendaryWeaponOnHitTarget = InBattleData.WeaponOnHitTarget.Find(Arcanum::Items::ItemSlot::Weapon::Legendary);
+
+	if (weaponSlot1OnHitTarget)
+	{
+		const FDerivedStatModifier* healthModifier = weaponSlot1OnHitTarget->Find(Arcanum::BattleStat::Character::Regen::Health::Value);
+		if (healthModifier)
+		{
+			const float damage = healthModifier->Value.Flat;
+		}
+	}*/
 	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 	UGameDataSubsystem* DataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
 
@@ -1242,11 +1391,24 @@ void ABattlePlayerController::InitialSkillBase()
 
 			if (DTSkillsDataRow)
 			{
-				SkillBaseBack->Initialize(GetPawn(), &DTSkillsDataRow->SkillData, SkillData.SkillLevel, DTSkillsDataRow->SkillData.TargetFilterTag);
+				const TMap<FGameplayTag, FDerivedStatModifier>* weaponSlot1OnHitTarget = BattleSubsystem->GetInBattleData().WeaponOnHitTarget.Find(Arcanum::Items::ItemSlot::Weapon::Slot1);
+
+				FDerivedStatModifier AddModi;
+				if (weaponSlot1OnHitTarget)
+				{
+					AddModi = weaponSlot1OnHitTarget->Array()[0].Value;
+
+					SkillBaseBack->Initialize(GetPawn(), &DTSkillsDataRow->SkillData, SkillData.SkillLevel, DTSkillsDataRow->SkillData.TargetFilterTag, AddModi);
+				}
+				else
+				{
+					SkillBaseBack->Initialize(GetPawn(), &DTSkillsDataRow->SkillData, SkillData.SkillLevel, DTSkillsDataRow->SkillData.TargetFilterTag, FDerivedStatModifier());
+
+				}
 			}
 		}
 	}
-	
+
 	// 슬롯2 기본공격
 	SkillData = BattleSubsystem->GetInBattleData().BattleWeaponSkill.WeaponSlot2BasicAttackSkill;
 	if (!SkillBaseInstances.Contains(SkillData.SkillTag))
@@ -1267,7 +1429,20 @@ void ABattlePlayerController::InitialSkillBase()
 
 			if (DTSkillsDataRow)
 			{
-				SkillBaseBack->Initialize(GetPawn(), &DTSkillsDataRow->SkillData, SkillData.SkillLevel, DTSkillsDataRow->SkillData.TargetFilterTag);
+				const TMap<FGameplayTag, FDerivedStatModifier>* weaponSlot1OnHitTarget = BattleSubsystem->GetInBattleData().WeaponOnHitTarget.Find(Arcanum::Items::ItemSlot::Weapon::Slot2);
+
+				FDerivedStatModifier AddModi;
+				if (weaponSlot1OnHitTarget)
+				{
+					AddModi = weaponSlot1OnHitTarget->Array()[0].Value;
+
+					SkillBaseBack->Initialize(GetPawn(), &DTSkillsDataRow->SkillData, SkillData.SkillLevel, DTSkillsDataRow->SkillData.TargetFilterTag, AddModi);
+				}
+				else
+				{
+					SkillBaseBack->Initialize(GetPawn(), &DTSkillsDataRow->SkillData, SkillData.SkillLevel, DTSkillsDataRow->SkillData.TargetFilterTag, FDerivedStatModifier());
+
+				}
 			}
 		}
 	}
@@ -1348,6 +1523,20 @@ void ABattlePlayerController::InitialSkillBase()
 	}
 }
 
+void ABattlePlayerController::RangeDecalOn(float DecalSize)
+{
+	SkillRangeDecalInstance->SkillRangeDecalOn(DecalSize);
+	FTimerDelegate TimerDelegate;
+	TimerDelegate.BindUObject(this, &ABattlePlayerController::Internal_RangeDecalOn, DecalSize);
+	GetWorld()->GetTimerManager().ClearTimer(RangeDecalTimerHandle);
+	GetWorld()->GetTimerManager().SetTimer(RangeDecalTimerHandle, TimerDelegate, RangeTime, false, RangeTime);
+}
+
+void ABattlePlayerController::Internal_RangeDecalOn(float DecalSize)
+{
+	SkillRangeDecalInstance->SkillRangeDecalOff();
+}
+
 // ========================================================
 // 인풋모드 설정
 // ========================================================
@@ -1372,8 +1561,6 @@ void ABattlePlayerController::SetupInputMode()
 	//InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
 	SetInputMode(InputMode);
 }
-
-
 
 // ========================================================
 // 입력 관련
@@ -1476,6 +1663,8 @@ void ABattlePlayerController::TriggerBasicAttackHit()
 	ASkillActor* skillActor = Cast<ASkillActor>(spawnedActor);
 	if (!skillActor) return;
 
+	RangeDecalOn(skillObject->GetSkillInfo().EnabledRange);
+
 	skillActor->ActivateSkillActor(skillObject, playerCharacter, spawnLocation, spawnRotation);
 
 	StartBasicAttackCooldown();
@@ -1483,6 +1672,8 @@ void ABattlePlayerController::TriggerBasicAttackHit()
 
 void ABattlePlayerController::TriggerSkill()
 {
+	UE_LOG(LogTemp, Warning, TEXT("TriggerSkill Enter Ultimate=%d"), bIsUltimateAiming);
+
 	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 	if (!battleSubsystem) return;
 
@@ -1520,11 +1711,11 @@ void ABattlePlayerController::TriggerSkill()
 		*skillData->SkillTag.ToString(),
 		skillData->SkillLevel);
 
-	
+
 	//if (bIsUltimateAiming) return;
 
 	FVector targetLocation = playerCharacter->GetUltimateLocation();
-	skillObject->Initialize(playerCharacter, skillInfo, skillData->SkillLevel, skillInfo->TargetFilterTag, nullptr, targetLocation);
+	skillObject->Initialize(playerCharacter, skillInfo, skillData->SkillLevel, skillInfo->TargetFilterTag, FDerivedStatModifier(), nullptr, targetLocation);
 
 	const FTransform spawnTransform = playerCharacter->GetActorTransform();
 	const FVector spawnLocation = spawnTransform.GetLocation();
@@ -1533,8 +1724,10 @@ void ABattlePlayerController::TriggerSkill()
 	AActor* spawnedActor = poolingSubsystem->SpawnFromPool(skillActorClass, spawnTransform);
 	ASkillActor* skillActor = Cast<ASkillActor>(spawnedActor);
 	if (!skillActor) return;
-	if (!SkillCostChecker(skillObject->GetSkillInfo()->SkillNameTag, skillObject->GetCurrentLevelEntry()->Level, true)) return;
-	UseSkillCost(skillObject->GetSkillInfo()->SkillNameTag);
+	if (!SkillCostChecker(skillObject->GetSkillInfo().SkillNameTag, skillObject->GetCurrentLevelEntry()->Level, true)) return;
+	UseSkillCost(skillObject->GetSkillInfo().SkillNameTag);
+
+	RangeDecalOn(skillObject->GetSkillInfo().EnabledRange);
 
 	skillActor->ActivateSkillActor(skillObject, playerCharacter, spawnLocation, spawnRotation);
 	skillActor->SetTargetActor(nullptr);
@@ -1546,7 +1739,16 @@ void ABattlePlayerController::TriggerSkill()
 
 void ABattlePlayerController::InputBasicAttack()
 {
-	if (BasicAttackCooldownRemaining > 0.0f) return;
+	if (bIsWeaponSwapping) return;
+
+	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
+	{
+		const FGameplayTag skillTag = battleSubsystem->GetCurrentBasicAttackSkillTag();
+		if (GetSkillCooldownRemaining(skillTag) > 0.0f)
+		{
+			return;
+		}
+	}
 
 	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
 	if (playerCharacter)
@@ -1557,13 +1759,30 @@ void ABattlePlayerController::InputBasicAttack()
 
 void ABattlePlayerController::InputSkill()
 {
-	if (BasicSkillCooldownRemaining > 0.0f) return;
+	if (bIsWeaponSwapping) return;
+
+	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
+	{
+		const FGameplayTag skillTag = battleSubsystem->GetCurrentBasicSkillTag();
+		const int32 skillLevel = battleSubsystem->GetCurrentBasicSkillLevel();
+		if (!SkillCostChecker(skillTag, skillLevel)) return;
+
+		if (GetSkillCooldownRemaining(skillTag) > 0.0f)
+		{
+			return;
+		}
+	}
 
 	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
 	if (playerCharacter)
 	{
 		playerCharacter->HandleCommonSkillInput();
 	}
+}
+
+void ABattlePlayerController::OnWeaponSwapMontageEnded(UAnimMontage* InMontage, bool bInterrupted)
+{
+	bIsWeaponSwapping = false;
 }
 
 // ========================================================
@@ -1593,17 +1812,23 @@ void ABattlePlayerController::UltimateSkillEnd()
 	{
 		HUDWidgetInstance->SetLegendaryButtonIcon(battleSubsystem->GetLegendaryWeaponIcon());
 	}
+	if (ActiveUltimateCameraShake)
+	{
+		ActiveUltimateCameraShake->StopShake(false);
+		ActiveUltimateCameraShake = nullptr;
+	}
 }
 
 void ABattlePlayerController::UltimateSkillPressed()
 {
+	if (bIsWeaponSwapping) return;
 	if (bIsUltimateAiming) return;
-	if (UltimateCooldownRemaining > 0.0f) return;
 
 	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 	if (!battleSubsystem) return;
 
 	const FGameplayTag skillTag = battleSubsystem->GetLegendaryUltimateSkillTag();
+	if (GetSkillCooldownRemaining(skillTag) > 0.0f) return;
 	if (!skillTag.IsValid()) return;
 	if (!SkillCostChecker(skillTag, battleSubsystem->GetLegendaryUltimateSkillLevel(), true)) return;
 
@@ -1689,6 +1914,12 @@ void ABattlePlayerController::ExecuteUltimateSkill()
 
 		playerCharacter->PlayUltimateReleaseMontage();
 	}
+
+	if (ActiveUltimateCameraShake)
+	{
+		ActiveUltimateCameraShake->StopShake(false);
+		ActiveUltimateCameraShake = nullptr;
+	}
 }
 
 void ABattlePlayerController::StartUltimatePresentation()
@@ -1710,6 +1941,11 @@ void ABattlePlayerController::StartUltimatePresentation()
 		}
 	}
 
+	if (UltimateCameraShakeClass && PlayerCameraManager)
+	{
+		ActiveUltimateCameraShake = PlayerCameraManager->StartCameraShake(UltimateCameraShakeClass);
+	}
+
 	if (UltimatePostProcessVolume)
 	{
 		UltimatePostProcessVolume->bUnbound = true;
@@ -1722,11 +1958,6 @@ void ABattlePlayerController::PlayUltimateReleasePresentation()
 	bIsUltimatePresentationRestoring = false;
 	bIsUltimateReleaseZoomActive = true;
 	UltimateTargetPostProcessBlendWeight = UltimatePressPostProcessBlendWeight;
-
-	if (UltimateReleaseCameraShakeClass)
-	{
-		ClientStartCameraShake(UltimateReleaseCameraShakeClass);
-	}
 
 	if (UltimatePostProcessVolume)
 	{
@@ -1791,28 +2022,69 @@ void ABattlePlayerController::UpdateUltimatePresentation(float DeltaTime)
 	}
 }
 
+void ABattlePlayerController::StartSkillCooldown(const FGameplayTag& InSkillTag, float InCooldown)
+{
+	if (!InSkillTag.IsValid()) return;
+	if (InCooldown <= 0.0f) return;
+
+	SkillCooldownMap.FindOrAdd(InSkillTag) = InCooldown;
+	SkillCooldownRemainingMap.FindOrAdd(InSkillTag) = InCooldown;
+
+	RefreshSkillCooldown();
+
+	GetWorldTimerManager().SetTimer(
+		SkillCooldownTimerHandle,
+		this,
+		&ABattlePlayerController::UpdateSkillCooldown,
+		SkillCooldownTickInterval,
+		true
+	);
+}
+
+float ABattlePlayerController::GetSkillCooldownRemaining(const FGameplayTag& InSkillTag) const
+{
+	if (const float* foundRemaining = SkillCooldownRemainingMap.Find(InSkillTag))
+	{
+		return *foundRemaining;
+	}
+	return 0.0f;
+}
+
+float ABattlePlayerController::GetSkillCooldown(const FGameplayTag& InSkillTag) const
+{
+	if (const float* foundCooldown = SkillCooldownMap.Find(InSkillTag))
+	{
+		return *foundCooldown;
+	}
+	return 0.0f;
+}
+
 void ABattlePlayerController::UpdateSkillCooldown()
 {
-	if (BasicAttackCooldownRemaining > 0.0f)
+	TArray<FGameplayTag> expiredSkillTags;
+
+	for (TPair<FGameplayTag, float>& skillCooldownPair : SkillCooldownRemainingMap)
 	{
-		BasicAttackCooldownRemaining = FMath::Max(0.0f, BasicAttackCooldownRemaining - SkillCooldownTickInterval);
+		if (skillCooldownPair.Value > 0.0f)
+		{
+			skillCooldownPair.Value = FMath::Max(0.0f, skillCooldownPair.Value - SkillCooldownTickInterval);
+		}
+
+		if (skillCooldownPair.Value <= 0.0f)
+		{
+			expiredSkillTags.Add(skillCooldownPair.Key);
+		}
 	}
 
-	if (BasicSkillCooldownRemaining > 0.0f)
+	for (const FGameplayTag& expiredSkillTag : expiredSkillTags)
 	{
-		BasicSkillCooldownRemaining = FMath::Max(0.0f, BasicSkillCooldownRemaining - SkillCooldownTickInterval);
+		SkillCooldownRemainingMap.Remove(expiredSkillTag);
+		SkillCooldownMap.Remove(expiredSkillTag);
 	}
 
-	if (UltimateCooldownRemaining > 0.0f)
-	{
-		UltimateCooldownRemaining = FMath::Max(0.0f, UltimateCooldownRemaining - SkillCooldownTickInterval);
-	}
+	RefreshSkillCooldown();
 
-	RefreshSkillCooldownUI();
-
-	if (BasicAttackCooldownRemaining <= 0.0f &&
-		BasicSkillCooldownRemaining <= 0.0f &&
-		UltimateCooldownRemaining <= 0.0f)
+	if (SkillCooldownRemainingMap.IsEmpty())
 	{
 		GetWorldTimerManager().ClearTimer(SkillCooldownTimerHandle);
 	}
@@ -1822,21 +2094,10 @@ void ABattlePlayerController::StartBasicAttackCooldown()
 {
 	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
 	{
-		BasicAttackCooldown = battleSubsystem->GetCurrentBasicAttackCooldown();
-		BasicAttackCooldownRemaining = BasicAttackCooldown;
+		const FGameplayTag skillTag = battleSubsystem->GetCurrentBasicAttackSkillTag();
+		const float cooldown = battleSubsystem->GetCurrentBasicAttackCooldown();
 
-		RefreshSkillCooldownUI();
-
-		if (BasicAttackCooldownRemaining > 0.0f)
-		{
-			GetWorldTimerManager().SetTimer(
-				SkillCooldownTimerHandle,
-				this,
-				&ABattlePlayerController::UpdateSkillCooldown,
-				SkillCooldownTickInterval,
-				true
-			);
-		}
+		StartSkillCooldown(skillTag, cooldown);
 	}
 }
 
@@ -1844,21 +2105,9 @@ void ABattlePlayerController::StartBasicSkillCooldown()
 {
 	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
 	{
-		BasicSkillCooldown = battleSubsystem->GetCurrentBasicSkillCooldown();
-		BasicSkillCooldownRemaining = BasicSkillCooldown;
-
-		RefreshSkillCooldownUI();
-
-		if (BasicSkillCooldownRemaining > 0.0f)
-		{
-			GetWorldTimerManager().SetTimer(
-				SkillCooldownTimerHandle,
-				this,
-				&ABattlePlayerController::UpdateSkillCooldown,
-				SkillCooldownTickInterval,
-				true
-			);
-		}
+		const FGameplayTag skillTag = battleSubsystem->GetCurrentBasicSkillTag();
+		const float cooldown = battleSubsystem->GetCurrentBasicSkillCooldown();
+		StartSkillCooldown(skillTag, cooldown);
 	}
 }
 
@@ -1866,48 +2115,97 @@ void ABattlePlayerController::StartUltimateCooldown()
 {
 	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
 	{
-		UltimateCooldown = battleSubsystem->GetLegendaryUltimateCooldown();
-		UltimateCooldownRemaining = UltimateCooldown;
+		const FGameplayTag skillTag = battleSubsystem->GetLegendaryUltimateSkillTag();
+		const float cooldown = battleSubsystem->GetLegendaryUltimateCooldown();
+		StartSkillCooldown(skillTag, cooldown);
+	}
+}
 
-		RefreshSkillCooldownUI();
-
-		if (UltimateCooldownRemaining > 0.0f)
+void ABattlePlayerController::RefreshSkillCooldown()
+{
+	if (HUDWidgetInstance)
+	{
+		if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
 		{
-			GetWorldTimerManager().SetTimer(
-				SkillCooldownTimerHandle,
-				this,
-				&ABattlePlayerController::UpdateSkillCooldown,
-				SkillCooldownTickInterval,
-				true
-			);
+			const FGameplayTag basicAttackSkillTag = battleSubsystem->GetCurrentBasicAttackSkillTag();
+			const FGameplayTag basicSkillTag = battleSubsystem->GetCurrentBasicSkillTag();
+			const FGameplayTag ultimateSkillTag = battleSubsystem->GetLegendaryUltimateSkillTag();
+
+			float basicAttackPercent = 0.0f;
+			const float basicAttackCooldown = GetSkillCooldown(basicAttackSkillTag);
+			if (basicAttackCooldown > 0.0f)
+			{
+				basicAttackPercent = GetSkillCooldownRemaining(basicAttackSkillTag) / basicAttackCooldown;
+			}
+
+			float basicSkillPercent = 0.0f;
+			const float basicSkillCooldown = GetSkillCooldown(basicSkillTag);
+			if (basicSkillCooldown > 0.0f)
+			{
+				basicSkillPercent = GetSkillCooldownRemaining(basicSkillTag) / basicSkillCooldown;
+			}
+
+			float ultimatePercent = 0.0f;
+			const float ultimateCooldown = GetSkillCooldown(ultimateSkillTag);
+			if (ultimateCooldown > 0.0f)
+			{
+				ultimatePercent = GetSkillCooldownRemaining(ultimateSkillTag) / ultimateCooldown;
+			}
+
+			HUDWidgetInstance->SetBasicAttackCooldown(basicAttackPercent);
+			HUDWidgetInstance->SetBasicSkillCooldown(basicSkillPercent);
+			HUDWidgetInstance->SetUltimateCooldown(ultimatePercent);
 		}
 	}
 }
 
-void ABattlePlayerController::RefreshSkillCooldownUI()
+void ABattlePlayerController::RefreshBattlePotion()
 {
-	if (HUDWidgetInstance)
+	if (!HUDWidgetInstance) return;
+
+	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (!battleSubsystem) return;
+
+	TArray<FBattlePotionRuntimeSlotData>& battlePotionSlots = battleSubsystem->GetBattlePotionRuntimeSlots();
+
+	if (battlePotionSlots.IsValidIndex(0))
 	{
-		float basicAttackPercent = 0.0f;
-		if (BasicAttackCooldown > 0.0f)
-		{
-			basicAttackPercent = BasicAttackCooldownRemaining / BasicAttackCooldown;
-		}
-
-		float basicSkillPercent = 0.0f;
-		if (BasicSkillCooldown > 0.0f)
-		{
-			basicSkillPercent = BasicSkillCooldownRemaining / BasicSkillCooldown;
-		}
-
-		float ultimatePercent = 0.0f;
-		if (UltimateCooldown > 0.0f)
-		{
-			ultimatePercent = UltimateCooldownRemaining / UltimateCooldown;
-		}
-
-		HUDWidgetInstance->SetBasicAttackCooldown(basicAttackPercent);
-		HUDWidgetInstance->SetBasicSkillCooldown(basicSkillPercent);
-		HUDWidgetInstance->SetUltimateCooldown(ultimatePercent);
+		HUDWidgetInstance->SetBattlePotionSlot(0, battlePotionSlots[0]);
 	}
+	else
+	{
+		HUDWidgetInstance->SetBattlePotionSlot(0, FBattlePotionRuntimeSlotData());
+	}
+
+	if (battlePotionSlots.IsValidIndex(1))
+	{
+		HUDWidgetInstance->SetBattlePotionSlot(1, battlePotionSlots[1]);
+	}
+	else
+	{
+		HUDWidgetInstance->SetBattlePotionSlot(1, FBattlePotionRuntimeSlotData());
+	}
+}
+
+void ABattlePlayerController::UpdateBattlePotionCooldown(float InDeltaTime)
+{
+	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
+	{
+		TArray<FBattlePotionRuntimeSlotData>& battlePotionSlots = battleSubsystem->GetBattlePotionRuntimeSlots();
+
+		for (FBattlePotionRuntimeSlotData& potionSlot : battlePotionSlots)
+		{
+			if (potionSlot.CurrentCooldown > 0.0f)
+			{
+				potionSlot.CurrentCooldown -= InDeltaTime;
+
+				if (potionSlot.CurrentCooldown < 0.0f)
+				{
+					potionSlot.CurrentCooldown = 0.0f;
+				}
+			}
+		}
+	}
+
+	RefreshBattlePotion();
 }

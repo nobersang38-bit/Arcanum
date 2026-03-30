@@ -76,6 +76,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UProgressBar> CoolTimeProgress = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UTextBlock> StackCountText = nullptr;
 #pragma endregion
 
 
@@ -109,16 +112,18 @@ protected:
 #pragma endregion
 
 
-#pragma region 스킬 쿨타임
+#pragma region 물약, 스킬
 public:
 	/* 스킬 쿨타임 머티리얼 진행도 갱신 */
 	void SetSkillCooldownPercent(float InPercent);
 
+	void SetStackCount(int32 InCount);
+
+	void ClearStackCount();
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UImage> SkillCooldownImage = nullptr;
 
-	/* 스킬 쿨타임 머티리얼 인스턴스 */
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> SkillCooldownMID = nullptr;
 #pragma endregion

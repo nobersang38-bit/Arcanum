@@ -21,6 +21,9 @@
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Struct.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
 #include "Perception/AIPerceptionComponent.h"
+#include "Character/BaseUnitCharacter.h"
+#include "Core/SubSystem/PoolingSubsystem.h"
+#include "Object/Actor/FloatingDamageText.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -78,6 +81,14 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	OutlineDynamicMI = UMaterialInstanceDynamic::Create(GetMesh()->GetOverlayMaterial(), this);
+	GetMesh()->SetOverlayMaterial(OutlineDynamicMI);
+	MaterialBackup.Empty();
+	for (int32 i = 0; i < GetMesh()->GetMaterials().Num(); i++)
+	{
+		MaterialBackup.Add(GetMesh()->GetMaterials()[i]);
+	}
+
 	if (AIControllerClass)
 	{
 		CachedAIC = GetWorld()->SpawnActor<AAIController>(AIControllerClass);
@@ -88,10 +99,21 @@ void APlayerCharacter::BeginPlay()
 	if (BattleSubsystem)
 	{
 		TeamTag = BattleSubsystem->AllyTeamTag;
+
 		StatComponent->SetData(BattleSubsystem->GetInBattleData().PlayerBattleStat);
 		StatComponent->OnCharacterRegenStatChanged.AddUObject(this, &APlayerCharacter::OnPlayerRegenStatChanged);
 		StatusActionComponent->SetupAction();
+
+		for (int i = 0; i < BattleSubsystem->GetInBattleData().EquippedOwnerStats.Num(); i++)
+		{
+			FDerivedStatModifier DerivedStatModifier = BattleSubsystem->GetInBattleData().EquippedOwnerStats[i];
+			DerivedStatModifier.bIsPermanent = true;
+			DerivedStatModifier.ModifierId = FGuid::NewGuid();
+			StatComponent->ApplyDurationModifier(DerivedStatModifier);
+		}
+		StatComponent->SetCurrentValueMax();
 	}
+
 	FGameplayTag PlayerID = FGameplayTag::RequestGameplayTag(TEXT("Arcanum.Player.ID.Elara"));
 	GameplayTags.AddTag(PlayerID);
 
@@ -105,7 +127,7 @@ void APlayerCharacter::BeginPlay()
 	{
 		if (const FRegenStat* RegenStat = StatComponent->FindRegenStat(HealthTag))
 		{
-			OwnerPC->SetPlayerHealthProgress(RegenStat->Current, RegenStat->GetBaseMax());
+			OwnerPC->SetPlayerHealthProgress(RegenStat->Current, RegenStat->GetTotalMax());
 		}
 	}
 
@@ -117,6 +139,31 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void APlayerCharacter::OuntLineStart(const UCurveFloat* CurveFloat, float InTime, float DeltaTime)
+{
+	RefOutlineTime = 0.0f;
+	FTimerDelegate OutlineDelegate;
+	OutlineDelegate.BindWeakLambda(this, [this, CurveFloat, InTime, DeltaTime]()
+		{
+			if (OutlineDynamicMI)
+			{
+				float Time = FMath::Clamp(RefOutlineTime / InTime, 0.0f, 1.0f);
+				float Value = CurveFloat->GetFloatValue(Time);
+				OutlineDynamicMI->SetScalarParameterValue(FName("Weight0"), Value);
+				RefOutlineTime += DeltaTime;
+
+				if (Time >= 1.0f)
+				{
+					OutlineDynamicMI->SetScalarParameterValue(FName("Weight0"), 0.0f);
+					GetWorld()->GetTimerManager().ClearTimer(OutlineTimeHandle);
+				}
+			}
+		});
+
+	GetWorld()->GetTimerManager().ClearTimer(OutlineTimeHandle);
+	GetWorld()->GetTimerManager().SetTimer(OutlineTimeHandle, OutlineDelegate, DeltaTime, true);
 }
 
 void APlayerCharacter::SetAutoMode(ABattlePlayerController* MainController, bool bIsAuto)
@@ -229,7 +276,49 @@ void APlayerCharacter::RecievedDamage(AActor* DamagedActor, float Damage, const 
 	const FRegenStat* HealthStat = StatComponent->FindRegenStat(HealthTag);
 	if (HealthStat)
 	{
-		StatComponent->ChangeStatValue(HealthTag, -Damage, DamageCauser);
+		const FNonRegenStat* EvasionStat = StatComponent->FindNonRegenStat(StatusActionComponent->EvasionTag);
+		if (EvasionStat)
+		{
+			float EvasionPercent = EvasionStat->GetTotalValue();
+			bool bIsEvasionSuccess = (FMath::FRandRange(0.0f, 1.0f) <= EvasionPercent);
+			if (bIsEvasionSuccess)
+			{
+				UPoolingSubsystem* PoolingSystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
+				if (PoolingSystem && TextFloatingClass)
+				{
+					FTransform Transform;
+					Transform.SetLocation((GetActorLocation() + (GetActorUpVector() * 60.0f)) + (FMath::VRand() * 20.0f));
+					AActor* FloatingActor = PoolingSystem->SpawnFromPool(TextFloatingClass, Transform);
+					if (AFloatingDamageText* FloatingText = Cast<AFloatingDamageText>(FloatingActor))
+					{
+						FloatingText->SetText(FText::FromString(TEXT("회피")));
+					}
+				}
+				return;
+			}
+			else
+			{
+				if (StatComponent->FindNonRegenStat(Arcanum::BattleStat::Character::NonRegen::DamageReduction::Root))
+				{
+					Damage *= (1.0f - StatComponent->FindNonRegenStat(Arcanum::BattleStat::Character::NonRegen::DamageReduction::Root)->GetTotalValue());
+					StatComponent->ChangeStatValue(HealthTag, -Damage, DamageCauser);
+					OuntLineStart(OutLineCurve, OutLineTime, 0.005f);
+
+					UPoolingSubsystem* PoolingSystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
+					if (PoolingSystem && TextFloatingClass)
+					{
+						FTransform Transform;
+						Transform.SetLocation((GetActorLocation() + (GetActorUpVector() * 60.0f)) + (FMath::VRand() * 20.0f));
+						AActor* FloatingActor = PoolingSystem->SpawnFromPool(TextFloatingClass, Transform);
+						if (AFloatingDamageText* FloatingText = Cast<AFloatingDamageText>(FloatingActor))
+						{
+							FString ResultString = FString::Printf(TEXT("%.0f"), -FMath::Abs(Damage));
+							FloatingText->SetText(FText::FromString(ResultString));
+						}
+					}
+				}
+			}
+		}
 		if (OwnerPC)
 		{
 			OwnerPC->SetPlayerHealthProgress(HealthStat->Current, HealthStat->GetTotalMax());
@@ -377,6 +466,21 @@ void APlayerCharacter::PlayerBasicAttack()
 void APlayerCharacter::AddCurrentStat(FGameplayTag InTag, float InValue)
 {
 
+}
+
+ABattlePlayerController* APlayerCharacter::GetBattleOwnerController() const
+{
+	if (ABattlePlayerController* ownerPC = Cast<ABattlePlayerController>(GetController()))
+	{
+		return ownerPC;
+	}
+
+	if (CachedOwnerPC)
+	{
+		return CachedOwnerPC;
+	}
+
+	return nullptr;
 }
 
 void APlayerCharacter::UpdateEquippedWeaponMesh()
@@ -585,7 +689,8 @@ void APlayerCharacter::HandleBasicAttackInput()
 	FOnMontageEnded montageEndedDelegate;
 	montageEndedDelegate.BindUObject(this, &APlayerCharacter::OnBasicAttackMontageEnded);
 
-	animInstance->Montage_Play(montage);
+	float MontagePlayRate = StatComponent->FindNonRegenStat(Arcanum::BattleStat::Character::NonRegen::AttackSpeed::Root)->GetTotalValue();
+	animInstance->Montage_Play(montage, MontagePlayRate);
 	animInstance->Montage_SetEndDelegate(montageEndedDelegate, montage);
 }
 
@@ -672,4 +777,3 @@ void APlayerCharacter::HandleCommonSkillInput()
 	animInstance->Montage_Play(montage);
 	animInstance->Montage_SetEndDelegate(montageEndedDelegate, montage);
 }
-

@@ -7,6 +7,8 @@
 #include "Perception/AIPerceptionComponent.h"
 #include "Interface/RuntimeUnitDataInterface.h"
 #include "Core/SubSystem/BattlefieldManagerSubsystem.h"
+#include "Character/PlayerCharacter.h"
+#include "UI/Battle/BattlePlayerController.h"
 
 UBTService_PlayerSelectTarget::UBTService_PlayerSelectTarget()
 {
@@ -26,22 +28,34 @@ void UBTService_PlayerSelectTarget::InitializeFromAsset(UBehaviorTree& Asset)
 	if (BBAsset)
 	{
 		CurrentDistance.ResolveSelectedKey(*BBAsset);
+		IsMoveKey.ResolveSelectedKey(*BBAsset);
 	}
+}
+
+void UBTService_PlayerSelectTarget::OnSearchStart(FBehaviorTreeSearchData& SearchData)
+{
+	Super::OnSearchStart(SearchData);
 }
 
 void UBTService_PlayerSelectTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
+	if (!CachedPlayerCharacter.IsValid())
+	{
+		if (APlayerCharacter* TempPlayerCharacter = Cast<APlayerCharacter>(OwnerComp.GetAIOwner()->GetPawn()))
+		{
+			CachedPlayerCharacter = TempPlayerCharacter;
+
+			if (ABattlePlayerController* TempPlayerController = Cast<ABattlePlayerController>(CachedPlayerCharacter->CachedOwnerPC))
+			{
+				CachedPlayerController = TempPlayerController;
+			}
+		}
+	}
 	APlayerAIController* PlayerAIC = Cast<APlayerAIController>(OwnerComp.GetAIOwner());
 	if (!PlayerAIC) return;
 	UBehaviorTreeComponent* Behavior = &OwnerComp;
 	if (!Behavior) return;
-
-	/*AActor* TempTargetActor = nullptr;
-	if (UBehaviorTreeComponent* Behavior = &OwnerComp)
-	{
-		TempTargetActor = Cast<AActor>(Behavior->GetBlackboardComponent()->GetValueAsObject(GetSelectedBlackboardKey()));
-	}*/
 
 	APawn* MyPawn = PlayerAIC->GetPawn();
 	if (!MyPawn) return;
@@ -50,34 +64,38 @@ void UBTService_PlayerSelectTarget::TickNode(UBehaviorTreeComponent& OwnerComp, 
 	TArray<AActor*> PerceivedActors;
 	PlayerAIC->GetAIPerceptionComp()->GetKnownPerceivedActors(nullptr, PerceivedActors);
 
+
 	AActor* ClosestActor = nullptr;
-	float MinDistance = MAX_FLT; // 아주 큰 값으로 초기화
+	ClosestActor = TargetPriorityWeightData.CalculateWinActor(MyPawn, PerceivedActors);
 
-	for (AActor* Actor : PerceivedActors)
-	{
-		// 2. 유효성 및 팀 확인 (이전에 만든 인터페이스 활용)
-		if (!Actor || Actor == MyPawn) continue;
+	//float MinDistance = MAX_FLT; // 아주 큰 값으로 초기화
 
-		// 적대적 관계인지 확인
-		if (PlayerAIC->GetTeamAttitudeTowards(*Actor) != ETeamAttitude::Hostile) continue;
 
-		// 죽었는지 확인 (인터페이스 활용)
-		if (Actor->Implements<URuntimeUnitDataInterface>())
-		{
-			if (IRuntimeUnitDataInterface* Interface = Cast<IRuntimeUnitDataInterface>(Actor))
-			{
-				if (Interface->GetIsDead()) continue;
-			}
-		}
+	//for (AActor* Actor : PerceivedActors)
+	//{
+	//	// 2. 유효성 및 팀 확인 (이전에 만든 인터페이스 활용)
+	//	if (!Actor || Actor == MyPawn) continue;
 
-		// 3. 거리 계산 및 최솟값 갱신
-		float Distance = FVector::DistSquared(MyPawn->GetActorLocation(), Actor->GetActorLocation());
-		if (Distance < MinDistance)
-		{
-			MinDistance = Distance;
-			ClosestActor = Actor;
-		}
-	}
+	//	// 적대적 관계인지 확인
+	//	if (PlayerAIC->GetTeamAttitudeTowards(*Actor) != ETeamAttitude::Hostile) continue;
+
+	//	// 죽었는지 확인 (인터페이스 활용)
+	//	if (Actor->Implements<URuntimeUnitDataInterface>())
+	//	{
+	//		if (IRuntimeUnitDataInterface* Interface = Cast<IRuntimeUnitDataInterface>(Actor))
+	//		{
+	//			if (Interface->GetIsDead()) continue;
+	//		}
+	//	}
+
+	//	// 3. 거리 계산 및 최솟값 갱신
+	//	float Distance = FVector::DistSquared(MyPawn->GetActorLocation(), Actor->GetActorLocation());
+	//	if (Distance < MinDistance)
+	//	{
+	//		MinDistance = Distance;
+	//		ClosestActor = Actor;
+	//	}
+	//}
 
 	AActor* TargetActor = Cast<AActor>(Behavior->GetBlackboardComponent()->GetValueAsObject(GetSelectedBlackboardKey()));
 	if (!ClosestActor)
@@ -102,16 +120,30 @@ void UBTService_PlayerSelectTarget::TickNode(UBehaviorTreeComponent& OwnerComp, 
 		UE_LOG(LogTemp, Log, TEXT("가장 가까운 적 발견: %s"), *ClosestActor->GetName());
 	}
 
-	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
-	if (BattleSubsystem && MyPawn)
-	{
-		AActor* Target = Cast<AActor>(Behavior->GetBlackboardComponent()->GetValueAsObject(BlackboardKey.SelectedKeyName));
-		if (Target)
-		{
-			float Distance = (Target->GetActorLocation() - MyPawn->GetActorLocation()).Length();
-			Behavior->GetBlackboardComponent()->SetValueAsFloat(CurrentDistance.SelectedKeyName, Distance);
-		}
-	}
+	//UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	//if (BattleSubsystem && MyPawn)
+	//{
+	//	AActor* Target = Cast<AActor>(Behavior->GetBlackboardComponent()->GetValueAsObject(BlackboardKey.SelectedKeyName));
+	//	if (Target)
+	//	{
+	//		float Distance = (Target->GetActorLocation() - MyPawn->GetActorLocation()).Length();
+	//		Behavior->GetBlackboardComponent()->SetValueAsFloat(CurrentDistance.SelectedKeyName, Distance);
+	//	}
+	//}
 
+
+
+
+	//움직일 수 있는 상태인가
+	if (CachedPlayerCharacter.IsValid())
+	{
+		bool bIsMove = !(CachedPlayerCharacter->bHasNextComboInput	||
+			CachedPlayerCharacter->bIsBasicAttackMontagePlaying		||
+			CachedPlayerCharacter->bIsCommonSkillMontagePlaying		||
+			CachedPlayerCharacter->bIsUltimateReleaseMontagePlaying ||
+			CachedPlayerController->bIsUltimateAiming);
+
+		Behavior->GetBlackboardComponent()->SetValueAsBool(IsMoveKey.SelectedKeyName, bIsMove);
+	}
 
 }

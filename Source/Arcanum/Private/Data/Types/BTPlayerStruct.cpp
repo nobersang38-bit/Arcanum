@@ -4,6 +4,11 @@
 #include "Data/Types/BTPlayerStruct.h"
 #include "UI/Battle/BattlePlayerController.h"
 #include "Core/SubSystem/BattlefieldManagerSubsystem.h"
+#include "Character/PlayerCharacter.h"
+#include "BehaviorTree/BehaviorTree.h"
+#include "BehaviorTree/BlackboardData.h"
+#include "AIController.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 void UBTPlayerDataObject::SpawnUnit()
 {
@@ -89,36 +94,71 @@ bool UBTPlayerDataObject::UseSkill()
 {
 	if (PlayerController.IsValid())
 	{
+		bool bIsSkillSuccess = CostCheck();
 		switch (SkillType)
 		{
 		case EBSkillType::None:
 			break;
+
 		case EBSkillType::BasicAttack:
-			//PlayerController->BasicAttack();
 			PlayerController->TriggerBasicAttackHit();
           	break;
+
 		case EBSkillType::BasicSkill:
-			//PlayerController->BasicSkill();
 			PlayerController->TriggerSkill();
 			break;
+
 		case EBSkillType::UltimateSkill:
-			PlayerController->UltimateSkillReleased();
+			if (PlayerController->CachedPlayerCharacter.IsValid())
+			{
+				APlayerCharacter* PlayerCharacter = PlayerController->CachedPlayerCharacter.Get();
+				UObject* TargetObject = PlayerCharacter->CachedAIC->GetBlackboardComponent()->GetValueAsObject(TargetActorName);
+				AActor* TargetActor = Cast<AActor>(TargetObject);
+
+				PlayerController->UltimateSkillPressed();
+
+				//GetWorld()->GetTimerManager().ClearTimer(UltimateStep1TimerHandle);
+				GetWorld()->GetTimerManager().ClearTimer(UltimateStep2TimerHandle);
+				//GetWorld()->GetTimerManager().SetTimer(UltimateStep1TimerHandle, this, &UBTPlayerDataObject::UltimateStep1, 0.1f, false, 0.1f);
+				GetWorld()->GetTimerManager().SetTimer(UltimateStep2TimerHandle, this, &UBTPlayerDataObject::UltimateStep2, 0.5f, false, 0.5f);
+				PlayerCharacter->UpdateUltimatePreviewLocation(TargetActor->GetActorLocation());
+				//PlayerController->UltimateSkillReleased();
+			}
+			else return false;
 			break;
+
 		case EBSkillType::Item01:
 			PlayerController->Item1();
 			break;
+
 		case EBSkillType::Item02:
 			PlayerController->Item2();
 			break;
+
 		case EBSkillType::Swap:
 			PlayerController->WeaponSwap();
 			break;
+
 		default:
 			break;
 		}
 
-		return PlayerController->bIsSkillSuccess;
+		return bIsSkillSuccess;
 	}
 
 	return false;
+}
+
+void UBTPlayerDataObject::UltimateStep1()
+{
+	APlayerCharacter* PlayerCharacter = PlayerController->CachedPlayerCharacter.Get();
+	UObject* TargetObject = PlayerCharacter->CachedAIC->GetBlackboardComponent()->GetValueAsObject(TargetActorName);
+	AActor* TargetActor = Cast<AActor>(TargetObject);
+
+	PlayerCharacter->UpdateUltimatePreviewLocation(TargetActor->GetActorLocation());
+}
+
+void UBTPlayerDataObject::UltimateStep2()
+{
+	PlayerController->UltimateSkillReleased();
 }

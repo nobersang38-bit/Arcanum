@@ -31,6 +31,7 @@ class ARCANUM_API ABattlePlayerController : public APlayerController
 {
 	GENERATED_BODY()
 	friend class UBTPlayerDataObject;
+	friend class UBTService_PlayerSelectTarget;
 #pragma region 언리얼 기본생성
 protected:
 	virtual void BeginPlay() override;
@@ -126,7 +127,10 @@ protected:
 	UFUNCTION()
 	void Item2();
 
-	//UFUNCTION()
+	UFUNCTION()
+	void UseBattlePotion(int32 InSlotIndex);
+
+    //UFUNCTION()
 	//bool SkillStarter(FGameplayTag InSkillTag, int32 InLevel, bool bIsUltimate = false);
 
 	UFUNCTION()
@@ -136,9 +140,9 @@ protected:
 	//void CurrentSelectedSkillStarter();
 
 
-	USkillBase* GetOrCreateSkillBase(const FBattleSkillData& InSkillData, const FSkillInfo* InSkillInfo, const FVector& InTargetLocation);
+	//USkillBase* GetOrCreateSkillBase(const FBattleSkillData& InSkillData, const FSkillInfo* InSkillInfo, const FVector& InTargetLocation);
 
-	bool SpawnAndActivateSkillActor(USkillBase* InSkillBase, UClass* InSkillActorClass, const FVector& InTargetLocation);
+	//bool SpawnAndActivateSkillActor(USkillBase* InSkillBase, UClass* InSkillActorClass, const FVector& InTargetLocation);
 
 	UFUNCTION()
 	void SkillCancel();
@@ -199,20 +203,31 @@ protected:
 	bool UsingUnitCost(FGameplayTag InTag);
 
 	// 쿨타임을 계속 줄임
-	//UFUNCTION()
-	//void Internal_CoolTimeTick(float DeltaTime);
+	UFUNCTION()
+	void Internal_CoolTimeTick(float DeltaTime);
 
 	UFUNCTION()
 	void InitialSkillBase();
 
 #pragma endregion
 
+#pragma region 범위
+protected:
+	void RangeDecalOn(float DecalSize);
+	void Internal_RangeDecalOn(float DecalSize);
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "RangeTime")
+	float RangeTime = 1.0f;
+
+	FTimerHandle RangeDecalTimerHandle;
+#pragma endregion
+
+
 
 #pragma region 인풋모드 설정
 protected:
 	void SetupInputMode();
 #pragma endregion
-
 
 #pragma region 입력 관련
 protected:
@@ -320,7 +335,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
 	FGameplayTag ManaTag = Arcanum::BattleStat::Character::Regen::Mana::Root;
 
-
 private:
 	FTimerHandle PlayerLocationProgressTimeHandle;
 	bool bIsAutoManual = false;
@@ -414,6 +428,14 @@ protected:
 	/* 스킬 입력 */
 	UFUNCTION()
 	void InputSkill();
+	
+private:
+	/* 스왑 몽타주 종료 */
+	UFUNCTION()
+	void OnWeaponSwapMontageEnded(UAnimMontage* InMontage, bool bInterrupted);
+
+	/* 무기 스왑 중 여부 */
+	bool bIsWeaponSwapping = false;
 #pragma endregion
 
 #pragma region 궁극기 연출
@@ -450,11 +472,11 @@ protected:
 
 	/* Press 시 1차 목표 FOV */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
-	float UltimatePressTargetFOV = 100.0f;
+	float UltimatePressTargetFOV = 80.0f;
 
 	/* Release 시 2차 목표 FOV */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
-	float UltimateReleaseTargetFOV = 85.0f;
+	float UltimateReleaseTargetFOV = 120.0f;
 
 	/* Press 줌 보간 속도 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
@@ -482,10 +504,29 @@ protected:
 
 	/* Release 순간 재생할 카메라 쉐이크 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ultimate|Presentation")
-	TSubclassOf<class UCameraShakeBase> UltimateReleaseCameraShakeClass = nullptr;
+	TSubclassOf<class UCameraShakeBase> UltimateCameraShakeClass = nullptr;
+	UPROPERTY(Transient)
+	TObjectPtr<class UCameraShakeBase> ActiveUltimateCameraShake = nullptr;
 #pragma endregion
 
 #pragma region 플레이어 스킬 쿨타임
+protected:
+	/* 스킬 쿨타임 시작 */
+	void StartSkillCooldown(const FGameplayTag& InSkillTag, float InCooldown);
+
+	/* 스킬 남은 쿨타임 반환 */
+	float GetSkillCooldownRemaining(const FGameplayTag& InSkillTag) const;
+
+	/* 스킬 전체 쿨타임 반환 */
+	float GetSkillCooldown(const FGameplayTag& InSkillTag) const;
+
+protected:
+	/* 스킬별 전체 쿨타임 */
+	TMap<FGameplayTag, float> SkillCooldownMap;
+
+	/* 스킬별 남은 쿨타임 */
+	TMap<FGameplayTag, float> SkillCooldownRemainingMap;
+
 protected:
 	/* 스킬 쿨타임 타이머 갱신 */
 	void UpdateSkillCooldown();
@@ -500,7 +541,7 @@ protected:
 	void StartUltimateCooldown();
 
 	/* 스킬 쿨타임 UI 갱신 */
-	void RefreshSkillCooldownUI();
+	void RefreshSkillCooldown();
 
 	/* 플레이어 스킬 쿨타임 타이머 핸들 */
 	FTimerHandle SkillCooldownTimerHandle;
@@ -524,5 +565,22 @@ protected:
 	float UltimateCooldown = 0.0f;
 
 	float SkillCooldownTickInterval = 0.02f;
+#pragma endregion
+
+#pragma region 물약
+protected:
+	/* 전투 물약 UI 갱신 */
+	UFUNCTION()
+	void RefreshBattlePotion();
+
+	/* 전투 물약 쿨타임 갱신 */
+	UFUNCTION()
+	void UpdateBattlePotionCooldown(float InDeltaTime);
+
+protected:
+	FTimerHandle BattlePotionCooldownTimer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Potion")
+	float BattlePotionCooldownTickInterval = 0.02f;
 #pragma endregion
 };

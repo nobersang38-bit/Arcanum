@@ -125,6 +125,34 @@
             }
           ],
           "TargetEffect": ""
+        },
+        {
+          "Level": 5,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.SkillName.BasicMeleeAttack",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
+              "Value": {
+                "Flat": -30.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 5
+            }
+          ],
+          "TargetEffect": ""
         }
       ],
       "ComboMontages": [
@@ -263,6 +291,34 @@
             }
           ],
           "TargetEffect": ""
+        },
+        {
+          "Level": 5,
+          "CastTime": 0.0,
+          "Cooldown": 0.0,
+          "Cost": [],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.SkillName.BasicRangedAttack",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
+              "Value": {
+                "Flat": -30.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 5
+            }
+          ],
+          "TargetEffect": ""
         }
       ],
       "ComboMontages": [
@@ -294,7 +350,26 @@
           "Level": 1,
           "CastTime": 0.1,
           "Cooldown": 5.0,
-          "Cost": [],
+          "Cost": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.SkillName.ShockWave",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Value",
+              "Value": {
+                "Flat": -10.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 5
+            }
+          ],
           "Effect": "",
           "OtherCharacterModifiers": [
             {
@@ -322,7 +397,26 @@
           "Level": 2,
           "CastTime": 0.1,
           "Cooldown": 5.0,
-          "Cost": [],
+          "Cost": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.SkillName.ShockWave",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Value",
+              "Value": {
+                "Flat": -10.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 5
+            }
+          ],
           "Effect": "",
           "OtherCharacterModifiers": [
             {
@@ -350,7 +444,26 @@
           "Level": 3,
           "CastTime": 0.1,
           "Cooldown": 5.0,
-          "Cost": [],
+          "Cost": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.SkillName.ShockWave",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Value",
+              "Value": {
+                "Flat": -10.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 5
+            }
+          ],
           "Effect": "",
           "OtherCharacterModifiers": [
             {
@@ -378,7 +491,26 @@
           "Level": 4,
           "CastTime": 0.1,
           "Cooldown": 5.0,
-          "Cost": [],
+          "Cost": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.SkillName.ShockWave",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Value",
+              "Value": {
+                "Flat": -10.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 5
+            }
+          ],
           "Effect": "",
           "OtherCharacterModifiers": [
             {
@@ -392,6 +524,53 @@
               "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
               "Value": {
                 "Flat": -70.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 5
+            }
+          ],
+          "TargetEffect": ""
+        },
+        {
+          "Level": 5,
+          "CastTime": 0.1,
+          "Cooldown": 5.0,
+          "Cost": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.SkillName.ShockWave",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Value",
+              "Value": {
+                "Flat": -10.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 5
+            }
+          ],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.SkillName.ShockWave",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
+              "Value": {
+                "Flat": -80.0,
                 "Mul": 1.0
               },
               "bIsPermanent": false,
@@ -611,6 +790,53 @@
             }
           ],
           "TargetEffect": ""
+        },
+        {
+          "Level": 5,
+          "CastTime": 0.1,
+          "Cooldown": 5.0,
+          "Cost": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.SkillName.ChainBolt",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Value",
+              "Value": {
+                "Flat": -10.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 5
+            }
+          ],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.SkillName.ChainBolt",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
+              "Value": {
+                "Flat": -80.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 5
+            }
+          ],
+          "TargetEffect": ""
         }
       ],
       "ComboMontages": [],
@@ -812,6 +1038,53 @@
               "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
               "Value": {
                 "Flat": -100.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 5
+            }
+          ],
+          "TargetEffect": ""
+        },
+        {
+          "Level": 5,
+          "CastTime": 2.0,
+          "Cooldown": 20.0,
+          "Cost": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.SkillName.SolarFlare",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Value",
+              "Value": {
+                "Flat": -30.0,
+                "Mul": 1.0
+              },
+              "bIsPermanent": false,
+              "Duration": 0.0,
+              "ModifierPolicy": "Refresh",
+              "MaxStack": 5
+            }
+          ],
+          "Effect": "",
+          "OtherCharacterModifiers": [
+            {
+              "ModifierId": {
+                "A": 0,
+                "B": 0,
+                "C": 0,
+                "D": 0
+              },
+              "SourceTag": "Arcanum.Skills.SkillName.SolarFlare",
+              "StatTag": "Arcanum.BattleStat.Character.Regen.Health",
+              "Value": {
+                "Flat": -110.0,
                 "Mul": 1.0
               },
               "bIsPermanent": false,

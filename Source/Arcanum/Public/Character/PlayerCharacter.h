@@ -17,12 +17,14 @@ class ARCANUM_API APlayerCharacter : public ACharacter, public ITeamInterface, p
 	//, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
-
+	friend class UBTPlayerDataObject;
+	friend class UBTService_PlayerSelectTarget;
 public:
 	// Sets default values for this character's properties
 	APlayerCharacter();
 
 	void SetAutoMode(class ABattlePlayerController* MainController, bool bIsAuto);
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
@@ -33,12 +35,15 @@ protected:
 
 	UFUNCTION()
 	void RecievedDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
-
 	void AddLevelModifierEntry(const FLevelModifierEntry& LevelModifierEntry) override;
 	void AddDerivedStatModifier(const FDerivedStatModifier& DerivedStatModifier) override;
+public:
 	void ChangeStat(const FGameplayTag& InTag, float InValue) override;
 
 public:
+	UFUNCTION()
+	void OuntLineStart(const UCurveFloat* CurveFloat, float InTime, float DeltaTime);
+
 	// ID 태그 바꾸는 함수
 	UFUNCTION(BlueprintCallable, Category = "Tags")
 	void SetIDTag(FGameplayTag NewID);
@@ -58,6 +63,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	USkeletalMeshComponent* GetSourceSkeletaMeshComponent() { return SourceSkeletaMeshComponent; }
+	ABattlePlayerController* GetBattleOwnerController() const;
+	class UCharacterBattleStatsComponent* GetBattleStatComponent() const {return StatComponent;}
+	class UStatusActionComponent* GetStatusActionComponent() const { return StatusActionComponent; }
+
+	UFUNCTION(BlueprintCallable)
+	void ApplyPotionModifier(const FDerivedStatModifier& InModifier) { AddDerivedStatModifier(InModifier); }
 
 protected:
 
@@ -134,11 +145,29 @@ protected:
 	FGameplayTag ManaTag = Arcanum::BattleStat::Character::Regen::Mana::Root;
 
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
+	TSubclassOf<class AFloatingDamageText> TextFloatingClass = nullptr;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<class AAIController> CachedAIC = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<ABattlePlayerController> CachedOwnerPC = nullptr;
+
+	float RefOutlineTime = 0.0f;
+
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> OutlineDynamicMI = nullptr;
+	FTimerHandle OutlineTimeHandle;
+
+	UPROPERTY()
+	TArray<UMaterialInterface*> MaterialBackup;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MaterialCurve")
+	TObjectPtr<UCurveFloat> OutLineCurve = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MaterialCurve")
+	float OutLineTime = 0.3f;
 
 #pragma region 무기 교체
 public:
