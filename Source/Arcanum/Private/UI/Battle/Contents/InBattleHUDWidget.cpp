@@ -67,16 +67,16 @@ void UInBattleHUDWidget::SetPlayerCharacterHealthBarProgress(float CurrentHealth
 	PlayerCharacterHealthBar->SetHealthProgress(CurrentHealth, MaxHealth);
 }
 
-void UInBattleHUDWidget::SetBossHealthBarProgress(float CurrentHealth, float MaxHealth)
+void UInBattleHUDWidget::SetEnemyBaseHealthBarProgress(float CurrentHealth, float MaxHealth)
 {
-	if (!BossHealthBar) return;
-	BossHealthBar->SetHealthProgress(CurrentHealth, MaxHealth);
+	if (!EnemyBaseHealthBar) return;
+	EnemyBaseHealthBar->SetHealthProgress(CurrentHealth, MaxHealth);
 }
 
-void UInBattleHUDWidget::ShowBosHealthPBar(bool bIsShow)
+void UInBattleHUDWidget::SetAllyBaseHealthBarProgress(float CurrentHealth, float MaxHealth)
 {
-	if (!BossHealthBar) return;
-	BossHealthBar->SetVisibility(bIsShow ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Hidden);
+	if (!AllyBaseHealthBar) return;
+	AllyBaseHealthBar->SetHealthProgress(CurrentHealth, MaxHealth);
 }
 
 // ========================================================

@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "Interface/TeamInterface.h"
 #include "Interface/StatModifierInterface.h"
+#include "GameplayTags/ArcanumTags.h"
 #include "Basement.generated.h"
 
 class UPlayerBattleStatsComponent;
@@ -127,6 +128,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FGameplayTag TeamTag;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FGameplayTag HealthTag = Arcanum::BattleStat::Character::Regen::Health::Root;
 
 
 	// IStatModifierInterface을(를) 통해 상속됨
