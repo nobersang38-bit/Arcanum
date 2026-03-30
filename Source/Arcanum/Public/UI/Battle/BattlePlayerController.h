@@ -62,9 +62,6 @@ protected:
 	void DebugPlayPlayerCharacterHealthBar(float CurrentHealth, float MaxHealth);
 
 	UFUNCTION(Exec)
-	void DebugBossHealthBar(float CurrentHealth, float MaxHealth);
-
-	UFUNCTION(Exec)
 	void DebugAddPlayerInfoPanelSlot();
 
 	UFUNCTION(Exec)
@@ -219,9 +216,6 @@ protected:
 
 	UFUNCTION()
 	void InitialSkillBase();
-
-	UFUNCTION()
-	void RefreshCost();
 
 #pragma endregion
 
@@ -579,6 +573,11 @@ protected:
 	float UltimateCooldown = 0.0f;
 
 	float SkillCooldownTickInterval = 0.02f;
+#pragma endregion
+
+#pragma region 스킬 마나 코스트
+	/* 스킬 마나 코스트 UI 갱신 */
+	void RefreshSkillCost();
 #pragma endregion
 
 #pragma region 물약

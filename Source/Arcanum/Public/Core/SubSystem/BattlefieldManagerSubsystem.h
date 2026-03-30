@@ -305,6 +305,9 @@ protected:
 	/* 스킬 쿨타임 */
 	float FindSkillCooldown(const FGameplayTag& InSkillTag, int32 InSkillLevel) const;
 
+	/* 스킬 마나 */
+	float FindSkillManaCost(const FGameplayTag& InSkillTag, int32 InSkillLevel) const;
+
 	/* 스킬 아이콘 */
 	UTexture2D* FindSkillIcon(const FGameplayTag& InSkillTag) const;
 
