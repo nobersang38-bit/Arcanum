@@ -75,13 +75,13 @@ private:
 protected:
 	UPROPERTY(EditAnywhere) float MoveTimerDuration = 1.f;
 
-	UPROPERTY(EditAnywhere) float MoveSpeed = 2000.f;
+	UPROPERTY(EditAnywhere) float MoveSpeed = 3000.f;
 
 	UPROPERTY(EditAnywhere) float ShrinkSpeed = 5.0f;
 
 	UPROPERTY(EditAnywhere) float ExplosionDelay = 2.0f;
 
-	UPROPERTY(EditAnywhere) float BrakingZone = 2000.0f;
+	UPROPERTY(EditAnywhere) float BrakingZone = 1600.0f;
 
 	// ========================================================
 	// Runtime

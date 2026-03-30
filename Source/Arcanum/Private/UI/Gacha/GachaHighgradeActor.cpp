@@ -14,6 +14,7 @@ AGachaHighgradeActor::AGachaHighgradeActor()
 
 	WidgetComp->SetWidgetSpace(EWidgetSpace::World);
 	WidgetComp->SetDrawSize(FVector2D(1920, 1080));
+	WidgetComp->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 }
 void AGachaHighgradeActor::InitializeWidget(const FGachaItemResult& ItemData, const FText& Dialog)
 {

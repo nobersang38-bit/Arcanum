@@ -2,6 +2,7 @@
 #include "UI/Lobby/Contents/Gacha/SubLayout/GachaPullButtonWidget.h"
 #include "UI/Lobby/Contents/Gacha/SubLayout/GachaProbabilityWidget.h"
 #include "UI/Lobby/Contents/Gacha/SubLayout/GachaBannerButtonWidget.h"
+#include "UI/Lobby/Contents/Gacha/SubLayout/GachaProgressWidget.h"
 
 #include "Components/Image.h"
 #include "Components/Button.h"
@@ -38,6 +39,7 @@ void UGachaHUDWidget::InitBannerList()
     for (const FDTGachaBannerDataRow* RowPtr : TempRows) {
         if (RowPtr) {
             ActiveBannerDataList.Add(*RowPtr);
+            FPlayerAccountService::InitGachaBannerData(this, RowPtr->BannerTag);
         }
     }
 
@@ -55,7 +57,7 @@ void UGachaHUDWidget::InitBannerList()
                 ButtonSlot->SetSize(FSlateChildSize(ESlateSizeRule::Automatic));
             }
 
-            if (i == 0) OnBannerSelected(NewButton->BannerTag);
+            //if (i == 0) OnBannerSelected(NewButton->BannerTag);
         }
     }
 
@@ -105,8 +107,15 @@ void UGachaHUDWidget::OnBannerSelected(FGameplayTag SelectedBannerTag)
     }
     UpdateDetailedView(SelectedData);
 
-    // 여기서 선택된 배너에 맞춰 오른쪽 메인 화면(보상 리스트 등) 갱신 로직 실행
-    UE_LOG(LogTemp, Log, TEXT("Selected Banner Tag: %s"), *SelectedBannerTag.ToString());
+    const FGachaBannerState* StatePtr = ParentLobby->CachedPlayerData.GachaState.BannerStates.Find(SelectedBannerTag);
+
+    int32 CurrentPity = 0;
+    if (StatePtr) CurrentPity = StatePtr->PityCount;
+    else {
+        FGachaBannerState NewState = FPlayerAccountService::InitGachaBannerData(this, SelectedBannerTag);
+        CurrentPity = NewState.PityCount;
+    }
+    UpdateGachaProgressWidget(CurrentPity, SelectedData->FiveStarPityCount);
 }
 void UGachaHUDWidget::UpdateDetailedView(const FDTGachaBannerDataRow* InData)
 {
@@ -199,9 +208,9 @@ void UGachaHUDWidget::HandleProbabilityButtonClicked()
         }
     }
 }
-
 void UGachaHUDWidget::HandleTimeUpdated(FDateTime CurrentTime)
 {
+    bool bNeedRefresh = false;
     for (int32 i = 0; i < ActiveBannerDataList.Num(); ++i) {
         const FDTGachaBannerDataRow& BannerData = ActiveBannerDataList[i];
 
@@ -216,10 +225,26 @@ void UGachaHUDWidget::HandleTimeUpdated(FDateTime CurrentTime)
         FTimespan Remaining = EndTime - CurrentTime;
         int32 RemainingSeconds = FMath::Max(0, (int32)Remaining.GetTotalSeconds());
 
+        if (RemainingSeconds <= 0) {
+            bNeedRefresh = true;
+            continue;
+        }
+
         int32 Hours = RemainingSeconds / 3600;
         int32 Minutes = (RemainingSeconds % 3600) / 60;
 
         FText TimeText = FText::Format(FText::FromString(TEXT("{0}시간 {1}분")), Hours, Minutes);
         BannerButtons[i]->UpdateRemainingTimeText(TimeText);
     }
+
+    if (bNeedRefresh) InitBannerList();
+}
+// ========================================================
+// 가챠 진행 위젯
+// ========================================================
+void UGachaHUDWidget::UpdateGachaProgressWidget(int32 curr, int32 max)
+{
+    if (!GachaProgressWidget) return;
+
+    GachaProgressWidget->UpdateGachaProgress(curr, max);
 }

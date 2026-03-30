@@ -4,6 +4,7 @@
 
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
+#include "Animation/WidgetAnimation.h"
 
 void UGachaHighgradeWidget::NativeConstruct()
 {
@@ -34,7 +35,16 @@ void UGachaHighgradeWidget::SkipToFinal()
 {
 	StopAllAnimations();
 	CurrentState = EGachaHighgradeState::FinalReveal;
+	
+	if (DialogueAnim) {
+		float EndTime = DialogueAnim->GetEndTime();
+		PlayAnimation(DialogueAnim);
+		SetAnimationCurrentTime(RevealAnim, EndTime);
+		PauseAnimation(RevealAnim);
+	}
+
 	if (RevealAnim) PlayAnimation(RevealAnim);
+	if (OnSkipRequested.IsBound()) OnSkipRequested.Broadcast();
 }
 
 void UGachaHighgradeWidget::InitializeGacha(const FGachaItemResult& ItemData, const FText& InText)
@@ -51,7 +61,17 @@ void UGachaHighgradeWidget::InitializeGacha(const FGachaItemResult& ItemData, co
 
 FReply UGachaHighgradeWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-	SkipToFinal();
+	if (CurrentState == EGachaHighgradeState::End) {
+		if (OnGachaFinished.IsBound()) OnGachaFinished.Broadcast();
+		return FReply::Handled();
+	}
+
+	if (!Isclicked) {
+		Isclicked = !Isclicked;
+		SkipToFinal();
+		CurrentState = EGachaHighgradeState::End;
+	}
+
 	return FReply::Handled();
 }
 
@@ -81,19 +101,25 @@ void UGachaHighgradeWidget::PlayNextState()
 }
 void UGachaHighgradeWidget::OnDialogueFinished()
 {
+	if (Isclicked) return;
+
 	CurrentState = EGachaHighgradeState::SilhouetteCamera;
 	OnSilhouetteStart.Broadcast();
 	PlayNextState();
 }
 void UGachaHighgradeWidget::OnSilhouetteFinished()
 {
+	if (Isclicked) return;
 	CurrentState = EGachaHighgradeState::FinalReveal;
 }
 void UGachaHighgradeWidget::OnSilhouetteCameraMovingFinished()
 {
+	if (Isclicked) return;
 	PlayNextState();
 }
 void UGachaHighgradeWidget::OnRevealFinished()
 {
+	if (Isclicked) return;
 	CurrentState = EGachaHighgradeState::End;
+	//if (OnGachaFinished.IsBound()) OnGachaFinished.Broadcast();
 }
