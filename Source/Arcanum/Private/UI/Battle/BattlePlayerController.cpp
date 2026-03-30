@@ -967,6 +967,17 @@ void ABattlePlayerController::WeaponSwap()
 			battleSubsystem->GetCurrentWeaponIcon(),
 			battleSubsystem->GetCurrentBasicSkillIcon(),
 			battleSubsystem->GetLegendaryWeaponIcon());
+
+		if (UBattleActionButtonWidget* BasicSkillButton = HUDWidgetInstance->GetBasicSkill())
+		{
+			/*FGameplayTag Tag = battleSubsystem->GetCurrentBasicSkillTag();
+			SkillBaseInstances.Find(Tag)
+			BasicSkillButton->SetCostText()*/
+		}
+		if (UBattleActionButtonWidget* UltimateButton = HUDWidgetInstance->GetUltimateSkill())
+		{
+
+		}
 	}
 
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("WeaponSwap"));

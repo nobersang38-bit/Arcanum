@@ -49,6 +49,9 @@ public:
 	UFUNCTION()
 	void SetImage(UTexture2D* InImage);
 
+	UFUNCTION()
+	void SetCostText(FText InText);
+
 #pragma region 내부 함수
 protected:
 	UFUNCTION()
@@ -79,12 +82,18 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UTextBlock> StackCountText = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UTextBlock> CostText = nullptr;
 #pragma endregion
 
 
 #pragma region 에디터 변경 및 런타임 참조용
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "에디터 변경용")
 	FText IconText = FText::FromString(TEXT("버튼"));
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "에디터 변경용")
+	FText EditCostText = FText::FromString(TEXT("100"));
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "에디터 변경용")
 	bool bUseDisableImage = true;
