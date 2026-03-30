@@ -43,10 +43,10 @@ public:
 	UFUNCTION()
 	void SetPlayerCharacterHealthBarProgress(float CurrentHealth, float MaxHealth);
 	UFUNCTION()
-	void SetBossHealthBarProgress(float CurrentHealth, float MaxHealth);
-
+	void SetEnemyBaseHealthBarProgress(float CurrentHealth, float MaxHealth);
 	UFUNCTION()
-	void ShowBosHealthPBar(bool bIsShow);
+	void SetAllyBaseHealthBarProgress(float CurrentHealth, float MaxHealth);
+
 #pragma endregion
 
 
@@ -60,7 +60,6 @@ public:
 #pragma region 스테이지 종료
 	UBattleBattleEndWidget* GetBattleEndWidget() const { return BattleEndCanvas; }
 #pragma endregion
-
 
 
 #pragma region 전투 관련 버튼들
@@ -131,7 +130,10 @@ protected:
 	TObjectPtr<UBattleHealthBarWidget> PlayerCharacterHealthBar = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
-	TObjectPtr<UBattleHealthBarWidget> BossHealthBar = nullptr;
+	TObjectPtr<UBattleHealthBarWidget> AllyBaseHealthBar = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UBattleHealthBarWidget> EnemyBaseHealthBar = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UBattleStageProgressWidget> StageProgress = nullptr;

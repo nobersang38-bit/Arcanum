@@ -74,6 +74,8 @@ void ABattlePlayerController::BeginPlay()
 	BindBuffUI();
 
 	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (!BattleSubsystem) return;
+
 	if (BattleSubsystem)
 	{
 		const TArray<FRegenStat>& PlayerBattleRegenStat = BattleSubsystem->GetInBattleData().PlayerBattleData.PlayerBattleRegenStat;
@@ -152,8 +154,6 @@ void ABattlePlayerController::BeginPlay()
 	GetWorld()->GetTimerManager().ClearTimer(BattlePotionCooldownTimer);
 	GetWorld()->GetTimerManager().SetTimer(BattlePotionCooldownTimer, BattlePotionCooldown, BattlePotionCooldownTickInterval, true);
 
-	SetBossHealthProgress(0.0f, 0.0f);
-
 	GetWorld()->GetTimerManager().ClearTimer(PlayerLocationProgressTimeHandle);
 	GetWorld()->GetTimerManager().SetTimer(PlayerLocationProgressTimeHandle, this, &ABattlePlayerController::UpdatePlayerLocationProgress, PlayerLocationProgressUpdateInterval, true, 0.0f);
 
@@ -170,6 +170,14 @@ void ABattlePlayerController::BeginPlay()
 		UltimatePostProcessVolume->BlendWeight = 0.0f;
 		UltimatePostProcessVolume->bUnbound = false;
 	}
+
+	if (HUDWidgetInstance)
+	{
+		BattleSubsystem->OnChangeAllyBaseHealth.AddDynamic(HUDWidgetInstance, &UInBattleHUDWidget::SetAllyBaseHealthBarProgress);
+		BattleSubsystem->OnChangeEnemyBaseHealth.AddDynamic(HUDWidgetInstance, &UInBattleHUDWidget::SetEnemyBaseHealthBarProgress);
+	}
+
+	RefreshCost();
 }
 
 void ABattlePlayerController::SetupInputComponent()
@@ -313,7 +321,7 @@ void ABattlePlayerController::DebugPlayPlayerCharacterHealthBar(float CurrentHea
 void ABattlePlayerController::DebugBossHealthBar(float CurrentHealth, float MaxHealth)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("DebugBossHealthBar"));
-	HUDWidgetInstance->SetBossHealthBarProgress(CurrentHealth, MaxHealth);
+	//HUDWidgetInstance->SetBossHealthBarProgress(CurrentHealth, MaxHealth);
 }
 
 void ABattlePlayerController::DebugAddPlayerInfoPanelSlot()
@@ -880,11 +888,6 @@ void ABattlePlayerController::SetPlayerHealthProgress(float CurrentHealth, float
 	HUDWidgetInstance->SetPlayerCharacterHealthBarProgress(CurrentHealth, MaxHealth);
 }
 
-void ABattlePlayerController::SetBossHealthProgress(float CurrentHealth, float MaxHealth)
-{
-	HUDWidgetInstance->SetBossHealthBarProgress(CurrentHealth, MaxHealth);
-}
-
 // ========================================================
 // 메인
 // ========================================================
@@ -967,18 +970,9 @@ void ABattlePlayerController::WeaponSwap()
 			battleSubsystem->GetCurrentWeaponIcon(),
 			battleSubsystem->GetCurrentBasicSkillIcon(),
 			battleSubsystem->GetLegendaryWeaponIcon());
-
-		if (UBattleActionButtonWidget* BasicSkillButton = HUDWidgetInstance->GetBasicSkill())
-		{
-			/*FGameplayTag Tag = battleSubsystem->GetCurrentBasicSkillTag();
-			SkillBaseInstances.Find(Tag)
-			BasicSkillButton->SetCostText()*/
-		}
-		if (UBattleActionButtonWidget* UltimateButton = HUDWidgetInstance->GetUltimateSkill())
-		{
-
-		}
 	}
+
+	RefreshCost();
 
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("WeaponSwap"));
 }
@@ -1592,18 +1586,6 @@ void ABattlePlayerController::Internal_CoolTimeTick(float DeltaTime)
 
 void ABattlePlayerController::InitialSkillBase()
 {
-	/*const TMap<FGameplayTag, FDerivedStatModifier>* weaponSlot1OnHitTarget = InBattleData.WeaponOnHitTarget.Find(Arcanum::Items::ItemSlot::Weapon::Slot1);
-	const TMap<FGameplayTag, FDerivedStatModifier>* weaponSlot2OnHitTarget = InBattleData.WeaponOnHitTarget.Find(Arcanum::Items::ItemSlot::Weapon::Slot2);
-	const TMap<FGameplayTag, FDerivedStatModifier>* legendaryWeaponOnHitTarget = InBattleData.WeaponOnHitTarget.Find(Arcanum::Items::ItemSlot::Weapon::Legendary);
-
-	if (weaponSlot1OnHitTarget)
-	{
-		const FDerivedStatModifier* healthModifier = weaponSlot1OnHitTarget->Find(Arcanum::BattleStat::Character::Regen::Health::Value);
-		if (healthModifier)
-		{
-			const float damage = healthModifier->Value.Flat;
-		}
-	}*/
 	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 	UGameDataSubsystem* DataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
 
@@ -1759,6 +1741,57 @@ void ABattlePlayerController::InitialSkillBase()
 				SkillBaseBack->Initialize(GetPawn(), &DTSkillsDataRow->SkillData, SkillData.SkillLevel, DTSkillsDataRow->SkillData.TargetFilterTag);
 			}
 		}
+	}
+}
+
+void ABattlePlayerController::RefreshCost()
+{
+	UE_LOG(LogTemp, Error, TEXT("RefreshCost"));
+	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (!battleSubsystem || !HUDWidgetInstance) return;
+	if (UBattleActionButtonWidget* BasicSkillButton = HUDWidgetInstance->GetBasicSkill())
+	{
+		int32 Level = battleSubsystem->GetCurrentBasicSkillData()->SkillLevel;
+		FGameplayTag Tag = battleSubsystem->GetCurrentBasicSkillData()->SkillTag;
+		TObjectPtr<USkillBase>* Skillbase = SkillBaseInstances.Find(Tag);
+
+		int32 Cost = 0;
+
+		if (Skillbase && Skillbase->Get())
+		{
+			for (const auto& IterSkillBase : Skillbase->Get()->GetCurrentLevelEntry()->Cost)
+			{
+				Cost += IterSkillBase.Value.Flat;
+			}
+		}
+
+		Cost = FMath::Abs(Cost);
+
+		FString Result = FString::Printf(TEXT("%d"), Cost);
+
+		BasicSkillButton->SetCostText(FText::FromString(Result));
+	}
+	if (UBattleActionButtonWidget* UltimateButton = HUDWidgetInstance->GetUltimateSkill())
+	{
+		int32 Level = battleSubsystem->GetCurrentLegendarySkillData()->SkillLevel;
+		FGameplayTag Tag = battleSubsystem->GetCurrentLegendarySkillData()->SkillTag;
+		TObjectPtr<USkillBase>* Skillbase = SkillBaseInstances.Find(Tag);
+
+		int32 Cost = 0;
+
+		if (Skillbase && Skillbase->Get())
+		{
+			for (const auto& IterSkillBase : Skillbase->Get()->GetCurrentLevelEntry()->Cost)
+			{
+				Cost += IterSkillBase.Value.Flat;
+			}
+		}
+
+		Cost = FMath::Abs(Cost);
+
+		FString Result = FString::Printf(TEXT("%d"), Cost);
+
+		UltimateButton->SetCostText(FText::FromString(Result));
 	}
 }
 
