@@ -51,7 +51,7 @@ void AResultStarChild::OnNotifyClicked(AActor* TouchedActor, FKey ButtonPressed)
 {
     OpenStar();
 }
-void AResultStarChild::OpenStar()
+void AResultStarChild::OpenStar(bool bIsSkip)
 {
     if (IsClicked) return;
     APlayerCameraManager* CamManager = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
@@ -63,6 +63,7 @@ void AResultStarChild::OpenStar()
     }
 
     IsClicked = true;
+    bIsSkiped = bIsSkip;
     OnStarClicked.Broadcast(this);
     PlayOpenAnimation(ResultData);
 }
@@ -72,7 +73,7 @@ void AResultStarChild::EndOpenAnimation()
 
     HideStarParts();
 
-    if (IsHighGrade()) {
+    if (IsHighGrade() && bIsSkiped) {
         SpawnHighGradeWidget();
         PlayResultFX();
     }

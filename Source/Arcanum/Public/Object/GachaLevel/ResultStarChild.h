@@ -23,7 +23,9 @@ public:
 
     UFUNCTION() void OnNotifyClicked(AActor* TouchedActor, FKey ButtonPressed);
 
-    UFUNCTION() void OpenStar();
+    UFUNCTION() void OpenStar(bool bIsSkip = false);
+
+    UPROPERTY() bool bIsSkiped = false;
 
     void SetResultData(const FGachaItemResult& InData);
 
