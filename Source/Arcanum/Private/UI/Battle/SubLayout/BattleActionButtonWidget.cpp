@@ -53,6 +53,7 @@ void UBattleActionButtonWidget::SynchronizeProperties()
 	Super::SynchronizeProperties();
 	{
 		ActionText->SetText(IconText);
+		CostText->SetText(EditCostText);
 	}
 }
 
@@ -156,6 +157,14 @@ void UBattleActionButtonWidget::SetImage(UTexture2D* InImage)
 	UpdateBrush(ButtonStyle.Disabled);
 
 	ActionButton->SetStyle(ButtonStyle);
+}
+
+void UBattleActionButtonWidget::SetCostText(FText InText)
+{
+	if (CostText)
+	{
+		CostText->SetText(InText);
+	}
 }
 
 void UBattleActionButtonWidget::SetProgressesVisible(bool IsVisible)
