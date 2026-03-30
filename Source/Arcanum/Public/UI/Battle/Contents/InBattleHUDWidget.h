@@ -20,6 +20,8 @@ class UBattleCostBarWidget;
 class UBattleHealthBarWidget;
 class UBattleStageProgressWidget;
 class UBattleBattleEndWidget;
+class UWrapBox;
+class UBattleBuffSlotWidget;
 struct FBattlePotionRuntimeSlotData;
 
 UCLASS()
@@ -187,5 +189,31 @@ public:
 public:
 	/* 물약 슬롯 갱신 */
 	void SetBattlePotionSlot(int32 InSlotIndex, const FBattlePotionRuntimeSlotData& InSlotData); 
+#pragma endregion
+
+#pragma region 버프
+public:
+	/* 버프 추가 */
+	void AddBuffSlot(const FGameplayTag& InBuffTag, float InPercent, UTexture2D* InIcon);
+
+	/* 버프 갱신 */
+	void UpdateBuffSlot(const FGameplayTag& InBuffTag, float InPercent);
+
+	/* 버프 제거 */
+	void RemoveBuffSlot(const FGameplayTag& InBuffTag);
+
+	/* 버프 전체 제거 */
+	void ClearBuffSlots();
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UWrapBox> BuffWrapBox = nullptr;
+
+	/* 활성 버프들 */
+	UPROPERTY()
+	TMap<FGameplayTag, TObjectPtr<UBattleBuffSlotWidget>> ActiveBuffSlots;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Buff")
+	TSubclassOf<UBattleBuffSlotWidget> BuffSlotWidgetClass = nullptr;
 #pragma endregion
 };

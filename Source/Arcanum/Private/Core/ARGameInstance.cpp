@@ -599,19 +599,19 @@ void UARGameInstance::InitializeCharacter(FGameplayTag CharacterTag)
 	UserCharacterRegistry.Add(CharacterTag, NewData);
 }
 
-bool UARGameInstance::AddTestGold()
+bool UARGameInstance::AddTestGold(int32 InAmount)
 {
-	return FPlayerAccountService::AddCurrency(this, Arcanum::PlayerData::Currencies::NonRegen::Gold::Value, 10000);
+	return FPlayerAccountService::AddCurrency(this, Arcanum::PlayerData::Currencies::NonRegen::Gold::Value, InAmount);
 }
 
-bool UARGameInstance::AddTestSoul()
+bool UARGameInstance::AddTestSoul(int32 InAmount)
 {
-	return FPlayerAccountService::AddCurrency(this, Arcanum::PlayerData::Currencies::NonRegen::Soul::Value, 10000);
+	return FPlayerAccountService::AddCurrency(this, Arcanum::PlayerData::Currencies::NonRegen::Soul::Value, InAmount);
 }
 
-bool UARGameInstance::AddTestShard()
+bool UARGameInstance::AddTestShard(int32 InAmount)
 {
-	return FPlayerAccountService::AddCurrency(this, Arcanum::PlayerData::Currencies::NonRegen::Shard::Value, 10000);
+	return FPlayerAccountService::AddCurrency(this, Arcanum::PlayerData::Currencies::NonRegen::Shard::Value, InAmount);
 }
 
 bool UARGameInstance::AddTestEquipmentSet()

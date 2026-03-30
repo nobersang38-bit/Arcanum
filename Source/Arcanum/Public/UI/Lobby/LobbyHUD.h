@@ -210,6 +210,8 @@ protected:
 private:
 	UFUNCTION()
 	void OnExitCommonDialog(EDialogResult res);
+
+	void ClosePanels();
 #pragma endregion
 
 };

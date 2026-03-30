@@ -12,6 +12,11 @@
 #include "GameplayTags/ArcanumTags.h"
 #include "BattlePlayerController.generated.h"
 
+class UInputMappingContext;
+class UInputAction;
+class UInBattleHUDWidget;
+struct FInputActionValue;
+
 UENUM()
 enum class ESkillType : uint8
 {
@@ -20,10 +25,19 @@ enum class ESkillType : uint8
 	UltimateSkill
 };
 
-class UInputMappingContext;
-class UInputAction;
-class UInBattleHUDWidget;
-struct FInputActionValue;
+UENUM()
+enum class EBattleActionType : uint8
+{
+	Move,
+	BasicAttack,
+	CommonSkill,
+	UltimatePress,
+	UltimateRelease,
+	Item1,
+	Item2,
+	WeaponSwap,
+	ReadySpawnUnit
+};
 
 // 김도현
 UCLASS()
@@ -577,10 +591,33 @@ protected:
 	UFUNCTION()
 	void UpdateBattlePotionCooldown(float InDeltaTime);
 
+	void OnPotionMontageEnded(UAnimMontage* InMontage, bool bInterrupted);
+
 protected:
 	FTimerHandle BattlePotionCooldownTimer;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Potion")
 	float BattlePotionCooldownTickInterval = 0.02f;
+
+private:
+	bool bIsPotionMontagePlaying = false;
 #pragma endregion
+
+#pragma region 전투 행동 실행 가능 여부
+private:
+	bool TryExecuteBattleAction(EBattleActionType InActionType);
+#pragma endregion
+
+#pragma region 버프
+protected:
+	UFUNCTION()
+	void BindBuffUI();
+
+	UFUNCTION()
+	void HandleBuffUpdated(const FGameplayTag& InBuffTag, float InPercent);
+
+	UFUNCTION()
+	void HandleBuffRemoved(const FGameplayTag& InBuffTag);
+#pragma endregion
+
 };

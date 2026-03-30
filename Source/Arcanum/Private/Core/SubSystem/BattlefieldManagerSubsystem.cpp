@@ -738,15 +738,7 @@ UAnimMontage* UBattlefieldManagerSubsystem::GetCurrentWeaponEquipMontage() const
 	const FEquipmentInfo* foundEquipment = FindEquipmentByGuid(InBattleData.PlayerData, itemGuid);
 	if (!foundEquipment) return nullptr;
 
-	UGameDataSubsystem* gameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
-	if (!gameDataSubsystem){return nullptr;
-	}
-
-	const FName itemTagLeafName = GetLeafNameFromTag(foundEquipment->ItemTag);
-	const FDTItemCatalogRow* itemCatalogRow = gameDataSubsystem->GetRow<FDTItemCatalogRow>(Arcanum::DataTable::ItemCatalog, itemTagLeafName);
-	if (!itemCatalogRow) return nullptr;
-
-	const FDTEquipmentInfoRow* equipmentRow = gameDataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, itemCatalogRow->DetailRowName);
+	const FDTEquipmentInfoRow* equipmentRow = FPlayerAccountService::FindEquipmentInfoRowByTag(this, foundEquipment->ItemTag);
 	if (!equipmentRow) return nullptr;
 
 	return equipmentRow->EquipMontage.LoadSynchronous();
@@ -956,14 +948,7 @@ USkeletalMesh* UBattlefieldManagerSubsystem::GetCurrentWeaponMesh() const
 	const FEquipmentInfo* foundEquip = FindEquipmentByGuid(InBattleData.PlayerData, *weaponGuid);
 	if (!foundEquip) return nullptr;
 
-	const FDTItemCatalogRow* catalogRow = FPlayerAccountService::FindItemCatalogRowByTag(this, foundEquip->ItemTag);
-	if (!catalogRow) return nullptr;
-	if (catalogRow->DetailRowName.IsNone()) return nullptr;
-
-	UGameDataSubsystem* gameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
-	if (!gameDataSubsystem) return nullptr;
-
-	const FDTEquipmentInfoRow* equipRow = gameDataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, catalogRow->DetailRowName);
+	const FDTEquipmentInfoRow* equipRow = FPlayerAccountService::FindEquipmentInfoRowByTag(this, foundEquip->ItemTag);
 	if (!equipRow) return nullptr;
 
 	return equipRow->SkeletalMesh.LoadSynchronous();
@@ -980,15 +965,7 @@ USkeletalMesh* UBattlefieldManagerSubsystem::GetLegendaryWeaponMesh() const
 	const FEquipmentInfo* foundEquip = FindEquipmentByGuid(InBattleData.PlayerData, *weaponGuid);
 	if (!foundEquip) return nullptr;
 
-	const FDTItemCatalogRow* catalogRow = FPlayerAccountService::FindItemCatalogRowByTag(this, foundEquip->ItemTag);
-	if (!catalogRow) return nullptr;
-
-	if (catalogRow->DetailRowName.IsNone()) return nullptr;
-
-	UGameDataSubsystem* gameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
-	if (!gameDataSubsystem) return nullptr;
-
-	const FDTEquipmentInfoRow* equipRow = gameDataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, catalogRow->DetailRowName);
+	const FDTEquipmentInfoRow* equipRow = FPlayerAccountService::FindEquipmentInfoRowByTag(this, foundEquip->ItemTag);
 	if (!equipRow) return nullptr;
 
 	return equipRow->SkeletalMesh.LoadSynchronous();
@@ -1016,14 +993,7 @@ FGameplayTag UBattlefieldManagerSubsystem::GetCurrentWeaponSlotTypeTag() const
 	const FEquipmentInfo* foundEquip = FindEquipmentByGuid(InBattleData.PlayerData, *weaponGuid);
 	if (!foundEquip) return FGameplayTag();
 
-	const FDTItemCatalogRow* catalogRow = FPlayerAccountService::FindItemCatalogRowByTag(this, foundEquip->ItemTag);
-	if (!catalogRow) return FGameplayTag();
-	if (catalogRow->DetailRowName.IsNone())	return FGameplayTag();
-
-	UGameDataSubsystem* gameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
-	if (!gameDataSubsystem) return FGameplayTag();
-
-	const FDTEquipmentInfoRow* equipRow = gameDataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, catalogRow->DetailRowName);
+	const FDTEquipmentInfoRow* equipRow = FPlayerAccountService::FindEquipmentInfoRowByTag(this, foundEquip->ItemTag);
 	if (!equipRow) return FGameplayTag();
 
 	return equipRow->SlotTag;
@@ -1239,7 +1209,7 @@ void UBattlefieldManagerSubsystem::BuildBattlePotionCache(FInBattleData& OutInBa
 		{
 			if (const FDTItemCatalogRow* catalogRow = FPlayerAccountService::FindItemCatalogRowByTag(this, potionSlot.PotionTag))
 			{
-				runtimeSlot.Icon = catalogRow->Icon;
+				runtimeSlot.Icon = catalogRow->Icon.LoadSynchronous();
 
 				if (FDTPotionInfoRow* potionRow = gameDataSubsystem->GetRow<FDTPotionInfoRow>(catalogRow->DetailTableTag, catalogRow->DetailRowName))
 				{

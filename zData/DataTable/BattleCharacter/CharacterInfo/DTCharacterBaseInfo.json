@@ -30,7 +30,7 @@
     }
   },
   {
-    "Name": "Iris",
+    "Name": "Nurse",
     "BattleCharacterInfo": {
       "CharacterTag": "Arcanum.Player.ID.Iris",
       "CharacterIcon": "/Game/Assets/UI/Character/AvatarThumb/Icon_Nurse.Icon_Nurse",

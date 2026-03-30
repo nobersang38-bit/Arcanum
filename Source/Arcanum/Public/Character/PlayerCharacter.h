@@ -60,7 +60,6 @@ public:
 	void AddCurrentStat(FGameplayTag InTag, float InValue);
 
 #pragma endregion
-
 	UFUNCTION(BlueprintCallable)
 	USkeletalMeshComponent* GetSourceSkeletaMeshComponent() { return SourceSkeletaMeshComponent; }
 	ABattlePlayerController* GetBattleOwnerController() const;
@@ -68,7 +67,7 @@ public:
 	class UStatusActionComponent* GetStatusActionComponent() const { return StatusActionComponent; }
 
 	UFUNCTION(BlueprintCallable)
-	void ApplyPotionModifier(const FDerivedStatModifier& InModifier) { AddDerivedStatModifier(InModifier); }
+	void ApplyPotionModifier(const FDerivedStatModifier& InModifier);
 
 protected:
 
@@ -224,6 +223,7 @@ public:
 	/* 궁극기 Release 몽타주 재생 중 여부 */
 	bool GetIsUltimateReleaseMontagePlaying() const { return bIsUltimateReleaseMontagePlaying; }
 	const FVector GetUltimateLocation() const;
+	bool GetIsCommonSkillMontagePlaying() const { return bIsCommonSkillMontagePlaying; }
 
 private:
 	/* 체력 리젠 변경 시 체력바 갱신 */

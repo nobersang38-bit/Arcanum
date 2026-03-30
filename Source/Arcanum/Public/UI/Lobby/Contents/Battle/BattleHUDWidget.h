@@ -5,6 +5,7 @@
 #include "DataInfo/StageData/StageInfo/Data/FStageDataInfo.h"
 #include "DataInfo/StageData/StageInfo/DataTable/FDTStageDataRow.h"
 #include "DataInfo/InventoryData/Data/FInventoryViewSlot.h"
+#include "UI/DataType/EDialogResult.h"
 #include "BattleHUDWidget.generated.h"
 
 class ULobbyHUD;
@@ -14,7 +15,7 @@ class UScrollBox;
 class UItemSlot;
 class UInventoryItemSlotWidget;
 class USquareSlotWidget;
-class UUserWidget;
+class UCommonDialog;
 
 /* 배틀 슬롯 클릭 알림 */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnShowUnitList, int32, InIndex);
@@ -52,6 +53,8 @@ public:
 	/* 장작 슬롯 화면 갱신 */
 	void RefreshBattlePotionSlots();
 
+	/* 물약 인벤토리 닫기 */
+	void HidePotionInventory();
 private:
 	/* 물약 슬롯 클릭 */
 	UFUNCTION()
@@ -75,9 +78,6 @@ private:
 	/* 물약 인벤토리 열기 */
 	void ShowPotionInventory();
 
-	/* 물약 인벤토리 닫기 */
-	void HidePotionInventory();
-
 	/* 장착 슬롯 선택 강조 갱신 */
 	void RefreshEquippedPotionSlotSelection();
 
@@ -99,9 +99,9 @@ protected:
 	TObjectPtr<UItemSlot> ItemListSlot;
 
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
-	//TSubclassOf<UUserWidget> LoadingWidgetClass;
+    //TSubclassOf<UUserWidget> LoadingWidgetClass;
 
-	//UUserWidget* LoadingWidgetInstance;
+    //UUserWidget* LoadingWidgetInstance;
 
 private:
 	/* 화면 슬롯 위젯 배열 */
@@ -156,5 +156,19 @@ private:
 	UFUNCTION() void OnStageClicked(UStageList* ClickedStage);
 	TArray<UStageList*> StageWidgets;
 	UStageList* CurrentSelectedStage = nullptr;
+#pragma endregion
+
+#pragma region 전투 입장 제한
+private:
+	/* 무기 장착 여부 검사 */
+	bool HasAllBattleWeaponsEquipped() const;
+
+	/* 무기 미장착 알림창 */
+	UFUNCTION()
+	void HandleWeaponRequiredDialogResult(EDialogResult InResult);
+
+protected:
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UCommonDialog> WeaponRequiredDialog;
 #pragma endregion
 };

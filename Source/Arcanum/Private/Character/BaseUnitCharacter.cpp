@@ -226,7 +226,6 @@ void ABaseUnitCharacter::OnAttackNotifyTriggered()
 			ResultAttackPower *= 2.0f;
 		}
 	}
-
 	UnitCombatComponent->SendDamage(ResultAttackPower);
 }
 

@@ -483,6 +483,14 @@ ABattlePlayerController* APlayerCharacter::GetBattleOwnerController() const
 	return nullptr;
 }
 
+void APlayerCharacter::ApplyPotionModifier(const FDerivedStatModifier& InModifier)
+{
+	if (UCharacterBattleStatsComponent* statComponent = FindComponentByClass<UCharacterBattleStatsComponent>())
+	{
+		statComponent->ApplyDurationModifier(InModifier);
+	}
+}
+
 void APlayerCharacter::UpdateEquippedWeaponMesh()
 {
 
