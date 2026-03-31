@@ -116,6 +116,9 @@ bool AResultStarChild::TryLoadAndSpawnResult()
         if (Row && Row->BattleCharacterInfo.CharacterClass.LoadSynchronous()) {
             ResultActor = GetWorld()->SpawnActor<AActor>(Row->BattleCharacterInfo.CharacterClass.Get(), GetActorLocation(), GetActorRotation(), SpawnParams);
             ResultDialog = Row->BattleCharacterInfo.DefaultDialogue;
+            ResultData.CharacterColorTexture = Row->BattleCharacterInfo.CharacterColor.LoadSynchronous();
+            ResultData.CharacterSilhouetteTexture = Row->BattleCharacterInfo.CharacterSilhouette.LoadSynchronous();
+            ResultData.CharacterBgTexture = Row->BattleCharacterInfo.CharacterBackground.LoadSynchronous();
         }
     }
     else if (ResultData.ItemTag.MatchesTag(Arcanum::Items::Rarity::Root)) { // 장비 분기

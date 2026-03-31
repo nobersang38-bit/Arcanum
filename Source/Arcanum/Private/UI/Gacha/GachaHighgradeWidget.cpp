@@ -53,10 +53,18 @@ void UGachaHighgradeWidget::InitializeGacha(const FGachaItemResult& ItemData, co
 	if (DialogueText) DialogueText->SetText(GachaDialogueText);
 
 	// TODO: 나중에 ItemData 기반 이미지 세팅
-	// if (RevealImage && ItemData.CharacterTexture)
-	// {
-	//     RevealImage->SetBrushFromTexture(ItemData.CharacterTexture);
-	// }
+	 if (RevealImage && ItemData.CharacterColorTexture)
+	 {
+	     RevealImage->SetBrushFromTexture(ItemData.CharacterColorTexture.LoadSynchronous());
+	 }
+	 if (SilhouetteImage && ItemData.CharacterSilhouetteTexture)
+	 {
+		 SilhouetteImage->SetBrushFromTexture(ItemData.CharacterSilhouetteTexture.LoadSynchronous());
+	 }
+	 if (BackGround && ItemData.CharacterBgTexture)
+	 {
+		 BackGround->SetBrushFromTexture(ItemData.CharacterBgTexture.LoadSynchronous());
+	 }
 }
 
 FReply UGachaHighgradeWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)

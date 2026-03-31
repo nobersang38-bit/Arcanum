@@ -175,10 +175,6 @@ void UGachaHUDWidget::RequestGachaTest(int32 InPullCount)
     if (ParentLobby->CachedPlayerData.Mailbox.Num() >= ParentLobby->CachedPlayerData.MailboxCapacity) {
         return;
     }
-    FPlayerAccountService::UpdateCurrency(this, ParentLobby->CachedPlayerData, Arcanum::PlayerData::Currencies::NonRegen::Soul::Value, 10000);
-    ParentLobby->CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
-    FPlayerAccountService::UpdateCurrency(this, ParentLobby->CachedPlayerData, Arcanum::PlayerData::Currencies::NonRegen::Gold::Value, 10000);
-    ParentLobby->CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
 
     if (!CurrentSelectedButton) {
         return;
