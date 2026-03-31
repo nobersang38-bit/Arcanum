@@ -4,14 +4,15 @@
 #include "Components/ScrollBox.h"
 #include "Components/Button.h"
 #include "Components/Image.h"
+#include "UI/Common/CommonBtnWidget.h"
 
 void UAnnouncetUserWidget::NativeConstruct()
 {
     Super::NativeConstruct();
 
-    if (CloseButton) {
-        CloseButton->OnClicked.RemoveDynamic(this, &UAnnouncetUserWidget::HandleCloseButtonClicked);
-        CloseButton->OnClicked.AddDynamic(this, &UAnnouncetUserWidget::HandleCloseButtonClicked);
+    if (CloseBtn) {
+        CloseBtn->OnClicked.RemoveDynamic(this, &UAnnouncetUserWidget::HandleCloseButtonClicked);
+        CloseBtn->OnClicked.AddDynamic(this, &UAnnouncetUserWidget::HandleCloseButtonClicked);
     }
 }
 void UAnnouncetUserWidget::SetAnnouncementText(const FText& NewText)
