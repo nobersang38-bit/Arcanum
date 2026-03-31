@@ -58,6 +58,12 @@ AActor* FTargetPriorityWeightData::CalculateWinActor(AActor* InMyCharacter, TArr
 
 	for (const auto& Actor : InActors)
 	{
+		if (Actor->GetClass()->ImplementsInterface(URuntimeUnitDataInterface::StaticClass()))
+		{
+			auto Interface = Cast<IRuntimeUnitDataInterface>(Actor);
+			bool bIsDead = Interface->GetIsDead();
+			if (bIsDead) continue;
+		}
 		float CurrentScore = CalculateScore(InMyCharacter, Actor);
 		if (HighScore <= CurrentScore)
 		{
