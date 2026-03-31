@@ -81,6 +81,9 @@ protected:
 
 
 #pragma region HUD 위젯 클래스
+public:
+	UInBattleHUDWidget* GetHUDWidgetInstance() const { return HUDWidgetInstance; }
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UInBattleHUDWidget> HUDWidgetClass = nullptr;

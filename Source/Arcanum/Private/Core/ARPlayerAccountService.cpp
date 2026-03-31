@@ -275,17 +275,11 @@ bool FPlayerAccountService::SetBattlePotionSlot(const UObject* WorldContextObjec
 	}
 	if (!playerData.BattlePotionSlots.IsValidIndex(InSlotIndex)) return false;
 
-	const int32 ownedCount = playerData.StackCounts.FindRef(InPotionTag);
-	if (ownedCount <= 0) return false;
-
-	const int32 setCount = FMath::Min(ownedCount, InCount);
-	if (setCount <= 0) return false;
-
-	for (int32 slotIndex = 0; slotIndex < playerData.BattlePotionSlots.Num(); slotIndex++)
+	for (int32 i = 0; i < playerData.BattlePotionSlots.Num(); i++)
 	{
-		if (slotIndex != InSlotIndex)
+		if (i != InSlotIndex)
 		{
-			const FBattlePotionSlotData& slotData = playerData.BattlePotionSlots[slotIndex];
+			const FBattlePotionSlotData& slotData = playerData.BattlePotionSlots[i];
 
 			if (slotData.PotionTag.MatchesTagExact(InPotionTag))
 			{
@@ -295,8 +289,58 @@ bool FPlayerAccountService::SetBattlePotionSlot(const UObject* WorldContextObjec
 	}
 
 	FBattlePotionSlotData& targetSlot = playerData.BattlePotionSlots[InSlotIndex];
-	targetSlot.PotionTag = InPotionTag;
-	targetSlot.Count = setCount;
+	const int32 MaxBattlePotionCount = 5;
+
+	if (targetSlot.PotionTag.MatchesTagExact(InPotionTag))
+	{
+		const int32 ownedCount = playerData.StackCounts.FindRef(InPotionTag);
+		if (ownedCount <= 0) return false;
+
+		const int32 remainCapacity = MaxBattlePotionCount - targetSlot.Count;
+		if (remainCapacity <= 0) return false;
+
+		const int32 addCount = FMath::Min(ownedCount, FMath::Min(InCount, remainCapacity));
+		if (addCount <= 0) return false;
+
+		int32 remainingInStack = ownedCount - addCount;
+		if (remainingInStack <= 0)
+		{
+			playerData.StackCounts.Remove(InPotionTag);
+		}
+		else
+		{
+			playerData.StackCounts.Add(InPotionTag, remainingInStack);
+		}
+
+		targetSlot.Count += addCount;
+	}
+	else
+	{
+		if (targetSlot.PotionTag.IsValid() && targetSlot.Count > 0)
+		{
+			int32& returnedCount = playerData.StackCounts.FindOrAdd(targetSlot.PotionTag);
+			returnedCount += targetSlot.Count;
+		}
+
+		const int32 ownedCount = playerData.StackCounts.FindRef(InPotionTag);
+		if (ownedCount <= 0) return false;
+
+		const int32 setCount = FMath::Min(ownedCount, FMath::Min(InCount, MaxBattlePotionCount));
+		if (setCount <= 0) return false;
+
+		int32 remainingInStack = ownedCount - setCount;
+		if (remainingInStack <= 0)
+		{
+			playerData.StackCounts.Remove(InPotionTag);
+		}
+		else
+		{
+			playerData.StackCounts.Add(InPotionTag, remainingInStack);
+		}
+
+		targetSlot.PotionTag = InPotionTag;
+		targetSlot.Count = setCount;
+	}
 
 	return SavePlayerData(GI);
 }
@@ -310,8 +354,40 @@ bool FPlayerAccountService::ClearBattlePotionSlot(const UObject* WorldContextObj
 	FPlayerData& playerData = GI->GetPlayerData();
 	if (!playerData.BattlePotionSlots.IsValidIndex(InSlotIndex)) return false;
 
-	playerData.BattlePotionSlots[InSlotIndex].PotionTag = FGameplayTag();
-	playerData.BattlePotionSlots[InSlotIndex].Count = 0;
+	FBattlePotionSlotData& targetSlot = playerData.BattlePotionSlots[InSlotIndex];
+	if (targetSlot.PotionTag.IsValid() && targetSlot.Count > 0)
+	{
+		int32& returnedCount = playerData.StackCounts.FindOrAdd(targetSlot.PotionTag);
+		returnedCount += targetSlot.Count;
+	}
+
+	targetSlot.PotionTag = FGameplayTag();
+	targetSlot.Count = 0;
+
+	return SavePlayerData(GI);
+}
+
+bool FPlayerAccountService::FinalizeBattlePotionSlots(const UObject* WorldContextObject, const TArray<FBattlePotionSlotData>& InBattlePotionSlots)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return false;
+
+	FPlayerData& playerData = GI->GetPlayerData();
+
+	for (const FBattlePotionSlotData& slotData : InBattlePotionSlots)
+	{
+		if (slotData.PotionTag.IsValid() && slotData.Count > 0)
+		{
+			int32& returnedCount = playerData.StackCounts.FindOrAdd(slotData.PotionTag);
+			returnedCount += slotData.Count;
+		}
+	}
+
+	for (FBattlePotionSlotData& slotData : playerData.BattlePotionSlots)
+	{
+		slotData.PotionTag = FGameplayTag();
+		slotData.Count = 0;
+	}
 
 	return SavePlayerData(GI);
 }
@@ -377,43 +453,17 @@ bool FPlayerAccountService::EquipItemToCharacter(const UObject* WorldContextObje
 
 	FBattleCharacterData* foundCharacter = FindOwnedCharacterByName(playerData, InCharacterName);
 	if (!foundCharacter) return false;
-	// if (!foundCharacter->bSelection) return false;
+	//if (!foundCharacter->bSelection) return false;
 
 	TMap<FGameplayTag, FGuid>* slotMap = GetEquipmentSlotMapBySlotTag(*foundCharacter, InEquipSlotTag);
 	if (!slotMap) return false;
 
 	// 다른 캐릭터 포함 이미 장착 중인 장비면 실패
-	for (const FBattleCharacterData& characterData : playerData.OwnedCharacters)
+	if (IsItemEquipped(WorldContextObject, InItemGuid) &&
+		!IsItemEquippedCharacter(WorldContextObject, InCharacterName, InItemGuid))
 	{
-		const FName otherCharacterName = GetLeafNameFromTag(characterData.CharacterInfo.BattleCharacterInitData.CharacterTag);
-		if (otherCharacterName == InCharacterName)	continue;
-
-		for (const TPair<FGameplayTag, FGuid>& pair : characterData.WeaponSlots)
-		{
-			if (pair.Value == InItemGuid)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("이미 장착중입니다."));
-				return false;
-			}
-		}
-
-		for (const TPair<FGameplayTag, FGuid>& pair : characterData.LegendaryWeaponSlots)
-		{
-			if (pair.Value == InItemGuid)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("이미 장착중입니다."));
-				return false;
-			}
-		}
-
-		for (const TPair<FGameplayTag, FGuid>& pair : characterData.ArmorSlots)
-		{
-			if (pair.Value == InItemGuid)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("이미 장착중입니다."));
-				return false;
-			}
-		}
+		UE_LOG(LogTemp, Warning, TEXT("이미 장착중입니다."));
+		return false;
 	}
 
 	// 장착 중복 처리
@@ -509,6 +559,87 @@ bool FPlayerAccountService::UnequipItemFromCharacter(const UObject* WorldContext
 	return false;
 }
 
+bool FPlayerAccountService::IsItemEquipped(const UObject* WorldContextObject, const FGuid& InItemGuid)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return false;
+
+	if (!InItemGuid.IsValid()) return false;
+
+	const FPlayerData& playerData = GI->GetPlayerData();
+	for (const FBattleCharacterData& characterData : playerData.OwnedCharacters)
+	{
+		for (const TPair<FGameplayTag, FGuid>& pair : characterData.WeaponSlots)
+		{
+			if (pair.Value == InItemGuid)
+			{
+				return true;
+			}
+		}
+
+		for (const TPair<FGameplayTag, FGuid>& pair : characterData.LegendaryWeaponSlots)
+		{
+			if (pair.Value == InItemGuid)
+			{
+				return true;
+			}
+		}
+
+		for (const TPair<FGameplayTag, FGuid>& pair : characterData.ArmorSlots)
+		{
+			if (pair.Value == InItemGuid)
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+bool FPlayerAccountService::IsItemEquippedCharacter(const UObject* WorldContextObject, const FName& InCharacterName, const FGuid& InItemGuid)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return false;
+
+	if (InCharacterName.IsNone() || !InItemGuid.IsValid()) return false;
+
+	const FPlayerData& playerData = GI->GetPlayerData();
+	for (const FBattleCharacterData& characterData : playerData.OwnedCharacters)
+	{
+		const FName characterName = GetLeafNameFromTag(characterData.CharacterInfo.BattleCharacterInitData.CharacterTag);
+		if (characterName != InCharacterName) continue;
+	
+		for (const TPair<FGameplayTag, FGuid>& pair : characterData.WeaponSlots)
+		{
+			if (pair.Value == InItemGuid)
+			{
+				return true;
+			}
+		}
+
+		for (const TPair<FGameplayTag, FGuid>& pair : characterData.LegendaryWeaponSlots)
+		{
+			if (pair.Value == InItemGuid)
+			{
+				return true;
+			}
+		}
+
+		for (const TPair<FGameplayTag, FGuid>& pair : characterData.ArmorSlots)
+		{
+			if (pair.Value == InItemGuid)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	return false;
+}
+
 FBattleCharacterData* FPlayerAccountService::FindOwnedCharacterByName(FPlayerData& InPlayerData, const FName& InCharacterName)
 {
 	for (FBattleCharacterData& characterData : InPlayerData.OwnedCharacters)
@@ -519,6 +650,7 @@ FBattleCharacterData* FPlayerAccountService::FindOwnedCharacterByName(FPlayerDat
 			return &characterData;
 		}
 	}
+
 	return nullptr;
 }
 

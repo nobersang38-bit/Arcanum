@@ -19,7 +19,7 @@ void UGameTimeSubsystem::Tick(float DeltaTime)
 		OnTimeUpdated.Broadcast(CurrentTimeKST);
 	}
 
-	if (bIsBattleActive) {
+	if (bIsBattleActive && !bStagePaused) {
 		CurrentStageTime -= DeltaTime;
 		int32 DisplaySecond = FMath::Max(0, FMath::CeilToInt(CurrentStageTime));
 
@@ -78,6 +78,16 @@ void UGameTimeSubsystem::StartStage(float DurationSeconds)
 void UGameTimeSubsystem::StopStage()
 {
 	bIsBattleActive = false;
+}
+
+void UGameTimeSubsystem::PauseStage()
+{
+	bStagePaused = true;
+}
+
+void UGameTimeSubsystem::ResumeStage()
+{
+	bStagePaused = false;
 }
 
 void UGameTimeSubsystem::StartShop(FDateTime InEndTime)
