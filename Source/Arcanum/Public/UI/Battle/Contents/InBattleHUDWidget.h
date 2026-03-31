@@ -1,10 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "NativeGameplayTags.h"
+#include "UI/DataType/EDialogResult.h"
 #include "InBattleHUDWidget.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnClickActionButton);
@@ -22,6 +21,8 @@ class UBattleStageProgressWidget;
 class UBattleBattleEndWidget;
 class UWrapBox;
 class UBattleBuffSlotWidget;
+class UCommonBtnWidget;
+class UBattleMenuWidget;
 struct FBattlePotionRuntimeSlotData;
 
 UCLASS()
@@ -190,7 +191,7 @@ public:
 #pragma region 물약
 public:
 	/* 물약 슬롯 갱신 */
-	void SetBattlePotionSlot(int32 InSlotIndex, const FBattlePotionRuntimeSlotData& InSlotData); 
+	void SetBattlePotionSlot(int32 InSlotIndex, const FBattlePotionRuntimeSlotData& InSlotData);
 #pragma endregion
 
 #pragma region 버프
@@ -217,5 +218,23 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Buff")
 	TSubclassOf<UBattleBuffSlotWidget> BuffSlotWidgetClass = nullptr;
+#pragma endregion
+
+#pragma region 인게임 메뉴
+private:
+	/* 인게임 메뉴 버튼 */
+	UFUNCTION()
+	void ClickMenuBtn();
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UCommonBtnWidget> MenuBtn = nullptr;
+
+private:
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UBattleMenuWidget> BattleMenuWidgetClass = nullptr;
+
+	UPROPERTY()
+	TObjectPtr<UBattleMenuWidget> BattleMenuWidget = nullptr;
 #pragma endregion
 };

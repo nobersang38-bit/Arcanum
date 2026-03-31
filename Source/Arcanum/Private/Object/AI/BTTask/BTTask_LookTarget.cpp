@@ -52,6 +52,7 @@ void UBTTask_LookTarget::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 		FRotator NextRotator = FMath::RInterpConstantTo(CachedPlayerCharacter->GetActorRotation(), ResultRotator, DeltaSeconds, RotationSpeed);
 
 		CachedPlayerCharacter->SetActorRotation(NextRotator);
+		//CachedPlayerCharacter->GetController()->SetControlRotation(NextRotator);
 
 		if (FMath::Abs(ResultRotator.Yaw - NextRotator.Yaw) <= MarginYaw)
 		{

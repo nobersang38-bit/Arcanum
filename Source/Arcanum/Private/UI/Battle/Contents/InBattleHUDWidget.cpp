@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "UI/Battle/Contents/InBattleHUDWidget.h"
 #include "UI/Battle/SubLayout/BattleActionButtonWidget.h"
 #include "UI/Battle/SubLayout/BattleAllyUnitPanelWidget.h"
@@ -10,10 +7,13 @@
 #include "UI/Battle/SubLayout/BattleStageProgressWidget.h"
 #include "UI/Battle/SubLayout/BattleToggleWidget.h"
 #include "UI/Battle/SubLayout/BattleBuffSlotWidget.h"
+#include "UI/Battle/SubLayout/BattleMenuWidget.h"
+#include "UI/Common/CommonBtnWidget.h"
+#include "Core/SubSystem/GameTimeSubsystem.h"
 #include "Object/Operation/UnitDragDropOperation.h"
 #include "DataInfo/SkillData/Data/FBattleWeaponSkillData.h"
 #include "Components/WrapBox.h"
-
+#include "Kismet/GameplayStatics.h"
 
 // ========================================================
 // 언리얼 기본 생성 및 초기화
@@ -165,6 +165,7 @@ void UInBattleHUDWidget::BindCallbacks()
 	Item1->OnButtonClick.AddDynamic(this, &UInBattleHUDWidget::ClickItem1);
 	Item2->OnButtonClick.AddDynamic(this, &UInBattleHUDWidget::ClickItem2);
 	AutoManualMode->OnToggle.AddDynamic(this, &UInBattleHUDWidget::ToggleAutoManualMode);
+	MenuBtn->OnClicked.AddDynamic(this, &UInBattleHUDWidget::ClickMenuBtn);
 }
 
 void UInBattleHUDWidget::RefreshWeaponSkillIcons(UTexture2D* InCurrentWeaponIcon, UTexture2D* InBasicSkillIcon, UTexture2D* InLegendaryWeaponIcon)
@@ -305,4 +306,31 @@ void UInBattleHUDWidget::ClearBuffSlots()
 	}
 
 	ActiveBuffSlots.Empty();
+}
+
+void UInBattleHUDWidget::ClickMenuBtn()
+{
+	if (!BattleMenuWidgetClass) return;
+
+	if (BattleMenuWidget)
+	{
+		if (UGameTimeSubsystem* gameTimeSubsystem = GetGameInstance()->GetSubsystem<UGameTimeSubsystem>())
+		{
+			gameTimeSubsystem->ResumeStage();
+		}
+		UGameplayStatics::SetGamePaused(this, false);
+		BattleMenuWidget->RemoveFromParent();
+		BattleMenuWidget = nullptr;
+		return;
+	}
+
+	if (BattleMenuWidget = CreateWidget<UBattleMenuWidget>(this, BattleMenuWidgetClass))
+	{
+		if (UGameTimeSubsystem* gameTimeSubsystem = GetGameInstance()->GetSubsystem<UGameTimeSubsystem>())
+		{
+			gameTimeSubsystem->PauseStage();
+		}
+		UGameplayStatics::SetGamePaused(this, true);
+		BattleMenuWidget->AddToViewport();
+	}
 }

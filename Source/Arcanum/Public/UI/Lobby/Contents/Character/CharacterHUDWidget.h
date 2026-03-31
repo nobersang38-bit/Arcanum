@@ -171,5 +171,8 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UCommonBtnWidget> EquipOpenBtn;
+
+private:
+	bool bCurrentSelectedCharacterOwned = false;
 #pragma endregion
 };

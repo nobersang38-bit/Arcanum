@@ -126,8 +126,8 @@ void UBattleActionButtonWidget::SetImage(UTexture2D* InImage)
 	FButtonStyle ButtonStyle = ActionButton->GetStyle();
 	auto UpdateBrush = [&](FSlateBrush& Brush) {
 		if (InImage == nullptr) {
-			Brush.SetResourceObject(nullptr);
-			Brush.DrawAs = ESlateBrushDrawType::NoDrawType; // 무기 장착 안 했을때 아이콘 투명하게
+			Brush.SetResourceObject(EditLockIcon);
+			Brush.DrawAs = ESlateBrushDrawType::Image; // 무기 장착 안 했을때 아이콘 투명하게
 		}
 		else {
 			Brush.SetResourceObject(InImage);
