@@ -8,6 +8,7 @@
 #include "Components/Button.h"
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
+#include "Components/Border.h"
 
 #include "Core/ARGameInstance.h"
 #include "Core/ARPlayerAccountService.h"
@@ -144,11 +145,10 @@ void UGachaHUDWidget::RequestGacha(int32 InPullCount)
         return;
     }
 
-
-    FPlayerAccountService::UpdateCurrency(this, ParentLobby->CachedPlayerData, Arcanum::PlayerData::Currencies::NonRegen::Soul::Value, 10000);
-    ParentLobby->CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
-    FPlayerAccountService::UpdateCurrency(this, ParentLobby->CachedPlayerData, Arcanum::PlayerData::Currencies::NonRegen::Gold::Value, 10000);
-    ParentLobby->CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
+   //FPlayerAccountService::UpdateCurrency(this, ParentLobby->CachedPlayerData, Arcanum::PlayerData::Currencies::NonRegen::Soul::Value, 10000);
+    //ParentLobby->CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
+    //FPlayerAccountService::UpdateCurrency(this, ParentLobby->CachedPlayerData, Arcanum::PlayerData::Currencies::NonRegen::Gold::Value, 10000);
+    //ParentLobby->CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
 
     if (!CurrentSelectedButton) {
         UE_LOG(LogTemp, Warning, TEXT("No Banner Selected!"));
@@ -175,10 +175,6 @@ void UGachaHUDWidget::RequestGachaTest(int32 InPullCount)
     if (ParentLobby->CachedPlayerData.Mailbox.Num() >= ParentLobby->CachedPlayerData.MailboxCapacity) {
         return;
     }
-    FPlayerAccountService::UpdateCurrency(this, ParentLobby->CachedPlayerData, Arcanum::PlayerData::Currencies::NonRegen::Soul::Value, 10000);
-    ParentLobby->CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
-    FPlayerAccountService::UpdateCurrency(this, ParentLobby->CachedPlayerData, Arcanum::PlayerData::Currencies::NonRegen::Gold::Value, 10000);
-    ParentLobby->CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
 
     if (!CurrentSelectedButton) {
         return;
@@ -200,12 +196,24 @@ void UGachaHUDWidget::RequestGachaTest(int32 InPullCount)
 // ========================================================
 void UGachaHUDWidget::HandleProbabilityButtonClicked()
 {
-    if (ProbabilityWidget) {
-        ESlateVisibility CurrentVis = ProbabilityWidget->GetVisibility();
-        ProbabilityWidget->SetVisibility(CurrentVis == ESlateVisibility::Visible ? ESlateVisibility::Collapsed : ESlateVisibility::Visible);
-        if (ProbabilityWidget->GetVisibility() == ESlateVisibility::Visible) {
-            //ProbabilityWidget->UpdateData(CurrentBannerData);
-        }
+    //if (ProbabilityWidget) {
+    //    ESlateVisibility CurrentVis = ProbabilityWidget->GetVisibility();
+    //    ProbabilityWidget->SetVisibility(CurrentVis == ESlateVisibility::Visible ? ESlateVisibility::Collapsed : ESlateVisibility::Visible);
+    //    if (ProbabilityWidget->GetVisibility() == ESlateVisibility::Visible) {
+    //        //ProbabilityWidget->UpdateData(CurrentBannerData);
+    //    }
+    //}
+    if (!DetailProbabilityText) return;
+
+    ESlateVisibility CurrentVisibility = DetailProbabilityText->GetVisibility();
+
+    if (CurrentVisibility == ESlateVisibility::Visible)
+    {
+        DetailProbabilityText->SetVisibility(ESlateVisibility::Collapsed);
+    }
+    else
+    {
+        DetailProbabilityText->SetVisibility(ESlateVisibility::Visible);
     }
 }
 void UGachaHUDWidget::HandleTimeUpdated(FDateTime CurrentTime)
@@ -214,7 +222,8 @@ void UGachaHUDWidget::HandleTimeUpdated(FDateTime CurrentTime)
     for (int32 i = 0; i < ActiveBannerDataList.Num(); ++i) {
         const FDTGachaBannerDataRow& BannerData = ActiveBannerDataList[i];
 
-        if (BannerData.GachaTypeTag == Arcanum::Gacha::Type::Standard::Standard) {
+        if (BannerData.GachaTypeTag == Arcanum::Gacha::Type::Standard::Standard || 
+            BannerData.GachaTypeTag == Arcanum::Gacha::Type::WeaponPickup::WeaponPickup) {
             BannerButtons[i]->UpdateRemainingTimeText(FText::FromString(TEXT("상시")));
             continue;
         }
