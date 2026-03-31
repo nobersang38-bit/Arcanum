@@ -1,6 +1,7 @@
 #include "UI/Lobby/Contents/Inventory/SubLayout/InventoryItemSlotWidget.h"
 #include "UI/Lobby/Contents/ItemDetail/ItemTooltipWidget.h"
 #include "UI/Lobby/Contents/ItemDetail/ItemDetailHelper.h"
+#include "Core/ARPlayerAccountService.h"
 #include "Components/Button.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
@@ -14,6 +15,11 @@ void UInventoryItemSlotWidget::NativeConstruct()
 	{
 		SlotButton->OnClicked.RemoveDynamic(this, &UInventoryItemSlotWidget::HandleSlotClicked);
 		SlotButton->OnClicked.AddDynamic(this, &UInventoryItemSlotWidget::HandleSlotClicked);
+	}
+
+	if (EquippedMarkImage)
+	{
+		EquippedMarkImage->SetVisibility(ESlateVisibility::Collapsed);
 	}
 
 	RefreshSlotUI();
@@ -76,6 +82,11 @@ void UInventoryItemSlotWidget::RefreshSlotUI()
 			StackOrUpgradeText->SetVisibility(ESlateVisibility::Collapsed);
 		}
 
+        if (EquippedMarkImage)
+        {
+			EquippedMarkImage->SetVisibility(ESlateVisibility::Collapsed);
+        }
+
 		return;
 	}
 
@@ -108,6 +119,11 @@ void UInventoryItemSlotWidget::RefreshSlotUI()
 				StackOrUpgradeText->SetText(FText::GetEmpty());
 				StackOrUpgradeText->SetVisibility(ESlateVisibility::Collapsed);
 			}
+			
+			if (EquippedMarkImage)
+			{
+				SetEquippedMarkVisible(FPlayerAccountService::IsItemEquipped(this, ViewSlot.ItemGuid));
+			}
 		}
 		// Potion
 		else
@@ -120,6 +136,11 @@ void UInventoryItemSlotWidget::RefreshSlotUI()
 			{
 				StackOrUpgradeText->SetText(FText::GetEmpty());
 				StackOrUpgradeText->SetVisibility(ESlateVisibility::Collapsed);
+			}
+
+			if (EquippedMarkImage)
+			{
+				EquippedMarkImage->SetVisibility(ESlateVisibility::Collapsed);
 			}
 		}
 	}
@@ -186,4 +207,12 @@ void UInventoryItemSlotWidget::RefreshTooltip()
 
 	tooltipWidget->ApplyDisplayData(viewData);
 	SetToolTip(tooltipWidget);
+}
+
+void UInventoryItemSlotWidget::SetEquippedMarkVisible(bool bVisible)
+{
+	if (EquippedMarkImage)
+	{
+		EquippedMarkImage->SetVisibility(bVisible ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+	}
 }

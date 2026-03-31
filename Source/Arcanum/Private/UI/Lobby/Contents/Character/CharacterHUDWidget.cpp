@@ -206,6 +206,7 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
 
 	CombinedInfoString = "";
 	CurrentSelectedCharacterName = CharacterName;
+	bCurrentSelectedCharacterOwned = SlotCharacterOwned;
 
 	for (int32 i = 0; i < ParentLobby->CachedPlayerData.OwnedCharacters.Num(); i++)
 	{
@@ -386,7 +387,6 @@ void UCharacterHUDWidget::UpdateSlotVisuals(const TMap<FGameplayTag, FGuid>& InE
 						targetSlot->SetItemIconImage(icon);
 						targetSlot->SetWeaponGuid(itemGuid);
 						targetSlot->SetUpgradeLevel(foundEquip->CurrUpgradeLevel);
-
 					}
 				}
 			}
@@ -736,6 +736,7 @@ void UCharacterHUDWidget::HandleCharacterEquipRequested(const FGameplayTag& InEq
 
 	if (CharacterEquipWidget)
 	{
+		if (!bCurrentSelectedCharacterOwned) return;
 		if (FPlayerAccountService::EquipItemToCharacter(this, CurrentSelectedCharacterName, InEquipSlotTag, InItemGuid))
 		{
 			ParentLobby->RefreshAllLobbyUI();

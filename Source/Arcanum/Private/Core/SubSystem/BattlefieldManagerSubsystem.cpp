@@ -2,18 +2,21 @@
 
 
 #include "Core/SubSystem/BattlefieldManagerSubsystem.h"
+#include "UI/Battle/Contents/InBattleHUDWidget.h"
+#include "UI/Battle/BattlePlayerController.h"
 #include "GameFramework/Character.h"
-#include "Object/Actor/BattlefieldManagerActor.h"
 #include "Kismet/GameplayStatics.h"
 #include "Core/ARGameInstance.h"
-#include "Data/Rows/UnitsDataRow.h"
 #include "Core/SubSystem/GameTimeSubsystem.h"
+#include "Core/ARPlayerAccountService.h"
+#include "Data/Rows/UnitsDataRow.h"
 #include "DataInfo/BattleCharacter/BattleStats/DataTable/DTBattleStats.h"
 #include "DataInfo/SkillData/Data/FSkillInfo.h"
 #include "DataInfo/SkillData/DataTable/DTSkillsData.h"
 #include "GameFramework/GameMode.h"
 #include "Object/Actor/SpawnCheckDecal.h"
-#include "Core/ARPlayerAccountService.h"
+#include "Object/Actor/BattlefieldManagerActor.h"
+
 
 
 void UBattlefieldManagerSubsystem::OnWorldBeginPlay(UWorld& InWorld)
@@ -452,9 +455,18 @@ void UBattlefieldManagerSubsystem::MatchEnded(const FMatchData& MatchData)
 			FPlayerAccountService::AddCurrency(this, Arcanum::PlayerData::Currencies::NonRegen::Soul::Value, InBattleData.StageData.Reward.Soul);
 		}
 
+		if (ABattlePlayerController* battlePlayerController = Cast<ABattlePlayerController>(GetWorld()->GetFirstPlayerController()))
+		{
+			if (UInBattleHUDWidget* inBattleHUD = battlePlayerController->GetHUDWidgetInstance())
+			{
+				inBattleHUD->ClearBuffSlots();
+			}
+		}
+
 		UGameTimeSubsystem* GameTimeSubsystem = GI->GetSubsystem<UGameTimeSubsystem>();
 		if (GameTimeSubsystem)
 		{
+			FPlayerAccountService::FinalizeBattlePotionSlots(this, InBattleData.PlayerData.BattlePotionSlots);
 			GameTimeSubsystem->StopStage();
 			OnMatchEnded.Clear();
 		}

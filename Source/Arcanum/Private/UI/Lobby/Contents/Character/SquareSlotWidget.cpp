@@ -8,6 +8,7 @@
 void USquareSlotWidget::NativePreConstruct()
 {
 	Super::NativePreConstruct();
+
 	if (BackgroundColor) BackgroundColor->SetBrushColor(BackColor);
 	if (IconImage && IconImg) IconImage->SetBrushFromTexture(IconImg);
 }
