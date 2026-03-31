@@ -222,7 +222,8 @@ void UGachaHUDWidget::HandleTimeUpdated(FDateTime CurrentTime)
     for (int32 i = 0; i < ActiveBannerDataList.Num(); ++i) {
         const FDTGachaBannerDataRow& BannerData = ActiveBannerDataList[i];
 
-        if (BannerData.GachaTypeTag == Arcanum::Gacha::Type::Standard::Standard) {
+        if (BannerData.GachaTypeTag == Arcanum::Gacha::Type::Standard::Standard || 
+            BannerData.GachaTypeTag == Arcanum::Gacha::Type::WeaponPickup::WeaponPickup) {
             BannerButtons[i]->UpdateRemainingTimeText(FText::FromString(TEXT("상시")));
             continue;
         }

@@ -67,7 +67,9 @@ void UGachaFinalResultWidget::SpawnNextItem()
 
 	UGachaItemContainerSubWidget* NewItem = CreateWidget<UGachaItemContainerSubWidget>(this, ResultItemWidgetClass);
 	if (NewItem) {
+		//PendingResults[CurrentDisplayIndex].Quantity++;
 		NewItem->SetItemData(PendingResults[CurrentDisplayIndex]);
+		
 		IconContainer->AddChildToWrapBox(NewItem);
 		if (ResultScrollBox) ResultScrollBox->ScrollToEnd();
 
