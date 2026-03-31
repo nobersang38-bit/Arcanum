@@ -54,6 +54,7 @@ protected:
 	UPROPERTY(meta = (BindWidget)) UTextBlock* DialogueText;
 	UPROPERTY(meta = (BindWidget)) UImage* SilhouetteImage;
 	UPROPERTY(meta = (BindWidget)) UImage* RevealImage;
+	UPROPERTY(meta = (BindWidget)) UImage* BackGround;
 
 	/** 애니메이션 종료 콜백 */
 	UFUNCTION() void OnDialogueFinished();

@@ -54,6 +54,13 @@ struct FGachaItemResult
     TSoftObjectPtr<UDataTable> SourceTable;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TSoftObjectPtr<UTexture2D> CharacterColorTexture;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TSoftObjectPtr<UTexture2D> CharacterSilhouetteTexture;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TSoftObjectPtr<UTexture2D> CharacterBgTexture;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
     int32 Quantity = 1;
 
     FGachaItemResult() {}

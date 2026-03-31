@@ -307,10 +307,10 @@ FGameplayTag UARGameInstance::DetermineGrade(const FDTGachaBannerDataRow* Banner
 bool UARGameInstance::ApplyHardPity(const FDTGachaBannerDataRow* BannerData, FGachaBannerState& BannerState, FGameplayTag& InOutGrade)
 {
 	const FGameplayTag EpicGrade = GetHighestGrade(BannerData);
-	/*if (InOutGrade == EpicGrade) {
+	if (InOutGrade == EpicGrade) {
 		BannerState.PityCount = 0;
 		return false;
-	}*/
+	}
 
 	if (BannerState.PityCount >= BannerData->FiveStarPityCount) {
 		InOutGrade = EpicGrade;
