@@ -392,8 +392,14 @@ FGameplayTag UARGameInstance::GetRandomFromGrade(const FGachaGradePool& Pool, FG
 				FGameplayTag CharacterTag = CharRow->BattleCharacterInfo.CharacterTag;
 				ValidList.Add(CharacterTag);
 				/* 0401 변경 */
-				if (AddCharacterToBattleCharacter(CharRow)) GachaRes.Quantity = 1;
-				else GachaRes.Quantity = CharRow->BattleCharacterInfo.DuplicateShardReward;
+				if (AddCharacterToBattleCharacter(CharRow)) {
+					GachaRes.Quantity = 1;
+					GachaRes.bIsNew = true;
+				}
+				else {
+					GachaRes.Quantity = CharRow->BattleCharacterInfo.DuplicateShardReward;
+					GachaRes.bIsNew = false;
+				}
 
 				GachaRes.CharacterColorTexture = CharRow->BattleCharacterInfo.CharacterColor;
 				GachaRes.CharacterSilhouetteTexture = CharRow->BattleCharacterInfo.CharacterSilhouette;
