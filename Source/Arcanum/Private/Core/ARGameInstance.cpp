@@ -341,7 +341,7 @@ FGachaItemResult UARGameInstance::ResolvePickup(const FDTGachaBannerDataRow* Ban
 	Result.GradeTag = Pool.GradeTag;
 	Result.SourceTable = Pool.CommonPoolTable;
 	if (Pool.PickupCharacters.Num() == 0) {
-		Result.ItemTag = GetRandomFromGrade(Pool, GachaIndex);
+		Result.ItemTag = GetRandomFromGrade(Pool, GachaIndex, Result);
 		return Result;
 	}
 
@@ -356,13 +356,13 @@ FGachaItemResult UARGameInstance::ResolvePickup(const FDTGachaBannerDataRow* Ban
 		Result.ItemTag = Pool.PickupCharacters[Index];
 	}
 	else {
-		Result.ItemTag = GetRandomFromGrade(Pool, GachaIndex);
+		Result.ItemTag = GetRandomFromGrade(Pool, GachaIndex, Result);
 		if (BannerData->bGuaranteePickupOnFail) BannerState.bPickupGuaranteed = true;
 	}
 
 	return Result;
 }
-FGameplayTag UARGameInstance::GetRandomFromGrade(const FGachaGradePool& Pool, FGameplayTag GachaIndex)
+FGameplayTag UARGameInstance::GetRandomFromGrade(const FGachaGradePool& Pool, FGameplayTag GachaIndex, FGachaItemResult& GachaRes)
 {
 	UDataTable* PoolTable = Pool.CommonPoolTable.LoadSynchronous();
 	if (!PoolTable) return FGameplayTag::EmptyTag;
@@ -391,7 +391,19 @@ FGameplayTag UARGameInstance::GetRandomFromGrade(const FGachaGradePool& Pool, FG
 			if (FDTCharacterBaseInfoRow* CharRow = DataSubsystem->GetRow<FDTCharacterBaseInfoRow>(Arcanum::DataTable::CharacterInfo, SelectedRow)) {
 				FGameplayTag CharacterTag = CharRow->BattleCharacterInfo.CharacterTag;
 				ValidList.Add(CharacterTag);
-				AddCharacterToBattleCharacter(CharRow);
+				/* 0401 변경 */
+				if (AddCharacterToBattleCharacter(CharRow)) {
+					GachaRes.Quantity = 1;
+					GachaRes.bIsNew = true;
+				}
+				else {
+					GachaRes.Quantity = CharRow->BattleCharacterInfo.DuplicateShardReward;
+					GachaRes.bIsNew = false;
+				}
+
+				GachaRes.CharacterColorTexture = CharRow->BattleCharacterInfo.CharacterColor;
+				GachaRes.CharacterSilhouetteTexture = CharRow->BattleCharacterInfo.CharacterSilhouette;
+				GachaRes.CharacterBgTexture = CharRow->BattleCharacterInfo.CharacterBackground;
 			}
 		}
 	}
@@ -416,9 +428,10 @@ FGameplayTag UARGameInstance::GetRandomFromGrade(const FGachaGradePool& Pool, FG
 
 	return ValidList.Num() > 0 ? ValidList[FMath::RandRange(0, ValidList.Num() - 1)] : FGameplayTag::EmptyTag;
 }
-void UARGameInstance::AddCharacterToBattleCharacter(FDTCharacterBaseInfoRow* CharRow)
+/* 0401 반환값 변경 */
+bool UARGameInstance::AddCharacterToBattleCharacter(FDTCharacterBaseInfoRow* CharRow)
 {
-	if (!CharRow) return;
+	if (!CharRow) return false;
 
 	const FGameplayTag CharacterTag = CharRow->BattleCharacterInfo.CharacterTag;
 	for (FBattleCharacterData& CharData : PlayerData.OwnedCharacters) {
@@ -426,12 +439,17 @@ void UARGameInstance::AddCharacterToBattleCharacter(FDTCharacterBaseInfoRow* Cha
 			if (CharData.CharacterInfo.CurrStarLevel == 0) {
 				CharData.CharacterInfo.CurrStarLevel = 1;
 				CharData.CharacterInfo.CurrGrade = CharRow->BattleCharacterInfo.DefaultGrade;
+				/* 0401 반환값 변경 */
+				return true;
 			}
-			else CharData.CharacterInfo.CurrShardCount += CharData.CharacterInfo.BattleCharacterInitData.DuplicateShardReward;
-
-			return;
+			else {
+				CharData.CharacterInfo.CurrShardCount += CharData.CharacterInfo.BattleCharacterInitData.DuplicateShardReward;
+				/* 0401 반환값 변경 */
+				return false;
+			}
 		}
 	}
+	return false;
 }
 void UARGameInstance::AddRandomEquipmentToInventory(FDTEquipmentInfoRow* InRow)
 {
@@ -636,34 +654,16 @@ bool UARGameInstance::AddTestEquipmentSet()
 	for (const FGameplayTag& itemTag : itemTags)
 	{
 		const FDTItemCatalogRow* catalogRow = FPlayerAccountService::FindItemCatalogRowByTag(this, itemTag);
-		if (!catalogRow)
-		{
-			continue;
-		}
+		if (!catalogRow) continue;
 
-		if (catalogRow->DetailRowName.IsNone())
-		{
-			continue;
-		}
+		if (catalogRow->DetailRowName.IsNone()) continue;
 
 		FDTEquipmentInfoRow* equipRow = dataSubsystem->GetRow<FDTEquipmentInfoRow>(
 			Arcanum::DataTable::Equipment,
 			catalogRow->DetailRowName);
-
-		if (!equipRow)
-		{
-			continue;
-		}
-
-		if (!equipRow->ItemTag.IsValid())
-		{
-			continue;
-		}
-
-		if (equipRow->BaseInfoSteps.IsEmpty())
-		{
-			continue;
-		}
+		if (!equipRow) continue;
+		if (!equipRow->ItemTag.IsValid()) continue;
+		if (equipRow->BaseInfoSteps.IsEmpty()) continue;
 
 		FEquipmentInfo newItem;
 		newItem.ItemTag = equipRow->ItemTag;

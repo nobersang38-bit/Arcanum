@@ -51,12 +51,18 @@ void UGachaItemContainerSubWidget::SetItemData(const FGachaItemResult& InData)
     }
 
     if (AmountText) {
-        if (CachedData.Quantity > 1) {
-            AmountText->SetText(FText::Format(FText::FromString(TEXT("x{0}")), FText::AsNumber(CachedData.Quantity)));
+        if (CachedData.bIsNew) {
+            AmountText->SetText(FText::FromString(TEXT("NEW")));
             AmountText->SetVisibility(ESlateVisibility::HitTestInvisible);
         }
-        else AmountText->SetText(FText::FromString(TEXT("New")));
+        else if (CachedData.Quantity > 1) {
+            AmountText->SetText(FText::Format(
+                FText::FromString(TEXT("x{0}")),
+                FText::AsNumber(CachedData.Quantity)
+            ));
+            AmountText->SetVisibility(ESlateVisibility::HitTestInvisible);
+        }
+        else AmountText->SetVisibility(ESlateVisibility::Hidden);
     }
-
     PlayAppearAnimation();
 }

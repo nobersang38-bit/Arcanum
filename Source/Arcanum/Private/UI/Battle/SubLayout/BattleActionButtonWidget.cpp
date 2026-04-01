@@ -45,6 +45,23 @@ void UBattleActionButtonWidget::NativeConstruct()
 	{
 		StackCountText->SetVisibility(ESlateVisibility::Hidden);
 	}
+
+	if (bUseDefaultIcon)
+	{
+		FButtonStyle ButtonStyle = ActionButton->GetStyle();
+		auto UpdateBrush = [&](FSlateBrush& Brush) 
+			{
+				Brush.SetResourceObject(EditLockIcon);
+				Brush.DrawAs = ESlateBrushDrawType::Image; // 무기 장착 안 했을때 아이콘 투명하게
+			};
+
+		UpdateBrush(ButtonStyle.Normal);
+		UpdateBrush(ButtonStyle.Hovered);
+		UpdateBrush(ButtonStyle.Pressed);
+		UpdateBrush(ButtonStyle.Disabled);
+
+		ActionButton->SetStyle(ButtonStyle);
+	}
 }
 
 #if WITH_EDITOR
@@ -224,7 +241,6 @@ void UBattleActionButtonWidget::SetSkillCooldownPercent(float InPercent)
 		}
 	}
 }
-
 
 void UBattleActionButtonWidget::SetStackCount(int32 InCount)
 {

@@ -56,8 +56,14 @@ void UGachaFinalResultWidget::OptimizeLayout(int32 ItemCount)
 
 void UGachaFinalResultWidget::HandleReturnClicked()
 {
+	int64 temp = 0;
+	for (auto i : PendingResults) {
+		if (!i.bIsNew) temp += i.Quantity;
+	}
+	FPlayerAccountService::AddCurrency(this, Arcanum::PlayerData::Currencies::NonRegen::Soul::Value, temp);
 	OnReturnLobbyClicked.Broadcast();
 }
+
 void UGachaFinalResultWidget::SpawnNextItem()
 {
 	if (!PendingResults.IsValidIndex(CurrentDisplayIndex)) {
