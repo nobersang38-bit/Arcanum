@@ -105,6 +105,17 @@ bool AResultStarChild::TryLoadAndSpawnResult()
     if (!TargetTable) return false;
 
     FName RowName = GetLeafNameFromTag(ResultData.ItemTag);
+
+    // TOOD: 0401 세트 방어구는 DT RowName이 TalashaChest, SigonBoot 형태라서 변경
+    if (ResultData.ItemTag.MatchesTag(Arcanum::Items::Rarity::SetItem::Talasha::Armor::Root))
+    {
+        RowName = FName(TEXT("Talasha") + RowName.ToString());
+    }
+    else if (ResultData.ItemTag.MatchesTag(Arcanum::Items::Rarity::SetItem::Sigon::Armor::Root))
+    {
+        RowName = FName(TEXT("Sigon") + RowName.ToString());
+    }
+
     static const FString Context(TEXT("GachaResultContext"));
 
     FActorSpawnParameters SpawnParams;
