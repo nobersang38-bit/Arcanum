@@ -654,34 +654,16 @@ bool UARGameInstance::AddTestEquipmentSet()
 	for (const FGameplayTag& itemTag : itemTags)
 	{
 		const FDTItemCatalogRow* catalogRow = FPlayerAccountService::FindItemCatalogRowByTag(this, itemTag);
-		if (!catalogRow)
-		{
-			continue;
-		}
+		if (!catalogRow) continue;
 
-		if (catalogRow->DetailRowName.IsNone())
-		{
-			continue;
-		}
+		if (catalogRow->DetailRowName.IsNone()) continue;
 
 		FDTEquipmentInfoRow* equipRow = dataSubsystem->GetRow<FDTEquipmentInfoRow>(
 			Arcanum::DataTable::Equipment,
 			catalogRow->DetailRowName);
-
-		if (!equipRow)
-		{
-			continue;
-		}
-
-		if (!equipRow->ItemTag.IsValid())
-		{
-			continue;
-		}
-
-		if (equipRow->BaseInfoSteps.IsEmpty())
-		{
-			continue;
-		}
+		if (!equipRow) continue;
+		if (!equipRow->ItemTag.IsValid()) continue;
+		if (equipRow->BaseInfoSteps.IsEmpty()) continue;
 
 		FEquipmentInfo newItem;
 		newItem.ItemTag = equipRow->ItemTag;
