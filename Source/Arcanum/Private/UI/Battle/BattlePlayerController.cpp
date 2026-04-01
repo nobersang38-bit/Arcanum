@@ -1053,6 +1053,14 @@ void ABattlePlayerController::UseBattlePotion(int32 InSlotIndex)
 	FDTPotionInfoRow* potionRow = gameDataSubsystem->GetRow<FDTPotionInfoRow>(catalogRow->DetailTableTag, catalogRow->DetailRowName);
 	if (!potionRow) return;
 
+	// 시그온 세트 효과
+	float potionMultiplier = 1.0f;
+
+	if (battleSubsystem->GetEquippedSetBonusTag() == Arcanum::Items::SetBonus::Avarice)
+	{
+		potionMultiplier = 1.2f;
+	}
+
 	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
 	if (!playerCharacter) return;
 
@@ -1102,7 +1110,7 @@ void ABattlePlayerController::UseBattlePotion(int32 InSlotIndex)
 		UCharacterBattleStatsComponent* statComponent = playerCharacter->FindComponentByClass<UCharacterBattleStatsComponent>();
 		if (!statComponent) return;
 
-		float instantValue = potionRow->InstantModifier.Value.Flat;
+		float instantValue = potionRow->InstantModifier.Value.Flat * potionMultiplier;
 
 		if (potionRow->InstantModifier.StatTag == Arcanum::BattleStat::Character::Regen::Health::Root)
 		{
@@ -1112,7 +1120,7 @@ void ABattlePlayerController::UseBattlePotion(int32 InSlotIndex)
 			{
 				if (regenStat.ParentTag == Arcanum::BattleStat::Character::Regen::Health::Root)
 				{
-					instantValue = regenStat.GetTotalMax() * potionRow->InstantModifier.Value.Flat;
+					instantValue = regenStat.GetTotalMax() * potionRow->InstantModifier.Value.Flat * potionMultiplier;
 					break;
 				}
 			}
@@ -1124,7 +1132,17 @@ void ABattlePlayerController::UseBattlePotion(int32 InSlotIndex)
 	{
 		for (const FDerivedStatModifier& modifier : potionRow->Modifiers)
 		{
-			playerCharacter->ApplyPotionModifier(modifier);
+			FDerivedStatModifier scaledModifier = modifier;
+			scaledModifier.Value.Flat *= potionMultiplier;
+			scaledModifier.Value.Mul *= potionMultiplier;
+
+			UE_LOG(LogTemp, Warning, TEXT("[Potion] Stat=%s Mult=%.2f FinalFlat=%.2f FinalMul=%.2f"),
+				*scaledModifier.StatTag.ToString(),
+				 potionMultiplier, scaledModifier.Value.Flat, 
+			 	 scaledModifier.Value.Mul);
+
+			playerCharacter->ApplyPotionModifier(scaledModifier);
+			//playerCharacter->ApplyPotionModifier(modifier);
 		}
 
 		if (HUDWidgetInstance && battleSubsystem->GetBattlePotionRuntimeSlots().IsValidIndex(InSlotIndex))

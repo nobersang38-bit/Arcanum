@@ -77,7 +77,7 @@ protected:
     /** 확률 공지 팝업을 띄우는 버튼 */
     UPROPERTY(meta = (BindWidget)) TObjectPtr<UButton> ProbabilityInfoButton;
     UPROPERTY(meta = (BindWidget)) TObjectPtr<UGachaProbabilityWidget> ProbabilityWidget;
-    UPROPERTY(meta = (BindWidget)) TObjectPtr<UBorder> DetailProbabilityText;
+    //UPROPERTY(meta = (BindWidget)) TObjectPtr<UBorder> DetailProbabilityText;
 
 private:
     /** 확률 버튼 클릭 핸들러 */

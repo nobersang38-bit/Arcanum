@@ -13,6 +13,7 @@
 #include "Components/WrapBox.h"
 #include "Components/WrapBoxSlot.h"
 #include "Components/WidgetSwitcher.h"
+#include "Components/Image.h"
 #include "GameplayTags/ArcanumTags.h"
 #include "Data/Types/BaseUnitData.h"
 
@@ -207,6 +208,7 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
 	CombinedInfoString = "";
 	CurrentSelectedCharacterName = CharacterName;
 	bCurrentSelectedCharacterOwned = SlotCharacterOwned;
+	UpdateCharacterPortrait(CharacterName);
 
 	for (int32 i = 0; i < ParentLobby->CachedPlayerData.OwnedCharacters.Num(); i++)
 	{
@@ -552,6 +554,24 @@ void UCharacterHUDWidget::UpdateCharacterInfo(FName CharacterName, bool bSetChar
 			InfoWidget->SetGradeCharcterInfo(CharacterGrade);
 			InfoWidget->SetCharcterInfo(InFinalText);
 			InfoWidget->SetEnhanceBtnText(InButtonText);
+		}
+	}
+}
+
+void UCharacterHUDWidget::UpdateCharacterPortrait(FName CharacterName)
+{
+	if (!ParentLobby || !CharacterPortraitImage) return;
+	
+	CharacterPortraitImage->SetBrushFromTexture(nullptr);
+
+	for (const FBattleCharacterData characterData : ParentLobby->CachedPlayerData.OwnedCharacters)
+	{
+		const FName listCharacterName = GetLeafNameFromTag(characterData.CharacterInfo.BattleCharacterInitData.CharacterTag);
+		if (listCharacterName == CharacterName)
+		{
+			UTexture2D* portraitTexture = characterData.CharacterInfo.BattleCharacterInitData.CharacterColor.LoadSynchronous();
+			CharacterPortraitImage->SetBrushFromTexture(portraitTexture);
+			break;
 		}
 	}
 }

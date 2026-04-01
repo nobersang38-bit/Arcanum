@@ -203,18 +203,18 @@ void UGachaHUDWidget::HandleProbabilityButtonClicked()
     //        //ProbabilityWidget->UpdateData(CurrentBannerData);
     //    }
     //}
-    if (!DetailProbabilityText) return;
+    //if (!DetailProbabilityText) return;
 
-    ESlateVisibility CurrentVisibility = DetailProbabilityText->GetVisibility();
+    //ESlateVisibility CurrentVisibility = DetailProbabilityText->GetVisibility();
 
-    if (CurrentVisibility == ESlateVisibility::Visible)
-    {
-        DetailProbabilityText->SetVisibility(ESlateVisibility::Collapsed);
-    }
-    else
-    {
-        DetailProbabilityText->SetVisibility(ESlateVisibility::Visible);
-    }
+    //if (CurrentVisibility == ESlateVisibility::Visible)
+    //{
+    //    DetailProbabilityText->SetVisibility(ESlateVisibility::Collapsed);
+    //}
+    //else
+    //{
+    //    DetailProbabilityText->SetVisibility(ESlateVisibility::Visible);
+    //}
 }
 void UGachaHUDWidget::HandleTimeUpdated(FDateTime CurrentTime)
 {
