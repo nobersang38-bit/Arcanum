@@ -960,12 +960,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 1.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.01
             },
             "MaxValue": {
-              "Flat": 5.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.05
             }
           },
           {
@@ -993,12 +993,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 6.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.06
             },
             "MaxValue": {
-              "Flat": 10.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.1
             }
           },
           {
@@ -1026,12 +1026,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 11.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.11
             },
             "MaxValue": {
-              "Flat": 15.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.15
             }
           },
           {
@@ -1059,12 +1059,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 16.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.16
             },
             "MaxValue": {
-              "Flat": 20.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.2
             }
           },
           {
@@ -1092,12 +1092,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 21.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.21
             },
             "MaxValue": {
-              "Flat": 25.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.25
             }
           },
           {
@@ -1125,12 +1125,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 26.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.26
             },
             "MaxValue": {
-              "Flat": 30.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.3
             }
           },
           {
@@ -1832,12 +1832,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 1.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.01
             },
             "MaxValue": {
-              "Flat": 5.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.05
             }
           },
           {
@@ -1865,12 +1865,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 6.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.06
             },
             "MaxValue": {
-              "Flat": 10.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.1
             }
           },
           {
@@ -1898,12 +1898,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 11.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.11
             },
             "MaxValue": {
-              "Flat": 15.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.15
             }
           },
           {
@@ -1931,12 +1931,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 16.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.16
             },
             "MaxValue": {
-              "Flat": 20.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.2
             }
           },
           {
@@ -1964,12 +1964,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 21.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.21
             },
             "MaxValue": {
-              "Flat": 25.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.25
             }
           },
           {
@@ -1997,12 +1997,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 26.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.26
             },
             "MaxValue": {
-              "Flat": 30.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.3
             }
           },
           {
@@ -2704,12 +2704,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 1.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.01
             },
             "MaxValue": {
-              "Flat": 5.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.05
             }
           },
           {
@@ -2737,12 +2737,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 6.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.06
             },
             "MaxValue": {
-              "Flat": 10.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.1
             }
           },
           {
@@ -2770,12 +2770,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 11.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.11
             },
             "MaxValue": {
-              "Flat": 15.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.15
             }
           },
           {
@@ -2803,12 +2803,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 16.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.16
             },
             "MaxValue": {
-              "Flat": 20.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.2
             }
           },
           {
@@ -2836,12 +2836,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 21.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.21
             },
             "MaxValue": {
-              "Flat": 25.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.25
             }
           },
           {
@@ -2869,12 +2869,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 26.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.26
             },
             "MaxValue": {
-              "Flat": 30.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.3
             }
           },
           {

@@ -651,7 +651,7 @@ void APlayerCharacter::OnPlayerRegenStatChanged(const FRegenStat& InRegenStat)
 		ABattlePlayerController* ownerPC = GetController<ABattlePlayerController>();
 		if (ownerPC)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Current Health = %.2f / %.2f"), InRegenStat.Current, InRegenStat.GetTotalMax());
+			// UE_LOG(LogTemp, Warning, TEXT("Current Health = %.2f / %.2f"), InRegenStat.Current, InRegenStat.GetTotalMax());
 			ownerPC->SetPlayerHealthProgress(InRegenStat.Current, InRegenStat.GetTotalMax());
 		}
 	}

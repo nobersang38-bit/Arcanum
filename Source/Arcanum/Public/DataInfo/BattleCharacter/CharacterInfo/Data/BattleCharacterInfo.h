@@ -14,7 +14,7 @@ struct FBattleCharacterDef
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Identity")
     FGameplayTag CharacterTag;
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Identity")
     TSoftObjectPtr<UTexture2D> CharacterIcon;
 
     /* Start 다이얼로그 (추후 sound로 변경 가능) */
