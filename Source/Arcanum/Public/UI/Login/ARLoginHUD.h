@@ -16,6 +16,7 @@ class ULoginPanelWidget;
 class UCommonBtnWidget;
 class UCommonDialog;
 class UCommonOptionWindow;
+class UImage;
 
 class UVerticalBox;
 class ALoginCharacter;
@@ -55,6 +56,11 @@ private:
 	UFUNCTION()
 	void OnPostLoginSyncFinished(bool bIsSuccess, const FString& ErrorMessage);
 	void VisibleSyncWidget(bool bIsSuccess, const FString& Message = TEXT(""));
+#pragma endregion
+#pragma region 타이틀
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UImage> TitleImg;
 #pragma endregion
 
 #pragma region 공지사항
