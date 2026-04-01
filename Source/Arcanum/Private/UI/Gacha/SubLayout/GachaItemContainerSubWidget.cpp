@@ -34,7 +34,7 @@ void UGachaItemContainerSubWidget::SetItemData(const FGachaItemResult& InData)
     if (TargetTable) {
         FName RowName = GetLeafNameFromTag(CachedData.ItemTag);
 
-        // TODO: 세트 방어구 아이콘은 DT RowName이 TalashaChest, SigonBoot 형태라서 변경
+        // TODO: 0401 세트 방어구 아이콘은 DT RowName이 TalashaChest, SigonBoot 형태라서 변경
         if (CachedData.ItemTag.MatchesTag(Arcanum::Items::Rarity::SetItem::Talasha::Armor::Root))
         {
             RowName = FName(TEXT("Talasha") + RowName.ToString());
