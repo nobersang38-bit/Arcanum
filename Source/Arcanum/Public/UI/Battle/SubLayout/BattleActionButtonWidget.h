@@ -102,6 +102,9 @@ protected:
 	bool bUseCoolTimeProgressBar = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "에디터 변경용")
+	bool bUseDefaultIcon = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "에디터 변경용")
 	TObjectPtr<UTexture2D> EditLockIcon = nullptr;
 #pragma endregion
 

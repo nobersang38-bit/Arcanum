@@ -233,7 +233,7 @@
       "ActiveDescText": "",
       "SetBonusTag": ""
     },
-    "EquipMontage": ""
+    "EquipMontage": "AnimMontage'/Game/AnimBlueprint/Ally/11_OutSider/AM_Equip_Sword.AM_Equip_Sword'"
   },
   {
     "Name": "Staff",
@@ -469,7 +469,7 @@
       "ActiveDescText": "",
       "SetBonusTag": ""
     },
-    "EquipMontage": ""
+    "EquipMontage": "AnimMontage'/Game/AnimBlueprint/Ally/11_OutSider/AM_Equip_Staff.AM_Equip_Staff'"
   },
   {
     "Name": "Bow",
@@ -948,7 +948,7 @@
     "ItemTag": "Arcanum.Items.Rarity.Common.Armor.Helmet",
     "SlotTag": "Arcanum.Items.ItemSlot.Armor.Helmet",
     "Desc": "평범한 투구",
-    "SkeletalMesh": "",
+    "SkeletalMesh": "SkeletalMesh'/Game/Assets/Equipment/Armor/Meshes/Separate_Parts/SKM_Helmet.SKM_Helmet'",
     "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_Normal_Helmet.Icon_Normal_Helmet'",
     "BuyPrice": 150,
     "SellPrice": 35,
@@ -1166,7 +1166,7 @@
     "ItemTag": "Arcanum.Items.Rarity.Common.Armor.Chest",
     "SlotTag": "Arcanum.Items.ItemSlot.Armor.Chest",
     "Desc": "평범한 갑옷",
-    "SkeletalMesh": "",
+    "SkeletalMesh": "SkeletalMesh'/Game/Assets/Equipment/Armor/Meshes/Separate_Parts/SKM_Chest.SKM_Chest'",
     "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_Normal_Chest.Icon_Normal_Chest'",
     "BuyPrice": 180,
     "SellPrice": 45,
@@ -1384,8 +1384,8 @@
     "ItemTag": "Arcanum.Items.Rarity.Common.Armor.Glove",
     "SlotTag": "Arcanum.Items.ItemSlot.Armor.Glove",
     "Desc": "평범한 장갑",
-    "SkeletalMesh": "",
-    "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_Normal_Gloves.Icon_Normal_Gloves'",
+    "SkeletalMesh": "SkeletalMesh'/Game/Assets/Equipment/Armor/Meshes/Separate_Parts/SKM_Glove.SKM_Glove'",
+    "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_Normal_Glove.Icon_Normal_Glove'",
     "BuyPrice": 140,
     "SellPrice": 30,
     "BaseInfoSteps": [
@@ -1602,8 +1602,8 @@
     "ItemTag": "Arcanum.Items.Rarity.Common.Armor.Boot",
     "SlotTag": "Arcanum.Items.ItemSlot.Armor.Boot",
     "Desc": "평범한 신발",
-    "SkeletalMesh": "",
-    "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_Normal_Boots.Icon_Normal_Boots'",
+    "SkeletalMesh": "SkeletalMesh'/Game/Assets/Equipment/Armor/Meshes/Separate_Parts/SKM_Boot.SKM_Boot'",
+    "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_Normal_Boot.Icon_Normal_Boot'",
     "BuyPrice": 140,
     "SellPrice": 30,
     "BaseInfoSteps": [
@@ -1820,7 +1820,7 @@
     "ItemTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Helmet",
     "SlotTag": "Arcanum.Items.ItemSlot.Armor.Helmet",
     "Desc": "탈라샤 세트 투구",
-    "SkeletalMesh": "",
+    "SkeletalMesh": "SkeletalMesh'/Game/Assets/Equipment/Armor/Meshes/Separate_Parts/SKM_Talasha_Helmet.SKM_Talasha_Helmet'",
     "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_TalRasha_Helmet.Icon_TalRasha_Helmet'",
     "BuyPrice": 1200,
     "SellPrice": 240,
@@ -2038,7 +2038,7 @@
     "ItemTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Chest",
     "SlotTag": "Arcanum.Items.ItemSlot.Armor.Chest",
     "Desc": "탈라샤 세트 갑옷",
-    "SkeletalMesh": "",
+    "SkeletalMesh": "SkeletalMesh'/Game/Assets/Equipment/Armor/Meshes/Separate_Parts/SKM_Talasha_Chest.SKM_Talasha_Chest'",
     "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_TalRasha_Chest.Icon_TalRasha_Chest'",
     "BuyPrice": 1400,
     "SellPrice": 280,
@@ -2256,8 +2256,8 @@
     "ItemTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Glove",
     "SlotTag": "Arcanum.Items.ItemSlot.Armor.Glove",
     "Desc": "탈라샤 세트 장갑",
-    "SkeletalMesh": "",
-    "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_TalRasha_Gloves.Icon_TalRasha_Gloves'",
+    "SkeletalMesh": "SkeletalMesh'/Game/Assets/Equipment/Armor/Meshes/Separate_Parts/SKM_Talasha_Glove.SKM_Talasha_Glove'",
+    "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_TalRasha_Glove.Icon_TalRasha_Glove'",
     "BuyPrice": 1100,
     "SellPrice": 220,
     "BaseInfoSteps": [
@@ -2474,8 +2474,8 @@
     "ItemTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Boot",
     "SlotTag": "Arcanum.Items.ItemSlot.Armor.Boot",
     "Desc": "탈라샤 세트 신발",
-    "SkeletalMesh": "",
-    "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_TalRasha_Boots.Icon_TalRasha_Boots'",
+    "SkeletalMesh": "SkeletalMesh'/Game/Assets/Equipment/Armor/Meshes/Separate_Parts/SKM_Talasha_Boot.SKM_Talasha_Boot'",
+    "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_TalRasha_Boot.Icon_TalRasha_Boot'",
     "BuyPrice": 1100,
     "SellPrice": 220,
     "BaseInfoSteps": [
@@ -2692,7 +2692,7 @@
     "ItemTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Helmet",
     "SlotTag": "Arcanum.Items.ItemSlot.Armor.Helmet",
     "Desc": "시그온 세트 투구",
-    "SkeletalMesh": "",
+    "SkeletalMesh": "SkeletalMesh'/Game/Assets/Equipment/Armor/Meshes/Separate_Parts/SKM_Sigon_Helmet.SKM_Sigon_Helmet'",
     "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_Sigon_Helmet.Icon_Sigon_Helmet'",
     "BuyPrice": 1200,
     "SellPrice": 240,
@@ -2910,7 +2910,7 @@
     "ItemTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Chest",
     "SlotTag": "Arcanum.Items.ItemSlot.Armor.Chest",
     "Desc": "시그온 세트 갑옷",
-    "SkeletalMesh": "",
+    "SkeletalMesh": "SkeletalMesh'/Game/Assets/Equipment/Armor/Meshes/Separate_Parts/SKM_Sigon_Chest.SKM_Sigon_Chest'",
     "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_Sigon_Chest.Icon_Sigon_Chest'",
     "BuyPrice": 1400,
     "SellPrice": 280,
@@ -3128,8 +3128,8 @@
     "ItemTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Glove",
     "SlotTag": "Arcanum.Items.ItemSlot.Armor.Glove",
     "Desc": "시그온 세트 장갑",
-    "SkeletalMesh": "",
-    "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_Sigon_Gloves.Icon_Sigon_Gloves'",
+    "SkeletalMesh": "SkeletalMesh'/Game/Assets/Equipment/Armor/Meshes/Separate_Parts/SKM_Sigon_Glove.SKM_Sigon_Glove'",
+    "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_Sigon_Glove.Icon_Sigon_Glove'",
     "BuyPrice": 1100,
     "SellPrice": 220,
     "BaseInfoSteps": [
@@ -3346,8 +3346,8 @@
     "ItemTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Boot",
     "SlotTag": "Arcanum.Items.ItemSlot.Armor.Boot",
     "Desc": "시그온 세트 신발",
-    "SkeletalMesh": "",
-    "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_Sigon_Boots.Icon_Sigon_Boots'",
+    "SkeletalMesh": "SkeletalMesh'/Game/Assets/Equipment/Armor/Meshes/Separate_Parts/SKM_Sigon_Boot.SKM_Sigon_Boot'",
+    "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_Sigon_Boot.Icon_Sigon_Boot'",
     "BuyPrice": 1100,
     "SellPrice": 220,
     "BaseInfoSteps": [
