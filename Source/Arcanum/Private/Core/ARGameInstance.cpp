@@ -453,6 +453,7 @@ bool UARGameInstance::AddCharacterToBattleCharacter(FDTCharacterBaseInfoRow* Cha
 }
 void UARGameInstance::AddRandomEquipmentToInventory(FDTEquipmentInfoRow* InRow)
 {
+	// TODO: 0401 가챠 장비 능력치 뽑기 방어구 안붙어서 나옴, 무기는 2개 붙어서 나옴 수정
 	if (!InRow || InRow->BaseInfoSteps.Num() == 0) return;
 
 	FEquipmentInfo NewItem;
@@ -461,7 +462,11 @@ void UARGameInstance::AddRandomEquipmentToInventory(FDTEquipmentInfoRow* InRow)
 	NewItem.CurrUpgradeLevel = 0;
 
 	NewItem.Equipment = InRow->BaseInfoSteps[0];
-	for (const FStatRangeDefinition& Range : NewItem.Equipment.RandomStatRanges) {
+	NewItem.Equipment.OwnerStats.Empty();
+	NewItem.Equipment.OnHitTargetStats.Empty();
+
+	for (const FStatRangeDefinition& Range : NewItem.Equipment.RandomStatRanges)
+	{
 		FDerivedStatModifier FinalStat;
 		FinalStat.StatTag = Range.StatTag;
 
@@ -472,7 +477,18 @@ void UARGameInstance::AddRandomEquipmentToInventory(FDTEquipmentInfoRow* InRow)
 		float MinM = Range.MinValue.Mul;
 		float MaxM = Range.MaxValue.Mul;
 		FinalStat.Value.Mul = FMath::RandRange(FMath::Min(MinM, MaxM), FMath::Max(MinM, MaxM));
-		NewItem.Equipment.OnHitTargetStats.Add(FinalStat);
+
+		FinalStat.SourceTag = InRow->ItemTag;
+		FinalStat.bIsPermanent = true;
+
+		if (InRow->SlotTag.MatchesTag(Arcanum::Items::ItemSlot::Armor::Root))
+		{
+			NewItem.Equipment.OwnerStats.Add(FinalStat);
+		}
+		else
+		{
+			NewItem.Equipment.OnHitTargetStats.Add(FinalStat);
+		}
 	}
 
 	if (PlayerData.Inventory.Num() < PlayerData.InventoryCapacity) PlayerData.Inventory.Add(NewItem);
