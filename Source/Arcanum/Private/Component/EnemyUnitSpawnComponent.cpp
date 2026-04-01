@@ -174,7 +174,8 @@ void UEnemyUnitSpawnComponent::WaveStart()
 			FNavLocation NavLocation;
 
 			NavSys->GetRandomReachablePointInRadius(ResultSpawnLocation, SpawnRadius, NavLocation);
-			Transform.SetLocation(NavLocation);
+			FVector NavFVectorLocation = NavLocation;
+			Transform.SetLocation(NavFVectorLocation + (FVector::UpVector * SpawnLocation.Z));
 			Transform.SetRotation(SpawnRotator.Quaternion());
 			FVector Scale = FVector(1.0f, 1.0f, 1.0f);
 			Transform.SetScale3D(Scale);
