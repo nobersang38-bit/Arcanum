@@ -63,7 +63,7 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> GradeText;
 	
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> CharacterInfoText;
 	
 	UPROPERTY(meta = (BindWidget))
@@ -71,7 +71,6 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCommonBtnWidget> SetPlayerBtn;
-
 
 public:
 	UPROPERTY(BlueprintAssignable)
@@ -86,4 +85,20 @@ private:
 	UFUNCTION()
 	void ClickSetPlayerBtn();
 
+#pragma region 유닛 정보
+public:
+	void SetDescriptionText(const FText& InText);
+	void SetMeatCostText(const FText& InText);
+	void SetCoolTimeText(const FText& InText);
+
+protected:
+	UPROPERTY(meta = (BindWidgetOptional))
+	TObjectPtr<class UTextBlock> DescriptionText = nullptr;
+
+	UPROPERTY(meta = (BindWidgetOptional))
+	TObjectPtr<class UTextBlock> MeatCostText = nullptr;
+
+	UPROPERTY(meta = (BindWidgetOptional))
+	TObjectPtr<class UTextBlock> CoolTimeText = nullptr;
+#pragma endregion
 };

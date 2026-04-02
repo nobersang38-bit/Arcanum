@@ -34,6 +34,8 @@ struct FBattleCharacterDef
     FGameplayTag MaxGrade;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Growth")
     TArray<int32> RequiredShardCount = { 10, 20, 30 };
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Growth")
     int32 DuplicateShardReward = 10;
 
     /* 가챠 연출용 */
@@ -43,7 +45,6 @@ struct FBattleCharacterDef
     TSoftObjectPtr<UTexture2D> CharacterSilhouette;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gacha")
     TSoftObjectPtr<UTexture2D> CharacterBackground;
-
 
     // 캐릭터 클래스 추가
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "CharacterClass")
