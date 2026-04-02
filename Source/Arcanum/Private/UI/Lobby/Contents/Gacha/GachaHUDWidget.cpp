@@ -3,6 +3,7 @@
 #include "UI/Lobby/Contents/Gacha/SubLayout/GachaProbabilityWidget.h"
 #include "UI/Lobby/Contents/Gacha/SubLayout/GachaBannerButtonWidget.h"
 #include "UI/Lobby/Contents/Gacha/SubLayout/GachaProgressWidget.h"
+#include "UI/Lobby/Contents/Gacha/SubLayout/GachaPullButtonWidget.h"
 
 #include "Components/Image.h"
 #include "Components/Button.h"
@@ -86,11 +87,19 @@ void UGachaHUDWidget::InitBannerList()
 void UGachaHUDWidget::OnBannerSelected(FGameplayTag SelectedBannerTag)
 {
     if (CurrentSelectedButton) CurrentSelectedButton->SetSelected(false);
-
     const FDTGachaBannerDataRow* SelectedData = nullptr;
     for (const FDTGachaBannerDataRow& Data : ActiveBannerDataList) {
         if (Data.BannerTag == SelectedBannerTag) {
             SelectedData = &Data;
+            if (Data.GachaTypeTag == Arcanum::Gacha::Type::WeaponPickup::WeaponPickup) {
+                SinglePullButton->SetTextCurrency(FText::FromString(TEXT("200소울")));
+                MultiPullButton->SetTextCurrency(FText::FromString(TEXT("1800소울")));
+            }
+            else
+            {
+                SinglePullButton->SetTextCurrency(FText::FromString(TEXT("200조각")));
+                MultiPullButton->SetTextCurrency(FText::FromString(TEXT("1800조각")));
+            }
             break;
         }
     }
