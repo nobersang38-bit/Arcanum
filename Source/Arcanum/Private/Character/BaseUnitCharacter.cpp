@@ -338,6 +338,7 @@ void ABaseUnitCharacter::OuntLineStart(const UCurveFloat* CurveFloat, float InTi
 
 void ABaseUnitCharacter::SetHologramType(bool bUseHologram)
 {
+	if (MaterialBackup.IsEmpty()) return;
 	if (!bUseHologram)
 	{
 		if (!MaterialBackup.IsEmpty())

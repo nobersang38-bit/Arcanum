@@ -24,6 +24,7 @@
 #include "Character/BaseUnitCharacter.h"
 #include "Core/SubSystem/PoolingSubsystem.h"
 #include "Object/Actor/FloatingDamageText.h"
+#include "Log/Logger.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -690,20 +691,42 @@ void APlayerCharacter::HandleBasicAttackInput()
 		return;
 	}
 
+	if (!IsValid(animInstance)) return;
+	if (!IsValid(montage)) return;
+
 	bCanNextComboInput = false;
 	bHasNextComboInput = false;
 	bIsBasicAttackMontagePlaying = true;
 
 	FOnMontageEnded montageEndedDelegate;
-	montageEndedDelegate.BindUObject(this, &APlayerCharacter::OnBasicAttackMontageEnded);
+	/*montageEndedDelegate.BindUObject(this, &APlayerCharacter::OnBasicAttackMontageEnded);*/
+	montageEndedDelegate.BindWeakLambda(this, [this](UAnimMontage* AnimMontage, bool bInterrupted) {
+		if (IsValid(this)) // 훨씬 엄격한 체크
+		{
+			this->OnBasicAttackMontageEnded(AnimMontage, bInterrupted);
+		}
+		});
 
 	float MontagePlayRate = StatComponent->FindNonRegenStat(Arcanum::BattleStat::Character::NonRegen::AttackSpeed::Root)->GetTotalValue();
+
+	if (MontagePlayRate <= 0.0f)
+	{
+		MontagePlayRate = 1.0f;
+	}
+
+	FString DebugString = FString::Printf(TEXT("MontageName : %s"), *montage->GetName());
+	Logger::Get().Log(DebugString, ELogLevel::Critical);
+
 	animInstance->Montage_Play(montage, MontagePlayRate);
-	animInstance->Montage_SetEndDelegate(montageEndedDelegate, montage);
+	ResetBasicAttackCombo();
+
+	//animInstance->Montage_SetEndDelegate(montageEndedDelegate, montage);
 }
 
 void APlayerCharacter::OnBasicAttackMontageEnded(UAnimMontage* InMontage, bool bInterrupted)
 {
+	if (!IsValid(InMontage)) return;
+	if (!InMontage) return;
 	bIsBasicAttackMontagePlaying = false;
 
 	if (bInterrupted)

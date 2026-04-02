@@ -41,7 +41,7 @@ void AProjectileBase::Tick(float Deltatime)
 {
     Super::Tick(Deltatime);
 
-    if (bIsActive)
+    if (bIsActive && InstigatorActor.IsValid())
     {
         FVector ResultVelocity;
         switch (ProjectileMode)
@@ -223,6 +223,8 @@ void AProjectileBase::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 
 void AProjectileBase::CollisionProcess(AActor* OtherActor)
 {
+    if (!OtherActor) return;
+
     if (OwnerSkill)
     {
         if (const FLevelModifierEntry* LevelModifierEntry = OwnerSkill->GetCurrentLevelEntry())
@@ -237,6 +239,7 @@ void AProjectileBase::CollisionProcess(AActor* OtherActor)
             if (OtherActor->GetClass()->ImplementsInterface(UStatModifierInterface::StaticClass()))
             {
                 auto Interface = Cast<IStatModifierInterface>(OtherActor);
+                if (!LevelModifierEntry) return;
                 if (LevelModifierEntry->OtherCharacterModifiers.Num() > 0)
                 {
                     // 계산 부분
@@ -293,18 +296,18 @@ void AProjectileBase::CollisionProcess(AActor* OtherActor)
                             }
                         }
 
-                        if (bIsAttack)
+                        //if (bIsAttack)
                         {
                             UGameplayStatics::ApplyDamage(OtherActor, ResultValue, nullptr, OwnerSkill->GetOwnerActor(), nullptr);
                             CachedActors.Add(OtherActor);
                             ActorCollisionCoolTime.Add(OtherActor, ReOnCollisionTime);
                         }
-                        else
+                       /* else
                         {
                             Interface->ChangeStat(StatModifier.StatTag, ResultValue);
                             CachedActors.Add(OtherActor);
                             ActorCollisionCoolTime.Add(OtherActor, ReOnCollisionTime);
-                        }
+                        }*/
                     }
                     else // 모디파이어 추가
                     {

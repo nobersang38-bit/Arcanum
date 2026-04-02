@@ -234,7 +234,7 @@ void UInBattleHUDWidget::SetBattlePotionSlot(int32 InSlotIndex, const FBattlePot
 
 	if (!InSlotData.PotionTag.IsValid())
 	{
-		targetButton->SetImage(nullptr);
+		//targetButton->SetImage(nullptr);
 		targetButton->ClearStackCount();
 		targetButton->SetSkillCooldownPercent(0.0f);
 		targetButton->SetActivateCost(true);

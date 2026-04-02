@@ -6,6 +6,7 @@
 #include "Components/Button.h"
 #include "Components/ProgressBar.h"
 #include "Components/Image.h"
+#include "Log/Logger.h"
 
 // ========================================================
 // 언리얼 기본 생성
@@ -140,18 +141,29 @@ void UBattleActionButtonWidget::SetCoolTimeProgress(float CurrentProgress, float
 
 void UBattleActionButtonWidget::SetImage(UTexture2D* InImage)
 {
+	FString Stringasd = IconText.ToString();
+	Logger::Get().Log(Stringasd, ELogLevel::Critical);
+
+	Logger::Get().Log(FString("UBattleActionButtonWidget::SetImage"), ELogLevel::Critical);
+
+	if(!IsValid(ActionButton)) return;
+
 	FButtonStyle ButtonStyle = ActionButton->GetStyle();
 	auto UpdateBrush = [&](FSlateBrush& Brush) {
 		if (InImage == nullptr) {
+			if (!IsValid(EditLockIcon)) EditLockIcon = nullptr;
 			Brush.SetResourceObject(EditLockIcon);
 			Brush.DrawAs = ESlateBrushDrawType::Image; // 무기 장착 안 했을때 아이콘 투명하게
 		}
 		else {
+			if (!IsValid(InImage)) InImage = nullptr;
 			Brush.SetResourceObject(InImage);
 			Brush.DrawAs = ESlateBrushDrawType::Image; 
 		}
 	};
-	/*FSlateBrush NormaSlateBrush = ButtonStyle.Normal;
+
+
+	FSlateBrush NormaSlateBrush = ButtonStyle.Normal;
 	NormaSlateBrush.SetResourceObject(InImage);
 
 	FSlateBrush HoveredSlateBrush = ButtonStyle.Hovered;
@@ -166,14 +178,25 @@ void UBattleActionButtonWidget::SetImage(UTexture2D* InImage)
 	ButtonStyle.SetNormal(NormaSlateBrush);
 	ButtonStyle.SetHovered(HoveredSlateBrush);
 	ButtonStyle.SetPressed(PressedSlateBrush);
-	ButtonStyle.SetDisabled(DisabledSlateBrush);*/
+	ButtonStyle.SetDisabled(DisabledSlateBrush);
 
-	UpdateBrush(ButtonStyle.Normal);
-	UpdateBrush(ButtonStyle.Hovered);
-	UpdateBrush(ButtonStyle.Pressed);
-	UpdateBrush(ButtonStyle.Disabled);
 
-	ActionButton->SetStyle(ButtonStyle);
+	//Logger::Get().Log(FString("Up:Normal"), ELogLevel::Critical);
+	//UpdateBrush(ButtonStyle.Normal);
+	//Logger::Get().Log(FString("Up:Hovered"), ELogLevel::Critical);
+	//UpdateBrush(ButtonStyle.Hovered);
+	//Logger::Get().Log(FString("Up:Pressed"), ELogLevel::Critical);
+	//UpdateBrush(ButtonStyle.Pressed);
+	//Logger::Get().Log(FString("Up:Disabled"), ELogLevel::Critical);
+	//UpdateBrush(ButtonStyle.Disabled);
+	//Logger::Get().Log(FString("Down:Disabled"), ELogLevel::Critical);
+	if (IsValid(ActionButton))
+	{
+		Logger::Get().Log(FString("In ActionButton : Disabled"), ELogLevel::Critical);
+		ActionButton->SetStyle(ButtonStyle);
+		Logger::Get().Log(FString("In Down ActionButton : Disabled"), ELogLevel::Critical);
+	}
+	Logger::Get().Log(FString("In Down Not If : UBattleActionButtonWidget::SetImage"), ELogLevel::Critical);
 }
 
 void UBattleActionButtonWidget::SetCostText(FText InText)

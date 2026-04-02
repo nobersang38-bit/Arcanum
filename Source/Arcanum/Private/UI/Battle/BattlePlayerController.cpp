@@ -29,6 +29,7 @@
 #include "Camera/CameraComponent.h"
 #include "Component/Stats/CharacterBattleStatsComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Log/Logger.h"
 
 // ========================================================
 // 언리얼 기본 생성
