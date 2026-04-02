@@ -21,6 +21,7 @@ EBTNodeResult::Type UBTTask_PlayerSkill::ExecuteTask(UBehaviorTreeComponent& Own
 	UBTPlayerDataObject* PlayerDataObject = nullptr;
 	if (UBehaviorTreeComponent* Behavior = &OwnerComp)
 	{
+		if (!Behavior->GetBlackboardComponent()) return EBTNodeResult::Failed;
 		PlayerDataObject = Cast<UBTPlayerDataObject>(Behavior->GetBlackboardComponent()->GetValueAsObject(GetSelectedBlackboardKey()));
 	}
 
@@ -28,6 +29,7 @@ EBTNodeResult::Type UBTTask_PlayerSkill::ExecuteTask(UBehaviorTreeComponent& Own
 	{
 		if (PlayerDataObject)
 		{
+			if (!OwnerComp.GetBlackboardComponent()) return EBTNodeResult::Failed;
 			AActor* TargetActor = Cast<AActor>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(TargetActorName));
 			if (TargetActor && !TargetActor->IsHidden())
 			{
@@ -66,6 +68,7 @@ void UBTTask_PlayerSkill::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 		UBTPlayerDataObject* PlayerDataObject = nullptr;
 		if (UBehaviorTreeComponent* Behavior = &OwnerComp)
 		{
+			if (!OwnerComp.GetBlackboardComponent()) return;
 			PlayerDataObject = Cast<UBTPlayerDataObject>(Behavior->GetBlackboardComponent()->GetValueAsObject(GetSelectedBlackboardKey()));
 		}
 
