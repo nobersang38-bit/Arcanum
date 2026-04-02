@@ -60,7 +60,8 @@ void UGachaFinalResultWidget::HandleReturnClicked()
 	for (auto i : PendingResults) {
 		if (!i.bIsNew) temp += i.Quantity;
 	}
-	FPlayerAccountService::AddCurrency(this, Arcanum::PlayerData::Currencies::NonRegen::Soul::Value, temp);
+	// 0402 중복가챠 소울->조각으로 변경
+	FPlayerAccountService::AddCurrency(this, Arcanum::PlayerData::Currencies::NonRegen::Shard::Value, temp);
 	OnReturnLobbyClicked.Broadcast();
 }
 
