@@ -5,6 +5,7 @@
 #include "GachaPullButtonWidget.generated.h"
 
 class UButton;
+class UTextBlock;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPullClicked, int32);
 
@@ -32,4 +33,10 @@ public:
 
     UPROPERTY(meta = (BindWidget))
     TObjectPtr<UButton> PullButton;
+
+    UPROPERTY(meta = (BindWidget))
+    TObjectPtr<UTextBlock> CurrencyText;
+
+    UFUNCTION()
+    void SetTextCurrency(FText InText);
 };
