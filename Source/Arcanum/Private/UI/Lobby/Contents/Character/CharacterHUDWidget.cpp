@@ -561,7 +561,7 @@ void UCharacterHUDWidget::UpdateCharacterPortrait(FName CharacterName)
 	
 	//CharacterPortraitImage->SetBrushFromTexture(nullptr);
 
-	for (const FBattleCharacterData characterData : ParentLobby->CachedPlayerData.OwnedCharacters)
+	for (const FBattleCharacterData& characterData : ParentLobby->CachedPlayerData.OwnedCharacters)
 	{
 		const FName listCharacterName = GetLeafNameFromTag(characterData.CharacterInfo.BattleCharacterInitData.CharacterTag);
 		if (listCharacterName == CharacterName)

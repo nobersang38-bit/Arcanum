@@ -2002,7 +2002,10 @@ void ABattlePlayerController::TriggerSkill()
 
 void ABattlePlayerController::InputBasicAttack()
 {
-	if (!TryExecuteBattleAction(EBattleActionType::BasicAttack)) return;
+	if (!TryExecuteBattleAction(EBattleActionType::BasicAttack))
+	{
+		return;
+	}
 
 	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
 	{
@@ -2014,10 +2017,18 @@ void ABattlePlayerController::InputBasicAttack()
 	}
 
 	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
-	if (playerCharacter)
+	if (!playerCharacter)
 	{
-		playerCharacter->HandleBasicAttackInput();
+		return;
 	}
+
+	if (playerCharacter->GetIsBasicAttackMontagePlaying())
+	{
+		playerCharacter->QueueBasicAttackInput();
+		return;
+	}
+
+	playerCharacter->HandleBasicAttackInput();
 }
 
 void ABattlePlayerController::InputSkill()

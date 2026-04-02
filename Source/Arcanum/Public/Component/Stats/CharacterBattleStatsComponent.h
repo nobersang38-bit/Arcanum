@@ -90,6 +90,9 @@ private:
 	void RebuildTotalStats();
 	UPROPERTY(VisibleAnywhere, Transient)
 	bool bInitialized = false;
+
+protected:
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 #pragma endregion
 
 #pragma region 배틀 중 부를 함수

@@ -39,7 +39,8 @@ void UBattleMenuWidget::ClickReturnLobbyBtn()
 {
 	if (!CommonDialogClass) return;
 
-	if (CommonDialog = CreateWidget<UCommonDialog>(this, CommonDialogClass))
+	CommonDialog = CreateWidget<UCommonDialog>(this, CommonDialogClass);
+	if (CommonDialog)
 	{
 		CommonDialog->DialogType = EDialogType::OKCancel;
 		CommonDialog->TitleTxt = FText::FromString(TEXT("알림"));
@@ -54,7 +55,8 @@ void UBattleMenuWidget::ClickQuitGameBtn()
 {
 	if (!CommonDialogClass) return;
 
-	if (CommonDialog = CreateWidget<UCommonDialog>(this, CommonDialogClass))
+	CommonDialog = CreateWidget<UCommonDialog>(this, CommonDialogClass);
+	if (CommonDialog)
 	{
 		CommonDialog->DialogType = EDialogType::OKCancel;
 		CommonDialog->TitleTxt = FText::FromString(TEXT("알림"));
@@ -75,7 +77,8 @@ void UBattleMenuWidget::ClickOptionBtn()
 		OptionWindow = nullptr;
 	}
 
-	if (OptionWindow = CreateWidget<UCommonOptionWindow>(this, OptionWindowClass))
+	OptionWindow = CreateWidget<UCommonOptionWindow>(this, OptionWindowClass);
+	if (OptionWindow)
 	{
 		OptionWindow->AddToViewport();
 	}

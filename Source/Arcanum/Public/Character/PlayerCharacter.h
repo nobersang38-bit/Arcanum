@@ -224,7 +224,8 @@ public:
 	bool GetIsUltimateReleaseMontagePlaying() const { return bIsUltimateReleaseMontagePlaying; }
 	const FVector GetUltimateLocation() const;
 	bool GetIsCommonSkillMontagePlaying() const { return bIsCommonSkillMontagePlaying; }
-
+	bool GetIsBasicAttackMontagePlaying() const { return bIsBasicAttackMontagePlaying; }
+	void QueueBasicAttackInput();
 private:
 	/* 체력 리젠 변경 시 체력바 갱신 */
 	void OnPlayerRegenStatChanged(const FRegenStat& InRegenStat);

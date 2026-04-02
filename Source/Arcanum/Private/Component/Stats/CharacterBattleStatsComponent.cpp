@@ -32,13 +32,17 @@ void UCharacterBattleStatsComponent::BeginPlay()
 	if (DTBattleStatsRow.DataTable && !DTBattleStatsRow.RowName.IsNone()) {
 		const FDTBattleStatsContainerRow* Row = DTBattleStatsRow.DataTable->FindRow<FDTBattleStatsContainerRow>(DTBattleStatsRow.RowName, TEXT("Editor StatsRegen Load"));
 
-		if (!Row->GradeDataSteps.IsEmpty())
+		if (Row && !Row->GradeDataSteps.IsEmpty())
 		{
 			SetData((*Row).GradeDataSteps[0]);
 		}
 	}
 
-	if (GetWorld()) GetWorld()->GetTimerManager().SetTimer(RegenTimerHandle, this, &UCharacterBattleStatsComponent::ProcessRegen, TimerTick, true);
+	if (GetWorld())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(RegenTimerHandle);
+		GetWorld()->GetTimerManager().SetTimer(RegenTimerHandle, this, &UCharacterBattleStatsComponent::ProcessRegen, TimerTick, true);
+	}
 }
 void UCharacterBattleStatsComponent::ProcessRegen()
 {
@@ -179,6 +183,23 @@ void UCharacterBattleStatsComponent::RebuildTotalStats()
 		Stat.Current = FMath::Clamp(Stat.Current, 0.f, Stat.GetTotalMax());
 		//Stat.Current = Stat.GetTotalMax();
 	}
+}
+void UCharacterBattleStatsComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (GetWorld())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(RegenTimerHandle);
+
+		for (TPair<FGuid, FTimerHandle>& timerPair : ModifierTimers)
+		{
+			GetWorld()->GetTimerManager().ClearTimer(timerPair.Value);
+		}
+	}
+
+	ModifierTimers.Empty();
+	ActiveModifiers.Empty();
+
+	Super::EndPlay(EndPlayReason);
 }
 // ========================================================
 // 배틀 중 부를 함수

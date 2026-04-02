@@ -157,6 +157,7 @@ protected:
 #pragma endregion
 
 #pragma region 데이터 캐시
+	UPROPERTY()
 	FInBattleData InBattleData;
 
 	UPROPERTY()

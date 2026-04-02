@@ -644,6 +644,14 @@ const FVector APlayerCharacter::GetUltimateLocation() const
 	return UltimatePreviewDecalComponent->GetComponentLocation();
 }
 
+void APlayerCharacter::QueueBasicAttackInput()
+{
+	if (bCanNextComboInput)
+	{
+		bHasNextComboInput = true;
+	}
+}
+
 void APlayerCharacter::OnPlayerRegenStatChanged(const FRegenStat& InRegenStat)
 {
 	if (InRegenStat.ParentTag == Arcanum::BattleStat::Character::Regen::Health::Root)
@@ -660,13 +668,38 @@ void APlayerCharacter::OnPlayerRegenStatChanged(const FRegenStat& InRegenStat)
 void APlayerCharacter::HandleBasicAttackInput()
 {
 	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
-	if (!battleSubsystem) return;
+	if (!battleSubsystem)
+	{
+		ResetBasicAttackCombo();
+		return;
+	}
+
 	const FBattleSkillData* currentBasicAttackSkill = battleSubsystem->GetCurrentBasicAttackSkillData();
-	if (!currentBasicAttackSkill) return;
+	if (!currentBasicAttackSkill)
+	{
+		ResetBasicAttackCombo();
+		return;
+	}
+
 	USkeletalMeshComponent* meshComp = GetMesh();
-	if (!meshComp) return;
+	if (!meshComp)
+	{
+		ResetBasicAttackCombo();
+		return;
+	}
+
 	UAnimInstance* animInstance = meshComp->GetAnimInstance();
-	if (!animInstance) return;
+	if (!animInstance)
+	{
+		ResetBasicAttackCombo();
+		return;
+	}
+
+	if (!StatComponent)
+	{
+		ResetBasicAttackCombo();
+		return;
+	}
 
 	if (bIsBasicAttackMontagePlaying)
 	{
@@ -684,11 +717,20 @@ void APlayerCharacter::HandleBasicAttackInput()
 	}
 
 	UAnimMontage* montage = currentBasicAttackSkill->ComboMontages[BasicAttackComboIndex];
-	if (!montage)
+	if (!IsValid(montage))
 	{
 		ResetBasicAttackCombo();
 		return;
 	}
+
+	const FNonRegenStat* attackSpeedStat = StatComponent->FindNonRegenStat(Arcanum::BattleStat::Character::NonRegen::AttackSpeed::Root);
+	if (!attackSpeedStat)
+	{
+		ResetBasicAttackCombo();
+		return;
+	}
+
+	float montagePlayRate = attackSpeedStat->GetTotalValue();
 
 	bCanNextComboInput = false;
 	bHasNextComboInput = false;
@@ -697,8 +739,7 @@ void APlayerCharacter::HandleBasicAttackInput()
 	FOnMontageEnded montageEndedDelegate;
 	montageEndedDelegate.BindUObject(this, &APlayerCharacter::OnBasicAttackMontageEnded);
 
-	float MontagePlayRate = StatComponent->FindNonRegenStat(Arcanum::BattleStat::Character::NonRegen::AttackSpeed::Root)->GetTotalValue();
-	animInstance->Montage_Play(montage, MontagePlayRate);
+	animInstance->Montage_Play(montage, montagePlayRate);
 	animInstance->Montage_SetEndDelegate(montageEndedDelegate, montage);
 }
 
@@ -712,7 +753,15 @@ void APlayerCharacter::OnBasicAttackMontageEnded(UAnimMontage* InMontage, bool b
 		return;
 	}
 
-	ProceedBasicAttackCombo();
+	if (!GetWorld())
+	{
+		ResetBasicAttackCombo();
+		return;
+	}
+
+	FTimerDelegate nextComboDelegate;
+	nextComboDelegate.BindUObject(this, &APlayerCharacter::ProceedBasicAttackCombo);
+	GetWorld()->GetTimerManager().SetTimerForNextTick(nextComboDelegate);
 }
 
 void APlayerCharacter::OnCommonSkillMontageEnded(UAnimMontage* InMontage, bool bInterrupted)
@@ -741,19 +790,44 @@ void APlayerCharacter::DisableNextComboInput()
 
 void APlayerCharacter::ProceedBasicAttackCombo()
 {
-	if (bHasNextComboInput)
-	{
-		bHasNextComboInput = false;
-		bCanNextComboInput = false;
-		BasicAttackComboIndex++;
-
-		HandleBasicAttackInput();
-
-	}
-	else
+	if (!bHasNextComboInput)
 	{
 		ResetBasicAttackCombo();
+		return;
 	}
+
+	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (!battleSubsystem)
+	{
+		ResetBasicAttackCombo();
+		return;
+	}
+
+	const FBattleSkillData* currentBasicAttackSkill = battleSubsystem->GetCurrentBasicAttackSkillData();
+	if (!currentBasicAttackSkill)
+	{
+		ResetBasicAttackCombo();
+		return;
+	}
+
+	const int32 nextComboIndex = BasicAttackComboIndex + 1;
+	if (!currentBasicAttackSkill->ComboMontages.IsValidIndex(nextComboIndex))
+	{
+		ResetBasicAttackCombo();
+		return;
+	}
+
+	if (!IsValid(currentBasicAttackSkill->ComboMontages[nextComboIndex]))
+	{
+		ResetBasicAttackCombo();
+		return;
+	}
+
+	bHasNextComboInput = false;
+	bCanNextComboInput = false;
+	BasicAttackComboIndex = nextComboIndex;
+
+	HandleBasicAttackInput();
 }
 void APlayerCharacter::ResetBasicAttackCombo()
 {
