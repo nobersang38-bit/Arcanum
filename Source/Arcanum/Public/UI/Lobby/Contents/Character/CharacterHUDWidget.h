@@ -182,6 +182,4 @@ protected:
 private:
 	bool bCurrentSelectedCharacterOwned = false;
 #pragma endregion
-
-
 };

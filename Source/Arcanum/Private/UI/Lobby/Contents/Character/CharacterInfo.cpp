@@ -165,3 +165,30 @@ void UCharacterInfo::ClickSetPlayerBtn()
 {
     OnSetPlayerBtnClicked.Broadcast(CharactNameTxt);
 }
+
+// ========================================================
+// 유닛 정보창
+// ========================================================
+void UCharacterInfo::SetDescriptionText(const FText& InText)
+{
+    if (DescriptionText)
+    {
+        DescriptionText->SetText(InText);
+    }
+}
+
+void UCharacterInfo::SetMeatCostText(const FText& InText)
+{
+    if (MeatCostText)
+    {
+        MeatCostText->SetText(InText);
+    }
+}
+
+void UCharacterInfo::SetCoolTimeText(const FText& InText)
+{
+    if (CoolTimeText)
+    {
+        CoolTimeText->SetText(InText);
+    }
+}

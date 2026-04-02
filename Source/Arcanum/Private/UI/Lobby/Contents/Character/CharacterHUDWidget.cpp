@@ -320,15 +320,10 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
 				bool bIsSelected = (ListUnitName == CharacterName);
 				if (bIsSelected)
 				{
-					FText Desc = UnitData.Description;
-					float MeatCost = UnitData.MeatCost;
-					float CoolTime = UnitData.CoolTime;
-					FText ResultText = FText::Format(
-						FText::FromString("{0}\n{1}\n{2}"),
-						Desc,
-						FText::AsNumber(MeatCost),
-						FText::AsNumber(CoolTime)
-					);
+					FText DescText = UnitData.Description;
+					FText MeatCostText = FText::AsNumber(UnitData.MeatCost);
+					FText CoolTimeText = FText::AsNumber(UnitData.CoolTime);
+
 					if (InfoWidget)
 					{
 						InfoWidget->SetCharacterName(CharacterName);
@@ -336,7 +331,9 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
 						//InfoWidget->SetEnhanceButtonEnabled(SlotCharacterOwned, RequiredSoul, soulAmount, TargetGradeIndex);
 						//InfoWidget->SetPlayerButtonEnabled(false, SlotCharacterOwned);
 						//InfoWidget->SetGradeCharcterInfo(CharacterGrade);
-						InfoWidget->SetCharcterInfo(ResultText);
+						InfoWidget->SetDescriptionText(DescText);
+						InfoWidget->SetMeatCostText(MeatCostText);
+						InfoWidget->SetCoolTimeText(CoolTimeText);
 						//InfoWidget->SetEnhanceBtnText(InButtonText);
 					}
 				}
@@ -562,7 +559,7 @@ void UCharacterHUDWidget::UpdateCharacterPortrait(FName CharacterName)
 {
 	if (!ParentLobby || !CharacterPortraitImage) return;
 	
-	CharacterPortraitImage->SetBrushFromTexture(nullptr);
+	//CharacterPortraitImage->SetBrushFromTexture(nullptr);
 
 	for (const FBattleCharacterData characterData : ParentLobby->CachedPlayerData.OwnedCharacters)
 	{
