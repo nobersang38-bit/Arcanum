@@ -1541,6 +1541,12 @@ void ABattlePlayerController::BattleEnd(const FMatchData& MatchData)
 void ABattlePlayerController::OpenLobbyLevel()
 {
 	// Todo KDH 로비 열기
+	if (UGameTimeSubsystem* gameTimeSubsystem = GetGameInstance()->GetSubsystem<UGameTimeSubsystem>())
+	{
+		gameTimeSubsystem->StopStage();
+	}
+
+	UGameplayStatics::SetGamePaused(this, false);
 	UGameplayStatics::OpenLevel(this, FName("LobbyMap"));
 }
 

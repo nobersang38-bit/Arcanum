@@ -73,11 +73,15 @@ void UGameTimeSubsystem::StartStage(float DurationSeconds)
 {
 	CurrentStageTime = DurationSeconds;
 	bIsBattleActive = true;
+	bStagePaused = false;
 	LastStageSecond = -1;
 }
 void UGameTimeSubsystem::StopStage()
 {
 	bIsBattleActive = false;
+	bStagePaused = false;
+	CurrentStageTime = 0.0f;
+	LastStageSecond = -1;
 }
 
 void UGameTimeSubsystem::PauseStage()
