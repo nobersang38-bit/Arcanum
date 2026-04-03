@@ -7,6 +7,9 @@
 #include "Component/Stats/CharacterBattleStatsComponent.h"
 #include "Interface/TeamInterface.h"
 #include "Engine/OverlapResult.h"
+#include "Character/PlayerCharacter.h"
+#include "Component/StatusActionComponent.h"
+#include "Core/SubSystem/BattlefieldManagerSubsystem.h"
 
 AProjectileBase::AProjectileBase()
 {
@@ -18,6 +21,7 @@ AProjectileBase::AProjectileBase()
     CollisionComponent->InitSphereRadius(20.f);
     CollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     CollisionComponent->SetCollisionProfileName("BlockAll");
+    CollisionComponent->SetLineThickness(5.0f);
 
     CollisionComponent->OnComponentHit.AddDynamic(this, &AProjectileBase::OnHit);
     CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AProjectileBase::OnOverlap);
@@ -26,11 +30,17 @@ AProjectileBase::AProjectileBase()
 void AProjectileBase::BeginPlay()
 {
     Super::BeginPlay();
+
+    UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+    if (BattleSubsystem)
+    {
+        bShowCollision = BattleSubsystem->GetIsDebugMode();
+    }
 }
 void AProjectileBase::Tick(float Deltatime)
 {
     Super::Tick(Deltatime);
-    
+
     if (bIsActive)
     {
         FVector ResultVelocity;
@@ -42,6 +52,7 @@ void AProjectileBase::Tick(float Deltatime)
             break;
 
         case EProjectileMode::Horming:
+        {
             FRotator HormingDirection;
             if (TargetActor.IsValid())
             {
@@ -56,15 +67,16 @@ void AProjectileBase::Tick(float Deltatime)
             SetActorRotation(ResultDirection);
             ResultVelocity = GetActorForwardVector() * InitialSpeed;
             SetActorLocation(GetActorLocation() + (ResultVelocity * Deltatime));
-            break;
+        }
+        break;
 
         case EProjectileMode::Howitzer:
             FVector TargetLocationIn;
-            if (TargetActor.IsValid())
+            /*if (TargetActor.IsValid())
             {
                 TargetLocationIn = TargetActor->GetActorLocation();
             }
-            else
+            else*/
             {
                 TargetLocationIn = TargetLocation;
             }
@@ -75,7 +87,7 @@ void AProjectileBase::Tick(float Deltatime)
             float HeightValue = (HowitzerHeightCurve.EditorCurveData.Eval(DistanceNormalize) * HowitzerHeight) + HowitzerStartTransform.GetLocation().Z;
 
             float SpeedValue = HowitzerSpeedCurve.EditorCurveData.Eval(DistanceNormalize);
-            SpeedValue =  (SpeedValue * InitialSpeed) * (TotalLength2D * 0.001f);
+            SpeedValue = (SpeedValue * InitialSpeed) * (TotalLength2D * 0.001f);
 
             FVector Direction = TargetLocationIn - HowitzerStartTransform.GetLocation();
             Direction = FVector(Direction).GetSafeNormal2D();
@@ -95,13 +107,39 @@ void AProjectileBase::Tick(float Deltatime)
             break;
         }
     }
-    
+
+    TArray<AActor*> DelActors;
+    for (auto& Iter : ActorCollisionCoolTime)
+    {
+        if (Iter.Value <= 0.0f)
+        {
+            DelActors.Add(Iter.Key);
+            continue;
+        }
+
+        Iter.Value -= Deltatime;
+    }
+    for (int i = 0; i < DelActors.Num(); i++)
+    {
+        ActorCollisionCoolTime.Remove(DelActors[i]);
+        CachedActors.Remove(DelActors[i]);
+    }
 }
 void AProjectileBase::DeactivateSkillActor()
 {
     GetWorld()->GetTimerManager().ClearTimer(LifeTimerHandle);
     GetWorld()->GetTimerManager().ClearTimer(DeactiveDelayTimerHandle);
     CollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    bIsActive = false;
+    SetActorHiddenInGame(true);
+    SetActorEnableCollision(false);
+    CachedActors.Empty();
+    ActorCollisionCoolTime.Empty();
+    if (bShowCollision)
+    {
+        CollisionComponent->SetHiddenInGame(true);
+    }
+    DeactiveItem();
     Super::DeactivateSkillActor();
 }
 void AProjectileBase::ActivateSkillActor(USkillBase* InSkill, AActor* InOwner, const FVector& SpawnLocation, const FRotator& SpawnRotation)
@@ -112,6 +150,8 @@ void AProjectileBase::ActivateSkillActor(USkillBase* InSkill, AActor* InOwner, c
         bIsFirstStart = false;
         FirstCollisionEnabled = CollisionComponent->GetCollisionEnabled();
     }
+    CachedActors.Empty();
+    ActorCollisionCoolTime.Empty();
     CollisionComponent->OnComponentHit.RemoveDynamic(this, &AProjectileBase::OnHit);
     CollisionComponent->OnComponentHit.AddDynamic(this, &AProjectileBase::OnHit);
 
@@ -126,6 +166,11 @@ void AProjectileBase::ActivateSkillActor(USkillBase* InSkill, AActor* InOwner, c
         HowitzerStartTransform = GetActorTransform();
     }
     CollisionComponent->SetCollisionEnabled(FirstCollisionEnabled);
+
+    if (bShowCollision)
+    {
+        CollisionComponent->SetHiddenInGame(false);
+    }
 
     GetWorld()->GetTimerManager().SetTimer(LifeTimerHandle, this, &AProjectileBase::DeactivateSkillActor, LifeTime, false);
 }
@@ -157,7 +202,7 @@ void AProjectileBase::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 {
     if (!bIsActive) return;
     if (!TargetfilterCheck(OtherActor)) return;
-   
+
     switch (CollisionMode)
     {
     case ECollisionMode::Immediately:
@@ -192,18 +237,80 @@ void AProjectileBase::CollisionProcess(AActor* OtherActor)
             if (OtherActor->GetClass()->ImplementsInterface(UStatModifierInterface::StaticClass()))
             {
                 auto Interface = Cast<IStatModifierInterface>(OtherActor);
-                if (LevelModifierEntry->OtherCharacterModifiers.Num() > LevelModifierEntry->Level - 1)
+                if (LevelModifierEntry->OtherCharacterModifiers.Num() > 0)
                 {
                     // 계산 부분
-                    FDerivedStatModifier StatModifier = LevelModifierEntry->OtherCharacterModifiers[LevelModifierEntry->Level - 1];
+                    FDerivedStatModifier StatModifier = LevelModifierEntry->OtherCharacterModifiers[0];
+
+                    if (OwnerSkill->GetDerivedStatModifier().StatTag.MatchesTag(StatModifier.StatTag))
+                    {
+                        StatModifier.Value.Flat = StatModifier.Value.Flat + OwnerSkill->GetDerivedStatModifier().Value.Flat;
+                    }
+
+                    if (bUseOwnerStat)
+                    {
+                        if (OwnerSkill->GetOwnerActor())
+                        {
+                            if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OwnerSkill->GetOwnerActor()))
+                            {
+                                if (const FRegenStat* RegenStat = PlayerCharacter->GetBattleStatComponent()->FindRegenStat(UseStatTag))
+                                {
+                                    StatModifier.Value.Flat = StatModifier.Value.Flat + (bIsAttack ? -FMath::Abs(RegenStat->Current) : RegenStat->Current);
+                                }
+                                else if (const FNonRegenStat* NonRegenStat = PlayerCharacter->GetBattleStatComponent()->FindNonRegenStat(UseStatTag))
+                                {
+                                    StatModifier.Value.Flat = StatModifier.Value.Flat + (bIsAttack ? -FMath::Abs(NonRegenStat->GetTotalValue()) : NonRegenStat->GetTotalValue());
+                                    UE_LOG(LogTemp, Warning, TEXT("Flat=%.2f OwnerStat=%.2f AddModi=%.2f"),
+                                        StatModifier.Value.Flat,
+                                        NonRegenStat->GetTotalValue(),
+                                        OwnerSkill->GetDerivedStatModifier().Value.Flat);
+                                }
+
+                            }
+                        }
+                    }
 
                     if (StatModifier.Duration <= 0.0f && !StatModifier.bIsPermanent) // 체인지 스탯함수 실행
                     {
-                        Interface->ChangeStat(StatModifier.StatTag, StatModifier.Value.Flat * StatModifier.Value.Mul);
+                        float ResultValue = StatModifier.Value.Flat * StatModifier.Value.Mul;
+
+                        if (bIsAttack)
+                        {
+                            if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OwnerSkill->GetOwnerActor()))
+                            {
+                                UCharacterBattleStatsComponent* StatComponent = PlayerCharacter->GetBattleStatComponent();
+                                const FNonRegenStat* CriticalStat = StatComponent->FindNonRegenStat(PlayerCharacter->GetStatusActionComponent()->CriticalTag);
+                                if (CriticalStat)
+                                {
+                                    float CriticalPercent = CriticalStat->GetTotalValue();
+                                    bool bIsCriticalSuccess = (FMath::FRandRange(0.0f, 1.0f) <= CriticalPercent);
+
+                                    if (bIsCriticalSuccess)
+                                    {
+                                        ResultValue *= 2.0f;
+                                    }
+                                }
+                            }
+                        }
+
+                        if (bIsAttack)
+                        {
+                            UGameplayStatics::ApplyDamage(OtherActor, ResultValue, nullptr, OwnerSkill->GetOwnerActor(), nullptr);
+                            CachedActors.Add(OtherActor);
+                            ActorCollisionCoolTime.Add(OtherActor, ReOnCollisionTime);
+                        }
+                        else
+                        {
+                            Interface->ChangeStat(StatModifier.StatTag, ResultValue);
+                            CachedActors.Add(OtherActor);
+                            ActorCollisionCoolTime.Add(OtherActor, ReOnCollisionTime);
+                        }
                     }
                     else // 모디파이어 추가
                     {
                         Interface->AddDerivedStatModifier(StatModifier);
+                        CachedActors.Add(OtherActor);
+                        ActorCollisionCoolTime.Add(OtherActor, ReOnCollisionTime);
                     }
                 }
             }
@@ -217,7 +324,7 @@ void AProjectileBase::ActivateOnCollisionProcess(AActor* OtherActor)
     FCollisionShape CollisionShape;
     CollisionShape.MakeSphere(SphereCollisionRadius);
     GetWorld()->OverlapMultiByChannel(OverlapResults, GetActorLocation(), FQuat::Identity, ECollisionChannel::ECC_Visibility, CollisionShape);
-    
+
     for (int i = 0; i < OverlapResults.Num(); i++)
     {
         if (!bIsActive) continue;
@@ -229,6 +336,8 @@ void AProjectileBase::ActivateOnCollisionProcess(AActor* OtherActor)
 
 bool AProjectileBase::TargetfilterCheck(AActor* OtherActor)
 {
+    if (CachedActors.Contains(OtherActor)) return false;
+
     if (OwnerSkill)
     {
         if (InstigatorActor->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()))
@@ -241,24 +350,22 @@ bool AProjectileBase::TargetfilterCheck(AActor* OtherActor)
                 FGameplayTag OtherActorTag = OtherActorInterface->GetTeamTag();
                 FGameplayTag InstigatorTag = InstigatorActorInterface->GetTeamTag();
 
-                if (const FSkillInfo* SkillInfo = OwnerSkill->GetSkillInfo())
+                const FSkillInfo& SkillInfo = OwnerSkill->GetSkillInfo();
+                if (SkillInfo.TargetFilterTag == AllyTag)
                 {
-                    if (SkillInfo->TargetFilterTag == AllyTag)
-                    {
-                        if (InstigatorTag != OtherActorTag) return false;
-                    }
-                    else if (SkillInfo->TargetFilterTag == EnemyTag)
-                    {
-                        if (InstigatorTag == OtherActorTag) return false;
-                    }
-                    else if (SkillInfo->TargetFilterTag == SelfTag)
-                    {
-                        if (OtherActor != InstigatorActor) return false;
-                    }
-                    else if (SkillInfo->TargetFilterTag == NoneTag)
-                    {
-                        return false;
-                    }
+                    if (InstigatorTag != OtherActorTag) return false;
+                }
+                else if (SkillInfo.TargetFilterTag == EnemyTag)
+                {
+                    if (InstigatorTag == OtherActorTag) return false;
+                }
+                else if (SkillInfo.TargetFilterTag == SelfTag)
+                {
+                    if (OtherActor != InstigatorActor) return false;
+                }
+                else if (SkillInfo.TargetFilterTag == NoneTag)
+                {
+                    return false;
                 }
             }
         }

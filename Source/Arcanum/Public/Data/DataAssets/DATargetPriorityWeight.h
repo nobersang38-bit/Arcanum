@@ -52,6 +52,9 @@ public:
 	//점수 계산 함수
 	float CalculateScore(AActor* MyCharacter, AActor* TargetCharacter) const;
 
+	// 다중 점수 계산 함수
+	AActor* CalculateWinActor(AActor* InMyCharacter, TArray<AActor*> InActors) const;
+
 protected:
 	// 플레이어 캐릭터 인가
 	// 플레이어 캐릭터가 맞다면 스킬 사거리 닿는가

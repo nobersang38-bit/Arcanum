@@ -66,7 +66,7 @@
   {
     "Name": "HealthRegen",
     "StatTag": "Arcanum.BattleStat.Character.Regen.Health.Regen",
-    "DisplayName": "체력 회복",
+    "DisplayName": "체력 즉시 회복",
     "bUsePercent": false,
     "SortOrder": 8,
     "Desc": "체력을 회복합니다."

@@ -37,6 +37,7 @@ namespace Arcanum {
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(GachaTable);
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(SkillData);
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(StageInfo);
+		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(InStageInfo);
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(AllyUnitInfo);
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(EnemyUnitInfo);
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(AllyUnitStatInfo);
@@ -72,12 +73,13 @@ namespace Arcanum {
 		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
 		namespace ID {
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
-			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Elara); 
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Elara);
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Iris);	// Iris : 빠른 공격 속도와 회피 능력을 강조하는 캐릭터.
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Celestia);   // Celestia : 강력한 공격력과 방어 능력을 갖춘 캐릭터, 지속적인 회복.
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Lynette);   // Lynette : 빠르고 치명적인 크리티컬, 높은 이동 속도와 공격 속도.
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Arna);  // Arna : 높은 공격력과 크리티컬 확률, 공격에 특화된 캐릭터.
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Aiden);  // Aiden : 균형 잡힌 공격력, 회피 능력, 크리티컬 확률을 갖춘 다재다능한 캐릭터.
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(OutSider);
 		}
 
 		namespace Grade { // cpp 확인 필수
@@ -198,6 +200,7 @@ namespace Arcanum {
 			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Legendary);
 		}
 		namespace Rarity {
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
 			namespace Common {
 				namespace Weapon {
 					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
@@ -214,6 +217,7 @@ namespace Arcanum {
 				}
 			}
 			namespace Legendary {
+				ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
 				namespace Weapon {
 					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
 					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Scepter);    // 셉터
@@ -439,6 +443,17 @@ namespace Arcanum {
 					ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
 				}
 			}
+		}
+	}
+}
+
+namespace Arcanum {
+	namespace UI {
+		ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+		namespace Option {
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Root);
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Audio);
+			ARCANUM_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Video);
 		}
 	}
 }

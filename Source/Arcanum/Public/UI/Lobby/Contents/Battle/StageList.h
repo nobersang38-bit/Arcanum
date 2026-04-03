@@ -45,12 +45,18 @@ public:
 	void SetText(FString StageName, FString StageInfo);
 
 protected:
-	UPROPERTY(meta = (BindWidget)) TObjectPtr<UBorder> SelectBorder;
-	UPROPERTY(meta = (BindWidget)) TObjectPtr<UButton> BtnClick;
-	UPROPERTY(meta = (BindWidget)) TObjectPtr<UImage> StageImage;
-	UPROPERTY(meta = (BindWidget)) TObjectPtr<UTextBlock> StageNameText;
-	UPROPERTY(meta = (BindWidget)) TObjectPtr<UTextBlock> StageInfoText;
-	UPROPERTY(meta = (BindWidgetAnim), Transient) TObjectPtr<UWidgetAnimation> BlinkAnim;
+	UPROPERTY(meta = (BindWidget)) 
+	TObjectPtr<UBorder> SelectBorder = nullptr;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UButton> BtnClick = nullptr;
+	UPROPERTY(meta = (BindWidget)) 
+	TObjectPtr<UImage> StageImage = nullptr;
+	UPROPERTY(meta = (BindWidget)) 
+	TObjectPtr<UTextBlock> StageNameText = nullptr;
+	UPROPERTY(meta = (BindWidget)) 
+	TObjectPtr<UTextBlock> StageInfoText = nullptr;
+	UPROPERTY(meta = (BindWidgetAnim), Transient) 
+	TObjectPtr<UWidgetAnimation> BlinkAnim = nullptr;
 	private:
 	bool bSelected = false;
 	FString DefaultStrName = TEXT("스테이지 0");

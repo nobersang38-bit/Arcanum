@@ -7,6 +7,8 @@
 #include "UI/Lobby/Contents/Enhancement/EnhancementHUDWidget.h"
 #include "UI/Lobby/Contents/Battle/BattleHUDWidget.h"
 #include "UI/Lobby/Contents/Gacha/GachaHUDWidget.h"
+#include "UI/Common/CommonOptionWindow.h"
+
 //#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/HorizontalBox.h"
@@ -177,6 +179,7 @@ void ULobbyHUD::ClickBattleMenuBtn()
 void ULobbyHUD::ClickCharacterMenuBtn()
 {
 	UpdateButtonSelection(CharacterMenuBtn);
+	ClosePanels();
 
 	if (UCharacterHUDWidget* CharacterWidget = Cast<UCharacterHUDWidget>(WidgetSwitcher->GetWidgetAtIndex(1))) {
 		CharacterWidget->SetParentLobby(this);
@@ -190,6 +193,8 @@ void ULobbyHUD::ClickCharacterMenuBtn()
 void ULobbyHUD::ClickEnhancementMenuBtn()
 {
 	UpdateButtonSelection(EnhancementMenuBtn);
+	ClosePanels();
+
 	if (EnhancementHUDWidget)
 	{
 		EnhancementHUDWidget->RefreshEquipmentInventory();
@@ -205,6 +210,8 @@ void ULobbyHUD::ClickEnhancementMenuBtn()
 void ULobbyHUD::ClickShopMenuBtn()
 {
 	UpdateButtonSelection(ShopMenuBtn);
+	ClosePanels();
+
 	if (InventoryHUDWidget)
 	{
 		InventoryHUDWidget->SetCurrentFilter(EInventoryCategoryFilter::All);
@@ -222,9 +229,24 @@ void ULobbyHUD::ClickShopMenuBtn()
 void ULobbyHUD::ClickGachaMenuBtn()
 {
 	UpdateButtonSelection(GachaMenuBtn);
+	ClosePanels();
+
 	if (UGachaHUDWidget* GachaWidget = Cast<UGachaHUDWidget>(WidgetSwitcher->GetWidgetAtIndex(4))) {
 		GachaWidget->SetParentLobby(this);
 		WidgetSwitcher->SetActiveWidget(GachaWidget);
+
+		TArray<const FDTGachaBannerDataRow*> TempRows;
+		FPlayerAccountService::GetActiveGachaBannerRows(this, TempRows);
+		ActiveBannerDataList.Empty();
+		for (const FDTGachaBannerDataRow* RowPtr : TempRows) {
+			if (RowPtr) {
+				ActiveBannerDataList.Add(*RowPtr);
+				FPlayerAccountService::InitGachaBannerData(this, RowPtr->BannerTag);
+			}
+		}
+		if (ActiveBannerDataList.Num() > 0) {
+			GachaWidget->OnBannerSelected(ActiveBannerDataList[0].BannerTag);
+		}
 
 		if (TimeSubsystem) TimeSubsystem->bBannerActive = true;
 	}
@@ -233,6 +255,12 @@ void ULobbyHUD::ClickGachaMenuBtn()
 void ULobbyHUD::ClickSettingBtn()
 {
 	/// TODO : 설정 위젯 띄우기
+	if (SettingHUDClass) {
+		SettingHUD = CreateWidget<UCommonOptionWindow>(this, SettingHUDClass);
+		if (SettingHUD) {
+			SettingHUD->AddToViewport();
+		}
+	}
 }
 
 
@@ -346,5 +374,13 @@ void ULobbyHUD::OnExitCommonDialog(EDialogResult res)
 		{
 			CurrencyWidget->SetVisibility(ESlateVisibility::Visible);
 		}
+	}
+}
+
+void ULobbyHUD::ClosePanels()
+{
+	if (BattleHUDWidget)
+	{
+		BattleHUDWidget->HidePotionInventory();
 	}
 }

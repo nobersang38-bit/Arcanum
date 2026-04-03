@@ -99,22 +99,58 @@ bool FItemDetailHelper::BuildStackItemDisplayViewData(const UObject* WorldContex
 		const FDTPotionInfoRow* potionRow = dataSubsystem->GetRow<FDTPotionInfoRow>(Arcanum::DataTable::Potion, catalogRow->DetailRowName);
 		if (potionRow)
 		{
-			for (const FDerivedStatModifier& stat : potionRow->Modifiers)
+			if (potionRow->EffectType == EPotionEffectType::Instant)
 			{
 				FItemStatLineViewData line;
-				line.StatNameText = BuildStatNameText(dataSubsystem, stat.StatTag);
 
-				if (const FDTStatDisplayRow* statRow = FindStatDisplayRowByTag(dataSubsystem, stat.StatTag))
+				if (!potionRow->TooltipStatName.IsEmpty())
 				{
-					line.StatValueText = BuildCurrentStatValueText(stat, statRow->bUsePercent);
+					line.StatNameText = potionRow->TooltipStatName;
+				}
+				else if (const FDTStatDisplayRow* statRow = FindStatDisplayRowByTag(dataSubsystem, potionRow->InstantModifier.StatTag))
+				{
+					line.StatNameText = statRow->DisplayName;
 				}
 				else
 				{
-					line.StatValueText = BuildCurrentStatValueText(stat, false);
+					line.StatNameText = BuildStatNameText(dataSubsystem, potionRow->InstantModifier.StatTag);
 				}
+
+				line.StatValueText = BuildInstantPotionValueText(
+					potionRow->InstantModifier,
+					potionRow->TooltipValueType == EPotionTooltipValueType::Percent
+				);
 
 				line.bVisible = true;
 				OutViewData.StatLines.Add(line);
+			}
+			else
+			{
+				for (const FDerivedStatModifier& stat : potionRow->Modifiers)
+				{
+					FItemStatLineViewData line;
+
+					if (!potionRow->TooltipStatName.IsEmpty())
+					{
+						line.StatNameText = potionRow->TooltipStatName;
+					}
+					else if (const FDTStatDisplayRow* statRow = FindStatDisplayRowByTag(dataSubsystem, stat.StatTag))
+					{
+						line.StatNameText = statRow->DisplayName;
+					}
+					else
+					{
+						line.StatNameText = BuildStatNameText(dataSubsystem, stat.StatTag);
+					}
+
+					line.StatValueText = BuildDurationPotionValueText(
+						stat,
+						potionRow->TooltipValueType == EPotionTooltipValueType::Percent
+					);
+
+					line.bVisible = true;
+					OutViewData.StatLines.Add(line);
+				}
 			}
 
 			FItemStatLineViewData cooldownLine;
@@ -420,8 +456,8 @@ FText FItemDetailHelper::BuildNextStatValueText(const FStatRangeDefinition& InRa
 		return FText::FromString(FString::Printf(TEXT("+%.0f%% ~ +%.0f%%"), minValue, maxValue));
 	}
 
-	const float minValue = FMath::Min(InRange.MinValue.Flat, InRange.MaxValue.Flat);
-	const float maxValue = FMath::Max(InRange.MinValue.Flat, InRange.MaxValue.Flat);
+	const float minValue = FMath::Min(FMath::Abs(InRange.MinValue.Flat), FMath::Abs(InRange.MaxValue.Flat));
+	const float maxValue = FMath::Max(FMath::Abs(InRange.MinValue.Flat), FMath::Abs(InRange.MaxValue.Flat));
 
 	if (FMath::IsNearlyEqual(minValue, maxValue))
 	{
@@ -488,4 +524,67 @@ FText FItemDetailHelper::BuildEquippedCharacterText(const UObject* WorldContextO
 	}
 
 	return FText::GetEmpty();
+}
+
+FText FItemDetailHelper::BuildInstantPotionValueText(const FDerivedStatModifier& InStat, bool bInUsePercent)
+{
+
+	if (bInUsePercent)
+	{
+		float percentValue = 0.0f;
+
+		if (!FMath::IsNearlyZero(InStat.Value.Flat))
+		{
+			percentValue = InStat.Value.Flat * 100.0f;
+		}
+		else
+		{
+			percentValue = InStat.Value.Mul * 100.0f;
+		}
+
+		return FText::FromString(FString::Printf(TEXT("+%.0f%%"), percentValue));
+	}
+
+	if (!FMath::IsNearlyZero(InStat.Value.Flat))
+	{
+		return FText::FromString(FString::Printf(TEXT("+%.0f"), InStat.Value.Flat));
+	}
+
+	if (!FMath::IsNearlyZero(InStat.Value.Mul))
+	{
+		return FText::FromString(FString::Printf(TEXT("+%.0f%%"), InStat.Value.Mul * 100.0f));
+	}
+
+	return FText::FromString(TEXT("+0"));
+}
+
+FText FItemDetailHelper::BuildDurationPotionValueText(const FDerivedStatModifier& InStat, bool bInUsePercent)
+{
+	if (bInUsePercent)
+	{
+		float percentValue = 0.0f;
+
+		if (!FMath::IsNearlyZero(InStat.Value.Flat))
+		{
+			percentValue = InStat.Value.Flat * 100.0f;
+		}
+		else
+		{
+			percentValue = InStat.Value.Mul * 100.0f;
+		}
+
+		return FText::FromString(FString::Printf(TEXT("+%.0f%%"), percentValue));
+	}
+
+	if (!FMath::IsNearlyZero(InStat.Value.Flat))
+	{
+		return FText::FromString(FString::Printf(TEXT("+%.0f"), InStat.Value.Flat));
+	}
+
+	if (!FMath::IsNearlyZero(InStat.Value.Mul))
+	{
+		return FText::FromString(FString::Printf(TEXT("+%.0f%%"), InStat.Value.Mul * 100.0f));
+	}
+
+	return FText::FromString(TEXT("+0"));
 }

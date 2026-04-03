@@ -4,8 +4,10 @@
 #include "Blueprint/UserWidget.h"
 #include "UI/DataType/EDialogResult.h"
 #include "UI/Lobby/Contents/Character/CharacterHUDWidget.h"
+
 #include "DataInfo/PlayerData/FPlayerData.h"
 #include "DataInfo/InventoryData/Data/FInventoryViewSlot.h"
+#include "DataInfo/GachaData/DataTable/DTGachaBannerData.h"
 #include "LobbyHUD.generated.h"
 
 /*
@@ -28,6 +30,8 @@ class UInventoryHUDWidget;
 class UEnhancementHUDWidget;
 class UGameTimeSubsystem;
 class UBattleHUDWidget;
+class UCommonOptionWindow;
+
 struct FDTItemCatalogRow;
 
 
@@ -191,11 +195,14 @@ protected:
 #pragma endregion
 
 #pragma region 가챠
-
+	UPROPERTY() TArray<FDTGachaBannerDataRow> ActiveBannerDataList;
 #pragma endregion
 
 #pragma region 설정
-
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UCommonOptionWindow> SettingHUDClass;
+	UPROPERTY()
+	TObjectPtr<UCommonOptionWindow> SettingHUD;
 #pragma endregion
 
 #pragma region 종료
@@ -205,6 +212,8 @@ protected:
 private:
 	UFUNCTION()
 	void OnExitCommonDialog(EDialogResult res);
+
+	void ClosePanels();
 #pragma endregion
 
 };

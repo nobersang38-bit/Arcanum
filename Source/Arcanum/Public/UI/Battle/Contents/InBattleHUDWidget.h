@@ -1,10 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "NativeGameplayTags.h"
+#include "UI/DataType/EDialogResult.h"
 #include "InBattleHUDWidget.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnClickActionButton);
@@ -20,6 +19,11 @@ class UBattleCostBarWidget;
 class UBattleHealthBarWidget;
 class UBattleStageProgressWidget;
 class UBattleBattleEndWidget;
+class UWrapBox;
+class UBattleBuffSlotWidget;
+class UCommonBtnWidget;
+class UBattleMenuWidget;
+struct FBattlePotionRuntimeSlotData;
 
 UCLASS()
 class ARCANUM_API UInBattleHUDWidget : public UUserWidget
@@ -40,10 +44,10 @@ public:
 	UFUNCTION()
 	void SetPlayerCharacterHealthBarProgress(float CurrentHealth, float MaxHealth);
 	UFUNCTION()
-	void SetBossHealthBarProgress(float CurrentHealth, float MaxHealth);
-
+	void SetEnemyBaseHealthBarProgress(float CurrentHealth, float MaxHealth);
 	UFUNCTION()
-	void ShowBosHealthPBar(bool bIsShow);
+	void SetAllyBaseHealthBarProgress(float CurrentHealth, float MaxHealth);
+
 #pragma endregion
 
 
@@ -57,7 +61,6 @@ public:
 #pragma region 스테이지 종료
 	UBattleBattleEndWidget* GetBattleEndWidget() const { return BattleEndCanvas; }
 #pragma endregion
-
 
 
 #pragma region 전투 관련 버튼들
@@ -97,10 +100,10 @@ protected:
 
 public:
 	UFUNCTION()
-	const FGameplayTag& GetSelectUnitTag() const {return SelectedUnitTag;}
+	const FGameplayTag& GetSelectUnitTag() const { return SelectedUnitTag; }
 
 	UFUNCTION()
-	const FVector& GetSelectUnitDropLocation() const {return SelectedUnitDropLocation;}
+	const FVector& GetSelectUnitDropLocation() const { return SelectedUnitDropLocation; }
 #pragma endregion
 
 #pragma region 플레이어 유닛, 코스트 패널
@@ -108,6 +111,11 @@ public:
 	FORCEINLINE UBattleAllyUnitPanelWidget* GetPlayerInfoPanel() const { return PlayerInfoPanel; }
 #pragma endregion
 
+#pragma region Getter
+	UBattleActionButtonWidget* GetBasicAttack();
+	UBattleActionButtonWidget* GetBasicSkill();
+	UBattleActionButtonWidget* GetUltimateSkill();
+#pragma endregion
 
 
 #pragma region 바인딩
@@ -123,7 +131,10 @@ protected:
 	TObjectPtr<UBattleHealthBarWidget> PlayerCharacterHealthBar = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
-	TObjectPtr<UBattleHealthBarWidget> BossHealthBar = nullptr;
+	TObjectPtr<UBattleHealthBarWidget> AllyBaseHealthBar = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UBattleHealthBarWidget> EnemyBaseHealthBar = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UBattleStageProgressWidget> StageProgress = nullptr;
@@ -159,4 +170,71 @@ protected:
 private:
 	FGameplayTag SelectedUnitTag;
 	FVector SelectedUnitDropLocation;
+
+public:
+	/* 전설무기(궁극기) 버튼 아이콘만 변경 */
+	void SetLegendaryButtonIcon(UTexture2D* InIcon);
+
+
+#pragma region 스킬 쿨타임
+public:
+	/* 기본 공격 쿨타임 진행도 갱신 */
+	void SetBasicAttackCooldown(float InPercent);
+
+	/* 일반 스킬 쿨타임 진행도 갱신 */
+	void SetBasicSkillCooldown(float InPercent);
+
+	/* 궁극기 쿨타임 진행도 갱신 */
+	void SetUltimateCooldown(float InPercent);
+#pragma endregion
+
+#pragma region 물약
+public:
+	/* 물약 슬롯 갱신 */
+	void SetBattlePotionSlot(int32 InSlotIndex, const FBattlePotionRuntimeSlotData& InSlotData);
+#pragma endregion
+
+#pragma region 버프
+public:
+	/* 버프 추가 */
+	void AddBuffSlot(const FGameplayTag& InBuffTag, float InPercent, UTexture2D* InIcon);
+
+	/* 버프 갱신 */
+	void UpdateBuffSlot(const FGameplayTag& InBuffTag, float InPercent);
+
+	/* 버프 제거 */
+	void RemoveBuffSlot(const FGameplayTag& InBuffTag);
+
+	/* 버프 전체 제거 */
+	void ClearBuffSlots();
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UWrapBox> BuffWrapBox = nullptr;
+
+	/* 활성 버프들 */
+	UPROPERTY()
+	TMap<FGameplayTag, TObjectPtr<UBattleBuffSlotWidget>> ActiveBuffSlots;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Buff")
+	TSubclassOf<UBattleBuffSlotWidget> BuffSlotWidgetClass = nullptr;
+#pragma endregion
+
+#pragma region 인게임 메뉴
+private:
+	/* 인게임 메뉴 버튼 */
+	UFUNCTION()
+	void ClickMenuBtn();
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UCommonBtnWidget> MenuBtn = nullptr;
+
+private:
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UBattleMenuWidget> BattleMenuWidgetClass = nullptr;
+
+	UPROPERTY()
+	TObjectPtr<UBattleMenuWidget> BattleMenuWidget = nullptr;
+#pragma endregion
 };

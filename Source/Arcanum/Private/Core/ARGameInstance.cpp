@@ -2,6 +2,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Core/ArcanumSaveGame.h"
 #include "Core/SubSystem/GameDataSubsystem.h"
+#include "Core/ARPlayerAccountService.h"
 
 #include "DataInfo/BattleCharacter/BattleStats/DataTable/DTBattleStats.h"
 #include "DataInfo/PlayerData/PlayerBattleData/DataTable/DTPlayerBattleStats.h"
@@ -21,8 +22,8 @@ void UARGameInstance::Init()
 void UARGameInstance::InitializeGameData()
 {
 	/// Todo : 추후 SaveSlot으로 저장이름 변경해줘야함. 지금 변경하면 테스트 불가.
-	ArSaveGame = Cast<UArcanumSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("d"), 0));
-	//ArSaveGame = Cast<UArcanumSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, 0));
+	//ArSaveGame = Cast<UArcanumSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("d"), 0));
+	ArSaveGame = Cast<UArcanumSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, 0));
 	if (!ArSaveGame) {
 		ArSaveGame = Cast<UArcanumSaveGame>(UGameplayStatics::CreateSaveGameObject(UArcanumSaveGame::StaticClass()));
 		AddIDPW(TEXT("Admin"), TEXT("12345"));
@@ -269,6 +270,28 @@ bool UARGameInstance::GenerateResults(const FDTGachaBannerDataRow* BannerData, i
 
 	//return Results.Num() > 0;
 }
+bool UARGameInstance::GenerateResultsTest(const FDTGachaBannerDataRow* BannerData, int32 PullCount)
+{
+	GachaItemResult.Empty();
+	TArray<FGachaItemResult> Results;
+	Results.Reserve(PullCount);
+
+	FGachaBannerState& BannerState = PlayerData.GachaState.BannerStates.FindOrAdd(BannerData->BannerTag);
+	for (int32 i = 0; i < PullCount; ++i) {
+		FGameplayTag Grade = FGameplayTag::RequestGameplayTag(FName("Arcanum.Player.Grade.Epic.2"));
+		ApplyHardPity(BannerData, BannerState, Grade);
+
+		const FGachaGradePool* Pool = BannerData->GradePools.FindByPredicate([&](const FGachaGradePool& P) { return P.GradeTag == Grade; });
+		if (Pool) {
+			FGachaItemResult Result = ResolvePickup(BannerData, *Pool, BannerState, Grade);
+			Results.Add(Result);
+
+		}
+	}
+
+	GachaItemResult = Results;
+	return GachaItemResult.Num() > 0;
+}
 FGameplayTag UARGameInstance::DetermineGrade(const FDTGachaBannerDataRow* BannerData)
 {
 	float Rand = FMath::FRand();
@@ -316,8 +339,9 @@ FGachaItemResult UARGameInstance::ResolvePickup(const FDTGachaBannerDataRow* Ban
 {
 	FGachaItemResult Result;
 	Result.GradeTag = Pool.GradeTag;
+	Result.SourceTable = Pool.CommonPoolTable;
 	if (Pool.PickupCharacters.Num() == 0) {
-		Result.ItemTag = GetRandomFromGrade(Pool, GachaIndex);
+		Result.ItemTag = GetRandomFromGrade(Pool, GachaIndex, Result);
 		return Result;
 	}
 
@@ -332,13 +356,13 @@ FGachaItemResult UARGameInstance::ResolvePickup(const FDTGachaBannerDataRow* Ban
 		Result.ItemTag = Pool.PickupCharacters[Index];
 	}
 	else {
-		Result.ItemTag = GetRandomFromGrade(Pool, GachaIndex);
+		Result.ItemTag = GetRandomFromGrade(Pool, GachaIndex, Result);
 		if (BannerData->bGuaranteePickupOnFail) BannerState.bPickupGuaranteed = true;
 	}
 
 	return Result;
 }
-FGameplayTag UARGameInstance::GetRandomFromGrade(const FGachaGradePool& Pool, FGameplayTag GachaIndex)
+FGameplayTag UARGameInstance::GetRandomFromGrade(const FGachaGradePool& Pool, FGameplayTag GachaIndex, FGachaItemResult& GachaRes)
 {
 	UDataTable* PoolTable = Pool.CommonPoolTable.LoadSynchronous();
 	if (!PoolTable) return FGameplayTag::EmptyTag;
@@ -367,7 +391,19 @@ FGameplayTag UARGameInstance::GetRandomFromGrade(const FGachaGradePool& Pool, FG
 			if (FDTCharacterBaseInfoRow* CharRow = DataSubsystem->GetRow<FDTCharacterBaseInfoRow>(Arcanum::DataTable::CharacterInfo, SelectedRow)) {
 				FGameplayTag CharacterTag = CharRow->BattleCharacterInfo.CharacterTag;
 				ValidList.Add(CharacterTag);
-				AddCharacterToBattleCharacter(CharRow);
+				/* 0401 변경 */
+				if (AddCharacterToBattleCharacter(CharRow)) {
+					GachaRes.Quantity = 1;
+					GachaRes.bIsNew = true;
+				}
+				else {
+					GachaRes.Quantity = CharRow->BattleCharacterInfo.DuplicateShardReward;
+					GachaRes.bIsNew = false;
+				}
+
+				GachaRes.CharacterColorTexture = CharRow->BattleCharacterInfo.CharacterColor;
+				GachaRes.CharacterSilhouetteTexture = CharRow->BattleCharacterInfo.CharacterSilhouette;
+				GachaRes.CharacterBgTexture = CharRow->BattleCharacterInfo.CharacterBackground;
 			}
 		}
 	}
@@ -392,9 +428,10 @@ FGameplayTag UARGameInstance::GetRandomFromGrade(const FGachaGradePool& Pool, FG
 
 	return ValidList.Num() > 0 ? ValidList[FMath::RandRange(0, ValidList.Num() - 1)] : FGameplayTag::EmptyTag;
 }
-void UARGameInstance::AddCharacterToBattleCharacter(FDTCharacterBaseInfoRow* CharRow)
+/* 0401 반환값 변경 */
+bool UARGameInstance::AddCharacterToBattleCharacter(FDTCharacterBaseInfoRow* CharRow)
 {
-	if (!CharRow) return;
+	if (!CharRow) return false;
 
 	const FGameplayTag CharacterTag = CharRow->BattleCharacterInfo.CharacterTag;
 	for (FBattleCharacterData& CharData : PlayerData.OwnedCharacters) {
@@ -402,15 +439,21 @@ void UARGameInstance::AddCharacterToBattleCharacter(FDTCharacterBaseInfoRow* Cha
 			if (CharData.CharacterInfo.CurrStarLevel == 0) {
 				CharData.CharacterInfo.CurrStarLevel = 1;
 				CharData.CharacterInfo.CurrGrade = CharRow->BattleCharacterInfo.DefaultGrade;
+				/* 0401 반환값 변경 */
+				return true;
 			}
-			else CharData.CharacterInfo.CurrShardCount += CharData.CharacterInfo.BattleCharacterInitData.DuplicateShardReward;
-
-			return;
+			else {
+				CharData.CharacterInfo.CurrShardCount += CharData.CharacterInfo.BattleCharacterInitData.DuplicateShardReward;
+				/* 0401 반환값 변경 */
+				return false;
+			}
 		}
 	}
+	return false;
 }
 void UARGameInstance::AddRandomEquipmentToInventory(FDTEquipmentInfoRow* InRow)
 {
+	// TODO: 0401 가챠 장비 능력치 뽑기 방어구 안붙어서 나옴, 무기는 2개 붙어서 나옴 수정
 	if (!InRow || InRow->BaseInfoSteps.Num() == 0) return;
 
 	FEquipmentInfo NewItem;
@@ -419,7 +462,11 @@ void UARGameInstance::AddRandomEquipmentToInventory(FDTEquipmentInfoRow* InRow)
 	NewItem.CurrUpgradeLevel = 0;
 
 	NewItem.Equipment = InRow->BaseInfoSteps[0];
-	for (const FStatRangeDefinition& Range : NewItem.Equipment.RandomStatRanges) {
+	NewItem.Equipment.OwnerStats.Empty();
+	NewItem.Equipment.OnHitTargetStats.Empty();
+
+	for (const FStatRangeDefinition& Range : NewItem.Equipment.RandomStatRanges)
+	{
 		FDerivedStatModifier FinalStat;
 		FinalStat.StatTag = Range.StatTag;
 
@@ -430,7 +477,18 @@ void UARGameInstance::AddRandomEquipmentToInventory(FDTEquipmentInfoRow* InRow)
 		float MinM = Range.MinValue.Mul;
 		float MaxM = Range.MaxValue.Mul;
 		FinalStat.Value.Mul = FMath::RandRange(FMath::Min(MinM, MaxM), FMath::Max(MinM, MaxM));
-		NewItem.Equipment.OnHitTargetStats.Add(FinalStat);
+
+		FinalStat.SourceTag = InRow->ItemTag;
+		FinalStat.bIsPermanent = true;
+
+		if (InRow->SlotTag.MatchesTag(Arcanum::Items::ItemSlot::Armor::Root))
+		{
+			NewItem.Equipment.OwnerStats.Add(FinalStat);
+		}
+		else
+		{
+			NewItem.Equipment.OnHitTargetStats.Add(FinalStat);
+		}
 	}
 
 	if (PlayerData.Inventory.Num() < PlayerData.InventoryCapacity) PlayerData.Inventory.Add(NewItem);
@@ -443,7 +501,6 @@ void UARGameInstance::AddRandomEquipmentToInventory(FDTEquipmentInfoRow* InRow)
 			PlayerData.Mailbox.Add(MailItem);
 		}
 	}
-
 
 	//if (NewItem.Equipment.OnHitTargetStats.Num() > 0)
 	//{
@@ -576,19 +633,19 @@ void UARGameInstance::InitializeCharacter(FGameplayTag CharacterTag)
 	UserCharacterRegistry.Add(CharacterTag, NewData);
 }
 
-bool UARGameInstance::AddTestGold()
+bool UARGameInstance::AddTestGold(int32 InAmount)
 {
-	return FPlayerAccountService::AddCurrency(this, Arcanum::PlayerData::Currencies::NonRegen::Gold::Value, 10000);
+	return FPlayerAccountService::AddCurrency(this, Arcanum::PlayerData::Currencies::NonRegen::Gold::Value, InAmount);
 }
 
-bool UARGameInstance::AddTestSoul()
+bool UARGameInstance::AddTestSoul(int32 InAmount)
 {
-	return FPlayerAccountService::AddCurrency(this, Arcanum::PlayerData::Currencies::NonRegen::Soul::Value, 10000);
+	return FPlayerAccountService::AddCurrency(this, Arcanum::PlayerData::Currencies::NonRegen::Soul::Value, InAmount);
 }
 
-bool UARGameInstance::AddTestShard()
+bool UARGameInstance::AddTestShard(int32 InAmount)
 {
-	return FPlayerAccountService::AddCurrency(this, Arcanum::PlayerData::Currencies::NonRegen::Shard::Value, 10000);
+	return FPlayerAccountService::AddCurrency(this, Arcanum::PlayerData::Currencies::NonRegen::Shard::Value, InAmount);
 }
 
 bool UARGameInstance::AddTestEquipmentSet()
@@ -613,34 +670,16 @@ bool UARGameInstance::AddTestEquipmentSet()
 	for (const FGameplayTag& itemTag : itemTags)
 	{
 		const FDTItemCatalogRow* catalogRow = FPlayerAccountService::FindItemCatalogRowByTag(this, itemTag);
-		if (!catalogRow)
-		{
-			continue;
-		}
+		if (!catalogRow) continue;
 
-		if (catalogRow->DetailRowName.IsNone())
-		{
-			continue;
-		}
+		if (catalogRow->DetailRowName.IsNone()) continue;
 
 		FDTEquipmentInfoRow* equipRow = dataSubsystem->GetRow<FDTEquipmentInfoRow>(
 			Arcanum::DataTable::Equipment,
 			catalogRow->DetailRowName);
-
-		if (!equipRow)
-		{
-			continue;
-		}
-
-		if (!equipRow->ItemTag.IsValid())
-		{
-			continue;
-		}
-
-		if (equipRow->BaseInfoSteps.IsEmpty())
-		{
-			continue;
-		}
+		if (!equipRow) continue;
+		if (!equipRow->ItemTag.IsValid()) continue;
+		if (equipRow->BaseInfoSteps.IsEmpty()) continue;
 
 		FEquipmentInfo newItem;
 		newItem.ItemTag = equipRow->ItemTag;

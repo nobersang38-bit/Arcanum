@@ -275,17 +275,11 @@ bool FPlayerAccountService::SetBattlePotionSlot(const UObject* WorldContextObjec
 	}
 	if (!playerData.BattlePotionSlots.IsValidIndex(InSlotIndex)) return false;
 
-	const int32 ownedCount = playerData.StackCounts.FindRef(InPotionTag);
-	if (ownedCount <= 0) return false;
-
-	const int32 setCount = FMath::Min(ownedCount, InCount);
-	if (setCount <= 0) return false;
-
-	for (int32 slotIndex = 0; slotIndex < playerData.BattlePotionSlots.Num(); slotIndex++)
+	for (int32 i = 0; i < playerData.BattlePotionSlots.Num(); i++)
 	{
-		if (slotIndex != InSlotIndex)
+		if (i != InSlotIndex)
 		{
-			const FBattlePotionSlotData& slotData = playerData.BattlePotionSlots[slotIndex];
+			const FBattlePotionSlotData& slotData = playerData.BattlePotionSlots[i];
 
 			if (slotData.PotionTag.MatchesTagExact(InPotionTag))
 			{
@@ -295,8 +289,58 @@ bool FPlayerAccountService::SetBattlePotionSlot(const UObject* WorldContextObjec
 	}
 
 	FBattlePotionSlotData& targetSlot = playerData.BattlePotionSlots[InSlotIndex];
-	targetSlot.PotionTag = InPotionTag;
-	targetSlot.Count = setCount;
+	const int32 MaxBattlePotionCount = 5;
+
+	if (targetSlot.PotionTag.MatchesTagExact(InPotionTag))
+	{
+		const int32 ownedCount = playerData.StackCounts.FindRef(InPotionTag);
+		if (ownedCount <= 0) return false;
+
+		const int32 remainCapacity = MaxBattlePotionCount - targetSlot.Count;
+		if (remainCapacity <= 0) return false;
+
+		const int32 addCount = FMath::Min(ownedCount, FMath::Min(InCount, remainCapacity));
+		if (addCount <= 0) return false;
+
+		int32 remainingInStack = ownedCount - addCount;
+		if (remainingInStack <= 0)
+		{
+			playerData.StackCounts.Remove(InPotionTag);
+		}
+		else
+		{
+			playerData.StackCounts.Add(InPotionTag, remainingInStack);
+		}
+
+		targetSlot.Count += addCount;
+	}
+	else
+	{
+		if (targetSlot.PotionTag.IsValid() && targetSlot.Count > 0)
+		{
+			int32& returnedCount = playerData.StackCounts.FindOrAdd(targetSlot.PotionTag);
+			returnedCount += targetSlot.Count;
+		}
+
+		const int32 ownedCount = playerData.StackCounts.FindRef(InPotionTag);
+		if (ownedCount <= 0) return false;
+
+		const int32 setCount = FMath::Min(ownedCount, FMath::Min(InCount, MaxBattlePotionCount));
+		if (setCount <= 0) return false;
+
+		int32 remainingInStack = ownedCount - setCount;
+		if (remainingInStack <= 0)
+		{
+			playerData.StackCounts.Remove(InPotionTag);
+		}
+		else
+		{
+			playerData.StackCounts.Add(InPotionTag, remainingInStack);
+		}
+
+		targetSlot.PotionTag = InPotionTag;
+		targetSlot.Count = setCount;
+	}
 
 	return SavePlayerData(GI);
 }
@@ -310,8 +354,40 @@ bool FPlayerAccountService::ClearBattlePotionSlot(const UObject* WorldContextObj
 	FPlayerData& playerData = GI->GetPlayerData();
 	if (!playerData.BattlePotionSlots.IsValidIndex(InSlotIndex)) return false;
 
-	playerData.BattlePotionSlots[InSlotIndex].PotionTag = FGameplayTag();
-	playerData.BattlePotionSlots[InSlotIndex].Count = 0;
+	FBattlePotionSlotData& targetSlot = playerData.BattlePotionSlots[InSlotIndex];
+	if (targetSlot.PotionTag.IsValid() && targetSlot.Count > 0)
+	{
+		int32& returnedCount = playerData.StackCounts.FindOrAdd(targetSlot.PotionTag);
+		returnedCount += targetSlot.Count;
+	}
+
+	targetSlot.PotionTag = FGameplayTag();
+	targetSlot.Count = 0;
+
+	return SavePlayerData(GI);
+}
+
+bool FPlayerAccountService::FinalizeBattlePotionSlots(const UObject* WorldContextObject, const TArray<FBattlePotionSlotData>& InBattlePotionSlots)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return false;
+
+	FPlayerData& playerData = GI->GetPlayerData();
+
+	for (const FBattlePotionSlotData& slotData : InBattlePotionSlots)
+	{
+		if (slotData.PotionTag.IsValid() && slotData.Count > 0)
+		{
+			int32& returnedCount = playerData.StackCounts.FindOrAdd(slotData.PotionTag);
+			returnedCount += slotData.Count;
+		}
+	}
+
+	for (FBattlePotionSlotData& slotData : playerData.BattlePotionSlots)
+	{
+		slotData.PotionTag = FGameplayTag();
+		slotData.Count = 0;
+	}
 
 	return SavePlayerData(GI);
 }
@@ -377,43 +453,17 @@ bool FPlayerAccountService::EquipItemToCharacter(const UObject* WorldContextObje
 
 	FBattleCharacterData* foundCharacter = FindOwnedCharacterByName(playerData, InCharacterName);
 	if (!foundCharacter) return false;
-	if (!foundCharacter->bSelection) return false;
+	//if (!foundCharacter->bSelection) return false;
 
 	TMap<FGameplayTag, FGuid>* slotMap = GetEquipmentSlotMapBySlotTag(*foundCharacter, InEquipSlotTag);
 	if (!slotMap) return false;
 
 	// 다른 캐릭터 포함 이미 장착 중인 장비면 실패
-	for (const FBattleCharacterData& characterData : playerData.OwnedCharacters)
+	if (IsItemEquipped(WorldContextObject, InItemGuid) &&
+		!IsItemEquippedCharacter(WorldContextObject, InCharacterName, InItemGuid))
 	{
-		const FName otherCharacterName = GetLeafNameFromTag(characterData.CharacterInfo.BattleCharacterInitData.CharacterTag);
-		if (otherCharacterName == InCharacterName)	continue;
-
-		for (const TPair<FGameplayTag, FGuid>& pair : characterData.WeaponSlots)
-		{
-			if (pair.Value == InItemGuid)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("이미 장착중입니다."));
-				return false;
-			}
-		}
-
-		for (const TPair<FGameplayTag, FGuid>& pair : characterData.LegendaryWeaponSlots)
-		{
-			if (pair.Value == InItemGuid)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("이미 장착중입니다."));
-				return false;
-			}
-		}
-
-		for (const TPair<FGameplayTag, FGuid>& pair : characterData.ArmorSlots)
-		{
-			if (pair.Value == InItemGuid)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("이미 장착중입니다."));
-				return false;
-			}
-		}
+		UE_LOG(LogTemp, Warning, TEXT("이미 장착중입니다."));
+		return false;
 	}
 
 	// 장착 중복 처리
@@ -458,6 +508,32 @@ bool FPlayerAccountService::EquipItemToCharacter(const UObject* WorldContextObje
 	}
 
 	slotMap->FindOrAdd(InEquipSlotTag) = InItemGuid;
+
+	int32 talashaCount = 0;
+
+	for (const TPair<FGameplayTag, FGuid>& pair : foundCharacter->ArmorSlots)
+	{
+		const FGuid& itemGuid = pair.Value;
+		if (itemGuid.IsValid())
+		{
+			for (const FEquipmentInfo& equip : playerData.Inventory)
+			{
+				if (equip.ItemGuid == itemGuid)
+				{
+					if (equip.ItemTag.MatchesTag(Arcanum::Items::Rarity::SetItem::Talasha::Armor::Root))
+					{
+						talashaCount++;
+					}
+					break;
+				}
+			}
+		}
+	}
+	if (talashaCount >= 4)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Set"));
+	}
+
 	return SavePlayerData(GI);
 }
 
@@ -483,6 +559,87 @@ bool FPlayerAccountService::UnequipItemFromCharacter(const UObject* WorldContext
 	return false;
 }
 
+bool FPlayerAccountService::IsItemEquipped(const UObject* WorldContextObject, const FGuid& InItemGuid)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return false;
+
+	if (!InItemGuid.IsValid()) return false;
+
+	const FPlayerData& playerData = GI->GetPlayerData();
+	for (const FBattleCharacterData& characterData : playerData.OwnedCharacters)
+	{
+		for (const TPair<FGameplayTag, FGuid>& pair : characterData.WeaponSlots)
+		{
+			if (pair.Value == InItemGuid)
+			{
+				return true;
+			}
+		}
+
+		for (const TPair<FGameplayTag, FGuid>& pair : characterData.LegendaryWeaponSlots)
+		{
+			if (pair.Value == InItemGuid)
+			{
+				return true;
+			}
+		}
+
+		for (const TPair<FGameplayTag, FGuid>& pair : characterData.ArmorSlots)
+		{
+			if (pair.Value == InItemGuid)
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+bool FPlayerAccountService::IsItemEquippedCharacter(const UObject* WorldContextObject, const FName& InCharacterName, const FGuid& InItemGuid)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return false;
+
+	if (InCharacterName.IsNone() || !InItemGuid.IsValid()) return false;
+
+	const FPlayerData& playerData = GI->GetPlayerData();
+	for (const FBattleCharacterData& characterData : playerData.OwnedCharacters)
+	{
+		const FName characterName = GetLeafNameFromTag(characterData.CharacterInfo.BattleCharacterInitData.CharacterTag);
+		if (characterName != InCharacterName) continue;
+	
+		for (const TPair<FGameplayTag, FGuid>& pair : characterData.WeaponSlots)
+		{
+			if (pair.Value == InItemGuid)
+			{
+				return true;
+			}
+		}
+
+		for (const TPair<FGameplayTag, FGuid>& pair : characterData.LegendaryWeaponSlots)
+		{
+			if (pair.Value == InItemGuid)
+			{
+				return true;
+			}
+		}
+
+		for (const TPair<FGameplayTag, FGuid>& pair : characterData.ArmorSlots)
+		{
+			if (pair.Value == InItemGuid)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	return false;
+}
+
 FBattleCharacterData* FPlayerAccountService::FindOwnedCharacterByName(FPlayerData& InPlayerData, const FName& InCharacterName)
 {
 	for (FBattleCharacterData& characterData : InPlayerData.OwnedCharacters)
@@ -493,6 +650,7 @@ FBattleCharacterData* FPlayerAccountService::FindOwnedCharacterByName(FPlayerDat
 			return &characterData;
 		}
 	}
+
 	return nullptr;
 }
 
@@ -515,6 +673,52 @@ TMap<FGameplayTag, FGuid>* FPlayerAccountService::GetEquipmentSlotMapBySlotTag(F
 	}
 
 	return nullptr;
+}
+
+bool FPlayerAccountService::UpdateCharacter(const UObject* WorldContextObject, const FGameplayTag InCharacterTag)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return false;
+
+	UGameDataSubsystem* dataSubsystem = GI->GetSubsystem<UGameDataSubsystem>();
+	if (!dataSubsystem) return false;
+
+	FPlayerData& playerData = GI->GetPlayerData();
+	for (int32 i = 0; i < playerData.OwnedCharacters.Num(); i++)
+	{
+		FBattleCharacterData& TargetData = playerData.OwnedCharacters[i];
+
+		FGameplayTag CharacterTag = TargetData.CharacterInfo.BattleCharacterInitData.CharacterTag;
+
+		if (CharacterTag == InCharacterTag)
+		{
+			//CurrStarLevel + 1 저장
+			TargetData.CharacterInfo.CurrStarLevel += 1;
+			return true;
+		}
+	}
+	return false;
+}
+
+bool FPlayerAccountService::SetSelectedCharacter(const UObject* WorldContextObject, const FName& InCharacterName)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return false;
+	if (InCharacterName.IsNone()) return false;
+
+	FPlayerData& playerData = GI->GetPlayerData();
+
+	FBattleCharacterData* foundCharacter = FindOwnedCharacterByName(playerData, InCharacterName);
+	if (!foundCharacter) return false;
+
+	for (FBattleCharacterData& characterData : playerData.OwnedCharacters)
+	{
+		characterData.bSelection = false;
+	}
+
+	foundCharacter->bSelection = true;
+
+	return SavePlayerData(GI);
 }
 
 // ========================================================
@@ -1136,14 +1340,9 @@ bool FPlayerAccountService::AddGuidFromEquipment(const UObject* WorldContextObje
 	newEquip.CurrUpgradeLevel = 0;
 	newEquip.Equipment = equipRow->BaseInfoSteps[0];
 
-	if (newEquip.ItemTag.MatchesTagExact(Arcanum::Items::Rarity::Common::Weapon::GreatSword)
-		|| newEquip.ItemTag.MatchesTagExact(Arcanum::Items::Rarity::Common::Weapon::Staff)
-		|| newEquip.ItemTag.MatchesTagExact(Arcanum::Items::Rarity::Common::Weapon::Bow)
-		|| newEquip.ItemTag.MatchesTagExact(Arcanum::Items::Rarity::Common::Weapon::Shield)
-		|| newEquip.ItemTag.MatchesTagExact(Arcanum::Items::Rarity::Legendary::Weapon::Scepter)
-		|| newEquip.ItemTag.MatchesTagExact(Arcanum::Items::Rarity::Legendary::Weapon::Scythe))
-		// 	if (newEquip.ItemTag.MatchesTag(Arcanum::Items::Rarity::Common::Weapon::Root)
-		// || newEquip.ItemTag.MatchesTag(Arcanum::Items::Rarity::Legendary::Weapon::Root))
+
+	if (newEquip.ItemTag.MatchesTag(Arcanum::Items::Rarity::Common::Weapon::Root) ||
+		newEquip.ItemTag.MatchesTag(Arcanum::Items::Rarity::Legendary::Weapon::Root))
 	{
 		// 무기: RandomStatRanges -> OnHitTargetStats
 		RollEquipmentStats(newEquip.Equipment, newEquip.Equipment.OnHitTargetStats);
@@ -1342,6 +1541,21 @@ FDateTime FPlayerAccountService::GetCurrentTimeKST()
 // ========================================================
 // Gacha Widget 관련
 // ========================================================
+FGachaBannerState FPlayerAccountService::InitGachaBannerData(const UObject* WorldContextObject, FGameplayTag TargetTag)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return FGachaBannerState();
+
+	FGachaData& GachaState = GI->GetPlayerData().GachaState;
+
+	if (!GachaState.BannerStates.Contains(TargetTag)) {
+		GachaState.BannerStates.Add(TargetTag, FGachaBannerState());
+		SavePlayerData(GI);
+	}
+
+	return GachaState.BannerStates[TargetTag];
+}
+
 const FDTGachaBannerDataRow* FPlayerAccountService::GetGachaBannerData(const UObject* WorldContextObject, FGameplayTag TargetTag)
 {
 	if (!WorldContextObject) return nullptr;
@@ -1417,6 +1631,37 @@ bool FPlayerAccountService::ExecuteGacha(const UObject* WorldContextObject, cons
 	if (!BannerData) return res;
 
 	if (GI->GenerateResults(BannerData, PullCount)) {
+		UpdateCurrency(WorldContextObject, PlayerData, Cost.ConsumptionCurrencyTag, -SpendAmount);
+		
+		FGachaData& GachaState = GI->GetPlayerData().GachaState;
+		FGachaBannerState& TargetState = GachaState.BannerStates.FindOrAdd(BannerTag);
+		//TargetState.PityCount += PullCount;
+		SavePlayerData(GI);
+		
+		res = true;
+	}
+
+	return res;
+}
+
+bool FPlayerAccountService::ExecuteGachaTest(const UObject* WorldContextObject, const FPlayerData& PlayerData, FGameplayTag BannerTag, FCurrencyCost Cost, int32 PullCount)
+{
+	bool res = false;
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	if (!World) return res;
+
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return res;
+
+	int64 SpendAmount = (PullCount == 1) ? (int64)Cost.SinglePullCost : (int64)Cost.MultiPullCost;
+	FPlayerCurrency PlayerCurrency = GetPlayerCurrency(WorldContextObject);
+	FCurrencyData* TargetData = PlayerCurrency.CurrencyDatas.Find(Cost.ConsumptionCurrencyTag);
+
+	if (!TargetData || TargetData->CurrAmount < SpendAmount) return res;
+	const FDTGachaBannerDataRow* BannerData = GetGachaBannerData(WorldContextObject, BannerTag);
+	if (!BannerData) return res;
+
+	if (GI->GenerateResultsTest(BannerData, PullCount)) {
 		UpdateCurrency(WorldContextObject, PlayerData, Cost.ConsumptionCurrencyTag, -SpendAmount);
 		res = true;
 	}

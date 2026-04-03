@@ -48,6 +48,32 @@ float FTargetPriorityWeightData::CalculateScore(AActor* MyCharacter, AActor* Tar
     return CurrentTargetScore;
 }
 
+AActor* FTargetPriorityWeightData::CalculateWinActor(AActor* InMyCharacter, TArray<AActor*> InActors) const
+{
+	if (!InMyCharacter) return nullptr;
+	if (InActors.IsEmpty()) return nullptr;
+
+	AActor* ResultTarget = nullptr;
+	float HighScore = 0.0f;
+
+	for (const auto& Actor : InActors)
+	{
+		if (Actor->GetClass()->ImplementsInterface(URuntimeUnitDataInterface::StaticClass()))
+		{
+			auto Interface = Cast<IRuntimeUnitDataInterface>(Actor);
+			bool bIsDead = Interface->GetIsDead();
+			if (bIsDead) continue;
+		}
+		float CurrentScore = CalculateScore(InMyCharacter, Actor);
+		if (HighScore <= CurrentScore)
+		{
+			ResultTarget = Actor;
+			HighScore = CurrentScore;
+		}
+	}
+	return ResultTarget;
+}
+
 // 랜덤하게 지정할 점수
 float FTargetPriorityWeightData::CalculateScoreRandomTargetWeight() const
 {

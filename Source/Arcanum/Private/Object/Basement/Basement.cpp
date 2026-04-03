@@ -10,11 +10,14 @@
 #include "Components/WidgetComponent.h"
 #include "UI/InGame/UnitHealthWidget.h"
 #include "Component/BasementCombatComponent.h"
+#include "Component/Stats/CharacterBattleStatsComponent.h"
+#include "Component/StatusActionComponent.h"
+#include "Core/SubSystem/BattlefieldManagerSubsystem.h"
 
 // Sets default values
 ABasement::ABasement()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
 	//CurrentBasementHealth = MaxBasementHealth;
@@ -29,6 +32,15 @@ ABasement::ABasement()
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CrystalMesh"));
 	MeshComponent->SetupAttachment(RootComponent);
 	MeshComponent->SetCollisionProfileName(TEXT("BlockAll"));
+
+	CharacterBattleStatsComponent = CreateDefaultSubobject<UCharacterBattleStatsComponent>(TEXT("CharacterBattleStatsComponent"));
+
+	StatusActionComponent = CreateDefaultSubobject<UStatusActionComponent>(TEXT("StatusActionComponent"));
+}
+
+UCharacterBattleStatsComponent* ABasement::GetStatComponent()
+{
+	return CharacterBattleStatsComponent;
 }
 
 // Called when the game starts or when spawned
@@ -36,6 +48,8 @@ void ABasement::BeginPlay()
 {
 	Super::BeginPlay();
 
+	OnTakeAnyDamage.RemoveDynamic(this, &ABasement::RecievedDamage);
+	OnTakeAnyDamage.AddDynamic(this, &ABasement::RecievedDamage);
 	//if (CommonEnemyClass)
 	//{
 	//	GetWorld()->GetTimerManager().SetTimer(
@@ -46,24 +60,96 @@ void ABasement::BeginPlay()
 	//		true
 	//	);
 	//}
+	StatusActionComponent->SetupAction();
 	if (UUserWidget* TempHealthWidgetUser = Cast<UUserWidget>(HealthWidgetComponent->GetWidget()))
 	{
 		if (UUnitHealthWidget* TempHealthWidget = Cast<UUnitHealthWidget>(TempHealthWidgetUser))
 		{
-			BasementCombatComponent->OnBasementChangeHealth.RemoveDynamic(TempHealthWidget, &UUnitHealthWidget::SetPercentFloat);
-			BasementCombatComponent->OnBasementChangeHealth.AddDynamic(TempHealthWidget, &UUnitHealthWidget::SetPercentFloat);
+			//CharacterBattleStatsComponent->OnCharacterRegenStatChanged.Remove(TempHealthWidget, &UUnitHealthWidget::SetPercent);
+			CharacterBattleStatsComponent->OnCharacterRegenStatChanged.AddUObject(TempHealthWidget, &UUnitHealthWidget::SetPercent);
 
-			FEnemyBasement Stat = BasementCombatComponent->GetBasementStat();
-			float CurrentHealth = Stat.CommandCenterHP.GetTotalValue();
-			float MaxHealth = CurrentHealth;
-			TempHealthWidget->SetPercentFloat(CurrentHealth, MaxHealth);
+			const FRegenStat* Stat = CharacterBattleStatsComponent->FindRegenStat(HealthTag);
+			TempHealthWidget->SetPercentFloat(Stat->Current, Stat->BaseMax);
+
+			FTimerDelegate Lambda;
+			Lambda.BindWeakLambda(this, [this, Stat]()
+				{
+					UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+					if (BattleSubsystem)
+					{
+						if (GetTeamTag() == BattleSubsystem->AllyTeamTag)
+						{
+							BattleSubsystem->OnChangeAllyBaseHealth.Broadcast(Stat->Current, Stat->BaseMax);
+						}
+						else if (GetTeamTag() == BattleSubsystem->EnemyTeamTag)
+						{
+							BattleSubsystem->OnChangeEnemyBaseHealth.Broadcast(Stat->Current, Stat->BaseMax);
+						}
+					}
+				});
+
+			GetWorld()->GetTimerManager().SetTimerForNextTick(Lambda);
+			
 		}
 	}
 }
 
-FGameplayTag ABasement::GetTeamTag()
+FGameplayTag ABasement::GetTeamTag() const
 {
-
 	return TeamTag;
 }
 
+void ABasement::AddLevelModifierEntry(const FLevelModifierEntry& LevelModifierEntry)
+{
+
+}
+
+void ABasement::AddDerivedStatModifier(const FDerivedStatModifier& DerivedStatModifier)
+{
+	CharacterBattleStatsComponent->ApplyDurationModifier(DerivedStatModifier);
+}
+
+void ABasement::ChangeStat(const FGameplayTag& InTag, float InValue)
+{
+	CharacterBattleStatsComponent->ChangeStatValue(InTag, InValue, nullptr);
+}
+
+void ABasement::RecievedDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
+{
+	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (!BattleSubsystem) return;
+	CharacterBattleStatsComponent->ChangeStatValue(Arcanum::BattleStat::Character::Regen::Health::Root, -FMath::Abs(Damage), DamageCauser);
+
+	const FRegenStat* HealthStat = CharacterBattleStatsComponent->FindRegenStat(Arcanum::BattleStat::Character::Regen::Health::Root);
+	if (!HealthStat) return;
+
+	if (HealthStat->Current <= 0.0f)
+	{
+		
+		if (BattleSubsystem)
+		{
+			/*if (GetOwner()->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()))
+			{
+				auto Interface = Cast<ITeamInterface>(GetOwner());*/
+				FGameplayTag OwnerTag = GetTeamTag();
+
+				if (OwnerTag.IsValid())
+				{
+					FMatchData MatchData;
+					MatchData.CurrentMatchState = EMatchState::Ended;
+
+					if (OwnerTag == BattleSubsystem->AllyTeamTag)
+					{
+						MatchData.bIsVictory = false;
+					}
+					else if (OwnerTag == BattleSubsystem->EnemyTeamTag)
+					{
+						MatchData.bIsVictory = true;
+					}
+					MatchData.EndTimeSecond = BattleSubsystem->GetCurrentMatchData().EndTimeSecond;
+					BattleSubsystem->OnMatchEnded.Broadcast(MatchData);
+				}
+			//}
+		}
+	}
+}

@@ -32,7 +32,6 @@ private:
 protected:
 	virtual void NativeConstruct() override;
 
-
 #pragma region 상점 UI 갱신
 public:
 	/* 상점 UI 갱신 */

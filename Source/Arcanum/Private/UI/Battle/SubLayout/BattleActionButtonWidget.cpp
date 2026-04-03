@@ -25,7 +25,43 @@ void UBattleActionButtonWidget::NativeConstruct()
 		ActionText->SetText(IconText);
 		//UE_LOG(LogTemp, Warning, TEXT("작동!!!!!!!!! %s"), *IconText.ToString());
 	}
+	if (SkillCooldownImage)
+	{
+		SkillCooldownMID = SkillCooldownImage->GetDynamicMaterial();
+		SkillCooldownImage->SetVisibility(ESlateVisibility::Hidden);
+	}
+
 	SetProgressesVisible(false);
+
+	if (!bUseDisableImage)
+	{
+		DisabledImage->SetVisibility(ESlateVisibility::Hidden);
+	}
+	if (!bUseCoolTimeProgressBar)
+	{
+		CoolTimeProgress->SetVisibility(ESlateVisibility::Hidden);
+	}
+	if (StackCountText)
+	{
+		StackCountText->SetVisibility(ESlateVisibility::Hidden);
+	}
+
+	if (bUseDefaultIcon)
+	{
+		FButtonStyle ButtonStyle = ActionButton->GetStyle();
+		auto UpdateBrush = [&](FSlateBrush& Brush) 
+			{
+				Brush.SetResourceObject(EditLockIcon);
+				Brush.DrawAs = ESlateBrushDrawType::Image; // 무기 장착 안 했을때 아이콘 투명하게
+			};
+
+		UpdateBrush(ButtonStyle.Normal);
+		UpdateBrush(ButtonStyle.Hovered);
+		UpdateBrush(ButtonStyle.Pressed);
+		UpdateBrush(ButtonStyle.Disabled);
+
+		ActionButton->SetStyle(ButtonStyle);
+	}
 }
 
 #if WITH_EDITOR
@@ -34,6 +70,7 @@ void UBattleActionButtonWidget::SynchronizeProperties()
 	Super::SynchronizeProperties();
 	{
 		ActionText->SetText(IconText);
+		CostText->SetText(EditCostText);
 	}
 }
 
@@ -64,41 +101,57 @@ void UBattleActionButtonWidget::PostEditChangeProperty(FPropertyChangedEvent& Pr
 
 void UBattleActionButtonWidget::SetActivateCost(bool InIsDisable)
 {
-	if (InIsDisable)
+	if (bUseDisableImage)
 	{
-		DisabledImage->SetVisibility(ESlateVisibility::HitTestInvisible);
+		if (InIsDisable)
+		{
+			DisabledImage->SetVisibility(ESlateVisibility::HitTestInvisible);
+		}
+		else
+		{
+			DisabledImage->SetVisibility(ESlateVisibility::Hidden);
+		}
 	}
-	else
-	{
-		DisabledImage->SetVisibility(ESlateVisibility::Hidden);
-	}
+
 }
 
 void UBattleActionButtonWidget::SetCoolTimeProgress(float CurrentProgress, float MaxProgress)
 {
-	SetProgressesVisible(true);
-	if (CoolTimeProgress)
+	if (bUseCoolTimeProgressBar)
 	{
-		CoolTimeProgress->SetPercent(CurrentProgress / MaxProgress);
-	}
-	if(ActionText)
-	{
-		FString Result = FString::Printf(TEXT("%d"), FMath::RoundToInt(CurrentProgress));
-		ActionText->SetText(FText::FromString(Result));
-	}
+		SetProgressesVisible(true);
+		if (CoolTimeProgress)
+		{
+			CoolTimeProgress->SetPercent(CurrentProgress / MaxProgress);
+		}
+		if (ActionText)
+		{
+			FString Result = FString::Printf(TEXT("%d"), FMath::RoundToInt(CurrentProgress));
+			ActionText->SetText(FText::FromString(Result));
+		}
 
-	if (CurrentProgress <= 0.0f)
-	{
-		SetProgressesVisible(false);
-		ActionText->SetText(IconText);
+		if (CurrentProgress <= 0.0f)
+		{
+			SetProgressesVisible(false);
+			ActionText->SetText(IconText);
+		}
 	}
 }
 
 void UBattleActionButtonWidget::SetImage(UTexture2D* InImage)
 {
 	FButtonStyle ButtonStyle = ActionButton->GetStyle();
-
-	FSlateBrush NormaSlateBrush = ButtonStyle.Normal;
+	auto UpdateBrush = [&](FSlateBrush& Brush) {
+		if (InImage == nullptr) {
+			Brush.SetResourceObject(EditLockIcon);
+			Brush.DrawAs = ESlateBrushDrawType::Image; // 무기 장착 안 했을때 아이콘 투명하게
+		}
+		else {
+			Brush.SetResourceObject(InImage);
+			Brush.DrawAs = ESlateBrushDrawType::Image; 
+		}
+	};
+	/*FSlateBrush NormaSlateBrush = ButtonStyle.Normal;
 	NormaSlateBrush.SetResourceObject(InImage);
 
 	FSlateBrush HoveredSlateBrush = ButtonStyle.Hovered;
@@ -113,8 +166,22 @@ void UBattleActionButtonWidget::SetImage(UTexture2D* InImage)
 	ButtonStyle.SetNormal(NormaSlateBrush);
 	ButtonStyle.SetHovered(HoveredSlateBrush);
 	ButtonStyle.SetPressed(PressedSlateBrush);
-	ButtonStyle.SetDisabled(DisabledSlateBrush);
+	ButtonStyle.SetDisabled(DisabledSlateBrush);*/
+
+	UpdateBrush(ButtonStyle.Normal);
+	UpdateBrush(ButtonStyle.Hovered);
+	UpdateBrush(ButtonStyle.Pressed);
+	UpdateBrush(ButtonStyle.Disabled);
+
 	ActionButton->SetStyle(ButtonStyle);
+}
+
+void UBattleActionButtonWidget::SetCostText(FText InText)
+{
+	if (CostText)
+	{
+		CostText->SetText(InText);
+	}
 }
 
 void UBattleActionButtonWidget::SetProgressesVisible(bool IsVisible)
@@ -148,4 +215,47 @@ void UBattleActionButtonWidget::OnActionButtonPressed()
 void UBattleActionButtonWidget::OnActionButtonReleased()
 {
 	OnButtonReleased.Broadcast();
+}
+
+void UBattleActionButtonWidget::SetSkillCooldownPercent(float InPercent)
+{
+	if (SkillCooldownImage)
+	{
+		if (!SkillCooldownMID)
+		{
+			SkillCooldownMID = SkillCooldownImage->GetDynamicMaterial();
+		}
+
+		if (SkillCooldownMID)
+		{
+			SkillCooldownMID->SetScalarParameterValue(TEXT("CooldownPercent"), InPercent);
+		}
+
+		if (InPercent > 0.0f)
+		{
+			SkillCooldownImage->SetVisibility(ESlateVisibility::HitTestInvisible);
+		}
+		else
+		{
+			SkillCooldownImage->SetVisibility(ESlateVisibility::Hidden);
+		}
+	}
+}
+
+void UBattleActionButtonWidget::SetStackCount(int32 InCount)
+{
+	if (StackCountText)
+	{
+		StackCountText->SetText(FText::AsNumber(InCount));
+		StackCountText->SetVisibility(ESlateVisibility::HitTestInvisible);
+	}
+}
+
+void UBattleActionButtonWidget::ClearStackCount()
+{
+	if (StackCountText)
+	{
+		StackCountText->SetText(FText::GetEmpty());
+		StackCountText->SetVisibility(ESlateVisibility::Hidden);
+	}
 }

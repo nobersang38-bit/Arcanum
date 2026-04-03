@@ -19,6 +19,7 @@ class UCharacterInfo;
 class UWidgetSwitcher;
 class UWrapBox;
 class ULobbyHUD;
+class UImage;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnhanceOKClicked, int32, RequiredSoul);
 
@@ -55,6 +56,9 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCharacterInfo> CharacterInfo;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UImage> CharacterPortraitImage;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCommonDialog> SetPlayerConfirm;
@@ -97,6 +101,9 @@ protected:
 
 	UFUNCTION()
 	void UpdateCharacterInfo(FName CharacterName, bool bSetCharacter, bool SlotCharacterOwned, FText InFinalText, FText ButtonText, int64 soulAmount);
+
+	UFUNCTION()
+	void UpdateCharacterPortrait(FName CharacterName);
 
 	UFUNCTION()
 	//void SetupEquipment(bool bNewEquipped);
@@ -162,11 +169,17 @@ private:
 	/* 장착 방어구 능력치 패널 갱신 */
 	void RefreshArmorStatPanel();
 
+	/* 세트 효과 패널 갱신 */
+	void RefreshSetEffectPanel();
+
 protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UCharacterEquipWidget> CharacterEquipWidget;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UCommonBtnWidget> EquipOpenBtn;
+
+private:
+	bool bCurrentSelectedCharacterOwned = false;
 #pragma endregion
 };

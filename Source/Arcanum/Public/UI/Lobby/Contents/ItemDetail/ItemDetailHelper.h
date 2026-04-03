@@ -152,10 +152,7 @@ private:
 #pragma region 텍스트
 private:
 	/* 스탯 이름 텍스트 생성 */
-	static FText BuildStatNameText(
-		UGameDataSubsystem* InDataSubsystem,
-		const FGameplayTag& InStatTag
-	);
+	static FText BuildStatNameText(UGameDataSubsystem* InDataSubsystem, const FGameplayTag& InStatTag);
 
 	/* 현재 스탯 값 텍스트 생성 */
 	static FText BuildCurrentStatValueText(const FDerivedStatModifier& InStat, bool bInUsePercent);
@@ -171,5 +168,10 @@ private:
 
 	/* 현재 장착 중인 캐릭터 텍스트 생성 */
 	static FText BuildEquippedCharacterText(const UObject* WorldContextObject, const FGuid& InItemGuid);
+
+	/* 포션 즉발용 */
+	static FText BuildInstantPotionValueText(const FDerivedStatModifier& InStat, bool bInUsePercent);
+	/* 포션 지속용 */
+	static FText BuildDurationPotionValueText(const FDerivedStatModifier& InStat, bool bInUsePercent);
 #pragma endregion
 };

@@ -14,74 +14,44 @@ AShootingStarActor::AShootingStarActor()
 	StarMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StarMesh"));
 	StarMesh->SetupAttachment(RootComponent);
 
-	StarMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	StarMesh->SetCastShadow(false);
-
-	IntroSparkleComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("IntroSparkleComp"));
+	IntroSparkleComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Intro"));
 	IntroSparkleComp->SetupAttachment(RootComponent);
 	IntroSparkleComp->bAutoActivate = false;
-	TrailNiagaraComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("TrailNiagaraComp"));
+
+	TrailNiagaraComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Trail"));
 	TrailNiagaraComp->SetupAttachment(RootComponent);
 	TrailNiagaraComp->bAutoActivate = false;
-	ImpactExplosionComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ImpactExplosionComp"));
+
+	ImpactExplosionComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Impact"));
 	ImpactExplosionComp->SetupAttachment(RootComponent);
 	ImpactExplosionComp->bAutoActivate = false;
-}
-void AShootingStarActor::SetSplineActor(AASplinePathActor* InSpline)
-{
-	SplineActor = InSpline;
-	Spline = SplineActor->GetPathSpline();
 }
 void AShootingStarActor::BeginPlay()
 {
 	Super::BeginPlay();
 }
-void AShootingStarActor::Tick(float DeltaTime)
+// ========================================================
+// Spline
+// ========================================================
+void AShootingStarActor::SetSplineActor(AASplinePathActor* InSpline)
 {
-	Super::Tick(DeltaTime);
-
-	if (!SplineActor || bIsShrinking) {
-		if (bIsShrinking) {
-			FVector TargetScale = FVector::ZeroVector;
-			SetActorScale3D(FMath::VInterpTo(GetActorScale3D(), TargetScale, DeltaTime, ShrinkSpeed));
-		}
-		return;
-	}
-	Spline = SplineActor->GetPathSpline();
-	if (!Spline) return;
-
-	const float SplineLength = Spline->GetSplineLength();
-	const float RemainingDistance = SplineLength - CurrentDistance;
-	float TargetSpeed = MoveSpeed;
-	if (RemainingDistance < BrakingZone) {
-		float SpeedAlpha = FMath::Clamp(RemainingDistance / BrakingZone, 0.1f, 1.0f);
-		TargetSpeed *= SpeedAlpha;
-	}
-
-	CurrentDistance += TargetSpeed * DeltaTime;
-	if (CurrentDistance >= SplineLength) {
-		CurrentDistance = SplineLength;
-		SetActorLocation(Spline->GetLocationAtDistanceAlongSpline(CurrentDistance, ESplineCoordinateSpace::World));
-		EndShootingStar();
-		return;
-	}
-
-	FVector NewLocation = Spline->GetLocationAtDistanceAlongSpline(CurrentDistance, ESplineCoordinateSpace::World);
-	SetActorLocation(NewLocation);
+	SplineActor = InSpline;
+	Spline = InSpline ? InSpline->GetPathSpline() : nullptr;
 }
+// ========================================================
+// Start
+// ========================================================
 void AShootingStarActor::StartShootingStar()
 {
-	CurrentDistance = 0.0f;
+	CurrentDistance = 0.f;
 
-	if (SplineActor && SplineActor->GetPathSpline()) {
-		FVector StartPos = SplineActor->GetPathSpline()->GetLocationAtDistanceAlongSpline(0.0f, ESplineCoordinateSpace::World);
-		SetActorLocation(StartPos);
-	}
+	if (Spline) SetActorLocation(Spline->GetLocationAtDistanceAlongSpline(0.f, ESplineCoordinateSpace::World));
 	if (IntroSparkleComp) IntroSparkleComp->Activate(true);
-
-	FTimerHandle LaunchTimer;
-	GetWorldTimerManager().SetTimer(LaunchTimer, this, &AShootingStarActor::MoveShootingStar, 1.0f, false);
+	GetWorldTimerManager().SetTimer(LaunchTimerHandle, this, &AShootingStarActor::MoveShootingStar, MoveTimerDuration, false);
 }
+// ========================================================
+// Move Start
+// ========================================================
 void AShootingStarActor::MoveShootingStar()
 {
 	if (IntroSparkleComp) IntroSparkleComp->Deactivate();
@@ -89,19 +59,74 @@ void AShootingStarActor::MoveShootingStar()
 
 	SetActorTickEnabled(true);
 }
+// ========================================================
+// Tick
+// ========================================================
+void AShootingStarActor::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (!Spline) return;
+
+	if (bIsShrinking) {
+		SetActorScale3D(FMath::VInterpTo(GetActorScale3D(), FVector::ZeroVector, DeltaTime, ShrinkSpeed));
+		return;
+	}
+
+	const float SplineLength = Spline->GetSplineLength();
+	const float Remaining = SplineLength - CurrentDistance;
+	float Speed = MoveSpeed;
+	if (Remaining < BrakingZone) Speed *= FMath::Clamp(Remaining / BrakingZone, 0.1f, 1.f);
+	CurrentDistance += Speed * DeltaTime;
+
+	if (CurrentDistance >= SplineLength) {
+		CurrentDistance = SplineLength;
+		SetActorLocation(Spline->GetLocationAtDistanceAlongSpline(CurrentDistance, ESplineCoordinateSpace::World));
+
+		EndShootingStar();
+		return;
+	}
+
+	SetActorLocation(Spline->GetLocationAtDistanceAlongSpline(CurrentDistance, ESplineCoordinateSpace::World));
+}
+// ========================================================
+// End
+// ========================================================
 void AShootingStarActor::EndShootingStar()
 {
 	bIsShrinking = true;
-	if (TrailNiagaraComp)	TrailNiagaraComp->Deactivate();
-	if (ImpactExplosionComp)ImpactExplosionComp->Activate(true);
+	OnShootingStarShrink.Broadcast();
 
-	FTimerHandle PostExplosionTimer;
-	GetWorldTimerManager().SetTimer(PostExplosionTimer, this, &AShootingStarActor::FinishSequenceAndBroadcast, ExplosionDelay, false);
+	if (TrailNiagaraComp) TrailNiagaraComp->Deactivate();
+	if (ImpactExplosionComp) ImpactExplosionComp->Activate(true);
+
+	GetWorldTimerManager().SetTimer(ExplosionTimerHandle, this, &AShootingStarActor::FinishSequenceAndBroadcast, ExplosionDelay, false);
 }
+// ========================================================
+// Finish
+// ========================================================
 void AShootingStarActor::FinishSequenceAndBroadcast()
 {
 	SetActorTickEnabled(false);
 	SetActorHiddenInGame(true);
+
 	OnShootingStarFinished.Broadcast();
+
 	SetLifeSpan(2.0f);
+}
+// ========================================================
+// Skip
+// ========================================================
+void AShootingStarActor::ForceFinish()
+{
+	GetWorldTimerManager().ClearTimer(LaunchTimerHandle);
+	GetWorldTimerManager().ClearTimer(ExplosionTimerHandle);
+
+	SetActorTickEnabled(false);
+
+	if (IntroSparkleComp) IntroSparkleComp->Deactivate();
+	if (TrailNiagaraComp) TrailNiagaraComp->Deactivate();
+	if (ImpactExplosionComp) ImpactExplosionComp->Deactivate();
+
+	SetActorHiddenInGame(true);
 }

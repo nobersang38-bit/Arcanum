@@ -2,11 +2,14 @@
 #include "UI/Lobby/Contents/Gacha/SubLayout/GachaPullButtonWidget.h"
 #include "UI/Lobby/Contents/Gacha/SubLayout/GachaProbabilityWidget.h"
 #include "UI/Lobby/Contents/Gacha/SubLayout/GachaBannerButtonWidget.h"
+#include "UI/Lobby/Contents/Gacha/SubLayout/GachaProgressWidget.h"
+#include "UI/Lobby/Contents/Gacha/SubLayout/GachaPullButtonWidget.h"
 
 #include "Components/Image.h"
 #include "Components/Button.h"
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
+#include "Components/Border.h"
 
 #include "Core/ARGameInstance.h"
 #include "Core/ARPlayerAccountService.h"
@@ -38,6 +41,7 @@ void UGachaHUDWidget::InitBannerList()
     for (const FDTGachaBannerDataRow* RowPtr : TempRows) {
         if (RowPtr) {
             ActiveBannerDataList.Add(*RowPtr);
+            FPlayerAccountService::InitGachaBannerData(this, RowPtr->BannerTag);
         }
     }
 
@@ -55,7 +59,7 @@ void UGachaHUDWidget::InitBannerList()
                 ButtonSlot->SetSize(FSlateChildSize(ESlateSizeRule::Automatic));
             }
 
-            if (i == 0) OnBannerSelected(NewButton->BannerTag);
+            //if (i == 0) OnBannerSelected(NewButton->BannerTag);
         }
     }
 
@@ -68,6 +72,10 @@ void UGachaHUDWidget::InitBannerList()
         MultiPullButton->OnPullClicked.AddUObject(this, &UGachaHUDWidget::RequestGacha);
     }
 
+    if (EpicButton) {
+        EpicButton->OnPullClicked.RemoveAll(this);
+        EpicButton->OnPullClicked.AddUObject(this, &UGachaHUDWidget::RequestGachaTest);
+    }
     if (ProbabilityInfoButton) {
         ProbabilityInfoButton->OnClicked.RemoveDynamic(this, &UGachaHUDWidget::HandleProbabilityButtonClicked);
         ProbabilityInfoButton->OnClicked.AddDynamic(this, &UGachaHUDWidget::HandleProbabilityButtonClicked);
@@ -79,11 +87,19 @@ void UGachaHUDWidget::InitBannerList()
 void UGachaHUDWidget::OnBannerSelected(FGameplayTag SelectedBannerTag)
 {
     if (CurrentSelectedButton) CurrentSelectedButton->SetSelected(false);
-
     const FDTGachaBannerDataRow* SelectedData = nullptr;
     for (const FDTGachaBannerDataRow& Data : ActiveBannerDataList) {
         if (Data.BannerTag == SelectedBannerTag) {
             SelectedData = &Data;
+            if (Data.GachaTypeTag == Arcanum::Gacha::Type::WeaponPickup::WeaponPickup) {
+                SinglePullButton->SetTextCurrency(FText::FromString(TEXT("200소울")));
+                MultiPullButton->SetTextCurrency(FText::FromString(TEXT("1800소울")));
+            }
+            else
+            {
+                SinglePullButton->SetTextCurrency(FText::FromString(TEXT("200조각")));
+                MultiPullButton->SetTextCurrency(FText::FromString(TEXT("1800조각")));
+            }
             break;
         }
     }
@@ -101,8 +117,15 @@ void UGachaHUDWidget::OnBannerSelected(FGameplayTag SelectedBannerTag)
     }
     UpdateDetailedView(SelectedData);
 
-    // 여기서 선택된 배너에 맞춰 오른쪽 메인 화면(보상 리스트 등) 갱신 로직 실행
-    UE_LOG(LogTemp, Log, TEXT("Selected Banner Tag: %s"), *SelectedBannerTag.ToString());
+    const FGachaBannerState* StatePtr = ParentLobby->CachedPlayerData.GachaState.BannerStates.Find(SelectedBannerTag);
+
+    int32 CurrentPity = 0;
+    if (StatePtr) CurrentPity = StatePtr->PityCount;
+    else {
+        FGachaBannerState NewState = FPlayerAccountService::InitGachaBannerData(this, SelectedBannerTag);
+        CurrentPity = NewState.PityCount;
+    }
+    UpdateGachaProgressWidget(CurrentPity, SelectedData->FiveStarPityCount);
 }
 void UGachaHUDWidget::UpdateDetailedView(const FDTGachaBannerDataRow* InData)
 {
@@ -131,11 +154,10 @@ void UGachaHUDWidget::RequestGacha(int32 InPullCount)
         return;
     }
 
-
-    FPlayerAccountService::UpdateCurrency(this, ParentLobby->CachedPlayerData, Arcanum::PlayerData::Currencies::NonRegen::Soul::Value, 10000);
-    ParentLobby->CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
-    FPlayerAccountService::UpdateCurrency(this, ParentLobby->CachedPlayerData, Arcanum::PlayerData::Currencies::NonRegen::Gold::Value, 10000);
-    ParentLobby->CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
+   //FPlayerAccountService::UpdateCurrency(this, ParentLobby->CachedPlayerData, Arcanum::PlayerData::Currencies::NonRegen::Soul::Value, 10000);
+    //ParentLobby->CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
+    //FPlayerAccountService::UpdateCurrency(this, ParentLobby->CachedPlayerData, Arcanum::PlayerData::Currencies::NonRegen::Gold::Value, 10000);
+    //ParentLobby->CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
 
     if (!CurrentSelectedButton) {
         UE_LOG(LogTemp, Warning, TEXT("No Banner Selected!"));
@@ -145,7 +167,7 @@ void UGachaHUDWidget::RequestGacha(int32 InPullCount)
     FGameplayTag SelectedTag = CurrentSelectedButton->BannerTag;
     bool bSuccess = FPlayerAccountService::ExecuteGacha(this, ParentLobby->CachedPlayerData, SelectedTag, CurrencyCost, InPullCount);
      
-    /// Test : 나중에 주석 풀기
+    /// Test : 가챠 연출 출력 부분
     if (bSuccess) {
         UE_LOG(LogTemp, Log, TEXT("Gacha Request Success: %d Times"), InPullCount);
         FPlayerAccountService::SetHUDIndex(this, EHUDIndex::GachaMenu);
@@ -155,25 +177,62 @@ void UGachaHUDWidget::RequestGacha(int32 InPullCount)
 
 }
 // ========================================================
+// 픽업 선택 버튼 관련 (테스트용 : Epic 확정)
+// ========================================================
+void UGachaHUDWidget::RequestGachaTest(int32 InPullCount)
+{
+    if (ParentLobby->CachedPlayerData.Mailbox.Num() >= ParentLobby->CachedPlayerData.MailboxCapacity) {
+        return;
+    }
+
+    if (!CurrentSelectedButton) {
+        return;
+    }
+
+    FGameplayTag SelectedTag = CurrentSelectedButton->BannerTag;
+    bool bSuccess = FPlayerAccountService::ExecuteGachaTest(this, ParentLobby->CachedPlayerData, SelectedTag, CurrencyCost, InPullCount);
+
+    if (bSuccess) {
+        FPlayerAccountService::SetHUDIndex(this, EHUDIndex::GachaMenu);
+        if (GachaMap.IsNull() == false) UGameplayStatics::OpenLevelBySoftObjectPtr(this, GachaMap);
+    }
+
+}
+
+
+// ========================================================
 // 확률 버튼
 // ========================================================
 void UGachaHUDWidget::HandleProbabilityButtonClicked()
 {
-    if (ProbabilityWidget) {
-        ESlateVisibility CurrentVis = ProbabilityWidget->GetVisibility();
-        ProbabilityWidget->SetVisibility(CurrentVis == ESlateVisibility::Visible ? ESlateVisibility::Collapsed : ESlateVisibility::Visible);
-        if (ProbabilityWidget->GetVisibility() == ESlateVisibility::Visible) {
-            //ProbabilityWidget->UpdateData(CurrentBannerData);
-        }
+    //if (ProbabilityWidget) {
+    //    ESlateVisibility CurrentVis = ProbabilityWidget->GetVisibility();
+    //    ProbabilityWidget->SetVisibility(CurrentVis == ESlateVisibility::Visible ? ESlateVisibility::Collapsed : ESlateVisibility::Visible);
+    //    if (ProbabilityWidget->GetVisibility() == ESlateVisibility::Visible) {
+    //        //ProbabilityWidget->UpdateData(CurrentBannerData);
+    //    }
+    //}
+    if (!DetailProbabilityText) return;
+
+    ESlateVisibility CurrentVisibility = DetailProbabilityText->GetVisibility();
+
+    if (CurrentVisibility == ESlateVisibility::Visible)
+    {
+        DetailProbabilityText->SetVisibility(ESlateVisibility::Collapsed);
+    }
+    else
+    {
+        DetailProbabilityText->SetVisibility(ESlateVisibility::Visible);
     }
 }
-
 void UGachaHUDWidget::HandleTimeUpdated(FDateTime CurrentTime)
 {
+    bool bNeedRefresh = false;
     for (int32 i = 0; i < ActiveBannerDataList.Num(); ++i) {
         const FDTGachaBannerDataRow& BannerData = ActiveBannerDataList[i];
 
-        if (BannerData.GachaTypeTag == Arcanum::Gacha::Type::Standard::Standard) {
+        if (BannerData.GachaTypeTag == Arcanum::Gacha::Type::Standard::Standard || 
+            BannerData.GachaTypeTag == Arcanum::Gacha::Type::WeaponPickup::WeaponPickup) {
             BannerButtons[i]->UpdateRemainingTimeText(FText::FromString(TEXT("상시")));
             continue;
         }
@@ -184,10 +243,26 @@ void UGachaHUDWidget::HandleTimeUpdated(FDateTime CurrentTime)
         FTimespan Remaining = EndTime - CurrentTime;
         int32 RemainingSeconds = FMath::Max(0, (int32)Remaining.GetTotalSeconds());
 
+        if (RemainingSeconds <= 0) {
+            bNeedRefresh = true;
+            continue;
+        }
+
         int32 Hours = RemainingSeconds / 3600;
         int32 Minutes = (RemainingSeconds % 3600) / 60;
 
         FText TimeText = FText::Format(FText::FromString(TEXT("{0}시간 {1}분")), Hours, Minutes);
         BannerButtons[i]->UpdateRemainingTimeText(TimeText);
     }
+
+    if (bNeedRefresh) InitBannerList();
+}
+// ========================================================
+// 가챠 진행 위젯
+// ========================================================
+void UGachaHUDWidget::UpdateGachaProgressWidget(int32 curr, int32 max)
+{
+    if (!GachaProgressWidget) return;
+
+    GachaProgressWidget->UpdateGachaProgress(curr, max);
 }

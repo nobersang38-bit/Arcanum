@@ -138,6 +138,9 @@ public:
 
 	/* 전투 물약 슬롯 해제 */
 	static bool ClearBattlePotionSlot(const UObject* WorldContextObject, int32 InSlotIndex);
+
+	/* 전투 종료 후 남은 물약 반환  */
+	static bool FinalizeBattlePotionSlots(const UObject* WorldContextObject, const TArray<FBattlePotionSlotData>& InBattlePotionSlots);
 #pragma endregion
 
 #pragma region Character Widget 관련
@@ -148,10 +151,22 @@ public:
 	/* 선택 캐릭터의 장착칸에서 장비 해제 */
 	static bool UnequipItemFromCharacter(const UObject* WorldContextObject, const FName& InCharacterName, const FGameplayTag& InEquipSlotTag);
 
+	/* 장비가 장착 중인지 */
+	static bool IsItemEquipped(const UObject* WorldContextObject, const FGuid& InItemGuid);
+
+	/* 캐릭터가 해당 장비를 장착 중인지 */
+	static bool IsItemEquippedCharacter(const UObject* WorldContextObject, const FName& InCharacterName, const FGuid& InItemGuid);
+
 	/* 이름으로 소유 캐릭터 찾기 */
 	static FBattleCharacterData* FindOwnedCharacterByName(FPlayerData& InPlayerData, const FName& InCharacterName);
 	/* 슬롯 태그에 맞는 장착 맵 반환 */
 	static TMap<FGameplayTag, FGuid>* GetEquipmentSlotMapBySlotTag(FBattleCharacterData& InCharacterData, const FGameplayTag& InEquipSlotTag);
+
+	/* 캐릭터 업데이트 */
+	static bool UpdateCharacter(const UObject* WorldContextObject, const FGameplayTag CharacterTag);
+
+	/* 선택 캐릭터 변경 */
+	static bool SetSelectedCharacter(const UObject* WorldContextObject, const FName& InCharacterName);
 #pragma endregion
 
 #pragma region Enhancement Widget 관련
@@ -165,7 +180,6 @@ public:
 	/* 장비 분해 */
 	static bool DisassembleEquipment(const UObject* WorldContextObject, const FGuid& InItemGuid);
 
-private:
 	/* 장비 랜덤 능력치 OwnerStats 생성 */
 	static void RollEquipmentStats(const FItemDefinition& InItemDefinition, TArray<FDerivedStatModifier>& OutStats);
 #pragma endregion
@@ -252,9 +266,11 @@ private:
 
 #pragma region Gacha Widget 관련
 public:
+	static FGachaBannerState InitGachaBannerData(const UObject* WorldContextObject, FGameplayTag TargetTag);
 	static const FDTGachaBannerDataRow* GetGachaBannerData(const UObject* WorldContextObject, FGameplayTag InBannerTag);
 	static void GetActiveGachaBannerRows(const UObject* WorldContextObject, TArray<const FDTGachaBannerDataRow*>& OutRows);
 	static bool ExecuteGacha(const UObject* WorldContextObject, const FPlayerData& PlayerData, FGameplayTag BannerTag, FCurrencyCost Cost, int32 PullCount);
+	static bool ExecuteGachaTest(const UObject* WorldContextObject, const FPlayerData& PlayerData, FGameplayTag BannerTag, FCurrencyCost Cost, int32 PullCount);
 #pragma endregion
 
 #pragma region Transient 관련

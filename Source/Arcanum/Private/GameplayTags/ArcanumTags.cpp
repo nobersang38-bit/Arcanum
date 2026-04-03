@@ -10,6 +10,7 @@ namespace Arcanum {
 		UE_DEFINE_GAMEPLAY_TAG(GachaTable, "Arcanum.DataTable.GachaTable");
 		UE_DEFINE_GAMEPLAY_TAG(SkillData, "Arcanum.DataTable.SkillData");
 		UE_DEFINE_GAMEPLAY_TAG(StageInfo, "Arcanum.DataTable.StageInfo");
+		UE_DEFINE_GAMEPLAY_TAG(InStageInfo, "Arcanum.DataTable.InStageInfo");
 		UE_DEFINE_GAMEPLAY_TAG(AllyUnitInfo, "Arcanum.DataTable.AllyUnitInfo");
 		UE_DEFINE_GAMEPLAY_TAG(EnemyUnitInfo, "Arcanum.DataTable.EnemyUnitInfo");
 		UE_DEFINE_GAMEPLAY_TAG(AllyUnitStatInfo, "Arcanum.DataTable.AllyUnitStatInfo");
@@ -52,6 +53,7 @@ namespace Arcanum
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Lynette, "Arcanum.Player.ID.Lynette", "리넷");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Arna, "Arcanum.Player.ID.Arna", "아르나");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Aiden, "Arcanum.Player.ID.Aiden", "Aiden");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(OutSider, "Arcanum.Player.ID.OutSider", "OutSider");
 		}
 
 		namespace Grade
@@ -137,12 +139,12 @@ namespace Arcanum {
 	namespace Items {
 		namespace HUDSlot {
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Slot1, "Arcanum.Items.ItemSlot.Slot1.0", "무기1")
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Slot2, "Arcanum.Items.ItemSlot.Slot2.1", "무기2")
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Legendary, "Arcanum.Items.ItemSlot.Legendary.2", "전설무기")
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Helmet, "Arcanum.Items.ItemSlot.Helmet.3", "투구")
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Chest, "Arcanum.Items.ItemSlot.Chest.4", "갑옷")
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Glove, "Arcanum.Items.ItemSlot.Glove.5", "장갑")
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Boot, "Arcanum.Items.ItemSlot.Boot.6", "신발")
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Slot2, "Arcanum.Items.ItemSlot.Slot2.1", "무기2")
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Legendary, "Arcanum.Items.ItemSlot.Legendary.2", "전설무기")
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Helmet, "Arcanum.Items.ItemSlot.Helmet.3", "투구")
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Chest, "Arcanum.Items.ItemSlot.Chest.4", "갑옷")
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Glove, "Arcanum.Items.ItemSlot.Glove.5", "장갑")
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Boot, "Arcanum.Items.ItemSlot.Boot.6", "신발")
 		}
 		namespace ItemSlot {
 			namespace Weapon {
@@ -163,6 +165,7 @@ namespace Arcanum {
 			}
 		}
 		namespace Rarity {
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Items.Rarity", "레어리티 루트");
 			namespace Grade {
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Items.Rarity.Grade", "등급 루트");
 				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Common, "Arcanum.Items.Rarity.Grade.Common.0", "일반");
@@ -185,6 +188,7 @@ namespace Arcanum {
 				}
 			}
 			namespace Legendary {
+				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Items.Rarity.Legendary", "전설 루트");
 				namespace Weapon {
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Items.Rarity.Legendary.Weapon", "전설 무기 루트");
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Scepter, "Arcanum.Items.Rarity.Legendary.Weapon.Scepter", "셉터");
@@ -426,6 +430,17 @@ namespace Arcanum
 					UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.Unit.Enemy.CupFelice", "컵 펠리스");
 				}
 			}
+		}
+	}
+}
+
+namespace Arcanum {
+	namespace UI {
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.UI", "UI 루트");
+		namespace Option {
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Root, "Arcanum.UI.Option", "Option 루트");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Audio, "Arcanum.UI.Option.Audio", "오디오");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Video, "Arcanum.UI.Option.Video", "비디오");
 		}
 	}
 }

@@ -3,13 +3,58 @@
     "Name": "HealthPotion",
     "PotionTag": "(TagName=\"Arcanum.Items.Potion.Health\")",
     "CooldownSeconds": 10.0,
+    "UseMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_Drink.AM_Drink",
+    "UseNiagara": "/Game/VFX/Buff/VFX/Particles/NS_HealthPotion.NS_HealthPotion",
+    "UseSound": "",
+    "EffectType": "Instant",
+    "TooltipStatName": "체력 회복",
+    "TooltipValueType": "Percent",
+    "InstantModifier": {
+      "ModifierId": "(A=0,B=0,C=0,D=0)",
+      "SourceTag": "(TagName=\"Arcanum.Items.Potion.Health\")",
+      "StatTag": "(TagName=\"Arcanum.BattleStat.Character.Regen.Health\")",
+      "Value": {
+        "Flat": 0.4,
+        "Mul": 1.0
+      },
+      "bIsPermanent": true,
+      "Duration": 0.0,
+      "ModifierPolicy": "Refresh",
+      "MaxStack": 1
+    },
+    "Modifiers": []
+  },
+  {
+    "Name": "ManaPotion",
+    "PotionTag": "(TagName=\"Arcanum.Items.Potion.Mana\")",
+    "CooldownSeconds": 15.0,
+    "UseMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_Drink.AM_Drink",
+    "UseNiagara": "/Game/VFX/Buff/VFX/Particles/NS_ManaPotion.NS_ManaPotion",
+    "UseSound": "",
+    "EffectType": "Duration",
+    "TooltipStatName": "마나 회복",
+    "TooltipValueType": "Flat",
+    "InstantModifier": {
+      "ModifierId": "(A=0,B=0,C=0,D=0)",
+      "SourceTag": "(TagName=\"Arcanum.Items.Potion.Mana\")",
+      "StatTag": "(TagName=\"Arcanum.BattleStat.Character.Regen.Mana.Regen\")",
+      "Value": {
+        "Flat": 0.0,
+        "Mul": 1.0
+      },
+      "bIsPermanent": true,
+      "Duration": 0.0,
+      "ModifierPolicy": "Refresh",
+      "MaxStack": 1
+    },
     "Modifiers": [
       {
-        "SourceTag": "(TagName=\"Arcanum.Items.Potion.Health\")",
-        "StatTag": "(TagName=\"Arcanum.BattleStat.Character.Regen.Health.Regen\")",
+        "ModifierId": "(A=0,B=0,C=0,D=0)",
+        "SourceTag": "(TagName=\"Arcanum.Items.Potion.Mana\")",
+        "StatTag": "(TagName=\"Arcanum.BattleStat.Character.Regen.Mana.Regen\")",
         "Value": {
-          "Flat": 50.0,
-          "Mul": 1.0
+          "Flat": 3.0,
+          "Mul": 0.0
         },
         "bIsPermanent": false,
         "Duration": 10.0,
@@ -19,15 +64,74 @@
     ]
   },
   {
-    "Name": "ManaPotion",
-    "PotionTag": "(TagName=\"Arcanum.Items.Potion.Mana\")",
-    "CooldownSeconds": 15.0,
+    "Name": "PowerPotion",
+    "PotionTag": "(TagName=\"Arcanum.Items.Potion.Power\")",
+    "CooldownSeconds": 20.0,
+    "UseMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_Drink.AM_Drink",
+    "UseNiagara": "/Game/VFX/Buff/VFX/Particles/NS_PowerPotion.NS_PowerPotion",
+    "UseSound": "",
+    "EffectType": "Duration",
+    "TooltipStatName": "공격력",
+    "TooltipValueType": "Percent",
+    "InstantModifier": {
+      "ModifierId": "(A=0,B=0,C=0,D=0)",
+      "SourceTag": "(TagName=\"Arcanum.Items.Potion.Power\")",
+      "StatTag": "(TagName=\"Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue\")",
+      "Value": {
+        "Flat": 0.0,
+        "Mul": 1.0
+      },
+      "bIsPermanent": true,
+      "Duration": 0.0,
+      "ModifierPolicy": "Refresh",
+      "MaxStack": 1
+    },
     "Modifiers": [
       {
-        "SourceTag": "(TagName=\"Arcanum.Items.Potion.Mana\")",
-        "StatTag": "(TagName=\"Arcanum.BattleStat.Character.Regen.Mana.Regen\")",
+        "ModifierId": "(A=0,B=0,C=0,D=0)",
+        "SourceTag": "(TagName=\"Arcanum.Items.Potion.Power\")",
+        "StatTag": "(TagName=\"Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue\")",
         "Value": {
-          "Flat": 50.0,
+          "Flat": 0.0,
+          "Mul": 0.3
+        },
+        "bIsPermanent": false,
+        "Duration": 15.0,
+        "ModifierPolicy": "Refresh",
+        "MaxStack": 1
+      }
+    ]
+  },
+  {
+    "Name": "FocusPotion",
+    "PotionTag": "(TagName=\"Arcanum.Items.Potion.Focus\")",
+    "CooldownSeconds": 20.0,
+    "UseMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_Drink.AM_Drink",
+    "UseNiagara": "/Game/VFX/Buff/VFX/Particles/NS_FocusPotion.NS_FocusPotion",
+    "UseSound": "",
+    "EffectType": "Duration",
+    "TooltipStatName": "치명타 확률",
+    "TooltipValueType": "Percent",
+    "InstantModifier": {
+      "ModifierId": "(A=0,B=0,C=0,D=0)",
+      "SourceTag": "(TagName=\"Arcanum.Items.Potion.Focus\")",
+      "StatTag": "(TagName=\"Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue\")",
+      "Value": {
+        "Flat": 0.0,
+        "Mul": 1.0
+      },
+      "bIsPermanent": true,
+      "Duration": 0.0,
+      "ModifierPolicy": "Refresh",
+      "MaxStack": 1
+    },
+    "Modifiers": [
+      {
+        "ModifierId": "(A=0,B=0,C=0,D=0)",
+        "SourceTag": "(TagName=\"Arcanum.Items.Potion.Focus\")",
+        "StatTag": "(TagName=\"Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue\")",
+        "Value": {
+          "Flat": 0.20,
           "Mul": 1.0
         },
         "bIsPermanent": false,
@@ -38,57 +142,39 @@
     ]
   },
   {
-    "Name": "PowerPotion",
-    "PotionTag": "(TagName=\"Arcanum.Items.Potion.Power\")",
-    "CooldownSeconds": 20.0,
-    "Modifiers": [
-      {
-        "SourceTag": "(TagName=\"Arcanum.Items.Potion.Power\")",
-        "StatTag": "(TagName=\"Arcanum.BattleStat.Character.NonRegen.AttackPower.BonusValue\")",
-        "Value": {
-          "Flat": 20.0,
-          "Mul": 1.0
-        },
-        "bIsPermanent": false,
-        "Duration": 20.0,
-        "ModifierPolicy": "Refresh",
-        "MaxStack": 1
-      }
-    ]
-  },
-  {
-    "Name": "FocusPotion",
-    "PotionTag": "(TagName=\"Arcanum.Items.Potion.Focus\")",
-    "CooldownSeconds": 20.0,
-    "Modifiers": [
-      {
-        "SourceTag": "(TagName=\"Arcanum.Items.Potion.Focus\")",
-        "StatTag": "(TagName=\"Arcanum.BattleStat.Character.NonRegen.CritChance.BonusValue\")",
-        "Value": {
-          "Flat": 0.0,
-          "Mul": 0.2
-        },
-        "bIsPermanent": false,
-        "Duration": 20.0,
-        "ModifierPolicy": "Refresh",
-        "MaxStack": 1
-      }
-    ]
-  },
-  {
     "Name": "FrenzyPotion",
     "PotionTag": "(TagName=\"Arcanum.Items.Potion.Frenzy\")",
     "CooldownSeconds": 20.0,
+    "UseMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_Drink.AM_Drink",
+    "UseNiagara": "/Game/VFX/Buff/VFX/Particles/NS_FrenzyPotion.NS_FrenzyPotion",
+    "UseSound": "",
+    "EffectType": "Duration",
+    "TooltipStatName": "공격속도",
+    "TooltipValueType": "Percent",
+    "InstantModifier": {
+      "ModifierId": "(A=0,B=0,C=0,D=0)",
+      "SourceTag": "(TagName=\"Arcanum.Items.Potion.Frenzy\")",
+      "StatTag": "(TagName=\"Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue\")",
+      "Value": {
+        "Flat": 0.0,
+        "Mul": 1.0
+      },
+      "bIsPermanent": true,
+      "Duration": 0.0,
+      "ModifierPolicy": "Refresh",
+      "MaxStack": 1
+    },
     "Modifiers": [
       {
+        "ModifierId": "(A=0,B=0,C=0,D=0)",
         "SourceTag": "(TagName=\"Arcanum.Items.Potion.Frenzy\")",
         "StatTag": "(TagName=\"Arcanum.BattleStat.Character.NonRegen.AttackSpeed.BonusValue\")",
         "Value": {
           "Flat": 0.0,
-          "Mul": 0.2
+          "Mul": 0.3
         },
         "bIsPermanent": false,
-        "Duration": 20.0,
+        "Duration": 15.0,
         "ModifierPolicy": "Refresh",
         "MaxStack": 1
       }
@@ -98,16 +184,36 @@
     "Name": "HastePotion",
     "PotionTag": "(TagName=\"Arcanum.Items.Potion.Haste\")",
     "CooldownSeconds": 20.0,
+    "UseMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_Drink.AM_Drink",
+    "UseNiagara": "/Game/VFX/Buff/VFX/Particles/NS_HastePotion.NS_HastePotion",
+    "UseSound": "",
+    "EffectType": "Duration",
+    "TooltipStatName": "이동속도",
+    "TooltipValueType": "Percent",
+    "InstantModifier": {
+      "ModifierId": "(A=0,B=0,C=0,D=0)",
+      "SourceTag": "(TagName=\"Arcanum.Items.Potion.Haste\")",
+      "StatTag": "(TagName=\"Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue\")",
+      "Value": {
+        "Flat": 0.0,
+        "Mul": 1.0
+      },
+      "bIsPermanent": true,
+      "Duration": 0.0,
+      "ModifierPolicy": "Refresh",
+      "MaxStack": 1
+    },
     "Modifiers": [
       {
+        "ModifierId": "(A=0,B=0,C=0,D=0)",
         "SourceTag": "(TagName=\"Arcanum.Items.Potion.Haste\")",
         "StatTag": "(TagName=\"Arcanum.BattleStat.Character.NonRegen.MoveSpeed.BonusValue\")",
         "Value": {
           "Flat": 0.0,
-          "Mul": 0.2
+          "Mul": 0.3
         },
         "bIsPermanent": false,
-        "Duration": 20.0,
+        "Duration": 15.0,
         "ModifierPolicy": "Refresh",
         "MaxStack": 1
       }

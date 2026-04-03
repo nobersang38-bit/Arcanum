@@ -7,7 +7,7 @@
 
 /**
  * 추영호
- * 스탯 태그별 UI 표시명/표현 정보를 관리
+ * 스탯 태그별 UI 표시명
  */
 
 USTRUCT(BlueprintType)

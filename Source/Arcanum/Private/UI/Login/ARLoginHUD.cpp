@@ -7,6 +7,7 @@
 #include "UI/Login/SubLayout/LoginPanelWidget.h"
 #include "UI/Common/CommonBtnWidget.h"
 #include "UI/Common/CommonDialog.h"
+#include "UI/Common/CommonOptionWindow.h"
 
 #include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
@@ -14,6 +15,7 @@
 #include "GameFramework/PlayerController.h"
 #include "Components/VerticalBox.h"
 #include "Components/Button.h"
+#include "Components/Image.h"
 
 #include "Object/Character/LoginCharacter.h"
 #include "Core/ARGameInstance.h"
@@ -65,10 +67,10 @@ void UARLoginHUD::OnPressAnyKey()
 	if (SyncLoginWidget) {
 		SyncLoginWidget->OnSyncFinished.RemoveDynamic(this, &UARLoginHUD::OnPreLoginSyncFinished);
 		SyncLoginWidget->OnSyncFinished.AddDynamic(this, &UARLoginHUD::OnPreLoginSyncFinished);
-
 		SyncLoginWidget->SetVisibility(ESlateVisibility::Visible);
 		SyncText = TEXT("서버 동기화중");
 		SyncLoginWidget->SetSyncPhase(ESyncPhase::PreLogin, FText::FromString(SyncText));
+		TitleImg->SetVisibility(ESlateVisibility::Visible);
 	}
 }
 // ========================================================
@@ -80,7 +82,7 @@ void UARLoginHUD::OnPreLoginSyncFinished(bool bIsSuccess, const FString& ErrorMe
 		SyncLoginWidget->OnSyncFinished.RemoveDynamic(this, &UARLoginHUD::OnPreLoginSyncFinished);
 		SyncLoginWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
-
+	TitleImg->SetVisibility(ESlateVisibility::Visible);
 	if(VerticalBox) VerticalBox->SetVisibility(ESlateVisibility::Visible);
 	if (LoginCharacter)  LoginCharacter->AppearCharacter();
 }
@@ -149,6 +151,7 @@ void UARLoginHUD::HandleAnnouncementOpen(bool bIsSuccess)
 			AnnouncetUserWidget->OnCloseClicked.RemoveDynamic(this, &UARLoginHUD::HandleAnnouncementClose);
 			AnnouncetUserWidget->OnCloseClicked.AddDynamic(this, &UARLoginHUD::HandleAnnouncementClose);
 			AnnouncetUserWidget->SetVisibility(ESlateVisibility::Visible);
+			TitleImg->SetVisibility(ESlateVisibility::Collapsed);
 		}
 	}
 	else {
@@ -162,13 +165,19 @@ void UARLoginHUD::HandleAnnouncementClose()
 		AnnouncetUserWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
 	if (VerticalBox) VerticalBox->SetVisibility(ESlateVisibility::Visible);
+	TitleImg->SetVisibility(ESlateVisibility::Visible);
 }
 // ========================================================
 // 설정
 // ========================================================
 void UARLoginHUD::ClickSettingBtn()
 {
-
+	if (SettingHUDClass) {
+		SettingHUD = CreateWidget<UCommonOptionWindow>(this, SettingHUDClass);
+		if (SettingHUD) {
+			SettingHUD->AddToViewport();
+		}
+	}
 }
 // ========================================================
 // 플레이
@@ -179,6 +188,7 @@ void UARLoginHUD::ClickPlayBtn()
 		if (VerticalBox) VerticalBox->SetVisibility(ESlateVisibility::Hidden);
 		
 		LoginPanelWidget->SetVisibility(ESlateVisibility::Visible);
+		TitleImg->SetVisibility(ESlateVisibility::Collapsed);
 		LoginPanelWidget->OnLoginStateChanged.RemoveDynamic(this, &UARLoginHUD::HandlePlayBtn);
 		LoginPanelWidget->OnLoginStateChanged.AddDynamic(this, &UARLoginHUD::HandlePlayBtn);
 	}
@@ -191,6 +201,7 @@ void UARLoginHUD::HandlePlayBtn(bool IsState)
 	}
 	else {
 		if (VerticalBox) VerticalBox->SetVisibility(ESlateVisibility::Visible);
+		TitleImg->SetVisibility(ESlateVisibility::Visible);
 	}
 }
 // ========================================================
@@ -204,6 +215,7 @@ void UARLoginHUD::ClickExitBtn()
 		ExitCommonDialog->OnResult.AddDynamic(this, &UARLoginHUD::OnExitCommonDialog);
 
 		if (VerticalBox) VerticalBox->SetVisibility(ESlateVisibility::Hidden);
+		TitleImg->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
 void UARLoginHUD::OnExitCommonDialog(EDialogResult res)
@@ -215,5 +227,6 @@ void UARLoginHUD::OnExitCommonDialog(EDialogResult res)
 	else if (res == EDialogResult::Cancel) {
 		ExitCommonDialog->SetVisibility(ESlateVisibility::Hidden);
 		if (VerticalBox) VerticalBox->SetVisibility(ESlateVisibility::Visible);
+		TitleImg->SetVisibility(ESlateVisibility::Visible);
 	}
 }

@@ -27,6 +27,10 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TSoftObjectPtr<USkeletalMesh> SkeletalMesh;
 
+    /** 장착 몽타주 */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TSoftObjectPtr<UAnimMontage> EquipMontage;
+
     /** 아이콘, 설명 등 변하지 않는 연출용 데이터 */
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TSoftObjectPtr<UTexture2D> Icon;
@@ -36,6 +40,10 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int64 SellPrice;
+
+    /* 세트 효과 구조체 */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FSetEffectDefinition SetEffect;
 
     /** 기본 스펙을 담고 있는 구조체 */
     UPROPERTY(EditAnywhere, BlueprintReadWrite)

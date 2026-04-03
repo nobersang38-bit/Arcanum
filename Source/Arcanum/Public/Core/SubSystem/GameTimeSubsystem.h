@@ -60,9 +60,14 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Time|Stage")
 	FOnStageSecondChanged OnStageSecondChanged;
 
+	UFUNCTION(BlueprintCallable, Category = "Time|Stage")
+	void PauseStage();
+
+	UFUNCTION(BlueprintCallable, Category = "Time|Stage")
+	void ResumeStage();
+
 private:
 	// Banner
-	
 	FDateTime BannerEndTime;
 	int32 LastBannerSecond = -1;
 
@@ -70,7 +75,7 @@ private:
 	bool bIsBattleActive = false;
 	float CurrentStageTime = 0.f;
 	int32 LastStageSecond = -1;
-
+	bool bStagePaused = false;
 
 #pragma region 상점 타이머
 	// ---------------------------
@@ -98,6 +103,5 @@ private:
 	bool bShopActive = false;
 	FDateTime ShopEndTime;
 	int32 LastShopSecond = -1;
-
 #pragma endregion
 };

@@ -17,6 +17,11 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnCharacterNonRegenStatChanged, const FNonR
 // 통합 호출용
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnCharacterStatChanged, const FRegenStat&, const FNonRegenStat&);
 
+// 버프
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnBuffAdded, const FGameplayTag&, float);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnBuffUpdated, const FGameplayTag&, float);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnBuffRemoved, const FGameplayTag&);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ARCANUM_API UCharacterBattleStatsComponent : public UActorComponent
 {
@@ -27,6 +32,10 @@ public:
 	FOnCharacterRegenStatChanged OnCharacterRegenStatChanged;
 	FOnCharacterNonRegenStatChanged OnCharacterNonRegenStatChanged;
 	FOnCharacterStatChanged OnCharacterStatChanged;
+
+	FOnBuffAdded OnBuffAdded;
+	FOnBuffUpdated OnBuffUpdated;
+	FOnBuffRemoved OnBuffRemoved;
 private:
 	void NotifyRegenStatChanged(const FRegenStat& Stat);
 	void NotifyNonRegenStatChanged(const FNonRegenStat& Stat);
@@ -68,6 +77,10 @@ public:
 	// 20260312 김도현 : 스탯 초기화 함수 추가
 	UFUNCTION()
 	void SetData(const FGradeStatData& InGradeStatData);
+
+	// 20260325 김도현 : 스탯 Current 최대로
+	UFUNCTION()
+	void SetCurrentValueMax();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "0_Stats|Base")
 	float TimerTick = 1.f;

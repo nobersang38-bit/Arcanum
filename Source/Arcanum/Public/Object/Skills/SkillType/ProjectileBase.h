@@ -29,7 +29,7 @@ class ARCANUM_API AProjectileBase : public ASkillActor
 {
     GENERATED_BODY()
 
-    public:
+public:
     AProjectileBase();
 
     virtual void ActivateSkillActor(USkillBase* InSkill, AActor* InOwner, const FVector& SpawnLocation, const FRotator& SpawnRotation) override;
@@ -40,7 +40,7 @@ protected:
     virtual void DeactivateSkillActor() override;
     /** 충돌 */
     UFUNCTION()
-    virtual void OnHit(UPrimitiveComponent* HitComponent,AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+    virtual void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
     /** 오버랩 */
     UFUNCTION()
@@ -61,6 +61,20 @@ protected:
     /** 이동 컴포넌트 */
     //UPROPERTY(VisibleAnywhere)
     //TObjectPtr<UProjectileMovementComponent> MovementComponent;
+
+    UPROPERTY(EditDefaultsOnly, Category = "ProjectiIe")
+    float ReOnCollisionTime = 1.0f;
+
+    // 공격이라면 공격로직
+    UPROPERTY(EditDefaultsOnly, Category = "ProjectiIe")
+    bool bIsAttack = true;
+
+    UPROPERTY(EditDefaultsOnly, Category = "ProjectiIe")
+    bool bUseOwnerStat = false;
+
+    // 사용할 태그 만약 공격력을 넣었다면 선택한 태그의 값을 스킬의 모디파이어에 스탯의 Value값에 더한다
+    UPROPERTY(EditDefaultsOnly, Category = "ProjectiIe", meta = (EditCondition = "bUseOwnerStat", EditConditionHides))
+    FGameplayTag UseStatTag;
 
     /** 기본 속도 */
     UPROPERTY(EditDefaultsOnly, Category = "ProjectiIe")
@@ -116,5 +130,14 @@ protected:
     float HowitzerTime = 0.0f;
     FTransform HowitzerStartTransform;
     ECollisionEnabled::Type FirstCollisionEnabled;
-    bool bIsFirstStart = true;;
+    bool bIsFirstStart = true;
+
+    UPROPERTY()
+    TSet<AActor*> CachedActors;
+
+    UPROPERTY()
+    TMap<AActor*, float> ActorCollisionCoolTime;
+
+private:
+    bool bShowCollision = false;
 };
