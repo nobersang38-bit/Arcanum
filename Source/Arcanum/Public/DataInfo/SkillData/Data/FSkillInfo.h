@@ -43,6 +43,27 @@ struct FLevelModifierEntry
  */
 
 USTRUCT(BlueprintType)
+struct FCharacterSkillMontage
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    FGameplayTag CharacterTag;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TArray<TSoftObjectPtr<UAnimMontage>> ComboMontages;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TSoftObjectPtr<UAnimMontage> CastMontage;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TSoftObjectPtr<UAnimMontage> PressMontage;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TSoftObjectPtr<UAnimMontage> ReleaseMontage;
+};
+
+USTRUCT(BlueprintType)
 struct FSkillInfo {
     GENERATED_BODY()
     
@@ -65,13 +86,7 @@ struct FSkillInfo {
     float EnabledRange = 300.0f;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    TArray<TSoftObjectPtr<UAnimMontage>> ComboMontages;
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    TSoftObjectPtr<UAnimMontage> CastMontage;
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    TSoftObjectPtr<UAnimMontage> PressMontage;
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    TSoftObjectPtr<UAnimMontage> ReleaseMontage;
+    TArray<FCharacterSkillMontage> CharacterMontage;
 
     /** 실행용 스킬 클래스 (BP) */
     UPROPERTY(EditAnywhere, BlueprintReadOnly)

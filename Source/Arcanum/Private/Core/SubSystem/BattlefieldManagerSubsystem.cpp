@@ -550,7 +550,7 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 	}
 
 	// 일반 무기 기본공격/기본스킬 캐시
-	auto cacheNormalWeaponSkill = [this](const FEquipmentInfo* InEquipInfo, FBattleSkillData& OutBasicAttackSkill, FBattleSkillData& OutBasicSkill)
+	auto cacheNormalWeaponSkill = [this, selectedCharacter](const FEquipmentInfo* InEquipInfo, FBattleSkillData& OutBasicAttackSkill, FBattleSkillData& OutBasicSkill)
 		{
 			if (InEquipInfo)
 			{
@@ -566,11 +566,27 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 
 					OutBasicAttackSkill.ComboMontages.Empty();
 
-					for (const TSoftObjectPtr<UAnimMontage>& comboMontage : basicAttackSkillInfo->ComboMontages)
+					const FCharacterSkillMontage* basicAttackMontageData = nullptr;
+					for (const FCharacterSkillMontage& montageData : basicAttackSkillInfo->CharacterMontage)
 					{
-						OutBasicAttackSkill.ComboMontages.Add(comboMontage.LoadSynchronous());
-						OutBasicAttackSkill.SkillClass = basicAttackSkillInfo->SkillClass.LoadSynchronous();
+						if (montageData.CharacterTag == selectedCharacter->Character)
+						{
+							basicAttackMontageData = &montageData;
+							break;
+						}
 					}
+
+					OutBasicAttackSkill.ComboMontages.Empty();
+
+					if (basicAttackMontageData)
+					{
+						for (const TSoftObjectPtr<UAnimMontage>& comboMontage : basicAttackMontageData->ComboMontages)
+						{
+							OutBasicAttackSkill.ComboMontages.Add(comboMontage.LoadSynchronous());
+						}
+					}
+
+					OutBasicAttackSkill.SkillClass = basicAttackSkillInfo->SkillClass.LoadSynchronous();
 				}
 
 				OutBasicAttackSkill.SkillLevel = basicAttackSkillLevel;
@@ -592,7 +608,22 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 						const int32 maxSkillLevel = basicSkillInfo->LevelModifiers.Num();
 						basicSkillLevel = FMath::Clamp(rawSkillLevel, 1, maxSkillLevel);
 
-						OutBasicSkill.CastMontage = basicSkillInfo->CastMontage.LoadSynchronous();
+						const FCharacterSkillMontage* basicSkillMontageData = nullptr;
+						for (const FCharacterSkillMontage& montageData : basicSkillInfo->CharacterMontage)
+						{
+							if (montageData.CharacterTag == selectedCharacter->Character)
+							{
+								basicSkillMontageData = &montageData;
+								break;
+							}
+						}
+
+						OutBasicSkill.CastMontage = nullptr;
+						if (basicSkillMontageData)
+						{
+							OutBasicSkill.CastMontage = basicSkillMontageData->CastMontage.LoadSynchronous();
+						}
+
 						OutBasicSkill.SkillClass = basicSkillInfo->SkillClass.LoadSynchronous();
 					}
 
@@ -608,7 +639,7 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 		};
 
 	// 전설 무기 궁극기 스킬 캐시
-	auto cacheLegendaryWeaponSkill = [this](const FEquipmentInfo* InEquipInfo, FBattleSkillData& OutUltimateSkill)
+	auto cacheLegendaryWeaponSkill = [this, selectedCharacter](const FEquipmentInfo* InEquipInfo, FBattleSkillData& OutUltimateSkill)
 		{
 			if (InEquipInfo)
 			{
@@ -628,10 +659,28 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 						const int32 maxSkillLevel = ultimateSkillInfo->LevelModifiers.Num();
 						ultimateSkillLevel = FMath::Clamp(rawSkillLevel, 1, maxSkillLevel);
 
-						OutUltimateSkill.CastMontage = ultimateSkillInfo->CastMontage.LoadSynchronous();
+						const FCharacterSkillMontage* ultimateMontageData = nullptr;
+						for (const FCharacterSkillMontage& montageData : ultimateSkillInfo->CharacterMontage)
+						{
+							if (montageData.CharacterTag == selectedCharacter->Character)
+							{
+								ultimateMontageData = &montageData;
+								break;
+							}
+						}
+
+						OutUltimateSkill.CastMontage = nullptr;
+						OutUltimateSkill.PressMontage = nullptr;
+						OutUltimateSkill.ReleaseMontage = nullptr;
+
+						if (ultimateMontageData)
+						{
+							OutUltimateSkill.CastMontage = ultimateMontageData->CastMontage.LoadSynchronous();
+							OutUltimateSkill.PressMontage = ultimateMontageData->PressMontage.LoadSynchronous();
+							OutUltimateSkill.ReleaseMontage = ultimateMontageData->ReleaseMontage.LoadSynchronous();
+						}
+
 						OutUltimateSkill.SkillClass = ultimateSkillInfo->SkillClass.LoadSynchronous();
-						OutUltimateSkill.PressMontage = ultimateSkillInfo->PressMontage.LoadSynchronous();
-						OutUltimateSkill.ReleaseMontage = ultimateSkillInfo->ReleaseMontage.LoadSynchronous();
 					}
 
 					OutUltimateSkill.SkillLevel = ultimateSkillLevel;
