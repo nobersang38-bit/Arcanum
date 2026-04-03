@@ -23,13 +23,21 @@ struct FInBattleData
 {
 	GENERATED_BODY()
 public:
+	UPROPERTY()
 	FPlayerData PlayerData;
+	UPROPERTY()
 	FStageDataInfo StageData;
+	UPROPERTY()
 	FBattleStageInfo BattleStageInfo;
+	UPROPERTY()
 	FGradeStatData PlayerBattleStat;
+	UPROPERTY()
 	FBattleWeaponSkillData BattleWeaponSkill;
+	UPROPERTY()
 	FPlayerBattleData PlayerBattleData;
+	UPROPERTY()
 	TArray<FDerivedStatModifier> EquippedOwnerStats;
+
 	TMap<FGameplayTag, TMap<FGameplayTag, FDerivedStatModifier>> WeaponOnHitTarget;
 };
 
@@ -157,6 +165,7 @@ protected:
 #pragma endregion
 
 #pragma region 데이터 캐시
+	UPROPERTY()
 	FInBattleData InBattleData;
 
 	UPROPERTY()

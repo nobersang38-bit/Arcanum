@@ -1898,7 +1898,7 @@ void ABattlePlayerController::TriggerBasicAttackHit()
 	if (!playerCharacter) return;
 	UPoolingSubsystem* poolingSubsystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
 	if (!poolingSubsystem) return;
-	UClass* skillActorClass = basicAttackSkillData->SkillClass.Get();
+	UClass* skillActorClass = basicAttackSkillData->SkillClass;
 	if (!skillActorClass) return;
 
 	USkillBase* skillObject = nullptr;
@@ -1956,7 +1956,7 @@ void ABattlePlayerController::TriggerSkill()
 	if (!playerCharacter) return;
 	UPoolingSubsystem* poolingSubsystem = GetWorld()->GetSubsystem<UPoolingSubsystem>();
 	if (!poolingSubsystem) return;
-	UClass* skillActorClass = skillData->SkillClass.Get();
+	UClass* skillActorClass = skillData->SkillClass;
 	if (!skillActorClass) return;
 
 	USkillBase* skillObject = nullptr;
@@ -2527,6 +2527,14 @@ bool ABattlePlayerController::TryExecuteBattleAction(EBattleActionType InActionT
 {
 	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
 
+	// 기본공격 몽타주 중에는 기본공격 입력만 허용
+	if (playerCharacter && playerCharacter->GetIsBasicAttackMontagePlaying())
+	{
+		if (InActionType != EBattleActionType::BasicAttack)
+		{
+			return false;
+		}
+	}
 	// 궁극기 중
 	if (bIsUltimateAiming)
 	{

@@ -47,7 +47,7 @@ struct FBattleSkillData
 
 	/* 스킬 실행 클래스 캐시 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSoftClassPtr<ASkillActor> SkillClass;
+	TSubclassOf<ASkillActor> SkillClass;
 };
 
 USTRUCT(BlueprintType)
