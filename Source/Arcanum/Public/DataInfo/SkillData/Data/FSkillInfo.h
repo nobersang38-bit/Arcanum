@@ -41,6 +41,7 @@ struct FLevelModifierEntry
  * 이 구조체는 계산 로직을 가지지 않으며,
  * 오직 현재 상태와 기본 정의값만 저장한다.
  */
+
 USTRUCT(BlueprintType)
 struct FSkillInfo {
     GENERATED_BODY()
