@@ -9,6 +9,18 @@
  */
 
 USTRUCT(BlueprintType)
+struct FWeaponSwapMontageData
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+    FGameplayTag WeaponItemTag;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+    TSoftObjectPtr<UAnimMontage> SwapMontage;
+};
+
+USTRUCT(BlueprintType)
 struct FBattleCharacterAnimSet
 {
     GENERATED_BODY()
@@ -27,6 +39,9 @@ struct FBattleCharacterAnimSet
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
     TSoftObjectPtr<UAnimMontage> PotionUseMontage;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+    TArray<FWeaponSwapMontageData> WeaponSwapMontages;
 };
 
 USTRUCT(BlueprintType)

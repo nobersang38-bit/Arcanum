@@ -756,15 +756,22 @@ UAnimMontage* UBattlefieldManagerSubsystem::GetCurrentWeaponEquipMontage() const
 			itemGuid = *foundWeaponGuid;
 		}
 	}
-	if (!itemGuid.IsValid()) return nullptr;
 
+	if (!itemGuid.IsValid()) return nullptr;
 	const FEquipmentInfo* foundEquipment = FindEquipmentByGuid(InBattleData.PlayerData, itemGuid);
 	if (!foundEquipment) return nullptr;
 
-	const FDTEquipmentInfoRow* equipmentRow = FPlayerAccountService::FindEquipmentInfoRowByTag(this, foundEquipment->ItemTag);
-	if (!equipmentRow) return nullptr;
+	const FBattleCharacterAnimSet& characterAnimSet = selectedCharacter->CharacterInfo.BattleCharacterInitData.CharacterAnimSet;
 
-	return equipmentRow->EquipMontage.LoadSynchronous();
+	for (const FWeaponSwapMontageData& swapData : characterAnimSet.WeaponSwapMontages)
+	{
+		if (swapData.WeaponItemTag == foundEquipment->ItemTag)
+		{
+			return swapData.SwapMontage.LoadSynchronous();
+		}
+	}
+
+	return nullptr;
 }
 
 FGameplayTag UBattlefieldManagerSubsystem::GetCurrentWeaponSlotTag() const

@@ -700,7 +700,7 @@
 				}
 			],
 			"Icon": "/Game/Assets/UI/Icon/Skill/Icon_TagSkill/Icon_ChainBolt.Icon_ChainBolt",
-			"EnabledRange": 500,
+			"EnabledRange": 1000,
 			"SkillClass": "/Game/Object/Skill/BP_ChainBolt.BP_ChainBolt_C",
 			"LevelModifiers": [
 				{

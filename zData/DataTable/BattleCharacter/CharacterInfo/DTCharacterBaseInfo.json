@@ -29,7 +29,17 @@
         "BasicSkillCastMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Skill.AM_OutSider_Skill",
         "UltimatePressMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_SolarFlare_Press.AM_OutSider_SolarFlare_Press",
         "UltimateReleaseMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_SolarFlare_Release.AM_OutSider_SolarFlare_Release",
-        "PotionUseMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Drink.AM_OutSider_Drink"
+        "PotionUseMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Drink.AM_OutSider_Drink",
+        "WeaponSwapMontages": [
+          {
+            "WeaponItemTag": "Arcanum.Items.Rarity.Common.Weapon.GreatSword",
+            "SwapMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Equip_Sword.AM_OutSider_Equip_Sword"
+          },
+          {
+            "WeaponItemTag": "Arcanum.Items.Rarity.Common.Weapon.Staff",
+            "SwapMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Equip_Staff.AM_OutSider_Equip_Staff"
+          }
+        ]
       }
     }
   },
@@ -63,7 +73,17 @@
         "BasicSkillCastMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Skill.AM_OutSider_Skill",
         "UltimatePressMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_SolarFlare_Press.AM_OutSider_SolarFlare_Press",
         "UltimateReleaseMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_SolarFlare_Release.AM_OutSider_SolarFlare_Release",
-        "PotionUseMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Drink.AM_OutSider_Drink"
+        "PotionUseMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Drink.AM_OutSider_Drink",
+        "WeaponSwapMontages": [
+          {
+            "WeaponItemTag": "Arcanum.Items.Rarity.Common.Weapon.GreatSword",
+            "SwapMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Equip_Sword.AM_OutSider_Equip_Sword"
+          },
+          {
+            "WeaponItemTag": "Arcanum.Items.Rarity.Common.Weapon.Staff",
+            "SwapMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Equip_Staff.AM_OutSider_Equip_Staff"
+          }
+        ]
       }
     }
   },
@@ -97,7 +117,17 @@
         "BasicSkillCastMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Skill.AM_OutSider_Skill",
         "UltimatePressMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_SolarFlare_Press.AM_OutSider_SolarFlare_Press",
         "UltimateReleaseMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_SolarFlare_Release.AM_OutSider_SolarFlare_Release",
-        "PotionUseMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Drink.AM_OutSider_Drink"
+        "PotionUseMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Drink.AM_OutSider_Drink",
+        "WeaponSwapMontages": [
+          {
+            "WeaponItemTag": "Arcanum.Items.Rarity.Common.Weapon.GreatSword",
+            "SwapMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Equip_Sword.AM_OutSider_Equip_Sword"
+          },
+          {
+            "WeaponItemTag": "Arcanum.Items.Rarity.Common.Weapon.Staff",
+            "SwapMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Equip_Staff.AM_OutSider_Equip_Staff"
+          }
+        ]
       }
     }
   },
@@ -131,7 +161,17 @@
         "BasicSkillCastMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Skill.AM_OutSider_Skill",
         "UltimatePressMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_SolarFlare_Press.AM_OutSider_SolarFlare_Press",
         "UltimateReleaseMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_SolarFlare_Release.AM_OutSider_SolarFlare_Release",
-        "PotionUseMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Drink.AM_OutSider_Drink"
+        "PotionUseMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Drink.AM_OutSider_Drink",
+        "WeaponSwapMontages": [
+          {
+            "WeaponItemTag": "Arcanum.Items.Rarity.Common.Weapon.GreatSword",
+            "SwapMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Equip_Sword.AM_OutSider_Equip_Sword"
+          },
+          {
+            "WeaponItemTag": "Arcanum.Items.Rarity.Common.Weapon.Staff",
+            "SwapMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Equip_Staff.AM_OutSider_Equip_Staff"
+          }
+        ]
       }
     }
   },
@@ -165,7 +205,17 @@
         "BasicSkillCastMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Skill.AM_OutSider_Skill",
         "UltimatePressMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_SolarFlare_Press.AM_OutSider_SolarFlare_Press",
         "UltimateReleaseMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_SolarFlare_Release.AM_OutSider_SolarFlare_Release",
-        "PotionUseMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Drink.AM_OutSider_Drink"
+        "PotionUseMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Drink.AM_OutSider_Drink",
+        "WeaponSwapMontages": [
+          {
+            "WeaponItemTag": "Arcanum.Items.Rarity.Common.Weapon.GreatSword",
+            "SwapMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Equip_Sword.AM_OutSider_Equip_Sword"
+          },
+          {
+            "WeaponItemTag": "Arcanum.Items.Rarity.Common.Weapon.Staff",
+            "SwapMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Equip_Staff.AM_OutSider_Equip_Staff"
+          }
+        ]
       }
     }
   },
@@ -199,7 +249,17 @@
         "BasicSkillCastMontage": "/Game/AnimBlueprint/Ally/07_Aiden/AM_Aiden_Skill.AM_Aiden_Skill",
         "UltimatePressMontage": "/Game/AnimBlueprint/Ally/07_Aiden/AM_Aiden_SolarFlare_Press.AM_Aiden_SolarFlare_Press",
         "UltimateReleaseMontage": "/Game/AnimBlueprint/Ally/07_Aiden/AM_Aiden_SolarFlare_Release.AM_Aiden_SolarFlare_Release",
-        "PotionUseMontage": "/Game/AnimBlueprint/Ally/07_Aiden/AM_Aiden_Drink.AM_Aiden_Drink"
+        "PotionUseMontage": "/Game/AnimBlueprint/Ally/07_Aiden/AM_Aiden_Drink.AM_Aiden_Drink",
+        "WeaponSwapMontages": [
+          {
+            "WeaponItemTag": "Arcanum.Items.Rarity.Common.Weapon.GreatSword",
+            "SwapMontage": "/Game/AnimBlueprint/Ally/07_Aiden/AM_Aiden_Equip_Sword.AM_Aiden_Equip_Sword"
+          },
+          {
+            "WeaponItemTag": "Arcanum.Items.Rarity.Common.Weapon.Staff",
+            "SwapMontage": "/Game/AnimBlueprint/Ally/07_Aiden/AM_Aiden_Equip_Staff.AM_Aiden_Equip_Staff"
+          }
+        ]
       }
     }
   },
@@ -233,7 +293,17 @@
         "BasicSkillCastMontage": "/Game/AnimBlueprint/Ally/07_Aiden/AM_Aiden_Skill.AM_Aiden_Skill",
         "UltimatePressMontage": "/Game/AnimBlueprint/Ally/07_Aiden/AM_Aiden_SolarFlare_Press.AM_Aiden_SolarFlare_Press",
         "UltimateReleaseMontage": "/Game/AnimBlueprint/Ally/07_Aiden/AM_Aiden_SolarFlare_Release.AM_Aiden_SolarFlare_Release",
-        "PotionUseMontage": "/Game/AnimBlueprint/Ally/07_Aiden/AM_Aiden_Drink.AM_Aiden_Drink"
+        "PotionUseMontage": "/Game/AnimBlueprint/Ally/07_Aiden/AM_Aiden_Drink.AM_Aiden_Drink",
+        "WeaponSwapMontages": [
+          {
+            "WeaponItemTag": "Arcanum.Items.Rarity.Common.Weapon.GreatSword",
+            "SwapMontage": "/Game/AnimBlueprint/Ally/07_Aiden/AM_Aiden_Equip_Sword.AM_Aiden_Equip_Sword"
+          },
+          {
+            "WeaponItemTag": "Arcanum.Items.Rarity.Common.Weapon.Staff",
+            "SwapMontage": "/Game/AnimBlueprint/Ally/07_Aiden/AM_Aiden_Equip_Staff.AM_Aiden_Equip_Staff"
+          }
+        ]
       }
     }
   }
