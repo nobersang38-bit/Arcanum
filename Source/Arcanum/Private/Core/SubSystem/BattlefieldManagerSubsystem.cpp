@@ -566,24 +566,10 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 
 					OutBasicAttackSkill.ComboMontages.Empty();
 
-					const FCharacterSkillMontage* basicAttackMontageData = nullptr;
-					for (const FCharacterSkillMontage& montageData : basicAttackSkillInfo->CharacterMontage)
+					const FBattleCharacterAnimSet& characterAnimSet = selectedCharacter->CharacterInfo.BattleCharacterInitData.CharacterAnimSet;
+					for (const TSoftObjectPtr<UAnimMontage>& comboMontage : characterAnimSet.BasicAttackComboMontages)
 					{
-						if (montageData.CharacterTag == selectedCharacter->Character)
-						{
-							basicAttackMontageData = &montageData;
-							break;
-						}
-					}
-
-					OutBasicAttackSkill.ComboMontages.Empty();
-
-					if (basicAttackMontageData)
-					{
-						for (const TSoftObjectPtr<UAnimMontage>& comboMontage : basicAttackMontageData->ComboMontages)
-						{
-							OutBasicAttackSkill.ComboMontages.Add(comboMontage.LoadSynchronous());
-						}
+						OutBasicAttackSkill.ComboMontages.Add(comboMontage.LoadSynchronous());
 					}
 
 					OutBasicAttackSkill.SkillClass = basicAttackSkillInfo->SkillClass.LoadSynchronous();
@@ -608,22 +594,8 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 						const int32 maxSkillLevel = basicSkillInfo->LevelModifiers.Num();
 						basicSkillLevel = FMath::Clamp(rawSkillLevel, 1, maxSkillLevel);
 
-						const FCharacterSkillMontage* basicSkillMontageData = nullptr;
-						for (const FCharacterSkillMontage& montageData : basicSkillInfo->CharacterMontage)
-						{
-							if (montageData.CharacterTag == selectedCharacter->Character)
-							{
-								basicSkillMontageData = &montageData;
-								break;
-							}
-						}
-
-						OutBasicSkill.CastMontage = nullptr;
-						if (basicSkillMontageData)
-						{
-							OutBasicSkill.CastMontage = basicSkillMontageData->CastMontage.LoadSynchronous();
-						}
-
+						const FBattleCharacterAnimSet& characterAnimSet = selectedCharacter->CharacterInfo.BattleCharacterInitData.CharacterAnimSet;
+						OutBasicSkill.CastMontage = characterAnimSet.BasicSkillCastMontage.LoadSynchronous();
 						OutBasicSkill.SkillClass = basicSkillInfo->SkillClass.LoadSynchronous();
 					}
 
@@ -659,27 +631,10 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 						const int32 maxSkillLevel = ultimateSkillInfo->LevelModifiers.Num();
 						ultimateSkillLevel = FMath::Clamp(rawSkillLevel, 1, maxSkillLevel);
 
-						const FCharacterSkillMontage* ultimateMontageData = nullptr;
-						for (const FCharacterSkillMontage& montageData : ultimateSkillInfo->CharacterMontage)
-						{
-							if (montageData.CharacterTag == selectedCharacter->Character)
-							{
-								ultimateMontageData = &montageData;
-								break;
-							}
-						}
-
-						OutUltimateSkill.CastMontage = nullptr;
-						OutUltimateSkill.PressMontage = nullptr;
-						OutUltimateSkill.ReleaseMontage = nullptr;
-
-						if (ultimateMontageData)
-						{
-							OutUltimateSkill.CastMontage = ultimateMontageData->CastMontage.LoadSynchronous();
-							OutUltimateSkill.PressMontage = ultimateMontageData->PressMontage.LoadSynchronous();
-							OutUltimateSkill.ReleaseMontage = ultimateMontageData->ReleaseMontage.LoadSynchronous();
-						}
-
+						const FBattleCharacterAnimSet& characterAnimSet = selectedCharacter->CharacterInfo.BattleCharacterInitData.CharacterAnimSet;
+						OutUltimateSkill.CastMontage = characterAnimSet.BasicSkillCastMontage.LoadSynchronous();
+						OutUltimateSkill.PressMontage = characterAnimSet.UltimatePressMontage.LoadSynchronous();
+						OutUltimateSkill.ReleaseMontage = characterAnimSet.UltimateReleaseMontage.LoadSynchronous();
 						OutUltimateSkill.SkillClass = ultimateSkillInfo->SkillClass.LoadSynchronous();
 					}
 

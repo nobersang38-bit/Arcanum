@@ -345,15 +345,45 @@ FGachaItemResult UARGameInstance::ResolvePickup(const FDTGachaBannerDataRow* Ban
 		return Result;
 	}
 
+	// 0403 픽업 캐릭터 결과 플레이어 데이터 정보에 반영 (중복 캐릭터 조각으로 안바껴서 수정)
+	auto ApplyPickupCharacterResult =
+		[this, &Result](const FGameplayTag& InCharacterTag)
+		{
+			Result.ItemTag = InCharacterTag;
+
+			if (UGameDataSubsystem* DataSubsystem = GetSubsystem<UGameDataSubsystem>())
+			{
+				const FName CharacterRowName = GetLeafNameFromTag(Result.ItemTag);
+
+				if (FDTCharacterBaseInfoRow* CharRow = DataSubsystem->GetRow<FDTCharacterBaseInfoRow>(Arcanum::DataTable::CharacterInfo, CharacterRowName))
+				{
+					if (AddCharacterToBattleCharacter(CharRow))
+					{
+						Result.Quantity = 1;
+						Result.bIsNew = true;
+					}
+					else
+					{
+						Result.Quantity = CharRow->BattleCharacterInfo.DuplicateShardReward;
+						Result.bIsNew = false;
+					}
+
+					Result.CharacterColorTexture = CharRow->BattleCharacterInfo.CharacterColor;
+					Result.CharacterSilhouetteTexture = CharRow->BattleCharacterInfo.CharacterSilhouette;
+					Result.CharacterBgTexture = CharRow->BattleCharacterInfo.CharacterBackground;
+				}
+			}
+		};
+
 	if (BannerState.bPickupGuaranteed) {
 		BannerState.bPickupGuaranteed = false;
-		Result.ItemTag = Pool.PickupCharacters[0];
+		ApplyPickupCharacterResult(Pool.PickupCharacters[0]);
 		return Result;
 	}
 
 	if (FMath::FRand() <= Pool.PickupRatio) {
 		int32 Index = FMath::RandRange(0, Pool.PickupCharacters.Num() - 1);
-		Result.ItemTag = Pool.PickupCharacters[Index];
+		ApplyPickupCharacterResult(Pool.PickupCharacters[Index]);
 	}
 	else {
 		Result.ItemTag = GetRandomFromGrade(Pool, GachaIndex, Result);
@@ -449,7 +479,18 @@ bool UARGameInstance::AddCharacterToBattleCharacter(FDTCharacterBaseInfoRow* Cha
 			}
 		}
 	}
-	return false;
+
+	// 0403 Aiden 뽑아도 데이터에 안들어와서 수정	
+	FBattleCharacterData NewCharData;
+	NewCharData.bSelection = false;
+	NewCharData.Character = CharacterTag;
+	NewCharData.CharacterInfo.BattleCharacterInitData = CharRow->BattleCharacterInfo;
+	NewCharData.CharacterInfo.CurrStarLevel = 1;
+	NewCharData.CharacterInfo.CurrShardCount = 0;
+	NewCharData.CharacterInfo.CurrGrade = CharRow->BattleCharacterInfo.DefaultGrade;
+
+	PlayerData.OwnedCharacters.Add(NewCharData);
+	return true;
 }
 void UARGameInstance::AddRandomEquipmentToInventory(FDTEquipmentInfoRow* InRow)
 {

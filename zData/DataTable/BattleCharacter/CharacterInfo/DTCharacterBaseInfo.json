@@ -10,12 +10,27 @@
       "DeathDialogue": "아직... 끝난 게 아니다...",
       "DefaultGrade": "Arcanum.Player.Grade.Common.0",
       "MaxGrade": "Arcanum.Player.Grade.Common.0",
-      "RequiredShardCount": [ 1000, 2000, 3000 ],
+      "RequiredGoldCount": [
+        1000,
+        2000,
+        3000
+      ],
       "DuplicateShardReward": 100,
       "CharacterColor": "/Game/Assets/Gacha/Character/Color/OutSiderColor.OutSiderColor",
       "CharacterSilhouette": "/Game/Assets/Gacha/Character/Silhouette/OutSiderSilhouette.OutSiderSilhouette",
       "CharacterBackground": "/Game/Assets/Gacha/Background/OutSiderBackGround.OutSiderBackGround",
-      "CharacterClass": "/Game/Character/PlayerCharacter/BP_OutSider.BP_OutSider_C"
+      "CharacterClass": "/Game/Character/PlayerCharacter/BP_OutSider.BP_OutSider_C",
+      "CharacterAnimSet": {
+        "BasicAttackComboMontages": [
+          "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_MCombo0.AM_OutSider_MCombo0",
+          "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_MCombo1.AM_OutSider_MCombo1",
+          "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_MCombo2.AM_OutSider_MCombo2"
+        ],
+        "BasicSkillCastMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Skill.AM_OutSider_Skill",
+        "UltimatePressMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_SolarFlare_Press.AM_OutSider_SolarFlare_Press",
+        "UltimateReleaseMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_SolarFlare_Release.AM_OutSider_SolarFlare_Release",
+        "PotionUseMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Drink.AM_OutSider_Drink"
+      }
     }
   },
   {
@@ -29,12 +44,27 @@
       "DeathDialogue": "아아… 다시 얼음처럼 돌아올게요!",
       "DefaultGrade": "Arcanum.Player.Grade.Common.0",
       "MaxGrade": "Arcanum.Player.Grade.Common.0",
-      "RequiredShardCount": [ 1000, 2000, 3000 ],
+      "RequiredGoldCount": [
+        1000,
+        2000,
+        3000
+      ],
       "DuplicateShardReward": 100,
       "CharacterColor": "/Game/Assets/Gacha/Character/Color/ElaraColor.ElaraColor",
       "CharacterSilhouette": "/Game/Assets/Gacha/Character/Silhouette/ElaraSilhouette.ElaraSilhouette",
       "CharacterBackground": "/Game/Assets/Gacha/Background/ElaraBackGround.ElaraBackGround",
-      "CharacterClass": "/Game/Character/PlayerCharacter/BP_Elara.BP_Elara_C"
+      "CharacterClass": "/Game/Character/PlayerCharacter/BP_Elara.BP_Elara_C",
+      "CharacterAnimSet": {
+        "BasicAttackComboMontages": [
+          "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_MCombo0.AM_OutSider_MCombo0",
+          "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_MCombo1.AM_OutSider_MCombo1",
+          "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_MCombo2.AM_OutSider_MCombo2"
+        ],
+        "BasicSkillCastMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Skill.AM_OutSider_Skill",
+        "UltimatePressMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_SolarFlare_Press.AM_OutSider_SolarFlare_Press",
+        "UltimateReleaseMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_SolarFlare_Release.AM_OutSider_SolarFlare_Release",
+        "PotionUseMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Drink.AM_OutSider_Drink"
+      }
     }
   },
   {
@@ -48,12 +78,27 @@
       "DeathDialogue": "저... 죄송해요... 다시 일어날 수 있을까요?",
       "DefaultGrade": "Arcanum.Player.Grade.Common.0",
       "MaxGrade": "Arcanum.Player.Grade.Common.0",
-      "RequiredShardCount": [ 1000, 2000, 3000 ],
+      "RequiredGoldCount": [
+        1000,
+        2000,
+        3000
+      ],
       "DuplicateShardReward": 100,
       "CharacterColor": "/Game/Assets/Gacha/Character/Color/IrisColor.IrisColor",
       "CharacterSilhouette": "/Game/Assets/Gacha/Character/Silhouette/IrisSilhouette.IrisSilhouette",
       "CharacterBackground": "/Game/Assets/Gacha/Background/IrisBackGround.IrisBackGround",
-      "CharacterClass": "/Game/Character/PlayerCharacter/BP_Iris.BP_Iris_C"
+      "CharacterClass": "/Game/Character/PlayerCharacter/BP_Iris.BP_Iris_C",
+      "CharacterAnimSet": {
+        "BasicAttackComboMontages": [
+          "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_MCombo0.AM_OutSider_MCombo0",
+          "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_MCombo1.AM_OutSider_MCombo1",
+          "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_MCombo2.AM_OutSider_MCombo2"
+        ],
+        "BasicSkillCastMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Skill.AM_OutSider_Skill",
+        "UltimatePressMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_SolarFlare_Press.AM_OutSider_SolarFlare_Press",
+        "UltimateReleaseMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_SolarFlare_Release.AM_OutSider_SolarFlare_Release",
+        "PotionUseMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Drink.AM_OutSider_Drink"
+      }
     }
   },
   {
@@ -67,12 +112,27 @@
       "DeathDialogue": "내가 진다고…? 웃기는 군.",
       "DefaultGrade": "Arcanum.Player.Grade.Rare.1",
       "MaxGrade": "Arcanum.Player.Grade.Rare.1",
-      "RequiredShardCount": [ 2000, 4000, 6000 ],
+      "RequiredGoldCount": [
+        2000,
+        4000,
+        6000
+      ],
       "DuplicateShardReward": 200,
       "CharacterColor": "/Game/Assets/Gacha/Character/Color/CelestiaColor.CelestiaColor",
       "CharacterSilhouette": "/Game/Assets/Gacha/Character/Silhouette/CelestiaSilhouette.CelestiaSilhouette",
       "CharacterBackground": "/Game/Assets/Gacha/Background/CelestiaBackGround.CelestiaBackGround",
-      "CharacterClass": "/Game/Character/PlayerCharacter/BP_Celestia.BP_Celestia_C"
+      "CharacterClass": "/Game/Character/PlayerCharacter/BP_Celestia.BP_Celestia_C",
+      "CharacterAnimSet": {
+        "BasicAttackComboMontages": [
+          "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_MCombo0.AM_OutSider_MCombo0",
+          "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_MCombo1.AM_OutSider_MCombo1",
+          "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_MCombo2.AM_OutSider_MCombo2"
+        ],
+        "BasicSkillCastMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Skill.AM_OutSider_Skill",
+        "UltimatePressMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_SolarFlare_Press.AM_OutSider_SolarFlare_Press",
+        "UltimateReleaseMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_SolarFlare_Release.AM_OutSider_SolarFlare_Release",
+        "PotionUseMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Drink.AM_OutSider_Drink"
+      }
     }
   },
   {
@@ -86,12 +146,27 @@
       "DeathDialogue": "하하… 잠깐 쉬어가겠다.",
       "DefaultGrade": "Arcanum.Player.Grade.Rare.1",
       "MaxGrade": "Arcanum.Player.Grade.Rare.1",
-      "RequiredShardCount": [ 2000, 4000, 6000 ],
+      "RequiredGoldCount": [
+        2000,
+        4000,
+        6000
+      ],
       "DuplicateShardReward": 200,
       "CharacterColor": "/Game/Assets/Gacha/Character/Color/LynetteColor.LynetteColor",
       "CharacterSilhouette": "/Game/Assets/Gacha/Character/Silhouette/LynetteSilhouette.LynetteSilhouette",
       "CharacterBackground": "/Game/Assets/Gacha/Background/LynetteBackGround.LynetteBackGround",
-      "CharacterClass": "/Game/Character/PlayerCharacter/BP_Lynette.BP_Lynette_C"
+      "CharacterClass": "/Game/Character/PlayerCharacter/BP_Lynette.BP_Lynette_C",
+      "CharacterAnimSet": {
+        "BasicAttackComboMontages": [
+          "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_MCombo0.AM_OutSider_MCombo0",
+          "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_MCombo1.AM_OutSider_MCombo1",
+          "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_MCombo2.AM_OutSider_MCombo2"
+        ],
+        "BasicSkillCastMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Skill.AM_OutSider_Skill",
+        "UltimatePressMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_SolarFlare_Press.AM_OutSider_SolarFlare_Press",
+        "UltimateReleaseMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_SolarFlare_Release.AM_OutSider_SolarFlare_Release",
+        "PotionUseMontage": "/Game/AnimBlueprint/Ally/11_OutSider/AM_OutSider_Drink.AM_OutSider_Drink"
+      }
     }
   },
   {
@@ -105,12 +180,27 @@
       "DeathDialogue": "하하… 결국… 나도 끝인가 보네…",
       "DefaultGrade": "Arcanum.Player.Grade.Epic.2",
       "MaxGrade": "Arcanum.Player.Grade.Epic.2",
-      "RequiredShardCount": [ 3000, 6000, 9000 ],
+      "RequiredGoldCount": [
+        3000,
+        6000,
+        9000
+      ],
       "DuplicateShardReward": 300,
       "CharacterColor": "/Game/Assets/Gacha/Character/Color/ArnaColor.ArnaColor",
       "CharacterSilhouette": "/Game/Assets/Gacha/Character/Silhouette/ArnaSilhouette.ArnaSilhouette",
       "CharacterBackground": "/Game/Assets/Gacha/Background/ArnaBackGround.ArnaBackGround",
-      "CharacterClass": "/Game/Character/PlayerCharacter/BP_Arna.BP_Arna_C"
+      "CharacterClass": "/Game/Character/PlayerCharacter/BP_Arna.BP_Arna_C",
+      "CharacterAnimSet": {
+        "BasicAttackComboMontages": [
+          "/Game/AnimBlueprint/Ally/07_Aiden/AM_Aiden_MCombo0.AM_Aiden_MCombo0",
+          "/Game/AnimBlueprint/Ally/07_Aiden/AM_Aiden_MCombo1.AM_Aiden_MCombo1",
+          "/Game/AnimBlueprint/Ally/07_Aiden/AM_Aiden_MCombo2.AM_Aiden_MCombo2"
+        ],
+        "BasicSkillCastMontage": "/Game/AnimBlueprint/Ally/07_Aiden/AM_Aiden_Skill.AM_Aiden_Skill",
+        "UltimatePressMontage": "/Game/AnimBlueprint/Ally/07_Aiden/AM_Aiden_SolarFlare_Press.AM_Aiden_SolarFlare_Press",
+        "UltimateReleaseMontage": "/Game/AnimBlueprint/Ally/07_Aiden/AM_Aiden_SolarFlare_Release.AM_Aiden_SolarFlare_Release",
+        "PotionUseMontage": "/Game/AnimBlueprint/Ally/07_Aiden/AM_Aiden_Drink.AM_Aiden_Drink"
+      }
     }
   },
   {
@@ -124,12 +214,27 @@
       "DeathDialogue": "이 싸움… 반드시 끝을 보겠어…",
       "DefaultGrade": "Arcanum.Player.Grade.Epic.2",
       "MaxGrade": "Arcanum.Player.Grade.Epic.2",
-      "RequiredShardCount": [ 3000, 6000, 9000 ],
+      "RequiredGoldCount": [
+        3000,
+        6000,
+        9000
+      ],
       "DuplicateShardReward": 300,
       "CharacterColor": "/Game/Assets/Gacha/Character/Color/AidenColor.AidenColor",
       "CharacterSilhouette": "/Game/Assets/Gacha/Character/Silhouette/AidenSilhouette.AidenSilhouette",
       "CharacterBackground": "/Game/Assets/Gacha/Background/AidenBackGround.AidenBackGround",
-      "CharacterClass": "/Game/Character/PlayerCharacter/BP_Aiden.BP_Aiden_C"
+      "CharacterClass": "/Game/Character/PlayerCharacter/BP_Aiden.BP_Aiden_C",
+      "CharacterAnimSet": {
+        "BasicAttackComboMontages": [
+          "/Game/AnimBlueprint/Ally/07_Aiden/AM_Aiden_MCombo0.AM_Aiden_MCombo0",
+          "/Game/AnimBlueprint/Ally/07_Aiden/AM_Aiden_MCombo1.AM_Aiden_MCombo1",
+          "/Game/AnimBlueprint/Ally/07_Aiden/AM_Aiden_MCombo2.AM_Aiden_MCombo2"
+        ],
+        "BasicSkillCastMontage": "/Game/AnimBlueprint/Ally/07_Aiden/AM_Aiden_Skill.AM_Aiden_Skill",
+        "UltimatePressMontage": "/Game/AnimBlueprint/Ally/07_Aiden/AM_Aiden_SolarFlare_Press.AM_Aiden_SolarFlare_Press",
+        "UltimateReleaseMontage": "/Game/AnimBlueprint/Ally/07_Aiden/AM_Aiden_SolarFlare_Release.AM_Aiden_SolarFlare_Release",
+        "PotionUseMontage": "/Game/AnimBlueprint/Ally/07_Aiden/AM_Aiden_Drink.AM_Aiden_Drink"
+      }
     }
   }
 ]

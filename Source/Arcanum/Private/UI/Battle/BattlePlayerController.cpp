@@ -528,6 +528,27 @@ void ABattlePlayerController::SkillCancel()
 			UltimateSkillEnd();
 		}
 	}
+
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(GetPawn());
+	if (!playerCharacter) return;
+
+	USkeletalMeshComponent* meshComp = playerCharacter->GetMesh();
+	if (!meshComp) return;
+
+	UAnimInstance* animInstance = meshComp->GetAnimInstance();
+	if (!animInstance) return;
+	if (!battleSubsystem) return;
+
+	const FBattleSkillData* currentBasicSkill = battleSubsystem->GetCurrentBasicSkillData();
+	if (!currentBasicSkill) return;
+
+	UAnimMontage* montage = currentBasicSkill->CastMontage;
+	if (!montage) return;
+
+	if (animInstance->Montage_IsPlaying(montage))
+	{
+		animInstance->Montage_Stop(0.1f, montage);
+	}
 }
 
 bool ABattlePlayerController::SkillCostChecker(FGameplayTag InSkillTag, int32 InLevel, bool bIsOnlyManaCheck)
@@ -921,8 +942,8 @@ void ABattlePlayerController::SetPlayerHealthProgress(float CurrentHealth, float
 
 void ABattlePlayerController::WeaponSwap()
 {
-	if (!TryExecuteBattleAction(EBattleActionType::WeaponSwap)) return;
 	SkillCancel();
+	if (!TryExecuteBattleAction(EBattleActionType::WeaponSwap)) return;
 
 	if (UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>())
 	{
@@ -1068,9 +1089,11 @@ void ABattlePlayerController::UseBattlePotion(int32 InSlotIndex)
 	if (!meshComp) return;
 
 	// 몽타주
-	if (!potionRow->UseMontage.IsNull())
+	if (const FBattleCharacterData* selectedCharacter = battleSubsystem->GetSelectedCharacterData())
 	{
-		if (UAnimMontage* useMontage = potionRow->UseMontage.LoadSynchronous())
+		const FBattleCharacterAnimSet& characterAnimSet = selectedCharacter->CharacterInfo.BattleCharacterInitData.CharacterAnimSet;
+
+		if (UAnimMontage* useMontage = characterAnimSet.PotionUseMontage.LoadSynchronous())
 		{
 			if (UAnimInstance* animInstance = meshComp->GetAnimInstance())
 			{
