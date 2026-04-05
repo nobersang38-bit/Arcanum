@@ -149,13 +149,12 @@ void UGachaHUDWidget::UpdateDetailedImage(TSoftObjectPtr<UTexture2D> NewTexture)
 // ========================================================
 void UGachaHUDWidget::RequestGacha(int32 InPullCount)
 {
-    if (ParentLobby->CachedPlayerData.Mailbox.Num() >= ParentLobby->CachedPlayerData.MailboxCapacity) {
-        // 0403 메일박스 Dialog로 창 띄우기
-        //UE_LOG(LogTemp, Warning, TEXT("Mailbox Full! Cannot execute gacha."));
-        ParentLobby->ShowMailboxFullDialog();
+    // 0403 메일박스 다 차면 Dialog 창 띄우기, 캐릭터는 메일박스 다 차도 띄우기 않기
 
-        return;
-    }
+    //if (ParentLobby->CachedPlayerData.Mailbox.Num() >= ParentLobby->CachedPlayerData.MailboxCapacity) {
+    //    UE_LOG(LogTemp, Warning, TEXT("Mailbox Full! Cannot execute gacha."));
+    //    return;
+    //}
 
    //FPlayerAccountService::UpdateCurrency(this, ParentLobby->CachedPlayerData, Arcanum::PlayerData::Currencies::NonRegen::Soul::Value, 10000);
     //ParentLobby->CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
@@ -168,6 +167,27 @@ void UGachaHUDWidget::RequestGacha(int32 InPullCount)
     }
 
     FGameplayTag SelectedTag = CurrentSelectedButton->BannerTag;
+
+    const FDTGachaBannerDataRow* SelectedData = nullptr;
+    for (const FDTGachaBannerDataRow& Data : ActiveBannerDataList)
+    {
+        if (Data.BannerTag == SelectedTag)
+        {
+            SelectedData = &Data;
+            break;
+        }
+    }
+    if (!SelectedData) return;
+
+    if (SelectedData->GachaTypeTag == Arcanum::Gacha::Type::WeaponPickup::WeaponPickup)
+    {
+        if (ParentLobby->CachedPlayerData.Mailbox.Num() >= ParentLobby->CachedPlayerData.MailboxCapacity)
+        {
+            ParentLobby->ShowMailboxFullDialog();
+            return;
+        }
+    }
+
     bool bSuccess = FPlayerAccountService::ExecuteGacha(this, ParentLobby->CachedPlayerData, SelectedTag, CurrencyCost, InPullCount);
      
     /// Test : 가챠 연출 출력 부분
@@ -177,7 +197,6 @@ void UGachaHUDWidget::RequestGacha(int32 InPullCount)
         if (GachaMap.IsNull() == false) UGameplayStatics::OpenLevelBySoftObjectPtr(this, GachaMap);
     }
     else UE_LOG(LogTemp, Error, TEXT("Gacha Request Failed (Insufficient Currency?)"));
-
 }
 // ========================================================
 // 픽업 선택 버튼 관련 (테스트용 : Epic 확정)
