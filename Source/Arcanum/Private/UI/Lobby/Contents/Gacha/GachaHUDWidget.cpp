@@ -150,7 +150,10 @@ void UGachaHUDWidget::UpdateDetailedImage(TSoftObjectPtr<UTexture2D> NewTexture)
 void UGachaHUDWidget::RequestGacha(int32 InPullCount)
 {
     if (ParentLobby->CachedPlayerData.Mailbox.Num() >= ParentLobby->CachedPlayerData.MailboxCapacity) {
-        UE_LOG(LogTemp, Warning, TEXT("Mailbox Full! Cannot execute gacha."));
+        // 0403 메일박스 Dialog로 창 띄우기
+        //UE_LOG(LogTemp, Warning, TEXT("Mailbox Full! Cannot execute gacha."));
+        ParentLobby->ShowMailboxFullDialog();
+
         return;
     }
 

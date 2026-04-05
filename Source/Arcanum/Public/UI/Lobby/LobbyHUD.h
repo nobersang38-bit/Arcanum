@@ -31,7 +31,7 @@ class UEnhancementHUDWidget;
 class UGameTimeSubsystem;
 class UBattleHUDWidget;
 class UCommonOptionWindow;
-
+class UMailboxPanelWidget;
 struct FDTItemCatalogRow;
 
 
@@ -164,7 +164,6 @@ protected:
 
 #pragma region 강화
 protected:
-	/* 강화 위젯 */
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UEnhancementHUDWidget> EnhancementHUDWidget;
 
@@ -178,20 +177,27 @@ public:
 	/* Getter: 인벤 총 생성 슬롯 */
 	int32 GetInventoryCapacity() const { return FMath::Max(0, CachedPlayerData.InventoryCapacity); }
 
+	/* 인벤토리 가득 참 */
+	UFUNCTION()
+	void HandleInventoryFull();
+
 protected:
-	/* 인벤토리 위젯 */
+	UFUNCTION()
+	void OnInventoryFullDialogResult(EDialogResult InResult);
+
+protected:
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidgetOptional))
+	TObjectPtr<UCommonDialog> InventoryFullCommonDialog;
+
+protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UInventoryHUDWidget> InventoryHUDWidget;
 #pragma endregion
 
 #pragma region 상점
 protected:
-	/* 상점 위젯 */
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UShopHUDWidget> ShopHUDWidget;
-
-#pragma endregion
-
 #pragma endregion
 
 #pragma region 가챠
@@ -203,6 +209,28 @@ protected:
 	TSubclassOf<UCommonOptionWindow> SettingHUDClass;
 	UPROPERTY()
 	TObjectPtr<UCommonOptionWindow> SettingHUD;
+#pragma endregion
+
+#pragma region 메일박스	
+public:
+	void ShowMailboxFullDialog();
+
+	UFUNCTION()
+	void OnMailboxFullDialogResult(EDialogResult InResult);
+
+private:
+	UFUNCTION()
+	void ClickMailboxBtn();
+
+protected:
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UCommonBtnWidget> MailboxBtn;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidgetOptional))
+	TObjectPtr<UMailboxPanelWidget> MailboxPanelWidget;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidgetOptional))
+	TObjectPtr<UCommonDialog> MailboxFullCommonDialog;
 #pragma endregion
 
 #pragma region 종료

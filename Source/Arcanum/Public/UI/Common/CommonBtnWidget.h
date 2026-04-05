@@ -52,6 +52,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Button Settings")
     void SetButtonText(FText InText);
 
+    UFUNCTION(BlueprintCallable, Category = "Button Settings")
+    void SetIconOpacity(float InOpacity);
+
     UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Button Settings")
     void SetSelectedState(bool bIsSelected);
     virtual void SetSelectedState_Implementation(bool bIsSelected);

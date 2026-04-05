@@ -76,6 +76,14 @@ void UCommonBtnWidget::SetButtonText(FText InText)
     if (ButtonLabel) ButtonLabel->SetText(DisplayText);
 }
 
+void UCommonBtnWidget::SetIconOpacity(float InOpacity)
+{
+    if (IconButton)
+    {
+        IconButton->SetRenderOpacity(InOpacity);
+    }
+}
+
 void UCommonBtnWidget::SetSelectedState_Implementation(bool bIsSelected)
 {
     bIsSelectedState = bIsSelected;
