@@ -202,8 +202,8 @@ void UCharacterHUDWidget::InitServantCharacter()
 // ========================================================
 void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlot, FName CharacterName, bool SlotCharacterOwned)
 {
-	FCurrencyData* soulData = ParentLobby->CachedPlayerData.PlayerCurrency.CurrencyDatas.Find(Arcanum::PlayerData::Currencies::NonRegen::Soul::Value);
-	const int64 soulAmount = (soulData) ? soulData->CurrAmount : 0;
+	FCurrencyData* GoldData = ParentLobby->CachedPlayerData.PlayerCurrency.CurrencyDatas.Find(Arcanum::PlayerData::Currencies::NonRegen::Gold::Value);
+	const int64 GoldAmount = (GoldData) ? GoldData->CurrAmount : 0;
 
 	CombinedInfoString = "";
 	CurrentSelectedCharacterName = CharacterName;
@@ -228,8 +228,8 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
 			// 최대 강화를 넘지 않기 위해
 			if (TargetGradeIndex < 3)
 			{
-				RequiredSoul = TargetData.CharacterInfo.BattleCharacterInitData.RequiredShardCount[TargetGradeIndex];
-				ButtonText = FText::Format(FText::FromString(TEXT("강화 : {0} 소울")), FText::AsNumber(RequiredSoul));
+				RequiredSoul = TargetData.CharacterInfo.BattleCharacterInitData.RequiredGoldCount[TargetGradeIndex];
+				ButtonText = FText::Format(FText::FromString(TEXT("강화 : {0} 골드")), FText::AsNumber(RequiredSoul));
 			}
 			else
 			{
@@ -272,7 +272,7 @@ void UCharacterHUDWidget::OnCharacterSlotSelected(URoundedSlotWidget* ClickedSlo
 			}
 			FinalText = FText::FromString(CombinedInfoString);
 			// 캐릭터 info창 바꾸기
-			UpdateCharacterInfo(CharacterName, TargetData.bSelection, SlotCharacterOwned, FinalText, ButtonText, soulAmount);
+			UpdateCharacterInfo(CharacterName, TargetData.bSelection, SlotCharacterOwned, FinalText, ButtonText, GoldAmount);
 		}
 
 		if (CreatedCharacterSlots.IsValidIndex(i))
@@ -400,14 +400,14 @@ void UCharacterHUDWidget::UpdateSlotVisuals(const TMap<FGameplayTag, FGuid>& InE
 
 void UCharacterHUDWidget::CharacterEnhancement(FText InCharacterName, int32 InRequiredSoul)
 {
-	// 이미 보유하고 있는 캐릭터, 소울이 충분한 경우에만 클릭이 되도록 해놓음
-	// 소울 소비
-	FCurrencyData* soulData = ParentLobby->CachedPlayerData.PlayerCurrency.CurrencyDatas.Find(Arcanum::PlayerData::Currencies::NonRegen::Soul::Value);
-	const int64 soulAmount = (soulData) ? soulData->CurrAmount : 0;
+	// 이미 보유하고 있는 캐릭터, 골드이 충분한 경우에만 클릭이 되도록 해놓음
+	// 골드 소비
+	FCurrencyData* GOldData = ParentLobby->CachedPlayerData.PlayerCurrency.CurrencyDatas.Find(Arcanum::PlayerData::Currencies::NonRegen::Gold::Value);
+	const int64 GOldAmount = (GOldData) ? GOldData->CurrAmount : 0;
 	/*if (soulAmount >= InRequiredSoul)
 		soulData->CurrAmount -= InRequiredSoul;*/
 	/// TODO : UpdateCurrency 사용시 캐릭터 CurrStarLevel가 초기화됨
-	FPlayerAccountService::UpdateCurrency(this, ParentLobby->CachedPlayerData, Arcanum::PlayerData::Currencies::NonRegen::Soul::Value, InRequiredSoul * -1);
+	FPlayerAccountService::UpdateCurrency(this, ParentLobby->CachedPlayerData, Arcanum::PlayerData::Currencies::NonRegen::Gold::Value, InRequiredSoul * -1);
 
 	FName SelectedCharacterName;
 	CombinedInfoString = "";
@@ -447,8 +447,8 @@ void UCharacterHUDWidget::CharacterEnhancement(FText InCharacterName, int32 InRe
 						// 최대 강화를 넘지 않기 위해
 						if (TargetGradeIndex < 3)
 						{
-							RequiredSoul = UpdateTargetData.CharacterInfo.BattleCharacterInitData.RequiredShardCount[TargetGradeIndex];
-							ButtonText = FText::Format(FText::FromString(TEXT("강화 : {0} 소울")), FText::AsNumber(RequiredSoul));
+							RequiredSoul = UpdateTargetData.CharacterInfo.BattleCharacterInitData.RequiredGoldCount[TargetGradeIndex];
+							ButtonText = FText::Format(FText::FromString(TEXT("강화 : {0} 골드")), FText::AsNumber(RequiredSoul));
 						}
 						else
 						{
@@ -492,7 +492,7 @@ void UCharacterHUDWidget::CharacterEnhancement(FText InCharacterName, int32 InRe
 						FinalText = FText::FromString(CombinedInfoString);
 						// Info창 다시 불러오기
 						//const int64 updatedSoulAmount = soulData ? soulData->CurrAmount : 0;
-						UpdateCharacterInfo(SelectedCharacterName, UpdateTargetData.bSelection, true, FinalText, ButtonText, soulAmount);
+						UpdateCharacterInfo(SelectedCharacterName, UpdateTargetData.bSelection, true, FinalText, ButtonText, GOldAmount);
 						//ParentLobby->CachedPlayerData = FPlayerAccountService::GetPlayerDataCopy(this);
 						break;
 					}

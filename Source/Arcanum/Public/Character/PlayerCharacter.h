@@ -224,6 +224,7 @@ public:
 	bool GetIsUltimateReleaseMontagePlaying() const { return bIsUltimateReleaseMontagePlaying; }
 	const FVector GetUltimateLocation() const;
 	bool GetIsCommonSkillMontagePlaying() const { return bIsCommonSkillMontagePlaying; }
+	bool GetIsBasicAttackMontagePlaying() const { return bIsBasicAttackMontagePlaying; }
 
 private:
 	/* 체력 리젠 변경 시 체력바 갱신 */
@@ -262,6 +263,10 @@ protected:
 	/* 기본공격 콤보 상태 초기화 */
 	UFUNCTION()
 	void ResetBasicAttackCombo();
+
+private:
+	/* 현재 콤보 인덱스 몽타주 재생 */
+	void PlayBasicAttackComboMontage();
 
 private:
 	int32 BasicAttackComboIndex = 0;

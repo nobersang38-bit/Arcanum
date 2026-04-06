@@ -23,13 +23,21 @@ struct FInBattleData
 {
 	GENERATED_BODY()
 public:
+	UPROPERTY()
 	FPlayerData PlayerData;
+	UPROPERTY()
 	FStageDataInfo StageData;
+	UPROPERTY()
 	FBattleStageInfo BattleStageInfo;
+	UPROPERTY()
 	FGradeStatData PlayerBattleStat;
+	UPROPERTY()
 	FBattleWeaponSkillData BattleWeaponSkill;
+	UPROPERTY()
 	FPlayerBattleData PlayerBattleData;
+	UPROPERTY()
 	TArray<FDerivedStatModifier> EquippedOwnerStats;
+
 	TMap<FGameplayTag, TMap<FGameplayTag, FDerivedStatModifier>> WeaponOnHitTarget;
 };
 
@@ -157,6 +165,7 @@ protected:
 #pragma endregion
 
 #pragma region 데이터 캐시
+	UPROPERTY()
 	FInBattleData InBattleData;
 
 	UPROPERTY()
@@ -278,6 +287,9 @@ public:
 	/* 현재 전설스킬 캐시 Get */
 	const FBattleSkillData* GetCurrentLegendarySkillData() const;
 
+	/* 현재 선택된 플레이어 캐릭터 반환 */
+	const FBattleCharacterData* GetSelectedCharacterData() const;
+
 	/* 쿨타임 */
 	float GetCurrentBasicAttackCooldown() const;
 	float GetCurrentBasicSkillCooldown() const;
@@ -316,9 +328,6 @@ protected:
 
 	/* Guid로 인벤토리에서 장비 찾기 */
 	const FEquipmentInfo* FindEquipmentByGuid(const FPlayerData& InPlayerData, const FGuid& InItemGuid) const;
-
-	/* 현재 선택된 플레이어 캐릭터 반환 */
-	const FBattleCharacterData* GetSelectedCharacterData() const;
 
 	/* 현재 선택 캐릭터가 지정한 세트 루트 태그를 4개 장착했는지 확인 */
 	UFUNCTION()

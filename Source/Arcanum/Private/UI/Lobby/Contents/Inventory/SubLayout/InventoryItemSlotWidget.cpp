@@ -187,8 +187,11 @@ void UInventoryItemSlotWidget::RefreshTooltip()
 	{
 		if (!FItemDetailHelper::BuildEquipmentDisplayViewData(this, ViewSlot.ItemGuid, viewData))
 		{
-			SetToolTip(nullptr);
-			return;
+			if (!FItemDetailHelper::BuildMailboxEquipmentDisplayViewData(this, ViewSlot.ItemGuid, viewData))
+			{
+				SetToolTip(nullptr);
+				return;
+			}
 		}
 	}
 	else if (ViewSlot.Type == EInventoryViewSlotType::StackItem)

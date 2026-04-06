@@ -561,6 +561,8 @@ void APlayerCharacter::ClearWeaponMesh()
 
 void APlayerCharacter::PlayUltimatePressMontage()
 {
+	ResetBasicAttackCombo();
+
 	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 	if (!battleSubsystem) return;
 
@@ -659,15 +661,6 @@ void APlayerCharacter::OnPlayerRegenStatChanged(const FRegenStat& InRegenStat)
 
 void APlayerCharacter::HandleBasicAttackInput()
 {
-	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
-	if (!battleSubsystem) return;
-	const FBattleSkillData* currentBasicAttackSkill = battleSubsystem->GetCurrentBasicAttackSkillData();
-	if (!currentBasicAttackSkill) return;
-	USkeletalMeshComponent* meshComp = GetMesh();
-	if (!meshComp) return;
-	UAnimInstance* animInstance = meshComp->GetAnimInstance();
-	if (!animInstance) return;
-
 	if (bIsBasicAttackMontagePlaying)
 	{
 		if (bCanNextComboInput)
@@ -676,6 +669,23 @@ void APlayerCharacter::HandleBasicAttackInput()
 		}
 		return;
 	}
+
+	PlayBasicAttackComboMontage();
+}
+
+void APlayerCharacter::PlayBasicAttackComboMontage()
+{
+	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (!battleSubsystem) return;
+
+	const FBattleSkillData* currentBasicAttackSkill = battleSubsystem->GetCurrentBasicAttackSkillData();
+	if (!currentBasicAttackSkill) return;
+
+	USkeletalMeshComponent* meshComp = GetMesh();
+	if (!meshComp) return;
+
+	UAnimInstance* animInstance = meshComp->GetAnimInstance();
+	if (!animInstance) return;
 
 	if (!currentBasicAttackSkill->ComboMontages.IsValidIndex(BasicAttackComboIndex))
 	{
@@ -697,8 +707,7 @@ void APlayerCharacter::HandleBasicAttackInput()
 	FOnMontageEnded montageEndedDelegate;
 	montageEndedDelegate.BindUObject(this, &APlayerCharacter::OnBasicAttackMontageEnded);
 
-	float MontagePlayRate = StatComponent->FindNonRegenStat(Arcanum::BattleStat::Character::NonRegen::AttackSpeed::Root)->GetTotalValue();
-	animInstance->Montage_Play(montage, MontagePlayRate);
+	animInstance->Montage_Play(montage);
 	animInstance->Montage_SetEndDelegate(montageEndedDelegate, montage);
 }
 
@@ -747,13 +756,13 @@ void APlayerCharacter::ProceedBasicAttackCombo()
 		bCanNextComboInput = false;
 		BasicAttackComboIndex++;
 
-		HandleBasicAttackInput();
+		FTimerDelegate timerDelegate;
+		timerDelegate.BindUObject(this, &APlayerCharacter::PlayBasicAttackComboMontage);
+		GetWorld()->GetTimerManager().SetTimerForNextTick(timerDelegate);
+		return;
+	}
 
-	}
-	else
-	{
-		ResetBasicAttackCombo();
-	}
+	ResetBasicAttackCombo();
 }
 void APlayerCharacter::ResetBasicAttackCombo()
 {
@@ -765,6 +774,8 @@ void APlayerCharacter::ResetBasicAttackCombo()
 
 void APlayerCharacter::HandleCommonSkillInput()
 {
+	ResetBasicAttackCombo();
+
 	if (bIsCommonSkillMontagePlaying) return;
 	UBattlefieldManagerSubsystem* battleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 	if (!battleSubsystem) return;

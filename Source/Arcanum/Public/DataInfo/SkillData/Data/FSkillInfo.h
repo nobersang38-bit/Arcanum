@@ -25,7 +25,6 @@ struct FLevelModifierEntry
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     TObjectPtr<UNiagaraSystem> Effect;
 
-
     /** 스킬이 맞은 상대에게 적용될 StatModifier */
     UPROPERTY(EditAnywhere)
     TArray<FDerivedStatModifier> OtherCharacterModifiers;
@@ -41,6 +40,7 @@ struct FLevelModifierEntry
  * 이 구조체는 계산 로직을 가지지 않으며,
  * 오직 현재 상태와 기본 정의값만 저장한다.
  */
+
 USTRUCT(BlueprintType)
 struct FSkillInfo {
     GENERATED_BODY()
@@ -62,15 +62,6 @@ struct FSkillInfo {
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     float EnabledRange = 300.0f;
-
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    TArray<TSoftObjectPtr<UAnimMontage>> ComboMontages;
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    TSoftObjectPtr<UAnimMontage> CastMontage;
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    TSoftObjectPtr<UAnimMontage> PressMontage;
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    TSoftObjectPtr<UAnimMontage> ReleaseMontage;
 
     /** 실행용 스킬 클래스 (BP) */
     UPROPERTY(EditAnywhere, BlueprintReadOnly)

@@ -16,6 +16,7 @@
 
 // 스태틱 관련 
 FOnSaveCompleted FPlayerAccountService::OnSaveCompleted;
+FOnInventoryFull FPlayerAccountService::OnInventoryFull;
 
 // ========================================================
 // 인터페이스(추후 서버 대비용 예시)
@@ -609,7 +610,7 @@ bool FPlayerAccountService::IsItemEquippedCharacter(const UObject* WorldContextO
 	{
 		const FName characterName = GetLeafNameFromTag(characterData.CharacterInfo.BattleCharacterInitData.CharacterTag);
 		if (characterName != InCharacterName) continue;
-	
+
 		for (const TPair<FGameplayTag, FGuid>& pair : characterData.WeaponSlots)
 		{
 			if (pair.Value == InItemGuid)
@@ -1395,7 +1396,13 @@ bool FPlayerAccountService::CanAddGuidItem(const FPlayerData& InPlayerData, UARG
 
 	const int32 usedStackSlots = GetUsedStackSlotCount(InPlayerData, InGameInstance);
 
-	return (usedGuidSlots + usedStackSlots + 1) <= maxSlots;
+	if ((usedGuidSlots + usedStackSlots + 1) > maxSlots)
+	{
+		OnInventoryFull.Broadcast();
+		return false;
+	}
+
+	return true;
 }
 
 bool FPlayerAccountService::CanAddStackItem(const FPlayerData& InPlayerData, UARGameInstance* InGameInstance, const FGameplayTag& InItemTag, int32 InAddCount, int32 InInventoryCapacity)
@@ -1419,7 +1426,13 @@ bool FPlayerAccountService::CanAddStackItem(const FPlayerData& InPlayerData, UAR
 			const int32 oldCount = InPlayerData.StackCounts.FindRef(InItemTag);
 			const int32 extraSlotsNeeded = GetExtraStackSlotsNeeded(oldCount, InAddCount, catalogRow->MaxStack);
 
-			return (usedGuidSlots + usedStackSlots + extraSlotsNeeded) <= maxSlots;
+			if ((usedGuidSlots + usedStackSlots + extraSlotsNeeded) > maxSlots)
+			{
+				OnInventoryFull.Broadcast();
+				return false;
+			}
+
+			return true;
 		}
 	}
 
@@ -1632,12 +1645,12 @@ bool FPlayerAccountService::ExecuteGacha(const UObject* WorldContextObject, cons
 
 	if (GI->GenerateResults(BannerData, PullCount)) {
 		UpdateCurrency(WorldContextObject, PlayerData, Cost.ConsumptionCurrencyTag, -SpendAmount);
-		
+
 		FGachaData& GachaState = GI->GetPlayerData().GachaState;
 		FGachaBannerState& TargetState = GachaState.BannerStates.FindOrAdd(BannerTag);
 		//TargetState.PityCount += PullCount;
 		SavePlayerData(GI);
-		
+
 		res = true;
 	}
 
@@ -1668,6 +1681,65 @@ bool FPlayerAccountService::ExecuteGachaTest(const UObject* WorldContextObject, 
 
 	return res;
 }
+
+// ========================================================
+// MailBox Widget 관련
+// // ========================================================
+bool FPlayerAccountService::ReceiveMailboxItem(const UObject* WorldContextObject, int32 InMailIndex)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return false;
+	FPlayerData& playerData = GI->GetPlayerData();
+
+	if (!playerData.Mailbox.IsValidIndex(InMailIndex)) return false;
+
+	if (!CanAddGuidItem(playerData, GI, playerData.InventoryCapacity)) return false;
+
+	const FMailItem& mailItem = playerData.Mailbox[InMailIndex];
+	if (!mailItem.Equipment.ItemGuid.IsValid()) return false;
+
+	playerData.Inventory.Add(mailItem.Equipment);
+	playerData.Mailbox.RemoveAt(InMailIndex);
+
+	return SavePlayerData(GI);
+}
+
+bool FPlayerAccountService::ReceiveAllMailboxItems(const UObject* WorldContextObject)
+{
+	UARGameInstance* GI = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!GI) return false;
+
+	FPlayerData& playerData = GI->GetPlayerData();
+
+	if (playerData.Mailbox.Num() <= 0) return false;
+
+	const int32 oldMailboxNum = playerData.Mailbox.Num();
+
+	for (int32 mailIndex = oldMailboxNum - 1; mailIndex >= 0; mailIndex--)
+	{
+		if (playerData.Mailbox.IsValidIndex(mailIndex))
+		{
+			if (CanAddGuidItem(playerData, GI, playerData.InventoryCapacity))
+			{
+				const FMailItem& mailItem = playerData.Mailbox[mailIndex];
+
+				if (mailItem.Equipment.ItemGuid.IsValid())
+				{
+					playerData.Inventory.Add(mailItem.Equipment);
+					playerData.Mailbox.RemoveAt(mailIndex);
+				}
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+	if (playerData.Mailbox.Num() == oldMailboxNum) return false;
+
+	return SavePlayerData(GI);
+}
+
 // ========================================================
 // Transient 관련
 // ========================================================
