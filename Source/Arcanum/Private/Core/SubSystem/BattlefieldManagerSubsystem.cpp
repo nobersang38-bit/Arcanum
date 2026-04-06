@@ -550,7 +550,7 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 	}
 
 	// 일반 무기 기본공격/기본스킬 캐시
-	auto cacheNormalWeaponSkill = [this](const FEquipmentInfo* InEquipInfo, FBattleSkillData& OutBasicAttackSkill, FBattleSkillData& OutBasicSkill)
+	auto cacheNormalWeaponSkill = [this, selectedCharacter](const FEquipmentInfo* InEquipInfo, FBattleSkillData& OutBasicAttackSkill, FBattleSkillData& OutBasicSkill)
 		{
 			if (InEquipInfo)
 			{
@@ -566,11 +566,13 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 
 					OutBasicAttackSkill.ComboMontages.Empty();
 
-					for (const TSoftObjectPtr<UAnimMontage>& comboMontage : basicAttackSkillInfo->ComboMontages)
+					const FBattleCharacterAnimSet& characterAnimSet = selectedCharacter->CharacterInfo.BattleCharacterInitData.CharacterAnimSet;
+					for (const TSoftObjectPtr<UAnimMontage>& comboMontage : characterAnimSet.BasicAttackComboMontages)
 					{
 						OutBasicAttackSkill.ComboMontages.Add(comboMontage.LoadSynchronous());
-						OutBasicAttackSkill.SkillClass = basicAttackSkillInfo->SkillClass.LoadSynchronous();
 					}
+
+					OutBasicAttackSkill.SkillClass = basicAttackSkillInfo->SkillClass.LoadSynchronous();
 				}
 
 				OutBasicAttackSkill.SkillLevel = basicAttackSkillLevel;
@@ -592,7 +594,8 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 						const int32 maxSkillLevel = basicSkillInfo->LevelModifiers.Num();
 						basicSkillLevel = FMath::Clamp(rawSkillLevel, 1, maxSkillLevel);
 
-						OutBasicSkill.CastMontage = basicSkillInfo->CastMontage.LoadSynchronous();
+						const FBattleCharacterAnimSet& characterAnimSet = selectedCharacter->CharacterInfo.BattleCharacterInitData.CharacterAnimSet;
+						OutBasicSkill.CastMontage = characterAnimSet.BasicSkillCastMontage.LoadSynchronous();
 						OutBasicSkill.SkillClass = basicSkillInfo->SkillClass.LoadSynchronous();
 					}
 
@@ -608,7 +611,7 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 		};
 
 	// 전설 무기 궁극기 스킬 캐시
-	auto cacheLegendaryWeaponSkill = [this](const FEquipmentInfo* InEquipInfo, FBattleSkillData& OutUltimateSkill)
+	auto cacheLegendaryWeaponSkill = [this, selectedCharacter](const FEquipmentInfo* InEquipInfo, FBattleSkillData& OutUltimateSkill)
 		{
 			if (InEquipInfo)
 			{
@@ -628,10 +631,11 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 						const int32 maxSkillLevel = ultimateSkillInfo->LevelModifiers.Num();
 						ultimateSkillLevel = FMath::Clamp(rawSkillLevel, 1, maxSkillLevel);
 
-						OutUltimateSkill.CastMontage = ultimateSkillInfo->CastMontage.LoadSynchronous();
+						const FBattleCharacterAnimSet& characterAnimSet = selectedCharacter->CharacterInfo.BattleCharacterInitData.CharacterAnimSet;
+						OutUltimateSkill.CastMontage = characterAnimSet.BasicSkillCastMontage.LoadSynchronous();
+						OutUltimateSkill.PressMontage = characterAnimSet.UltimatePressMontage.LoadSynchronous();
+						OutUltimateSkill.ReleaseMontage = characterAnimSet.UltimateReleaseMontage.LoadSynchronous();
 						OutUltimateSkill.SkillClass = ultimateSkillInfo->SkillClass.LoadSynchronous();
-						OutUltimateSkill.PressMontage = ultimateSkillInfo->PressMontage.LoadSynchronous();
-						OutUltimateSkill.ReleaseMontage = ultimateSkillInfo->ReleaseMontage.LoadSynchronous();
 					}
 
 					OutUltimateSkill.SkillLevel = ultimateSkillLevel;
@@ -752,15 +756,22 @@ UAnimMontage* UBattlefieldManagerSubsystem::GetCurrentWeaponEquipMontage() const
 			itemGuid = *foundWeaponGuid;
 		}
 	}
-	if (!itemGuid.IsValid()) return nullptr;
 
+	if (!itemGuid.IsValid()) return nullptr;
 	const FEquipmentInfo* foundEquipment = FindEquipmentByGuid(InBattleData.PlayerData, itemGuid);
 	if (!foundEquipment) return nullptr;
 
-	const FDTEquipmentInfoRow* equipmentRow = FPlayerAccountService::FindEquipmentInfoRowByTag(this, foundEquipment->ItemTag);
-	if (!equipmentRow) return nullptr;
+	const FBattleCharacterAnimSet& characterAnimSet = selectedCharacter->CharacterInfo.BattleCharacterInitData.CharacterAnimSet;
 
-	return equipmentRow->EquipMontage.LoadSynchronous();
+	for (const FWeaponSwapMontageData& swapData : characterAnimSet.WeaponSwapMontages)
+	{
+		if (swapData.WeaponItemTag == foundEquipment->ItemTag)
+		{
+			return swapData.SwapMontage.LoadSynchronous();
+		}
+	}
+
+	return nullptr;
 }
 
 FGameplayTag UBattlefieldManagerSubsystem::GetCurrentWeaponSlotTag() const

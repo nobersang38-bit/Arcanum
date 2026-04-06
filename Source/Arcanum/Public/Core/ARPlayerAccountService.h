@@ -46,6 +46,7 @@ enum class EHUDIndex : uint8;
  */
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSaveCompleted, bool, bSuccess);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInventoryFull);
 
 class FPlayerAccountService : public IPlayerAccountService
 {
@@ -184,6 +185,13 @@ public:
 	static void RollEquipmentStats(const FItemDefinition& InItemDefinition, TArray<FDerivedStatModifier>& OutStats);
 #pragma endregion
 
+#pragma region Inventory Widget 관련
+public:
+	// 인벤토리 가득 참 공용 알림
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	static FOnInventoryFull OnInventoryFull;
+#pragma endregion
+
 #pragma region Shop Widget 관련
 public:
 	/** */
@@ -271,6 +279,14 @@ public:
 	static void GetActiveGachaBannerRows(const UObject* WorldContextObject, TArray<const FDTGachaBannerDataRow*>& OutRows);
 	static bool ExecuteGacha(const UObject* WorldContextObject, const FPlayerData& PlayerData, FGameplayTag BannerTag, FCurrencyCost Cost, int32 PullCount);
 	static bool ExecuteGachaTest(const UObject* WorldContextObject, const FPlayerData& PlayerData, FGameplayTag BannerTag, FCurrencyCost Cost, int32 PullCount);
+#pragma endregion
+
+#pragma region MailBox Widget 관련
+public:
+	/* 메일 1개 수령 */
+	static bool ReceiveMailboxItem(const UObject* WorldContextObject, int32 InMailIndex);
+	/* 메일 전체 수령 */
+	static bool ReceiveAllMailboxItems(const UObject* WorldContextObject);
 #pragma endregion
 
 #pragma region Transient 관련

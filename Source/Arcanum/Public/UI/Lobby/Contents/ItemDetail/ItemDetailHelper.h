@@ -174,4 +174,28 @@ private:
 	/* 포션 지속용 */
 	static FText BuildDurationPotionValueText(const FDerivedStatModifier& InStat, bool bInUsePercent);
 #pragma endregion
+
+#pragma region 매일 박스 툴팁
+public:
+	/* 메일박스 장비 Guid 툴팁 데이터 */
+	static bool BuildMailboxEquipmentDisplayViewData(
+		const UObject* WorldContextObject,
+		const FGuid& InItemGuid,
+		FItemDisplayViewData& OutViewData);
+
+private:
+	/* 찾은 장비 정보로 공용 툴팁 데이터 */
+	static bool BuildEquipmentDisplayViewDataFromEquipment(
+		const UObject* WorldContextObject,
+		const FGuid& InItemGuid,
+		const FEquipmentInfo& InEquipInfo,
+		FItemDisplayViewData& OutViewData,
+		bool bShowEquippedCharacter);
+
+	/* Guid로 메일박스 장비 찾기 */
+	static bool FindMailboxEquipmentByGuid(
+		const UObject* WorldContextObject,
+		const FGuid& InItemGuid,
+		FEquipmentInfo& OutEquipmentInfo);
+#pragma endregion
 };

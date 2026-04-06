@@ -106,7 +106,10 @@ bool UBTPlayerDataObject::UseSkill()
           	break;
 
 		case EBSkillType::BasicSkill:
-			PlayerController->TriggerSkill();
+			if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(PlayerController->GetPawn()))
+			{
+				PlayerCharacter->HandleCommonSkillInput();
+			}
 			break;
 
 		case EBSkillType::UltimateSkill:

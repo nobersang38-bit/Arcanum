@@ -11,6 +11,7 @@ class UCommonBtnWidget;
 class UInventoryItemSlotWidget;
 class UHorizontalBox;
 class UBorder;
+class UMailboxPanelWidget;
 struct FDTItemCatalogRow;
 
 UENUM(BlueprintType)

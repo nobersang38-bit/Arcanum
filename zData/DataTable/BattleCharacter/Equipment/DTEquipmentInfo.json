@@ -232,8 +232,7 @@
       "InactiveDescText": "",
       "ActiveDescText": "",
       "SetBonusTag": ""
-    },
-    "EquipMontage": "AnimMontage'/Game/AnimBlueprint/Ally/11_OutSider/AM_Equip_Sword.AM_Equip_Sword'"
+    }
   },
   {
     "Name": "Staff",
@@ -468,8 +467,7 @@
       "InactiveDescText": "",
       "ActiveDescText": "",
       "SetBonusTag": ""
-    },
-    "EquipMontage": "AnimMontage'/Game/AnimBlueprint/Ally/11_OutSider/AM_Equip_Staff.AM_Equip_Staff'"
+    }
   },
   {
     "Name": "Bow",
@@ -704,8 +702,7 @@
       "InactiveDescText": "",
       "ActiveDescText": "",
       "SetBonusTag": ""
-    },
-    "EquipMontage": ""
+    }
   },
   {
     "Name": "Shield",
@@ -940,8 +937,7 @@
       "InactiveDescText": "",
       "ActiveDescText": "",
       "SetBonusTag": ""
-    },
-    "EquipMontage": ""
+    }
   },
   {
     "Name": "Helmet",
@@ -1158,8 +1154,7 @@
       "InactiveDescText": "",
       "ActiveDescText": "",
       "SetBonusTag": ""
-    },
-    "EquipMontage": ""
+    }
   },
   {
     "Name": "Chest",
@@ -1376,8 +1371,7 @@
       "InactiveDescText": "",
       "ActiveDescText": "",
       "SetBonusTag": ""
-    },
-    "EquipMontage": ""
+    }
   },
   {
     "Name": "Glove",
@@ -1594,8 +1588,7 @@
       "InactiveDescText": "",
       "ActiveDescText": "",
       "SetBonusTag": ""
-    },
-    "EquipMontage": ""
+    }
   },
   {
     "Name": "Boot",
@@ -1812,8 +1805,7 @@
       "InactiveDescText": "",
       "ActiveDescText": "",
       "SetBonusTag": ""
-    },
-    "EquipMontage": ""
+    }
   },
   {
     "Name": "TalashaHelmet",
@@ -2030,8 +2022,7 @@
       "InactiveDescText": "4세트 효과: 체력 일정 수치 이하일 때 체력 회복 속도가 증가합니다",
       "ActiveDescText": "세트효과 발동: 체력 30% 이하일 때 10초 동안 체력 회복 속도가 초당 7 증가합니다 (쿨타임 30초)",
       "SetBonusTag": "Arcanum.Items.SetBonus.Surge"
-    },
-    "EquipMontage": ""
+    }
   },
   {
     "Name": "TalashaChest",
@@ -2248,8 +2239,7 @@
       "InactiveDescText": "4세트 효과: 체력 일정 수치 이하일 때 체력 회복 속도가 증가합니다",
       "ActiveDescText": "세트효과 발동: 체력 30% 이하일 때 10초 동안 체력 회복 속도가 초당 7 증가합니다 (쿨타임 30초)",
       "SetBonusTag": "Arcanum.Items.SetBonus.Surge"
-    },
-    "EquipMontage": ""
+    }
   },
   {
     "Name": "TalashaGlove",
@@ -2466,8 +2456,7 @@
       "InactiveDescText": "4세트 효과: 체력 일정 수치 이하일 때 체력 회복 속도가 증가합니다",
       "ActiveDescText": "세트효과 발동: 체력 30% 이하일 때 10초 동안 체력 회복 속도가 초당 7 증가합니다 (쿨타임 30초)",
       "SetBonusTag": "Arcanum.Items.SetBonus.Surge"
-    },
-    "EquipMontage": ""
+    }
   },
   {
     "Name": "TalashaBoot",
@@ -2684,8 +2673,7 @@
       "InactiveDescText": "4세트 효과: 체력 일정 수치 이하일 때 체력 회복 속도가 증가합니다",
       "ActiveDescText": "세트효과 발동: 체력 30% 이하일 때 10초 동안 체력 회복 속도가 초당 7 증가합니다 (쿨타임 30초)",
       "SetBonusTag": "Arcanum.Items.SetBonus.Surge"
-    },
-    "EquipMontage": ""
+    }
   },
   {
     "Name": "SigonHelmet",
@@ -2902,8 +2890,7 @@
       "InactiveDescText": "4세트 효과: 물약 회복량이 증가합니다",
       "ActiveDescText": "세트효과 발동: 물약 회복량이 20% 증가합니다",
       "SetBonusTag": "Arcanum.Items.SetBonus.Avarice"
-    },
-    "EquipMontage": ""
+    }
   },
   {
     "Name": "SigonChest",
@@ -3120,8 +3107,7 @@
       "InactiveDescText": "4세트 효과: 물약 회복량이 증가합니다",
       "ActiveDescText": "세트효과 발동: 물약 회복량이 20% 증가합니다",
       "SetBonusTag": "Arcanum.Items.SetBonus.Avarice"
-    },
-    "EquipMontage": ""
+    }
   },
   {
     "Name": "SigonGlove",
@@ -3338,8 +3324,7 @@
       "InactiveDescText": "4세트 효과: 물약 회복량이 증가합니다",
       "ActiveDescText": "세트효과 발동: 물약 회복량이 20% 증가합니다",
       "SetBonusTag": "Arcanum.Items.SetBonus.Avarice"
-    },
-    "EquipMontage": ""
+    }
   },
   {
     "Name": "SigonBoot",
@@ -3556,8 +3541,7 @@
       "InactiveDescText": "4세트 효과: 물약 회복량이 증가합니다",
       "ActiveDescText": "세트효과 발동: 물약 회복량이 20% 증가합니다",
       "SetBonusTag": "Arcanum.Items.SetBonus.Avarice"
-    },
-    "EquipMontage": ""
+    }
   },
   {
     "Name": "Scepter",
@@ -3792,8 +3776,7 @@
       "InactiveDescText": "",
       "ActiveDescText": "",
       "SetBonusTag": ""
-    },
-    "EquipMontage": ""
+    }
   },
   {
     "Name": "Scythe",
@@ -4028,7 +4011,6 @@
       "InactiveDescText": "",
       "ActiveDescText": "",
       "SetBonusTag": ""
-    },
-    "EquipMontage": ""
+    }
   }
 ]
