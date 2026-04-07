@@ -324,7 +324,8 @@ void UInBattleHUDWidget::ClickMenuBtn()
 		return;
 	}
 
-	if (BattleMenuWidget = CreateWidget<UBattleMenuWidget>(this, BattleMenuWidgetClass))
+	BattleMenuWidget = CreateWidget<UBattleMenuWidget>(this, BattleMenuWidgetClass);
+	if (BattleMenuWidget)
 	{
 		if (UGameTimeSubsystem* gameTimeSubsystem = GetGameInstance()->GetSubsystem<UGameTimeSubsystem>())
 		{
