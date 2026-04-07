@@ -24,6 +24,7 @@ public:
 	APlayerCharacter();
 
 	void SetAutoMode(class ABattlePlayerController* MainController, bool bIsAuto);
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
@@ -34,9 +35,9 @@ protected:
 
 	UFUNCTION()
 	void RecievedDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
-
 	void AddLevelModifierEntry(const FLevelModifierEntry& LevelModifierEntry) override;
 	void AddDerivedStatModifier(const FDerivedStatModifier& DerivedStatModifier) override;
+public:
 	void ChangeStat(const FGameplayTag& InTag, float InValue) override;
 
 public:
@@ -59,12 +60,14 @@ public:
 	void AddCurrentStat(FGameplayTag InTag, float InValue);
 
 #pragma endregion
-
 	UFUNCTION(BlueprintCallable)
 	USkeletalMeshComponent* GetSourceSkeletaMeshComponent() { return SourceSkeletaMeshComponent; }
 	ABattlePlayerController* GetBattleOwnerController() const;
 	class UCharacterBattleStatsComponent* GetBattleStatComponent() const {return StatComponent;}
 	class UStatusActionComponent* GetStatusActionComponent() const { return StatusActionComponent; }
+
+	UFUNCTION(BlueprintCallable)
+	void ApplyPotionModifier(const FDerivedStatModifier& InModifier);
 
 protected:
 
@@ -220,6 +223,8 @@ public:
 	/* 궁극기 Release 몽타주 재생 중 여부 */
 	bool GetIsUltimateReleaseMontagePlaying() const { return bIsUltimateReleaseMontagePlaying; }
 	const FVector GetUltimateLocation() const;
+	bool GetIsCommonSkillMontagePlaying() const { return bIsCommonSkillMontagePlaying; }
+	bool GetIsBasicAttackMontagePlaying() const { return bIsBasicAttackMontagePlaying; }
 
 private:
 	/* 체력 리젠 변경 시 체력바 갱신 */
@@ -258,6 +263,10 @@ protected:
 	/* 기본공격 콤보 상태 초기화 */
 	UFUNCTION()
 	void ResetBasicAttackCombo();
+
+private:
+	/* 현재 콤보 인덱스 몽타주 재생 */
+	void PlayBasicAttackComboMontage();
 
 private:
 	int32 BasicAttackComboIndex = 0;

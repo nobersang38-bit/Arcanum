@@ -232,8 +232,7 @@
       "InactiveDescText": "",
       "ActiveDescText": "",
       "SetBonusTag": ""
-    },
-    "EquipMontage": ""
+    }
   },
   {
     "Name": "Staff",
@@ -468,15 +467,14 @@
       "InactiveDescText": "",
       "ActiveDescText": "",
       "SetBonusTag": ""
-    },
-    "EquipMontage": ""
+    }
   },
   {
     "Name": "Bow",
     "ItemTag": "Arcanum.Items.Rarity.Common.Weapon.Bow",
     "SlotTag": "Arcanum.Items.ItemSlot.Weapon.TwoHand",
     "Desc": "평범한 활",
-    "SkeletalMesh": "",
+    "SkeletalMesh": "SkeletalMesh'/Game/Assets/Equipment/Weapon/SKM_Bow.SKM_Bow'",
     "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_Bow.Icon_Bow'",
     "BuyPrice": 200,
     "SellPrice": 50,
@@ -704,15 +702,14 @@
       "InactiveDescText": "",
       "ActiveDescText": "",
       "SetBonusTag": ""
-    },
-    "EquipMontage": ""
+    }
   },
   {
     "Name": "Shield",
     "ItemTag": "Arcanum.Items.Rarity.Common.Weapon.Shield",
     "SlotTag": "Arcanum.Items.ItemSlot.Weapon.RightHand",
     "Desc": "평범한 방패",
-    "SkeletalMesh": "",
+    "SkeletalMesh": "SkeletalMesh'/Game/Assets/Equipment/Weapon/SKM_Shield.SKM_Shield'",
     "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_Shield.Icon_Shield'",
     "BuyPrice": 200,
     "SellPrice": 50,
@@ -940,15 +937,14 @@
       "InactiveDescText": "",
       "ActiveDescText": "",
       "SetBonusTag": ""
-    },
-    "EquipMontage": ""
+    }
   },
   {
     "Name": "Helmet",
     "ItemTag": "Arcanum.Items.Rarity.Common.Armor.Helmet",
     "SlotTag": "Arcanum.Items.ItemSlot.Armor.Helmet",
     "Desc": "평범한 투구",
-    "SkeletalMesh": "",
+    "SkeletalMesh": "SkeletalMesh'/Game/Assets/Equipment/Armor/Meshes/Separate_Parts/SKM_Helmet.SKM_Helmet'",
     "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_Normal_Helmet.Icon_Normal_Helmet'",
     "BuyPrice": 150,
     "SellPrice": 35,
@@ -960,12 +956,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 1.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.01
             },
             "MaxValue": {
-              "Flat": 5.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.05
             }
           },
           {
@@ -993,12 +989,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 6.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.06
             },
             "MaxValue": {
-              "Flat": 10.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.1
             }
           },
           {
@@ -1026,12 +1022,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 11.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.11
             },
             "MaxValue": {
-              "Flat": 15.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.15
             }
           },
           {
@@ -1059,12 +1055,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 16.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.16
             },
             "MaxValue": {
-              "Flat": 20.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.2
             }
           },
           {
@@ -1092,12 +1088,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 21.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.21
             },
             "MaxValue": {
-              "Flat": 25.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.25
             }
           },
           {
@@ -1125,12 +1121,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 26.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.26
             },
             "MaxValue": {
-              "Flat": 30.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.3
             }
           },
           {
@@ -1158,15 +1154,14 @@
       "InactiveDescText": "",
       "ActiveDescText": "",
       "SetBonusTag": ""
-    },
-    "EquipMontage": ""
+    }
   },
   {
     "Name": "Chest",
     "ItemTag": "Arcanum.Items.Rarity.Common.Armor.Chest",
     "SlotTag": "Arcanum.Items.ItemSlot.Armor.Chest",
     "Desc": "평범한 갑옷",
-    "SkeletalMesh": "",
+    "SkeletalMesh": "SkeletalMesh'/Game/Assets/Equipment/Armor/Meshes/Separate_Parts/SKM_Chest.SKM_Chest'",
     "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_Normal_Chest.Icon_Normal_Chest'",
     "BuyPrice": 180,
     "SellPrice": 45,
@@ -1376,16 +1371,15 @@
       "InactiveDescText": "",
       "ActiveDescText": "",
       "SetBonusTag": ""
-    },
-    "EquipMontage": ""
+    }
   },
   {
     "Name": "Glove",
     "ItemTag": "Arcanum.Items.Rarity.Common.Armor.Glove",
     "SlotTag": "Arcanum.Items.ItemSlot.Armor.Glove",
     "Desc": "평범한 장갑",
-    "SkeletalMesh": "",
-    "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_Normal_Gloves.Icon_Normal_Gloves'",
+    "SkeletalMesh": "SkeletalMesh'/Game/Assets/Equipment/Armor/Meshes/Separate_Parts/SKM_Glove.SKM_Glove'",
+    "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_Normal_Glove.Icon_Normal_Glove'",
     "BuyPrice": 140,
     "SellPrice": 30,
     "BaseInfoSteps": [
@@ -1594,16 +1588,15 @@
       "InactiveDescText": "",
       "ActiveDescText": "",
       "SetBonusTag": ""
-    },
-    "EquipMontage": ""
+    }
   },
   {
     "Name": "Boot",
     "ItemTag": "Arcanum.Items.Rarity.Common.Armor.Boot",
     "SlotTag": "Arcanum.Items.ItemSlot.Armor.Boot",
     "Desc": "평범한 신발",
-    "SkeletalMesh": "",
-    "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_Normal_Boots.Icon_Normal_Boots'",
+    "SkeletalMesh": "SkeletalMesh'/Game/Assets/Equipment/Armor/Meshes/Separate_Parts/SKM_Boot.SKM_Boot'",
+    "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_Normal_Boot.Icon_Normal_Boot'",
     "BuyPrice": 140,
     "SellPrice": 30,
     "BaseInfoSteps": [
@@ -1812,15 +1805,14 @@
       "InactiveDescText": "",
       "ActiveDescText": "",
       "SetBonusTag": ""
-    },
-    "EquipMontage": ""
+    }
   },
   {
     "Name": "TalashaHelmet",
     "ItemTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Helmet",
     "SlotTag": "Arcanum.Items.ItemSlot.Armor.Helmet",
     "Desc": "탈라샤 세트 투구",
-    "SkeletalMesh": "",
+    "SkeletalMesh": "SkeletalMesh'/Game/Assets/Equipment/Armor/Meshes/Separate_Parts/SKM_Talasha_Helmet.SKM_Talasha_Helmet'",
     "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_TalRasha_Helmet.Icon_TalRasha_Helmet'",
     "BuyPrice": 1200,
     "SellPrice": 240,
@@ -1832,12 +1824,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 1.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.01
             },
             "MaxValue": {
-              "Flat": 5.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.05
             }
           },
           {
@@ -1865,12 +1857,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 6.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.06
             },
             "MaxValue": {
-              "Flat": 10.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.1
             }
           },
           {
@@ -1898,12 +1890,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 11.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.11
             },
             "MaxValue": {
-              "Flat": 15.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.15
             }
           },
           {
@@ -1931,12 +1923,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 16.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.16
             },
             "MaxValue": {
-              "Flat": 20.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.2
             }
           },
           {
@@ -1964,12 +1956,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 21.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.21
             },
             "MaxValue": {
-              "Flat": 25.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.25
             }
           },
           {
@@ -1997,12 +1989,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 26.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.26
             },
             "MaxValue": {
-              "Flat": 30.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.3
             }
           },
           {
@@ -2030,15 +2022,14 @@
       "InactiveDescText": "4세트 효과: 체력 일정 수치 이하일 때 체력 회복 속도가 증가합니다",
       "ActiveDescText": "세트효과 발동: 체력 30% 이하일 때 10초 동안 체력 회복 속도가 초당 7 증가합니다 (쿨타임 30초)",
       "SetBonusTag": "Arcanum.Items.SetBonus.Surge"
-    },
-    "EquipMontage": ""
+    }
   },
   {
     "Name": "TalashaChest",
     "ItemTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Chest",
     "SlotTag": "Arcanum.Items.ItemSlot.Armor.Chest",
     "Desc": "탈라샤 세트 갑옷",
-    "SkeletalMesh": "",
+    "SkeletalMesh": "SkeletalMesh'/Game/Assets/Equipment/Armor/Meshes/Separate_Parts/SKM_Talasha_Chest.SKM_Talasha_Chest'",
     "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_TalRasha_Chest.Icon_TalRasha_Chest'",
     "BuyPrice": 1400,
     "SellPrice": 280,
@@ -2248,16 +2239,15 @@
       "InactiveDescText": "4세트 효과: 체력 일정 수치 이하일 때 체력 회복 속도가 증가합니다",
       "ActiveDescText": "세트효과 발동: 체력 30% 이하일 때 10초 동안 체력 회복 속도가 초당 7 증가합니다 (쿨타임 30초)",
       "SetBonusTag": "Arcanum.Items.SetBonus.Surge"
-    },
-    "EquipMontage": ""
+    }
   },
   {
     "Name": "TalashaGlove",
     "ItemTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Glove",
     "SlotTag": "Arcanum.Items.ItemSlot.Armor.Glove",
     "Desc": "탈라샤 세트 장갑",
-    "SkeletalMesh": "",
-    "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_TalRasha_Gloves.Icon_TalRasha_Gloves'",
+    "SkeletalMesh": "SkeletalMesh'/Game/Assets/Equipment/Armor/Meshes/Separate_Parts/SKM_Talasha_Glove.SKM_Talasha_Glove'",
+    "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_TalRasha_Glove.Icon_TalRasha_Glove'",
     "BuyPrice": 1100,
     "SellPrice": 220,
     "BaseInfoSteps": [
@@ -2466,16 +2456,15 @@
       "InactiveDescText": "4세트 효과: 체력 일정 수치 이하일 때 체력 회복 속도가 증가합니다",
       "ActiveDescText": "세트효과 발동: 체력 30% 이하일 때 10초 동안 체력 회복 속도가 초당 7 증가합니다 (쿨타임 30초)",
       "SetBonusTag": "Arcanum.Items.SetBonus.Surge"
-    },
-    "EquipMontage": ""
+    }
   },
   {
     "Name": "TalashaBoot",
     "ItemTag": "Arcanum.Items.Rarity.SetItem.Talasha.Armor.Boot",
     "SlotTag": "Arcanum.Items.ItemSlot.Armor.Boot",
     "Desc": "탈라샤 세트 신발",
-    "SkeletalMesh": "",
-    "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_TalRasha_Boots.Icon_TalRasha_Boots'",
+    "SkeletalMesh": "SkeletalMesh'/Game/Assets/Equipment/Armor/Meshes/Separate_Parts/SKM_Talasha_Boot.SKM_Talasha_Boot'",
+    "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_TalRasha_Boot.Icon_TalRasha_Boot'",
     "BuyPrice": 1100,
     "SellPrice": 220,
     "BaseInfoSteps": [
@@ -2684,15 +2673,14 @@
       "InactiveDescText": "4세트 효과: 체력 일정 수치 이하일 때 체력 회복 속도가 증가합니다",
       "ActiveDescText": "세트효과 발동: 체력 30% 이하일 때 10초 동안 체력 회복 속도가 초당 7 증가합니다 (쿨타임 30초)",
       "SetBonusTag": "Arcanum.Items.SetBonus.Surge"
-    },
-    "EquipMontage": ""
+    }
   },
   {
     "Name": "SigonHelmet",
     "ItemTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Helmet",
     "SlotTag": "Arcanum.Items.ItemSlot.Armor.Helmet",
     "Desc": "시그온 세트 투구",
-    "SkeletalMesh": "",
+    "SkeletalMesh": "SkeletalMesh'/Game/Assets/Equipment/Armor/Meshes/Separate_Parts/SKM_Sigon_Helmet.SKM_Sigon_Helmet'",
     "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_Sigon_Helmet.Icon_Sigon_Helmet'",
     "BuyPrice": 1200,
     "SellPrice": 240,
@@ -2704,12 +2692,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 1.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.01
             },
             "MaxValue": {
-              "Flat": 5.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.05
             }
           },
           {
@@ -2737,12 +2725,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 6.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.06
             },
             "MaxValue": {
-              "Flat": 10.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.1
             }
           },
           {
@@ -2770,12 +2758,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 11.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.11
             },
             "MaxValue": {
-              "Flat": 15.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.15
             }
           },
           {
@@ -2803,12 +2791,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 16.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.16
             },
             "MaxValue": {
-              "Flat": 20.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.2
             }
           },
           {
@@ -2836,12 +2824,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 21.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.21
             },
             "MaxValue": {
-              "Flat": 25.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.25
             }
           },
           {
@@ -2869,12 +2857,12 @@
           {
             "StatTag": "Arcanum.BattleStat.Character.Regen.Mana.Regen",
             "MinValue": {
-              "Flat": 26.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.26
             },
             "MaxValue": {
-              "Flat": 30.0,
-              "Mul": 1.0
+              "Flat": 0.0,
+              "Mul": 0.3
             }
           },
           {
@@ -2902,15 +2890,14 @@
       "InactiveDescText": "4세트 효과: 물약 회복량이 증가합니다",
       "ActiveDescText": "세트효과 발동: 물약 회복량이 20% 증가합니다",
       "SetBonusTag": "Arcanum.Items.SetBonus.Avarice"
-    },
-    "EquipMontage": ""
+    }
   },
   {
     "Name": "SigonChest",
     "ItemTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Chest",
     "SlotTag": "Arcanum.Items.ItemSlot.Armor.Chest",
     "Desc": "시그온 세트 갑옷",
-    "SkeletalMesh": "",
+    "SkeletalMesh": "SkeletalMesh'/Game/Assets/Equipment/Armor/Meshes/Separate_Parts/SKM_Sigon_Chest.SKM_Sigon_Chest'",
     "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_Sigon_Chest.Icon_Sigon_Chest'",
     "BuyPrice": 1400,
     "SellPrice": 280,
@@ -3120,16 +3107,15 @@
       "InactiveDescText": "4세트 효과: 물약 회복량이 증가합니다",
       "ActiveDescText": "세트효과 발동: 물약 회복량이 20% 증가합니다",
       "SetBonusTag": "Arcanum.Items.SetBonus.Avarice"
-    },
-    "EquipMontage": ""
+    }
   },
   {
     "Name": "SigonGlove",
     "ItemTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Glove",
     "SlotTag": "Arcanum.Items.ItemSlot.Armor.Glove",
     "Desc": "시그온 세트 장갑",
-    "SkeletalMesh": "",
-    "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_Sigon_Gloves.Icon_Sigon_Gloves'",
+    "SkeletalMesh": "SkeletalMesh'/Game/Assets/Equipment/Armor/Meshes/Separate_Parts/SKM_Sigon_Glove.SKM_Sigon_Glove'",
+    "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_Sigon_Glove.Icon_Sigon_Glove'",
     "BuyPrice": 1100,
     "SellPrice": 220,
     "BaseInfoSteps": [
@@ -3338,16 +3324,15 @@
       "InactiveDescText": "4세트 효과: 물약 회복량이 증가합니다",
       "ActiveDescText": "세트효과 발동: 물약 회복량이 20% 증가합니다",
       "SetBonusTag": "Arcanum.Items.SetBonus.Avarice"
-    },
-    "EquipMontage": ""
+    }
   },
   {
     "Name": "SigonBoot",
     "ItemTag": "Arcanum.Items.Rarity.SetItem.Sigon.Armor.Boot",
     "SlotTag": "Arcanum.Items.ItemSlot.Armor.Boot",
     "Desc": "시그온 세트 신발",
-    "SkeletalMesh": "",
-    "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_Sigon_Boots.Icon_Sigon_Boots'",
+    "SkeletalMesh": "SkeletalMesh'/Game/Assets/Equipment/Armor/Meshes/Separate_Parts/SKM_Sigon_Boot.SKM_Sigon_Boot'",
+    "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_Sigon_Boot.Icon_Sigon_Boot'",
     "BuyPrice": 1100,
     "SellPrice": 220,
     "BaseInfoSteps": [
@@ -3556,8 +3541,7 @@
       "InactiveDescText": "4세트 효과: 물약 회복량이 증가합니다",
       "ActiveDescText": "세트효과 발동: 물약 회복량이 20% 증가합니다",
       "SetBonusTag": "Arcanum.Items.SetBonus.Avarice"
-    },
-    "EquipMontage": ""
+    }
   },
   {
     "Name": "Scepter",
@@ -3792,15 +3776,14 @@
       "InactiveDescText": "",
       "ActiveDescText": "",
       "SetBonusTag": ""
-    },
-    "EquipMontage": ""
+    }
   },
   {
     "Name": "Scythe",
     "ItemTag": "Arcanum.Items.Rarity.Legendary.Weapon.Scythe",
     "SlotTag": "Arcanum.Items.ItemSlot.Weapon.TwoHand",
     "Desc": "죽음의 기운이 흐르는 전설 낫",
-    "SkeletalMesh": "",
+    "SkeletalMesh": "SkeletalMesh'/Game/Assets/Equipment/Weapon/SKM_Scythe.SKM_Scythe'",
     "Icon": "Texture2D'/Game/Assets/Equipment/Textures/Icon_Scythe.Icon_Scythe'",
     "BuyPrice": 5000,
     "SellPrice": 1000,
@@ -4028,7 +4011,6 @@
       "InactiveDescText": "",
       "ActiveDescText": "",
       "SetBonusTag": ""
-    },
-    "EquipMontage": ""
+    }
   }
 ]

@@ -12,6 +12,11 @@
 #include "GameplayTags/ArcanumTags.h"
 #include "BattlePlayerController.generated.h"
 
+class UInputMappingContext;
+class UInputAction;
+class UInBattleHUDWidget;
+struct FInputActionValue;
+
 UENUM()
 enum class ESkillType : uint8
 {
@@ -20,10 +25,19 @@ enum class ESkillType : uint8
 	UltimateSkill
 };
 
-class UInputMappingContext;
-class UInputAction;
-class UInBattleHUDWidget;
-struct FInputActionValue;
+UENUM()
+enum class EBattleActionType : uint8
+{
+	Move,
+	BasicAttack,
+	CommonSkill,
+	UltimatePress,
+	UltimateRelease,
+	Item1,
+	Item2,
+	WeaponSwap,
+	ReadySpawnUnit
+};
 
 // 김도현
 UCLASS()
@@ -48,9 +62,6 @@ protected:
 	void DebugPlayPlayerCharacterHealthBar(float CurrentHealth, float MaxHealth);
 
 	UFUNCTION(Exec)
-	void DebugBossHealthBar(float CurrentHealth, float MaxHealth);
-
-	UFUNCTION(Exec)
 	void DebugAddPlayerInfoPanelSlot();
 
 	UFUNCTION(Exec)
@@ -70,6 +81,9 @@ protected:
 
 
 #pragma region HUD 위젯 클래스
+public:
+	UInBattleHUDWidget* GetHUDWidgetInstance() const { return HUDWidgetInstance; }
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UInBattleHUDWidget> HUDWidgetClass = nullptr;
@@ -102,9 +116,6 @@ public:
 	void SetPlayerHealthProgress(float CurrentHealth, float MaxHealth);
 
 	UFUNCTION()
-	void SetBossHealthProgress(float CurrentHealth, float MaxHealth);
-
-	UFUNCTION()
 	bool SkillCostChecker(FGameplayTag InSkillTag, int32 InLevel, bool bIsOnlyManaCheck = false);
 
 #pragma endregion
@@ -127,7 +138,10 @@ protected:
 	UFUNCTION()
 	void Item2();
 
-	//UFUNCTION()
+	UFUNCTION()
+	void UseBattlePotion(int32 InSlotIndex);
+
+    //UFUNCTION()
 	//bool SkillStarter(FGameplayTag InSkillTag, int32 InLevel, bool bIsUltimate = false);
 
 	UFUNCTION()
@@ -208,12 +222,23 @@ protected:
 
 #pragma endregion
 
+#pragma region 범위
+protected:
+	void RangeDecalOn(float DecalSize);
+	void Internal_RangeDecalOn(float DecalSize);
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "RangeTime")
+	float RangeTime = 1.0f;
+
+	FTimerHandle RangeDecalTimerHandle;
+#pragma endregion
+
+
 
 #pragma region 인풋모드 설정
 protected:
 	void SetupInputMode();
 #pragma endregion
-
 
 #pragma region 입력 관련
 protected:
@@ -320,7 +345,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Setting")
 	FGameplayTag ManaTag = Arcanum::BattleStat::Character::Regen::Mana::Root;
-
 
 private:
 	FTimerHandle PlayerLocationProgressTimeHandle;
@@ -528,7 +552,7 @@ protected:
 	void StartUltimateCooldown();
 
 	/* 스킬 쿨타임 UI 갱신 */
-	void RefreshSkillCooldownUI();
+	void RefreshSkillCooldown();
 
 	/* 플레이어 스킬 쿨타임 타이머 핸들 */
 	FTimerHandle SkillCooldownTimerHandle;
@@ -553,4 +577,49 @@ protected:
 
 	float SkillCooldownTickInterval = 0.02f;
 #pragma endregion
+
+#pragma region 스킬 마나 코스트
+	/* 스킬 마나 코스트 UI 갱신 */
+	void RefreshSkillCost();
+#pragma endregion
+
+#pragma region 물약
+protected:
+	/* 전투 물약 UI 갱신 */
+	UFUNCTION()
+	void RefreshBattlePotion();
+
+	/* 전투 물약 쿨타임 갱신 */
+	UFUNCTION()
+	void UpdateBattlePotionCooldown(float InDeltaTime);
+
+	void OnPotionMontageEnded(UAnimMontage* InMontage, bool bInterrupted);
+
+protected:
+	FTimerHandle BattlePotionCooldownTimer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Potion")
+	float BattlePotionCooldownTickInterval = 0.02f;
+
+private:
+	bool bIsPotionMontagePlaying = false;
+#pragma endregion
+
+#pragma region 전투 행동 실행 가능 여부
+private:
+	bool TryExecuteBattleAction(EBattleActionType InActionType);
+#pragma endregion
+
+#pragma region 버프
+protected:
+	UFUNCTION()
+	void BindBuffUI();
+
+	UFUNCTION()
+	void HandleBuffUpdated(const FGameplayTag& InBuffTag, float InPercent);
+
+	UFUNCTION()
+	void HandleBuffRemoved(const FGameplayTag& InBuffTag);
+#pragma endregion
+
 };

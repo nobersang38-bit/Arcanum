@@ -23,6 +23,10 @@ public:
 
     UFUNCTION() void OnNotifyClicked(AActor* TouchedActor, FKey ButtonPressed);
 
+    UFUNCTION() void OpenStar(bool bIsSkip = false);
+
+    UPROPERTY() bool bIsSkiped = false;
+
     void SetResultData(const FGachaItemResult& InData);
 
     UFUNCTION(BlueprintImplementableEvent) void PlayOpenAnimation(const FGachaItemResult& Data);
@@ -47,7 +51,7 @@ protected:
     UPROPERTY() FGachaItemResult ResultData;
     UPROPERTY(EditAnywhere, Category = "00-Global") TArray<FGameplayTag> HighGradeTags;
 
-    UPROPERTY(EditAnywhere) float NiagaraTimerDelay = 3.f;
+    UPROPERTY(EditAnywhere) float NiagaraTimerDelay = 6.f;
 
 private:
     UPROPERTY(EditAnywhere) bool IsClicked = false; // 클릭 시 true

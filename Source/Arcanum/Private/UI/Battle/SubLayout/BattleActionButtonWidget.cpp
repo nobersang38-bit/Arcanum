@@ -30,16 +30,37 @@ void UBattleActionButtonWidget::NativeConstruct()
 		SkillCooldownMID = SkillCooldownImage->GetDynamicMaterial();
 		SkillCooldownImage->SetVisibility(ESlateVisibility::Hidden);
 	}
+
 	SetProgressesVisible(false);
 
 	if (!bUseDisableImage)
 	{
 		DisabledImage->SetVisibility(ESlateVisibility::Hidden);
 	}
-
 	if (!bUseCoolTimeProgressBar)
 	{
 		CoolTimeProgress->SetVisibility(ESlateVisibility::Hidden);
+	}
+	if (StackCountText)
+	{
+		StackCountText->SetVisibility(ESlateVisibility::Hidden);
+	}
+
+	if (bUseDefaultIcon)
+	{
+		FButtonStyle ButtonStyle = ActionButton->GetStyle();
+		auto UpdateBrush = [&](FSlateBrush& Brush) 
+			{
+				Brush.SetResourceObject(EditLockIcon);
+				Brush.DrawAs = ESlateBrushDrawType::Image; // 무기 장착 안 했을때 아이콘 투명하게
+			};
+
+		UpdateBrush(ButtonStyle.Normal);
+		UpdateBrush(ButtonStyle.Hovered);
+		UpdateBrush(ButtonStyle.Pressed);
+		UpdateBrush(ButtonStyle.Disabled);
+
+		ActionButton->SetStyle(ButtonStyle);
 	}
 }
 
@@ -49,6 +70,7 @@ void UBattleActionButtonWidget::SynchronizeProperties()
 	Super::SynchronizeProperties();
 	{
 		ActionText->SetText(IconText);
+		CostText->SetText(EditCostText);
 	}
 }
 
@@ -90,7 +112,7 @@ void UBattleActionButtonWidget::SetActivateCost(bool InIsDisable)
 			DisabledImage->SetVisibility(ESlateVisibility::Hidden);
 		}
 	}
-	
+
 }
 
 void UBattleActionButtonWidget::SetCoolTimeProgress(float CurrentProgress, float MaxProgress)
@@ -119,8 +141,17 @@ void UBattleActionButtonWidget::SetCoolTimeProgress(float CurrentProgress, float
 void UBattleActionButtonWidget::SetImage(UTexture2D* InImage)
 {
 	FButtonStyle ButtonStyle = ActionButton->GetStyle();
-
-	FSlateBrush NormaSlateBrush = ButtonStyle.Normal;
+	auto UpdateBrush = [&](FSlateBrush& Brush) {
+		if (InImage == nullptr) {
+			Brush.SetResourceObject(EditLockIcon);
+			Brush.DrawAs = ESlateBrushDrawType::Image; // 무기 장착 안 했을때 아이콘 투명하게
+		}
+		else {
+			Brush.SetResourceObject(InImage);
+			Brush.DrawAs = ESlateBrushDrawType::Image; 
+		}
+	};
+	/*FSlateBrush NormaSlateBrush = ButtonStyle.Normal;
 	NormaSlateBrush.SetResourceObject(InImage);
 
 	FSlateBrush HoveredSlateBrush = ButtonStyle.Hovered;
@@ -135,8 +166,22 @@ void UBattleActionButtonWidget::SetImage(UTexture2D* InImage)
 	ButtonStyle.SetNormal(NormaSlateBrush);
 	ButtonStyle.SetHovered(HoveredSlateBrush);
 	ButtonStyle.SetPressed(PressedSlateBrush);
-	ButtonStyle.SetDisabled(DisabledSlateBrush);
+	ButtonStyle.SetDisabled(DisabledSlateBrush);*/
+
+	UpdateBrush(ButtonStyle.Normal);
+	UpdateBrush(ButtonStyle.Hovered);
+	UpdateBrush(ButtonStyle.Pressed);
+	UpdateBrush(ButtonStyle.Disabled);
+
 	ActionButton->SetStyle(ButtonStyle);
+}
+
+void UBattleActionButtonWidget::SetCostText(FText InText)
+{
+	if (CostText)
+	{
+		CostText->SetText(InText);
+	}
 }
 
 void UBattleActionButtonWidget::SetProgressesVisible(bool IsVisible)
@@ -194,5 +239,23 @@ void UBattleActionButtonWidget::SetSkillCooldownPercent(float InPercent)
 		{
 			SkillCooldownImage->SetVisibility(ESlateVisibility::Hidden);
 		}
+	}
+}
+
+void UBattleActionButtonWidget::SetStackCount(int32 InCount)
+{
+	if (StackCountText)
+	{
+		StackCountText->SetText(FText::AsNumber(InCount));
+		StackCountText->SetVisibility(ESlateVisibility::HitTestInvisible);
+	}
+}
+
+void UBattleActionButtonWidget::ClearStackCount()
+{
+	if (StackCountText)
+	{
+		StackCountText->SetText(FText::GetEmpty());
+		StackCountText->SetVisibility(ESlateVisibility::Hidden);
 	}
 }

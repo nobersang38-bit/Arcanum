@@ -7,7 +7,7 @@
 
 /**
  * 추영호 
- * 전투용 무기 스킬 캐시 데이터
+ * 스킬 캐시 데이터
  */
 
 USTRUCT(BlueprintType)
@@ -27,6 +27,9 @@ struct FBattleSkillData
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float Cooldown = 0.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float ManaCost = 0.0f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UTexture2D> SkillIcon = nullptr;
 
@@ -44,7 +47,7 @@ struct FBattleSkillData
 
 	/* 스킬 실행 클래스 캐시 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSoftClassPtr<ASkillActor> SkillClass;
+	TSubclassOf<ASkillActor> SkillClass;
 };
 
 USTRUCT(BlueprintType)
@@ -75,4 +78,25 @@ struct FBattleWeaponSkillData
 	/* 현재 활성 일반 무기 슬롯 태그 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FGameplayTag CurrentWeaponSlotTag;
+};
+
+USTRUCT(BlueprintType)
+struct FBattlePotionRuntimeSlotData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameplayTag PotionTag;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 Count = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UTexture2D> Icon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MaxCooldown = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float CurrentCooldown = 0.0f;
 };

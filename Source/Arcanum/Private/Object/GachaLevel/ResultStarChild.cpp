@@ -49,8 +49,11 @@ void AResultStarChild::SetResultData(const FGachaItemResult& InData)
 }
 void AResultStarChild::OnNotifyClicked(AActor* TouchedActor, FKey ButtonPressed)
 {
+    OpenStar();
+}
+void AResultStarChild::OpenStar(bool bIsSkip)
+{
     if (IsClicked) return;
-
     APlayerCameraManager* CamManager = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
     if (CamManager) {
         FVector CameraLoc = CamManager->GetCameraLocation();
@@ -59,7 +62,8 @@ void AResultStarChild::OnNotifyClicked(AActor* TouchedActor, FKey ButtonPressed)
         SetActorRotation(LookAtRot);
     }
 
-    IsClicked = !IsClicked;
+    IsClicked = true;
+    bIsSkiped = bIsSkip;
     OnStarClicked.Broadcast(this);
     PlayOpenAnimation(ResultData);
 }
@@ -69,11 +73,15 @@ void AResultStarChild::EndOpenAnimation()
 
     HideStarParts();
 
-    if (IsHighGrade()) {
+    if (IsHighGrade() && !bIsSkiped) {
         SpawnHighGradeWidget();
         PlayResultFX();
     }
-    else PlayResultFX();
+    else {
+        PlayResultFX();
+        AARGachaController* PC = Cast<AARGachaController>(GetWorld()->GetFirstPlayerController());
+        if (PC) PC->HandleGachaFinished();
+    }
 }
 void AResultStarChild::DeactivateResultNiagara()
 {
@@ -97,6 +105,17 @@ bool AResultStarChild::TryLoadAndSpawnResult()
     if (!TargetTable) return false;
 
     FName RowName = GetLeafNameFromTag(ResultData.ItemTag);
+
+    // TOOD: 0401 세트 방어구는 DT RowName이 TalashaChest, SigonBoot 형태라서 변경
+    if (ResultData.ItemTag.MatchesTag(Arcanum::Items::Rarity::SetItem::Talasha::Armor::Root))
+    {
+        RowName = FName(TEXT("Talasha") + RowName.ToString());
+    }
+    else if (ResultData.ItemTag.MatchesTag(Arcanum::Items::Rarity::SetItem::Sigon::Armor::Root))
+    {
+        RowName = FName(TEXT("Sigon") + RowName.ToString());
+    }
+
     static const FString Context(TEXT("GachaResultContext"));
 
     FActorSpawnParameters SpawnParams;
@@ -108,6 +127,9 @@ bool AResultStarChild::TryLoadAndSpawnResult()
         if (Row && Row->BattleCharacterInfo.CharacterClass.LoadSynchronous()) {
             ResultActor = GetWorld()->SpawnActor<AActor>(Row->BattleCharacterInfo.CharacterClass.Get(), GetActorLocation(), GetActorRotation(), SpawnParams);
             ResultDialog = Row->BattleCharacterInfo.DefaultDialogue;
+            ResultData.CharacterColorTexture = Row->BattleCharacterInfo.CharacterColor.LoadSynchronous();
+            ResultData.CharacterSilhouetteTexture = Row->BattleCharacterInfo.CharacterSilhouette.LoadSynchronous();
+            ResultData.CharacterBgTexture = Row->BattleCharacterInfo.CharacterBackground.LoadSynchronous();
         }
     }
     else if (ResultData.ItemTag.MatchesTag(Arcanum::Items::Rarity::Root)) { // 장비 분기

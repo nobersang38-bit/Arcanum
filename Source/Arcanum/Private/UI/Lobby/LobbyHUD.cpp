@@ -7,6 +7,7 @@
 #include "UI/Lobby/Contents/Enhancement/EnhancementHUDWidget.h"
 #include "UI/Lobby/Contents/Battle/BattleHUDWidget.h"
 #include "UI/Lobby/Contents/Gacha/GachaHUDWidget.h"
+#include "UI/Lobby/Contents/MailBox/MailboxPanelWidget.h"
 #include "UI/Common/CommonOptionWindow.h"
 
 //#include "Kismet/GameplayStatics.h"
@@ -48,6 +49,7 @@ void ULobbyHUD::NativeConstruct()
 
 	if (ExitCommonDialog) ExitCommonDialog->SetVisibility(ESlateVisibility::Collapsed);
 	if (BackgroundBlur) BackgroundBlur->SetVisibility(ESlateVisibility::Collapsed);
+	if (InventoryFullCommonDialog) InventoryFullCommonDialog->SetVisibility(ESlateVisibility::Collapsed);
 
 	if (BattleMenuBtn) {
 		BattleMenuBtn->OnClicked.RemoveDynamic(this, &ULobbyHUD::ClickBattleMenuBtn);
@@ -82,6 +84,31 @@ void ULobbyHUD::NativeConstruct()
 	if (QuitBtn) {
 		QuitBtn->OnClicked.RemoveDynamic(this, &ULobbyHUD::ClickQuitBtn);
 		QuitBtn->OnClicked.AddDynamic(this, &ULobbyHUD::ClickQuitBtn);
+	}
+
+	if (MailboxBtn)
+	{
+		MailboxBtn->OnClicked.RemoveDynamic(this, &ULobbyHUD::ClickMailboxBtn);
+		MailboxBtn->OnClicked.AddDynamic(this, &ULobbyHUD::ClickMailboxBtn);
+	}
+
+	if (InventoryFullCommonDialog)
+	{
+		InventoryFullCommonDialog->OnResult.RemoveDynamic(this, &ULobbyHUD::OnInventoryFullDialogResult);
+		InventoryFullCommonDialog->OnResult.AddDynamic(this, &ULobbyHUD::OnInventoryFullDialogResult);
+	}
+
+	if (MailboxPanelWidget)
+	{
+		MailboxPanelWidget->SetParentLobby(this);
+		MailboxPanelWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
+
+	if (MailboxFullCommonDialog)
+	{
+		MailboxFullCommonDialog->SetVisibility(ESlateVisibility::Collapsed);
+		MailboxFullCommonDialog->OnResult.RemoveDynamic(this, &ULobbyHUD::OnMailboxFullDialogResult);
+		MailboxFullCommonDialog->OnResult.AddDynamic(this, &ULobbyHUD::OnMailboxFullDialogResult);
 	}
 
 	if (!CharacterDataTable)
@@ -128,6 +155,9 @@ void ULobbyHUD::NativeConstruct()
 		});
 	FPlayerAccountService::OnSaveCompleted.RemoveDynamic(this, &ULobbyHUD::HandleSaveCompleted);
 	FPlayerAccountService::OnSaveCompleted.AddDynamic(this, &ULobbyHUD::HandleSaveCompleted);
+
+	FPlayerAccountService::OnInventoryFull.RemoveDynamic(this, &ULobbyHUD::HandleInventoryFull);
+	FPlayerAccountService::OnInventoryFull.AddDynamic(this, &ULobbyHUD::HandleInventoryFull);
 }
 void ULobbyHUD::HandleSaveCompleted(bool bSuccess)
 {
@@ -161,6 +191,12 @@ void ULobbyHUD::RefreshAllLobbyUI()
 	{
 		BattleHUDWidget->RefreshBattlePotionSlots();
 	}
+
+	if (MailboxBtn)
+	{
+		bool bHasMail = CachedPlayerData.Mailbox.Num() > 0;
+		MailboxBtn->SetIconOpacity(bHasMail ? 1.0f : 0.5f);
+	}
 }
 
 void ULobbyHUD::ClickBattleMenuBtn()
@@ -179,6 +215,7 @@ void ULobbyHUD::ClickBattleMenuBtn()
 void ULobbyHUD::ClickCharacterMenuBtn()
 {
 	UpdateButtonSelection(CharacterMenuBtn);
+	ClosePanels();
 
 	if (UCharacterHUDWidget* CharacterWidget = Cast<UCharacterHUDWidget>(WidgetSwitcher->GetWidgetAtIndex(1))) {
 		CharacterWidget->SetParentLobby(this);
@@ -192,6 +229,8 @@ void ULobbyHUD::ClickCharacterMenuBtn()
 void ULobbyHUD::ClickEnhancementMenuBtn()
 {
 	UpdateButtonSelection(EnhancementMenuBtn);
+	ClosePanels();
+
 	if (EnhancementHUDWidget)
 	{
 		EnhancementHUDWidget->RefreshEquipmentInventory();
@@ -207,6 +246,8 @@ void ULobbyHUD::ClickEnhancementMenuBtn()
 void ULobbyHUD::ClickShopMenuBtn()
 {
 	UpdateButtonSelection(ShopMenuBtn);
+	ClosePanels();
+
 	if (InventoryHUDWidget)
 	{
 		InventoryHUDWidget->SetCurrentFilter(EInventoryCategoryFilter::All);
@@ -224,9 +265,24 @@ void ULobbyHUD::ClickShopMenuBtn()
 void ULobbyHUD::ClickGachaMenuBtn()
 {
 	UpdateButtonSelection(GachaMenuBtn);
+	ClosePanels();
+
 	if (UGachaHUDWidget* GachaWidget = Cast<UGachaHUDWidget>(WidgetSwitcher->GetWidgetAtIndex(4))) {
 		GachaWidget->SetParentLobby(this);
 		WidgetSwitcher->SetActiveWidget(GachaWidget);
+
+		TArray<const FDTGachaBannerDataRow*> TempRows;
+		FPlayerAccountService::GetActiveGachaBannerRows(this, TempRows);
+		ActiveBannerDataList.Empty();
+		for (const FDTGachaBannerDataRow* RowPtr : TempRows) {
+			if (RowPtr) {
+				ActiveBannerDataList.Add(*RowPtr);
+				FPlayerAccountService::InitGachaBannerData(this, RowPtr->BannerTag);
+			}
+		}
+		if (ActiveBannerDataList.Num() > 0) {
+			GachaWidget->OnBannerSelected(ActiveBannerDataList[0].BannerTag);
+		}
 
 		if (TimeSubsystem) TimeSubsystem->bBannerActive = true;
 	}
@@ -309,16 +365,76 @@ void ULobbyHUD::RefreshLobbyCurrencyUI()
 // ========================================================
 // 인벤토리
 // ========================================================
+void ULobbyHUD::HandleInventoryFull()
+{
+	if (InventoryFullCommonDialog)
+	{
+		InventoryFullCommonDialog->SetVisibility(ESlateVisibility::Visible);
+	}
+}
 
-
+void ULobbyHUD::OnInventoryFullDialogResult(EDialogResult InResult)
+{
+	if (InventoryFullCommonDialog)
+	{
+		InventoryFullCommonDialog->SetVisibility(ESlateVisibility::Collapsed);
+	}
+}
 
 // ========================================================
 // 상점
 // ========================================================
 
 
+// ========================================================
+// 메일박스
+// ========================================================
+void ULobbyHUD::ClickMailboxBtn()
+{
+	if (MailboxPanelWidget)
+	{
+		bool bIsVisible = (MailboxPanelWidget->GetVisibility() == ESlateVisibility::Visible);
 
+		if (bIsVisible)
+		{
+			MailboxPanelWidget->SetVisibility(ESlateVisibility::Collapsed);
+		}
+		else
+		{
+			UpdateButtonSelection(MailboxBtn);
+			ClosePanels();
 
+			MailboxPanelWidget->SetParentLobby(this);
+			MailboxPanelWidget->SetVisibility(ESlateVisibility::Visible);
+			MailboxPanelWidget->RefreshMailboxUI();
+
+			if (TimeSubsystem)
+			{
+				TimeSubsystem->bBannerActive = false;
+			}
+		}
+	}
+}
+
+void ULobbyHUD::ShowMailboxFullDialog()
+{
+	if (MailboxFullCommonDialog)
+	{
+		MailboxFullCommonDialog->SetVisibility(ESlateVisibility::Visible);
+	}
+}
+
+void ULobbyHUD::OnMailboxFullDialogResult(EDialogResult InResult)
+{
+	if (MailboxFullCommonDialog)
+	{
+		MailboxFullCommonDialog->SetVisibility(ESlateVisibility::Collapsed);
+	}
+}
+
+// ========================================================
+// 종료
+// ========================================================
 void ULobbyHUD::OnExitCommonDialog(EDialogResult res)
 {
 	if (res == EDialogResult::OK)
@@ -356,3 +472,17 @@ void ULobbyHUD::OnExitCommonDialog(EDialogResult res)
 		}
 	}
 }
+
+void ULobbyHUD::ClosePanels()
+{
+	if (BattleHUDWidget)
+	{
+		BattleHUDWidget->HidePotionInventory();
+	}
+
+	if (MailboxPanelWidget)
+	{
+		MailboxPanelWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
+}
+

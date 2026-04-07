@@ -12,9 +12,27 @@ UStatusAction_BasementHealth::UStatusAction_BasementHealth()
 
 void UStatusAction_BasementHealth::StartAction_Implementation(const FRegenStat& RegenStat, const FNonRegenStat& NonRegenStat)
 {
+	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (!BattleSubsystem) return;
+
+	if (GetOuter()->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()))
+	{
+		auto Interface = Cast<ITeamInterface>(GetOuter());
+		FGameplayTag OwnerTag = Interface->GetTeamTag();
+
+		if (OwnerTag == BattleSubsystem->AllyTeamTag)
+		{
+			BattleSubsystem->OnChangeAllyBaseHealth.Broadcast(RegenStat.Current, RegenStat.GetTotalMax());
+		}
+		else if (OwnerTag == BattleSubsystem->EnemyTeamTag)
+		{
+			BattleSubsystem->OnChangeEnemyBaseHealth.Broadcast(RegenStat.Current, RegenStat.GetTotalMax());
+		}
+	}
+
 	if (RegenStat.Current <= 0.0f)
 	{
-		UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+		
 		if (BattleSubsystem)
 		{
 			if (GetOuter()->GetClass()->ImplementsInterface(UTeamInterface::StaticClass()))

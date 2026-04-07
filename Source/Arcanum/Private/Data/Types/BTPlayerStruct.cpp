@@ -9,6 +9,7 @@
 #include "BehaviorTree/BlackboardData.h"
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Object/Skills/SkillBase.h"
 
 void UBTPlayerDataObject::SpawnUnit()
 {
@@ -26,7 +27,7 @@ void UBTPlayerDataObject::SpawnUnit()
 		UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
 
 		AActor* AllyBasement = BattleSubsystem->GetAllyBasement();
-		PlayerController->Internal_SpawnUnit(AllyBasement->GetActorLocation() + AllyBasement->GetActorForwardVector() * 450.0f);
+		PlayerController->Internal_SpawnUnit(AllyBasement->GetActorLocation() + (AllyBasement->GetActorForwardVector() * 450.0f) + (FVector::UpVector * 20.0f));
 	}
 }
 
@@ -105,7 +106,10 @@ bool UBTPlayerDataObject::UseSkill()
           	break;
 
 		case EBSkillType::BasicSkill:
-			PlayerController->TriggerSkill();
+			if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(PlayerController->GetPawn()))
+			{
+				PlayerCharacter->HandleCommonSkillInput();
+			}
 			break;
 
 		case EBSkillType::UltimateSkill:
@@ -146,6 +150,102 @@ bool UBTPlayerDataObject::UseSkill()
 		return bIsSkillSuccess;
 	}
 
+	return false;
+}
+
+bool UBTPlayerDataObject::RangeCheck(EBSkillType InSkillType)
+{
+	if (!PlayerController.IsValid()) return false;
+	if (!PlayerController->CachedPlayerCharacter.IsValid()) return false;
+
+	UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+	if (!BattleSubsystem) return false;
+
+	APlayerCharacter* PlayerCharacter = PlayerController->CachedPlayerCharacter.Get();
+	float CharacterToTargetDistance = PlayerCharacter->CachedAIC->GetBlackboardComponent()->GetValueAsFloat(CharacterToTargetDistanceName);
+	
+	switch (InSkillType)
+	{
+	case EBSkillType::None:
+	{
+		return false;
+	}
+		break;
+	case EBSkillType::BasicAttack:
+	{
+		FGameplayTag Tag = BattleSubsystem->GetCurrentBasicAttackSkillTag();
+		if (TObjectPtr<USkillBase>* SkillBaseTO = PlayerController->SkillBaseInstances.Find(Tag))
+		{
+			if (USkillBase* SkillBase = SkillBaseTO->Get())
+			{
+				if (SkillBase->GetSkillInfo().EnabledRange > CharacterToTargetDistance)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}
+	}
+		break;
+	case EBSkillType::BasicSkill:
+	{
+		FGameplayTag Tag = BattleSubsystem->GetCurrentBasicSkillTag();
+		if (TObjectPtr<USkillBase>* SkillBaseTO = PlayerController->SkillBaseInstances.Find(Tag))
+		{
+			if (USkillBase* SkillBase = SkillBaseTO->Get())
+			{
+				if (SkillBase->GetSkillInfo().EnabledRange > CharacterToTargetDistance)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}
+	}
+		break;
+	case EBSkillType::UltimateSkill:
+	{
+		FGameplayTag Tag = BattleSubsystem->GetCurrentLegendarySkillData()->SkillTag;
+		if (TObjectPtr<USkillBase>* SkillBaseTO = PlayerController->SkillBaseInstances.Find(Tag))
+		{
+			if (USkillBase* SkillBase = SkillBaseTO->Get())
+			{
+				if (SkillBase->GetSkillInfo().EnabledRange > CharacterToTargetDistance)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}
+	}
+		break;
+	case EBSkillType::Item01:
+	{
+		return true;
+	}
+		break;
+	case EBSkillType::Item02:
+	{
+		return true;
+	}
+		break;
+	case EBSkillType::Swap:
+	{
+		return true;
+	}
+		break;
+	default:
+		break;
+	}
 	return false;
 }
 

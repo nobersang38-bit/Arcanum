@@ -4,6 +4,7 @@
 
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
+#include "Animation/WidgetAnimation.h"
 
 void UGachaHighgradeWidget::NativeConstruct()
 {
@@ -34,7 +35,16 @@ void UGachaHighgradeWidget::SkipToFinal()
 {
 	StopAllAnimations();
 	CurrentState = EGachaHighgradeState::FinalReveal;
+	
+	if (DialogueAnim) {
+		float EndTime = DialogueAnim->GetEndTime();
+		PlayAnimation(DialogueAnim);
+		SetAnimationCurrentTime(RevealAnim, EndTime);
+		PauseAnimation(RevealAnim);
+	}
+
 	if (RevealAnim) PlayAnimation(RevealAnim);
+	if (OnSkipRequested.IsBound()) OnSkipRequested.Broadcast();
 }
 
 void UGachaHighgradeWidget::InitializeGacha(const FGachaItemResult& ItemData, const FText& InText)
@@ -43,15 +53,33 @@ void UGachaHighgradeWidget::InitializeGacha(const FGachaItemResult& ItemData, co
 	if (DialogueText) DialogueText->SetText(GachaDialogueText);
 
 	// TODO: 나중에 ItemData 기반 이미지 세팅
-	// if (RevealImage && ItemData.CharacterTexture)
-	// {
-	//     RevealImage->SetBrushFromTexture(ItemData.CharacterTexture);
-	// }
+	 if (RevealImage && ItemData.CharacterColorTexture)
+	 {
+	     RevealImage->SetBrushFromTexture(ItemData.CharacterColorTexture.LoadSynchronous());
+	 }
+	 if (SilhouetteImage && ItemData.CharacterSilhouetteTexture)
+	 {
+		 SilhouetteImage->SetBrushFromTexture(ItemData.CharacterSilhouetteTexture.LoadSynchronous());
+	 }
+	 if (BackGround && ItemData.CharacterBgTexture)
+	 {
+		 BackGround->SetBrushFromTexture(ItemData.CharacterBgTexture.LoadSynchronous());
+	 }
 }
 
 FReply UGachaHighgradeWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-	SkipToFinal();
+	if (CurrentState == EGachaHighgradeState::End) {
+		if (OnGachaFinished.IsBound()) OnGachaFinished.Broadcast();
+		return FReply::Handled();
+	}
+
+	if (!Isclicked) {
+		Isclicked = !Isclicked;
+		SkipToFinal();
+		CurrentState = EGachaHighgradeState::End;
+	}
+
 	return FReply::Handled();
 }
 
@@ -81,19 +109,25 @@ void UGachaHighgradeWidget::PlayNextState()
 }
 void UGachaHighgradeWidget::OnDialogueFinished()
 {
+	if (Isclicked) return;
+
 	CurrentState = EGachaHighgradeState::SilhouetteCamera;
 	OnSilhouetteStart.Broadcast();
 	PlayNextState();
 }
 void UGachaHighgradeWidget::OnSilhouetteFinished()
 {
+	if (Isclicked) return;
 	CurrentState = EGachaHighgradeState::FinalReveal;
 }
 void UGachaHighgradeWidget::OnSilhouetteCameraMovingFinished()
 {
+	if (Isclicked) return;
 	PlayNextState();
 }
 void UGachaHighgradeWidget::OnRevealFinished()
 {
+	if (Isclicked) return;
 	CurrentState = EGachaHighgradeState::End;
+	//if (OnGachaFinished.IsBound()) OnGachaFinished.Broadcast();
 }

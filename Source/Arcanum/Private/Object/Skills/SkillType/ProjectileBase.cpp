@@ -9,6 +9,7 @@
 #include "Engine/OverlapResult.h"
 #include "Character/PlayerCharacter.h"
 #include "Component/StatusActionComponent.h"
+#include "Core/SubSystem/BattlefieldManagerSubsystem.h"
 
 AProjectileBase::AProjectileBase()
 {
@@ -20,6 +21,7 @@ AProjectileBase::AProjectileBase()
     CollisionComponent->InitSphereRadius(20.f);
     CollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     CollisionComponent->SetCollisionProfileName("BlockAll");
+    CollisionComponent->SetLineThickness(5.0f);
 
     CollisionComponent->OnComponentHit.AddDynamic(this, &AProjectileBase::OnHit);
     CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AProjectileBase::OnOverlap);
@@ -28,6 +30,12 @@ AProjectileBase::AProjectileBase()
 void AProjectileBase::BeginPlay()
 {
     Super::BeginPlay();
+
+    UBattlefieldManagerSubsystem* BattleSubsystem = GetWorld()->GetSubsystem<UBattlefieldManagerSubsystem>();
+    if (BattleSubsystem)
+    {
+        bShowCollision = BattleSubsystem->GetIsDebugMode();
+    }
 }
 void AProjectileBase::Tick(float Deltatime)
 {
@@ -127,6 +135,10 @@ void AProjectileBase::DeactivateSkillActor()
     SetActorEnableCollision(false);
     CachedActors.Empty();
     ActorCollisionCoolTime.Empty();
+    if (bShowCollision)
+    {
+        CollisionComponent->SetHiddenInGame(true);
+    }
     DeactiveItem();
     Super::DeactivateSkillActor();
 }
@@ -154,6 +166,11 @@ void AProjectileBase::ActivateSkillActor(USkillBase* InSkill, AActor* InOwner, c
         HowitzerStartTransform = GetActorTransform();
     }
     CollisionComponent->SetCollisionEnabled(FirstCollisionEnabled);
+
+    if (bShowCollision)
+    {
+        CollisionComponent->SetHiddenInGame(false);
+    }
 
     GetWorld()->GetTimerManager().SetTimer(LifeTimerHandle, this, &AProjectileBase::DeactivateSkillActor, LifeTime, false);
 }
@@ -243,6 +260,10 @@ void AProjectileBase::CollisionProcess(AActor* OtherActor)
                                 else if (const FNonRegenStat* NonRegenStat = PlayerCharacter->GetBattleStatComponent()->FindNonRegenStat(UseStatTag))
                                 {
                                     StatModifier.Value.Flat = StatModifier.Value.Flat + (bIsAttack ? -FMath::Abs(NonRegenStat->GetTotalValue()) : NonRegenStat->GetTotalValue());
+                                    UE_LOG(LogTemp, Warning, TEXT("Flat=%.2f OwnerStat=%.2f AddModi=%.2f"),
+                                        StatModifier.Value.Flat,
+                                        NonRegenStat->GetTotalValue(),
+                                        OwnerSkill->GetDerivedStatModifier().Value.Flat);
                                 }
 
                             }

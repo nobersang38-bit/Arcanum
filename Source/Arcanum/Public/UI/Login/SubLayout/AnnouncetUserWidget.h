@@ -8,6 +8,7 @@ class UTextBlock;
 class UScrollBox;
 class UButton;
 class UImage;
+class UCommonBtnWidget;
 
 /** 브로드캐스트용 버튼 클릭 이벤트 */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCloseClicked);
@@ -39,8 +40,9 @@ protected:
 	TObjectPtr<UScrollBox> ScrollBox;
 
 	/** 닫기 버튼 */
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UButton> CloseButton;
+	/*UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UButton> CloseButton;*/
+	UPROPERTY(meta = (BindWidget)) TObjectPtr<UCommonBtnWidget> CloseBtn;
 
 	/** 배경 이미지 */
 	UPROPERTY(meta = (BindWidgetOptional))

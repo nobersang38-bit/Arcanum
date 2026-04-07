@@ -48,14 +48,28 @@ struct FGachaItemResult
     FGameplayTag GradeTag;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    FText ItemName;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
     TSoftObjectPtr<UDataTable> SourceTable;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TSoftObjectPtr<UTexture2D> CharacterColorTexture;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TSoftObjectPtr<UTexture2D> CharacterSilhouetteTexture;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TSoftObjectPtr<UTexture2D> CharacterBgTexture;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     int32 Quantity = 1;
 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    bool bIsNew = true;
+
     FGachaItemResult() {}
-    FGachaItemResult(FGameplayTag InTag, UDataTable* InTable, int32 InQty = 1)
-        : ItemTag(InTag), SourceTable(InTable), Quantity(InQty) {
+    /* 0401 생성자 변경 */
+    FGachaItemResult(FGameplayTag InTag, UDataTable* InTable, int32 InQty = 1, bool bInIsNew = true)
+        : ItemTag(InTag), SourceTable(InTable), Quantity(InQty), bIsNew(bInIsNew) {
     }
 };
 
@@ -123,8 +137,8 @@ private:
     bool ApplyHardPity(const FDTGachaBannerDataRow* BannerData, FGachaBannerState& BannerState, FGameplayTag& InOutGrade);
     FGameplayTag GetHighestGrade(const FDTGachaBannerDataRow* BannerData);
     FGachaItemResult ResolvePickup(const FDTGachaBannerDataRow* BannerData, const FGachaGradePool& Pool, FGachaBannerState& BannerState, FGameplayTag GachaIndex);
-    FGameplayTag GetRandomFromGrade(const FGachaGradePool& Pool, FGameplayTag GachaIndex);
-    void AddCharacterToBattleCharacter(FDTCharacterBaseInfoRow* CharRow);
+    FGameplayTag GetRandomFromGrade(const FGachaGradePool& Pool, FGameplayTag GachaIndex, FGachaItemResult& GachaRes);
+    bool AddCharacterToBattleCharacter(FDTCharacterBaseInfoRow* CharRow);
     void AddRandomEquipmentToInventory(FDTEquipmentInfoRow* InRow);
 #pragma endregion
 
@@ -197,12 +211,15 @@ private:
     }*/
 
     UFUNCTION(BlueprintCallable)
-    bool AddTestGold();
+    bool AddTestGold(int32 InAmount);
     UFUNCTION(BlueprintCallable)
-    bool AddTestSoul();
+    bool AddTestSoul(int32 InAmount);
     UFUNCTION(BlueprintCallable)
-    bool AddTestShard();
+    bool AddTestShard(int32 InAmount);
     UFUNCTION(BlueprintCallable)
     bool AddTestEquipmentSet();
+public:
+    UPROPERTY(BlueprintReadWrite)
+    bool bTestGiven = false;
 #pragma endregion
 };

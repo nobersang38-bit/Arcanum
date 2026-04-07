@@ -2,15 +2,15 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Data/Types/BTPlayerStruct.h"
 
-UBTDecorator_PlayerSkillCostCheck::UBTDecorator_PlayerSkillCostCheck()
+UBTDecorator_PlayerRangeCheck::UBTDecorator_PlayerRangeCheck()
 {
-	NodeName = TEXT("PlayerSkillCostCheck");
+	NodeName = TEXT("PlayerSkillRangeCheck");
 	bNotifyTick = false;
 	bCreateNodeInstance = true;
-	BlackboardKey.AddObjectFilter(this, GET_MEMBER_NAME_CHECKED(UBTDecorator_PlayerSkillCostCheck, BlackboardKey), UBTPlayerDataObject::StaticClass());
+	BlackboardKey.AddObjectFilter(this, GET_MEMBER_NAME_CHECKED(UBTDecorator_PlayerRangeCheck, BlackboardKey), UBTPlayerDataObject::StaticClass());
 }
 
-bool UBTDecorator_PlayerSkillCostCheck::CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const
+bool UBTDecorator_PlayerRangeCheck::CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const
 {
 	UBTPlayerDataObject* PlayerDataObject = nullptr;
 	if (UBehaviorTreeComponent* Behavior = &OwnerComp)
@@ -20,7 +20,7 @@ bool UBTDecorator_PlayerSkillCostCheck::CalculateRawConditionValue(UBehaviorTree
 
 	if (PlayerDataObject)
 	{
-		return PlayerDataObject->CostCheck();
+		return PlayerDataObject->RangeCheck(SkillType);
 	}
 
 	return false;

@@ -2,18 +2,21 @@
 
 
 #include "Core/SubSystem/BattlefieldManagerSubsystem.h"
+#include "UI/Battle/Contents/InBattleHUDWidget.h"
+#include "UI/Battle/BattlePlayerController.h"
 #include "GameFramework/Character.h"
-#include "Object/Actor/BattlefieldManagerActor.h"
 #include "Kismet/GameplayStatics.h"
 #include "Core/ARGameInstance.h"
-#include "Data/Rows/UnitsDataRow.h"
 #include "Core/SubSystem/GameTimeSubsystem.h"
+#include "Core/ARPlayerAccountService.h"
+#include "Data/Rows/UnitsDataRow.h"
 #include "DataInfo/BattleCharacter/BattleStats/DataTable/DTBattleStats.h"
 #include "DataInfo/SkillData/Data/FSkillInfo.h"
 #include "DataInfo/SkillData/DataTable/DTSkillsData.h"
 #include "GameFramework/GameMode.h"
 #include "Object/Actor/SpawnCheckDecal.h"
-#include "Core/ARPlayerAccountService.h"
+#include "Object/Actor/BattlefieldManagerActor.h"
+
 
 
 void UBattlefieldManagerSubsystem::OnWorldBeginPlay(UWorld& InWorld)
@@ -365,7 +368,11 @@ void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerDa
 
 	//스테이지 데이터 설정 부분
 	UGameDataSubsystem* GameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
-	FGameplayTag StageTag = Arcanum::BattleStage::Normal::Stage1;
+	FGameplayTag StageTag;
+	if (UARGameInstance* GameInstance = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(this)))
+	{
+		StageTag = GameInstance->CurrentStageTag;
+	}
 
 	if (GameDataSubsystem)
 	{
@@ -433,6 +440,7 @@ void UBattlefieldManagerSubsystem::SetInBattleData(const FPlayerData& InPlayerDa
 	//OutInBattleData.PlayerBattleStat = 
 
 	BuildBattleWeaponSkillCache(OutInBattleData);
+	BuildBattlePotionCache(OutInBattleData);
 }
 
 void UBattlefieldManagerSubsystem::MatchEnded(const FMatchData& MatchData)
@@ -447,9 +455,18 @@ void UBattlefieldManagerSubsystem::MatchEnded(const FMatchData& MatchData)
 			FPlayerAccountService::AddCurrency(this, Arcanum::PlayerData::Currencies::NonRegen::Soul::Value, InBattleData.StageData.Reward.Soul);
 		}
 
+		if (ABattlePlayerController* battlePlayerController = Cast<ABattlePlayerController>(GetWorld()->GetFirstPlayerController()))
+		{
+			if (UInBattleHUDWidget* inBattleHUD = battlePlayerController->GetHUDWidgetInstance())
+			{
+				inBattleHUD->ClearBuffSlots();
+			}
+		}
+
 		UGameTimeSubsystem* GameTimeSubsystem = GI->GetSubsystem<UGameTimeSubsystem>();
 		if (GameTimeSubsystem)
 		{
+			FPlayerAccountService::FinalizeBattlePotionSlots(this, InBattleData.PlayerData.BattlePotionSlots);
 			GameTimeSubsystem->StopStage();
 			OnMatchEnded.Clear();
 		}
@@ -533,7 +550,7 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 	}
 
 	// 일반 무기 기본공격/기본스킬 캐시
-	auto cacheNormalWeaponSkill = [this](const FEquipmentInfo* InEquipInfo, FBattleSkillData& OutBasicAttackSkill, FBattleSkillData& OutBasicSkill)
+	auto cacheNormalWeaponSkill = [this, selectedCharacter](const FEquipmentInfo* InEquipInfo, FBattleSkillData& OutBasicAttackSkill, FBattleSkillData& OutBasicSkill)
 		{
 			if (InEquipInfo)
 			{
@@ -549,16 +566,19 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 
 					OutBasicAttackSkill.ComboMontages.Empty();
 
-					for (const TSoftObjectPtr<UAnimMontage>& comboMontage : basicAttackSkillInfo->ComboMontages)
+					const FBattleCharacterAnimSet& characterAnimSet = selectedCharacter->CharacterInfo.BattleCharacterInitData.CharacterAnimSet;
+					for (const TSoftObjectPtr<UAnimMontage>& comboMontage : characterAnimSet.BasicAttackComboMontages)
 					{
 						OutBasicAttackSkill.ComboMontages.Add(comboMontage.LoadSynchronous());
-						OutBasicAttackSkill.SkillClass = basicAttackSkillInfo->SkillClass.LoadSynchronous();
 					}
+
+					OutBasicAttackSkill.SkillClass = basicAttackSkillInfo->SkillClass.LoadSynchronous();
 				}
 
 				OutBasicAttackSkill.SkillLevel = basicAttackSkillLevel;
 				OutBasicAttackSkill.SkillIcon = FindSkillIcon(OutBasicAttackSkill.SkillTag);
 				OutBasicAttackSkill.Cooldown = FindSkillCooldown(OutBasicAttackSkill.SkillTag, OutBasicAttackSkill.SkillLevel);
+				OutBasicAttackSkill.ManaCost = FindSkillManaCost(OutBasicAttackSkill.SkillTag, OutBasicAttackSkill.SkillLevel);
 
 				for (const TPair<FGameplayTag, int32>& skillPair : InEquipInfo->Equipment.Skills)
 				{
@@ -574,7 +594,8 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 						const int32 maxSkillLevel = basicSkillInfo->LevelModifiers.Num();
 						basicSkillLevel = FMath::Clamp(rawSkillLevel, 1, maxSkillLevel);
 
-						OutBasicSkill.CastMontage = basicSkillInfo->CastMontage.LoadSynchronous();
+						const FBattleCharacterAnimSet& characterAnimSet = selectedCharacter->CharacterInfo.BattleCharacterInitData.CharacterAnimSet;
+						OutBasicSkill.CastMontage = characterAnimSet.BasicSkillCastMontage.LoadSynchronous();
 						OutBasicSkill.SkillClass = basicSkillInfo->SkillClass.LoadSynchronous();
 					}
 
@@ -582,6 +603,7 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 					OutBasicSkill.SkillIcon = FindSkillIcon(OutBasicSkill.SkillTag);
 					OutBasicSkill.CastTime = FindSkillCastTime(OutBasicSkill.SkillTag, OutBasicSkill.SkillLevel);
 					OutBasicSkill.Cooldown = FindSkillCooldown(OutBasicSkill.SkillTag, OutBasicSkill.SkillLevel);
+					OutBasicSkill.ManaCost = FindSkillManaCost(OutBasicSkill.SkillTag, OutBasicSkill.SkillLevel);
 
 					break;
 				}
@@ -589,7 +611,7 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 		};
 
 	// 전설 무기 궁극기 스킬 캐시
-	auto cacheLegendaryWeaponSkill = [this](const FEquipmentInfo* InEquipInfo, FBattleSkillData& OutUltimateSkill)
+	auto cacheLegendaryWeaponSkill = [this, selectedCharacter](const FEquipmentInfo* InEquipInfo, FBattleSkillData& OutUltimateSkill)
 		{
 			if (InEquipInfo)
 			{
@@ -609,16 +631,18 @@ void UBattlefieldManagerSubsystem::BuildBattleWeaponSkillCache(FInBattleData& Ou
 						const int32 maxSkillLevel = ultimateSkillInfo->LevelModifiers.Num();
 						ultimateSkillLevel = FMath::Clamp(rawSkillLevel, 1, maxSkillLevel);
 
-						OutUltimateSkill.CastMontage = ultimateSkillInfo->CastMontage.LoadSynchronous();
+						const FBattleCharacterAnimSet& characterAnimSet = selectedCharacter->CharacterInfo.BattleCharacterInitData.CharacterAnimSet;
+						OutUltimateSkill.CastMontage = characterAnimSet.BasicSkillCastMontage.LoadSynchronous();
+						OutUltimateSkill.PressMontage = characterAnimSet.UltimatePressMontage.LoadSynchronous();
+						OutUltimateSkill.ReleaseMontage = characterAnimSet.UltimateReleaseMontage.LoadSynchronous();
 						OutUltimateSkill.SkillClass = ultimateSkillInfo->SkillClass.LoadSynchronous();
-						OutUltimateSkill.PressMontage = ultimateSkillInfo->PressMontage.LoadSynchronous();
-						OutUltimateSkill.ReleaseMontage = ultimateSkillInfo->ReleaseMontage.LoadSynchronous();
 					}
 
 					OutUltimateSkill.SkillLevel = ultimateSkillLevel;
 					OutUltimateSkill.SkillIcon = FindSkillIcon(OutUltimateSkill.SkillTag);
 					OutUltimateSkill.CastTime = FindSkillCastTime(OutUltimateSkill.SkillTag, OutUltimateSkill.SkillLevel);
 					OutUltimateSkill.Cooldown = FindSkillCooldown(OutUltimateSkill.SkillTag, OutUltimateSkill.SkillLevel);
+					OutUltimateSkill.ManaCost = FindSkillManaCost(OutUltimateSkill.SkillTag, OutUltimateSkill.SkillLevel);
 
 					break;
 				}
@@ -732,23 +756,22 @@ UAnimMontage* UBattlefieldManagerSubsystem::GetCurrentWeaponEquipMontage() const
 			itemGuid = *foundWeaponGuid;
 		}
 	}
-	if (!itemGuid.IsValid()) return nullptr;
 
+	if (!itemGuid.IsValid()) return nullptr;
 	const FEquipmentInfo* foundEquipment = FindEquipmentByGuid(InBattleData.PlayerData, itemGuid);
 	if (!foundEquipment) return nullptr;
 
-	UGameDataSubsystem* gameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
-	if (!gameDataSubsystem){return nullptr;
+	const FBattleCharacterAnimSet& characterAnimSet = selectedCharacter->CharacterInfo.BattleCharacterInitData.CharacterAnimSet;
+
+	for (const FWeaponSwapMontageData& swapData : characterAnimSet.WeaponSwapMontages)
+	{
+		if (swapData.WeaponItemTag == foundEquipment->ItemTag)
+		{
+			return swapData.SwapMontage.LoadSynchronous();
+		}
 	}
 
-	const FName itemTagLeafName = GetLeafNameFromTag(foundEquipment->ItemTag);
-	const FDTItemCatalogRow* itemCatalogRow = gameDataSubsystem->GetRow<FDTItemCatalogRow>(Arcanum::DataTable::ItemCatalog, itemTagLeafName);
-	if (!itemCatalogRow) return nullptr;
-
-	const FDTEquipmentInfoRow* equipmentRow = gameDataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, itemCatalogRow->DetailRowName);
-	if (!equipmentRow) return nullptr;
-
-	return equipmentRow->EquipMontage.LoadSynchronous();
+	return nullptr;
 }
 
 FGameplayTag UBattlefieldManagerSubsystem::GetCurrentWeaponSlotTag() const
@@ -955,14 +978,7 @@ USkeletalMesh* UBattlefieldManagerSubsystem::GetCurrentWeaponMesh() const
 	const FEquipmentInfo* foundEquip = FindEquipmentByGuid(InBattleData.PlayerData, *weaponGuid);
 	if (!foundEquip) return nullptr;
 
-	const FDTItemCatalogRow* catalogRow = FPlayerAccountService::FindItemCatalogRowByTag(this, foundEquip->ItemTag);
-	if (!catalogRow) return nullptr;
-	if (catalogRow->DetailRowName.IsNone()) return nullptr;
-
-	UGameDataSubsystem* gameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
-	if (!gameDataSubsystem) return nullptr;
-
-	const FDTEquipmentInfoRow* equipRow = gameDataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, catalogRow->DetailRowName);
+	const FDTEquipmentInfoRow* equipRow = FPlayerAccountService::FindEquipmentInfoRowByTag(this, foundEquip->ItemTag);
 	if (!equipRow) return nullptr;
 
 	return equipRow->SkeletalMesh.LoadSynchronous();
@@ -979,15 +995,7 @@ USkeletalMesh* UBattlefieldManagerSubsystem::GetLegendaryWeaponMesh() const
 	const FEquipmentInfo* foundEquip = FindEquipmentByGuid(InBattleData.PlayerData, *weaponGuid);
 	if (!foundEquip) return nullptr;
 
-	const FDTItemCatalogRow* catalogRow = FPlayerAccountService::FindItemCatalogRowByTag(this, foundEquip->ItemTag);
-	if (!catalogRow) return nullptr;
-
-	if (catalogRow->DetailRowName.IsNone()) return nullptr;
-
-	UGameDataSubsystem* gameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
-	if (!gameDataSubsystem) return nullptr;
-
-	const FDTEquipmentInfoRow* equipRow = gameDataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, catalogRow->DetailRowName);
+	const FDTEquipmentInfoRow* equipRow = FPlayerAccountService::FindEquipmentInfoRowByTag(this, foundEquip->ItemTag);
 	if (!equipRow) return nullptr;
 
 	return equipRow->SkeletalMesh.LoadSynchronous();
@@ -1015,14 +1023,7 @@ FGameplayTag UBattlefieldManagerSubsystem::GetCurrentWeaponSlotTypeTag() const
 	const FEquipmentInfo* foundEquip = FindEquipmentByGuid(InBattleData.PlayerData, *weaponGuid);
 	if (!foundEquip) return FGameplayTag();
 
-	const FDTItemCatalogRow* catalogRow = FPlayerAccountService::FindItemCatalogRowByTag(this, foundEquip->ItemTag);
-	if (!catalogRow) return FGameplayTag();
-	if (catalogRow->DetailRowName.IsNone())	return FGameplayTag();
-
-	UGameDataSubsystem* gameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
-	if (!gameDataSubsystem) return FGameplayTag();
-
-	const FDTEquipmentInfoRow* equipRow = gameDataSubsystem->GetRow<FDTEquipmentInfoRow>(Arcanum::DataTable::Equipment, catalogRow->DetailRowName);
+	const FDTEquipmentInfoRow* equipRow = FPlayerAccountService::FindEquipmentInfoRowByTag(this, foundEquip->ItemTag);
 	if (!equipRow) return FGameplayTag();
 
 	return equipRow->SlotTag;
@@ -1200,6 +1201,35 @@ float UBattlefieldManagerSubsystem::FindSkillCooldown(const FGameplayTag& InSkil
 	return 0.0f;
 }
 
+float UBattlefieldManagerSubsystem::FindSkillManaCost(const FGameplayTag& InSkillTag, int32 InSkillLevel) const
+{
+	if (!InSkillTag.IsValid()) return 0.0f;
+
+	UGameDataSubsystem* gameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
+	if (!gameDataSubsystem) return 0.0;
+
+	const FDTSkillsDataRow* skillRow = gameDataSubsystem->GetRow<FDTSkillsDataRow>(Arcanum::DataTable::SkillData, GetLeafNameFromTag(InSkillTag));
+	if (!skillRow) return 0.0;
+
+	const FSkillInfo& skillInfo = skillRow->SkillData;
+
+	for (const FLevelModifierEntry& levelModifier : skillInfo.LevelModifiers)
+	{
+		if (levelModifier.Level == InSkillLevel)
+		{
+			for (const FDerivedStatModifier& costModifier : levelModifier.Cost)
+			{
+				if (costModifier.StatTag == Arcanum::BattleStat::Character::Regen::Mana::Value)
+				{
+					return FMath::Abs(costModifier.Value.Flat);
+				}
+			}
+		}
+	}
+
+	return 0.0f;
+}
+
 UTexture2D* UBattlefieldManagerSubsystem::FindSkillIcon(const FGameplayTag& InSkillTag) const
 {
 	if (!InSkillTag.IsValid()) return nullptr;
@@ -1215,4 +1245,64 @@ UTexture2D* UBattlefieldManagerSubsystem::FindSkillIcon(const FGameplayTag& InSk
 	}
 
 	return nullptr;
+}
+
+void UBattlefieldManagerSubsystem::BuildBattlePotionCache(FInBattleData& OutInBattleData)
+{
+	BattlePotionRuntimeSlots.Empty();
+
+	const FPlayerData& playerData = OutInBattleData.PlayerData;
+
+	UGameDataSubsystem* gameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
+	if (!gameDataSubsystem) return;
+
+	for (const FBattlePotionSlotData& potionSlot : playerData.BattlePotionSlots)
+	{
+		FBattlePotionRuntimeSlotData runtimeSlot;
+		runtimeSlot.PotionTag = potionSlot.PotionTag;
+		runtimeSlot.Count = potionSlot.Count;
+		runtimeSlot.CurrentCooldown = 0.0f;
+		runtimeSlot.MaxCooldown = 0.0f;
+
+		if (potionSlot.PotionTag.IsValid())
+		{
+			if (const FDTItemCatalogRow* catalogRow = FPlayerAccountService::FindItemCatalogRowByTag(this, potionSlot.PotionTag))
+			{
+				runtimeSlot.Icon = catalogRow->Icon.LoadSynchronous();
+
+				if (FDTPotionInfoRow* potionRow = gameDataSubsystem->GetRow<FDTPotionInfoRow>(catalogRow->DetailTableTag, catalogRow->DetailRowName))
+				{
+					runtimeSlot.MaxCooldown = potionRow->CooldownSeconds;
+				}
+			}
+		}
+
+		BattlePotionRuntimeSlots.Add(runtimeSlot);
+	}
+}
+
+void UBattlefieldManagerSubsystem::DecreaseBattlePotionCount(int32 InSlotIndex)
+{
+	if (InBattleData.PlayerData.BattlePotionSlots.IsValidIndex(InSlotIndex))
+	{
+		FBattlePotionSlotData& potionSlot = InBattleData.PlayerData.BattlePotionSlots[InSlotIndex];
+		if (potionSlot.Count > 0)
+		{
+			potionSlot.Count--;
+		}
+	}
+
+	if (BattlePotionRuntimeSlots.IsValidIndex(InSlotIndex))
+	{
+		FBattlePotionRuntimeSlotData& runtimeSlot = BattlePotionRuntimeSlots[InSlotIndex];
+		if (runtimeSlot.Count > 0)
+		{
+			runtimeSlot.Count--;
+		}
+	}
+}
+
+TArray<FBattlePotionRuntimeSlotData>& UBattlefieldManagerSubsystem::GetBattlePotionRuntimeSlots()
+{
+	return BattlePotionRuntimeSlots;
 }

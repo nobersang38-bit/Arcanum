@@ -139,5 +139,5 @@ protected:
     TMap<AActor*, float> ActorCollisionCoolTime;
 
 private:
-
+    bool bShowCollision = false;
 };

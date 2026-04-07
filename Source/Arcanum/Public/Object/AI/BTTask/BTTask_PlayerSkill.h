@@ -25,6 +25,7 @@ public:
 
 protected:
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -32,4 +33,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FName TargetActorName = FName("TargetActor");
+
+private:
+	float Internal_Time = 0.0f;
 };

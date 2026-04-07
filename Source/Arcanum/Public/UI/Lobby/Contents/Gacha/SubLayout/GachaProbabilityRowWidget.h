@@ -13,7 +13,7 @@ class ARCANUM_API UGachaProbabilityRowWidget : public UUserWidget
 {
     GENERATED_BODY()
 
-    public:
+public:
     void SetAsHeader(FText GradeName, float Probability, FLinearColor HeaderColor);
     void SetAsCharacter(UTexture2D* Icon, FText Name, float Probability, bool bIsPickup);
 

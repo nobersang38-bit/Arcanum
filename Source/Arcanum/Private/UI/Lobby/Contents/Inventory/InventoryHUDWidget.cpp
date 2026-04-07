@@ -674,4 +674,3 @@ void UInventoryHUDWidget::RefreshCategoryButtonState()
 			: FLinearColor(1.f, 1.f, 1.f, 1.f));
 	}
 }
-

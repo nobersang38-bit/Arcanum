@@ -52,8 +52,8 @@ namespace Arcanum
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Celestia, "Arcanum.Player.ID.Celestia", "셀레스티아");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Lynette, "Arcanum.Player.ID.Lynette", "리넷");
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Arna, "Arcanum.Player.ID.Arna", "아르나");
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Aiden, "Arcanum.Player.ID.Aiden", "Aiden");
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(OutSider, "Arcanum.Player.ID.OutSider", "OutSider");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Aiden, "Arcanum.Player.ID.Aiden", "에이든");
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(OutSider, "Arcanum.Player.ID.OutSider", "아웃사이더");
 		}
 
 		namespace Grade
@@ -139,12 +139,12 @@ namespace Arcanum {
 	namespace Items {
 		namespace HUDSlot {
 			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Slot1, "Arcanum.Items.ItemSlot.Slot1.0", "무기1")
-				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Slot2, "Arcanum.Items.ItemSlot.Slot2.1", "무기2")
-				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Legendary, "Arcanum.Items.ItemSlot.Legendary.2", "전설무기")
-				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Helmet, "Arcanum.Items.ItemSlot.Helmet.3", "투구")
-				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Chest, "Arcanum.Items.ItemSlot.Chest.4", "갑옷")
-				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Glove, "Arcanum.Items.ItemSlot.Glove.5", "장갑")
-				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Boot, "Arcanum.Items.ItemSlot.Boot.6", "신발")
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Slot2, "Arcanum.Items.ItemSlot.Slot2.1", "무기2")
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Legendary, "Arcanum.Items.ItemSlot.Legendary.2", "전설무기")
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Helmet, "Arcanum.Items.ItemSlot.Helmet.3", "투구")
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Chest, "Arcanum.Items.ItemSlot.Chest.4", "갑옷")
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Glove, "Arcanum.Items.ItemSlot.Glove.5", "장갑")
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Boot, "Arcanum.Items.ItemSlot.Boot.6", "신발")
 		}
 		namespace ItemSlot {
 			namespace Weapon {

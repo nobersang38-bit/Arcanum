@@ -23,33 +23,27 @@ struct FInBattleData
 {
 	GENERATED_BODY()
 public:
+	UPROPERTY()
 	FPlayerData PlayerData;
+	UPROPERTY()
 	FStageDataInfo StageData;
+	UPROPERTY()
 	FBattleStageInfo BattleStageInfo;
+	UPROPERTY()
 	FGradeStatData PlayerBattleStat;
+	UPROPERTY()
 	FBattleWeaponSkillData BattleWeaponSkill;
+	UPROPERTY()
 	FPlayerBattleData PlayerBattleData;
+	UPROPERTY()
 	TArray<FDerivedStatModifier> EquippedOwnerStats;
-	TMap<FGameplayTag, TMap<FGameplayTag, FDerivedStatModifier>> WeaponOnHitTarget;
-	
-	/* TODO: 꺼내쓸때
-	const TMap<FGameplayTag, FDerivedStatModifier>* weaponSlot1OnHitTarget = InBattleData.WeaponOnHitTarget.Find(Arcanum::Items::ItemSlot::Weapon::Slot1);
-	const TMap<FGameplayTag, FDerivedStatModifier>* weaponSlot2OnHitTarget = InBattleData.WeaponOnHitTarget.Find(Arcanum::Items::ItemSlot::Weapon::Slot2);
-	const TMap<FGameplayTag, FDerivedStatModifier>* legendaryWeaponOnHitTarget = InBattleData.WeaponOnHitTarget.Find(Arcanum::Items::ItemSlot::Weapon::Legendary);
 
-	if (weaponSlot1OnHitTarget)
-    {
-	    const FDerivedStatModifier* healthModifier = weaponSlot1OnHitTarget->Find(Arcanum::BattleStat::Character::Regen::Health::Value);
-	    if (healthModifier)
-	    { 
-	 	    const float damage = healthModifier->Value.Flat;
-	    }
-    }
-	*/
+	TMap<FGameplayTag, TMap<FGameplayTag, FDerivedStatModifier>> WeaponOnHitTarget;
 };
 
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnMatchEnded, const FMatchData&)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealthBarProgress, float, InCurrent, float, InMax);
 
 // 김도현
 // 전투 스테이지에 관련된 기능
@@ -67,8 +61,17 @@ public:
 	// 전투 스테이지가 종료되면 호출, 결과 정보 = FMatchResultData
 	FOnMatchEnded OnMatchEnded;
 
+	bool GetIsDebugMode() const { return bIsDebug; }
+	void SetIsDebugMode(bool InUseDebug) { bIsDebug = InUseDebug; }
+
+#pragma region 체력관련 프로그래스바
 public:
+	FOnHealthBarProgress OnChangeEnemyBaseHealth;
+	FOnHealthBarProgress OnChangeAllyBaseHealth;
+#pragma endregion
+
 #pragma region 스테이지 기본설정
+public:
 	UFUNCTION()
 	AActor* GetAllyBasement() const;
 
@@ -162,6 +165,7 @@ protected:
 #pragma endregion
 
 #pragma region 데이터 캐시
+	UPROPERTY()
 	FInBattleData InBattleData;
 
 	UPROPERTY()
@@ -187,6 +191,8 @@ protected:
 
 #pragma endregion
 
+private:
+	bool bIsDebug = false;
 
 protected:
 #pragma region 디버그(나중에 삭제)
@@ -281,6 +287,9 @@ public:
 	/* 현재 전설스킬 캐시 Get */
 	const FBattleSkillData* GetCurrentLegendarySkillData() const;
 
+	/* 현재 선택된 플레이어 캐릭터 반환 */
+	const FBattleCharacterData* GetSelectedCharacterData() const;
+
 	/* 쿨타임 */
 	float GetCurrentBasicAttackCooldown() const;
 	float GetCurrentBasicSkillCooldown() const;
@@ -308,6 +317,9 @@ protected:
 	/* 스킬 쿨타임 */
 	float FindSkillCooldown(const FGameplayTag& InSkillTag, int32 InSkillLevel) const;
 
+	/* 스킬 마나 */
+	float FindSkillManaCost(const FGameplayTag& InSkillTag, int32 InSkillLevel) const;
+
 	/* 스킬 아이콘 */
 	UTexture2D* FindSkillIcon(const FGameplayTag& InSkillTag) const;
 
@@ -316,9 +328,6 @@ protected:
 
 	/* Guid로 인벤토리에서 장비 찾기 */
 	const FEquipmentInfo* FindEquipmentByGuid(const FPlayerData& InPlayerData, const FGuid& InItemGuid) const;
-
-	/* 현재 선택된 플레이어 캐릭터 반환 */
-	const FBattleCharacterData* GetSelectedCharacterData() const;
 
 	/* 현재 선택 캐릭터가 지정한 세트 루트 태그를 4개 장착했는지 확인 */
 	UFUNCTION()
@@ -331,5 +340,21 @@ protected:
 	/* 현재 궁극기 사용 중 여부 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Battle|SkillCache")
 	bool bUsingLegendaryWeapon = false;
+#pragma endregion
+
+#pragma region 물약
+public:
+	UFUNCTION(BlueprintCallable)
+	void BuildBattlePotionCache(FInBattleData& OutInBattleData);
+
+	UFUNCTION(BlueprintCallable)
+	void DecreaseBattlePotionCount(int32 InSlotIndex);
+
+	UFUNCTION(BlueprintCallable)
+	TArray<FBattlePotionRuntimeSlotData>& GetBattlePotionRuntimeSlots();
+
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Potion", meta = (AllowPrivateAccess = "true"))
+	TArray<FBattlePotionRuntimeSlotData> BattlePotionRuntimeSlots;
 #pragma endregion
 };

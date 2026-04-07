@@ -9,10 +9,13 @@
 
 class UImage;
 class UButton;
+class UBorder;
 class UVerticalBox;
 class UGachaPullButtonWidget;
 class UGachaProbabilityWidget;
 class UGachaBannerButtonWidget;
+class UGachaProbabilityRowWidget;
+class UGachaProgressWidget;
 
 UCLASS()
 class ARCANUM_API UGachaHUDWidget : public UUserWidget
@@ -33,6 +36,9 @@ private:
 #pragma endregion
 
 #pragma region 배너 버튼 관련
+public:
+    /** 버튼 클릭 시 호출될 함수 */
+    void OnBannerSelected(FGameplayTag SelectedBannerTag);
 protected:
     UPROPERTY(meta = (BindWidget)) TObjectPtr<UVerticalBox> BannerVerticalBox;
 
@@ -48,8 +54,7 @@ private:
     UPROPERTY() TArray<TObjectPtr<UGachaBannerButtonWidget>> BannerButtons;
     /** 현재 선택된 배너 버튼 보관 */
     UPROPERTY() TObjectPtr<UGachaBannerButtonWidget> CurrentSelectedButton;
-    /** 버튼 클릭 시 호출될 함수 */
-    void OnBannerSelected(FGameplayTag SelectedBannerTag);
+   
     void UpdateDetailedView(const FDTGachaBannerDataRow* InData);
     /** 상세 이미지를 부드럽게 교체하기 위한 텍스처 설정 함수 */
     void UpdateDetailedImage(TSoftObjectPtr<UTexture2D> NewTexture);
@@ -72,11 +77,22 @@ protected:
     /** 확률 공지 팝업을 띄우는 버튼 */
     UPROPERTY(meta = (BindWidget)) TObjectPtr<UButton> ProbabilityInfoButton;
     UPROPERTY(meta = (BindWidget)) TObjectPtr<UGachaProbabilityWidget> ProbabilityWidget;
+    UPROPERTY(meta = (BindWidget)) TObjectPtr<UBorder> DetailProbabilityText;
 
-    private:
+private:
     /** 확률 버튼 클릭 핸들러 */
     UFUNCTION() void HandleProbabilityButtonClicked();
 #pragma endregion
+
+#pragma region 가챠 진행 위젯
+protected:
+    /** 가챠 진행도 위젯 */
+    UPROPERTY(meta = (BindWidget)) TObjectPtr<UGachaProgressWidget> GachaProgressWidget;
+private:
+    /** 배너 변경시 가챠 진행도 불러올 함수 */
+    UFUNCTION() void UpdateGachaProgressWidget(int32 curr, int32 max);
+#pragma endregion
+
 
 #pragma region 가챠 맵
 protected:

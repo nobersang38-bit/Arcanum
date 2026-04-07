@@ -13,7 +13,7 @@ class USplineComponent;
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnResultStarFinished, AResultStarActor*, FinishedActor);
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAllResultFinished);
 
 USTRUCT(BlueprintType)
 struct FGradeMaterialSet
@@ -36,8 +36,8 @@ public:
     // Delegate
     // ========================================================
 public:
-    UPROPERTY(BlueprintAssignable)
-    FOnResultStarFinished OnResultStarFinished;
+    UPROPERTY(BlueprintAssignable) FOnResultStarFinished OnResultStarFinished;
+    UPROPERTY(BlueprintAssignable) FOnAllResultFinished OnAllResultFinished;
 
     // ========================================================
     // 외부 인터페이스
@@ -53,6 +53,11 @@ public:
     /** 스킵용 */
     void SpawnAllAtEnd();
 
+    /** 차일드 액터 전부 클릭 했는지 세는 함수 */
+    void NotifyOneResultFinished();
+    int32 FinishedCount = 0;
+
+
     /** Skip 강제 종료 */
     void ForceFinish();
 
@@ -60,6 +65,8 @@ public:
     void OnChildStarClicked(AResultStarChild* ClickedStar);
 
     virtual void Tick(float DeltaTime) override;
+
+    TArray<AResultStarChild*> GetStarActors() { return StarActors; }
 
 protected:
     virtual void BeginPlay() override;
@@ -107,11 +114,8 @@ private:
     // 자식 관리
     // ========================================================
 private:
-    UPROPERTY()
-    TArray<TObjectPtr<USceneComponent>> OrbitPivots;
-
-    UPROPERTY()
-    TArray<TObjectPtr<AResultStarChild>> StarActors;
+    UPROPERTY() TArray<TObjectPtr<USceneComponent>> OrbitPivots;
+    UPROPERTY() TArray<TObjectPtr<AResultStarChild>> StarActors;
 
     // ========================================================
     // 런타임 상태

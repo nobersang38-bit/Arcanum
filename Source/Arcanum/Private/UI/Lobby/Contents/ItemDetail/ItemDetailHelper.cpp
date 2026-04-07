@@ -21,55 +21,7 @@ bool FItemDetailHelper::BuildEquipmentDisplayViewData(const UObject* WorldContex
 	FEquipmentInfo equipInfo;
 	if (!FindEquipmentByGuid(WorldContextObject, InItemGuid, equipInfo)) return false;
 
-	UARGameInstance* gameInstance = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
-	if (!gameInstance) return false;
-
-	UGameDataSubsystem* dataSubsystem = gameInstance->GetSubsystem<UGameDataSubsystem>();
-	if (!dataSubsystem) return false;
-
-	const FDTItemCatalogRow* catalogRow = FPlayerAccountService::FindItemCatalogRowByTag(WorldContextObject, equipInfo.ItemTag);
-	if (!catalogRow) return false;
-
-	OutViewData.ItemNameText = catalogRow->DisplayName;
-	OutViewData.UpgradeLevelText = BuildUpgradeLevelText(equipInfo.CurrUpgradeLevel);
-	OutViewData.DescText = catalogRow->Desc;
-	OutViewData.SellPriceText = BuildSellPriceText(catalogRow->SellPrice);
-
-	OutViewData.bShowUpgradeLevel = true;
-	OutViewData.EquippedCharacterText = BuildEquippedCharacterText(WorldContextObject, InItemGuid);
-	OutViewData.bShowEquippedCharacter = !OutViewData.EquippedCharacterText.IsEmpty();
-
-	const TArray<FDerivedStatModifier>* statsToShow = nullptr;
-
-	if (equipInfo.ItemTag.MatchesTag(Arcanum::Items::Rarity::Common::Weapon::Root)
-		|| equipInfo.ItemTag.MatchesTag(Arcanum::Items::Rarity::Legendary::Weapon::Root))
-	{
-		statsToShow = &equipInfo.Equipment.OnHitTargetStats;
-	}
-	else
-	{
-		statsToShow = &equipInfo.Equipment.OwnerStats;
-	}
-
-	for (const FDerivedStatModifier& stat : *statsToShow)
-	{
-		FItemStatLineViewData line;
-		line.StatNameText = BuildStatNameText(dataSubsystem, stat.StatTag);
-
-		if (const FDTStatDisplayRow* statRow = FindStatDisplayRowByTag(dataSubsystem, stat.StatTag))
-		{
-			line.StatValueText = BuildCurrentStatValueText(stat, statRow->bUsePercent);
-		}
-		else
-		{
-			line.StatValueText = BuildCurrentStatValueText(stat, false);
-		}
-
-		line.bVisible = true;
-		OutViewData.StatLines.Add(line);
-	}
-
-	return true;
+	return BuildEquipmentDisplayViewDataFromEquipment(WorldContextObject, InItemGuid, equipInfo, OutViewData, true);
 }
 
 bool FItemDetailHelper::BuildStackItemDisplayViewData(const UObject* WorldContextObject, const FGameplayTag& InItemTag, FItemDisplayViewData& OutViewData)
@@ -99,22 +51,58 @@ bool FItemDetailHelper::BuildStackItemDisplayViewData(const UObject* WorldContex
 		const FDTPotionInfoRow* potionRow = dataSubsystem->GetRow<FDTPotionInfoRow>(Arcanum::DataTable::Potion, catalogRow->DetailRowName);
 		if (potionRow)
 		{
-			for (const FDerivedStatModifier& stat : potionRow->Modifiers)
+			if (potionRow->EffectType == EPotionEffectType::Instant)
 			{
 				FItemStatLineViewData line;
-				line.StatNameText = BuildStatNameText(dataSubsystem, stat.StatTag);
 
-				if (const FDTStatDisplayRow* statRow = FindStatDisplayRowByTag(dataSubsystem, stat.StatTag))
+				if (!potionRow->TooltipStatName.IsEmpty())
 				{
-					line.StatValueText = BuildCurrentStatValueText(stat, statRow->bUsePercent);
+					line.StatNameText = potionRow->TooltipStatName;
+				}
+				else if (const FDTStatDisplayRow* statRow = FindStatDisplayRowByTag(dataSubsystem, potionRow->InstantModifier.StatTag))
+				{
+					line.StatNameText = statRow->DisplayName;
 				}
 				else
 				{
-					line.StatValueText = BuildCurrentStatValueText(stat, false);
+					line.StatNameText = BuildStatNameText(dataSubsystem, potionRow->InstantModifier.StatTag);
 				}
+
+				line.StatValueText = BuildInstantPotionValueText(
+					potionRow->InstantModifier,
+					potionRow->TooltipValueType == EPotionTooltipValueType::Percent
+				);
 
 				line.bVisible = true;
 				OutViewData.StatLines.Add(line);
+			}
+			else
+			{
+				for (const FDerivedStatModifier& stat : potionRow->Modifiers)
+				{
+					FItemStatLineViewData line;
+
+					if (!potionRow->TooltipStatName.IsEmpty())
+					{
+						line.StatNameText = potionRow->TooltipStatName;
+					}
+					else if (const FDTStatDisplayRow* statRow = FindStatDisplayRowByTag(dataSubsystem, stat.StatTag))
+					{
+						line.StatNameText = statRow->DisplayName;
+					}
+					else
+					{
+						line.StatNameText = BuildStatNameText(dataSubsystem, stat.StatTag);
+					}
+
+					line.StatValueText = BuildDurationPotionValueText(
+						stat,
+						potionRow->TooltipValueType == EPotionTooltipValueType::Percent
+					);
+
+					line.bVisible = true;
+					OutViewData.StatLines.Add(line);
+				}
 			}
 
 			FItemStatLineViewData cooldownLine;
@@ -420,8 +408,8 @@ FText FItemDetailHelper::BuildNextStatValueText(const FStatRangeDefinition& InRa
 		return FText::FromString(FString::Printf(TEXT("+%.0f%% ~ +%.0f%%"), minValue, maxValue));
 	}
 
-	const float minValue = FMath::Min(InRange.MinValue.Flat, InRange.MaxValue.Flat);
-	const float maxValue = FMath::Max(InRange.MinValue.Flat, InRange.MaxValue.Flat);
+	const float minValue = FMath::Min(FMath::Abs(InRange.MinValue.Flat), FMath::Abs(InRange.MaxValue.Flat));
+	const float maxValue = FMath::Max(FMath::Abs(InRange.MinValue.Flat), FMath::Abs(InRange.MaxValue.Flat));
 
 	if (FMath::IsNearlyEqual(minValue, maxValue))
 	{
@@ -488,4 +476,163 @@ FText FItemDetailHelper::BuildEquippedCharacterText(const UObject* WorldContextO
 	}
 
 	return FText::GetEmpty();
+}
+
+FText FItemDetailHelper::BuildInstantPotionValueText(const FDerivedStatModifier& InStat, bool bInUsePercent)
+{
+
+	if (bInUsePercent)
+	{
+		float percentValue = 0.0f;
+
+		if (!FMath::IsNearlyZero(InStat.Value.Flat))
+		{
+			percentValue = InStat.Value.Flat * 100.0f;
+		}
+		else
+		{
+			percentValue = InStat.Value.Mul * 100.0f;
+		}
+
+		return FText::FromString(FString::Printf(TEXT("+%.0f%%"), percentValue));
+	}
+
+	if (!FMath::IsNearlyZero(InStat.Value.Flat))
+	{
+		return FText::FromString(FString::Printf(TEXT("+%.0f"), InStat.Value.Flat));
+	}
+
+	if (!FMath::IsNearlyZero(InStat.Value.Mul))
+	{
+		return FText::FromString(FString::Printf(TEXT("+%.0f%%"), InStat.Value.Mul * 100.0f));
+	}
+
+	return FText::FromString(TEXT("+0"));
+}
+
+FText FItemDetailHelper::BuildDurationPotionValueText(const FDerivedStatModifier& InStat, bool bInUsePercent)
+{
+	if (bInUsePercent)
+	{
+		float percentValue = 0.0f;
+
+		if (!FMath::IsNearlyZero(InStat.Value.Flat))
+		{
+			percentValue = InStat.Value.Flat * 100.0f;
+		}
+		else
+		{
+			percentValue = InStat.Value.Mul * 100.0f;
+		}
+
+		return FText::FromString(FString::Printf(TEXT("+%.0f%%"), percentValue));
+	}
+
+	if (!FMath::IsNearlyZero(InStat.Value.Flat))
+	{
+		return FText::FromString(FString::Printf(TEXT("+%.0f"), InStat.Value.Flat));
+	}
+
+	if (!FMath::IsNearlyZero(InStat.Value.Mul))
+	{
+		return FText::FromString(FString::Printf(TEXT("+%.0f%%"), InStat.Value.Mul * 100.0f));
+	}
+
+	return FText::FromString(TEXT("+0"));
+}
+
+bool FItemDetailHelper::BuildMailboxEquipmentDisplayViewData(const UObject* WorldContextObject, const FGuid& InItemGuid, FItemDisplayViewData& OutViewData)
+{
+	ClearDisplayViewData(OutViewData);
+
+	if (!WorldContextObject) return false;
+	if (!InItemGuid.IsValid()) return false;
+
+	FEquipmentInfo equipInfo;
+	if (!FindMailboxEquipmentByGuid(WorldContextObject, InItemGuid, equipInfo)) return false;
+
+	return BuildEquipmentDisplayViewDataFromEquipment(WorldContextObject, InItemGuid, equipInfo, OutViewData, false);
+}
+
+bool FItemDetailHelper::BuildEquipmentDisplayViewDataFromEquipment(const UObject* WorldContextObject, const FGuid& InItemGuid, const FEquipmentInfo& InEquipInfo, FItemDisplayViewData& OutViewData, bool bShowEquippedCharacter)
+{
+	UARGameInstance* gameInstance = Cast<UARGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
+	if (!gameInstance) return false;
+
+	UGameDataSubsystem* dataSubsystem = gameInstance->GetSubsystem<UGameDataSubsystem>();
+	if (!dataSubsystem) return false;
+
+	const FDTItemCatalogRow* catalogRow = FPlayerAccountService::FindItemCatalogRowByTag(WorldContextObject, InEquipInfo.ItemTag);
+	if (!catalogRow) return false;
+
+	OutViewData.ItemNameText = catalogRow->DisplayName;
+	OutViewData.UpgradeLevelText = BuildUpgradeLevelText(InEquipInfo.CurrUpgradeLevel);
+	OutViewData.DescText = catalogRow->Desc;
+	OutViewData.SellPriceText = BuildSellPriceText(catalogRow->SellPrice);
+
+	OutViewData.bShowUpgradeLevel = true;
+
+	if (bShowEquippedCharacter)
+	{
+		OutViewData.EquippedCharacterText = BuildEquippedCharacterText(WorldContextObject, InItemGuid);
+		OutViewData.bShowEquippedCharacter = !OutViewData.EquippedCharacterText.IsEmpty();
+	}
+	else
+	{
+		OutViewData.EquippedCharacterText = FText::GetEmpty();
+		OutViewData.bShowEquippedCharacter = false;
+	}
+
+	const TArray<FDerivedStatModifier>* statsToShow = nullptr;
+
+	if (InEquipInfo.ItemTag.MatchesTag(Arcanum::Items::Rarity::Common::Weapon::Root)
+		|| InEquipInfo.ItemTag.MatchesTag(Arcanum::Items::Rarity::Legendary::Weapon::Root))
+	{
+		statsToShow = &InEquipInfo.Equipment.OnHitTargetStats;
+	}
+	else
+	{
+		statsToShow = &InEquipInfo.Equipment.OwnerStats;
+	}
+
+	for (const FDerivedStatModifier& stat : *statsToShow)
+	{
+		FItemStatLineViewData line;
+		line.StatNameText = BuildStatNameText(dataSubsystem, stat.StatTag);
+
+		if (const FDTStatDisplayRow* statRow = FindStatDisplayRowByTag(dataSubsystem, stat.StatTag))
+		{
+			line.StatValueText = BuildCurrentStatValueText(stat, statRow->bUsePercent);
+		}
+		else
+		{
+			line.StatValueText = BuildCurrentStatValueText(stat, false);
+		}
+
+		line.bVisible = true;
+		OutViewData.StatLines.Add(line);
+	}
+
+	return true;
+}
+
+bool FItemDetailHelper::FindMailboxEquipmentByGuid(const UObject* WorldContextObject, const FGuid& InItemGuid, FEquipmentInfo& OutEquipmentInfo)
+{
+	OutEquipmentInfo = FEquipmentInfo();
+
+	if (!WorldContextObject) return false;
+	if (!InItemGuid.IsValid()) return false;
+
+	const FPlayerData playerData = FPlayerAccountService::GetPlayerDataCopy(WorldContextObject);
+
+	for (const FMailItem& mailItem : playerData.Mailbox)
+	{
+		if (mailItem.Equipment.ItemGuid == InItemGuid)
+		{
+			OutEquipmentInfo = mailItem.Equipment;
+			return true;
+		}
+	}
+
+	return false;
 }

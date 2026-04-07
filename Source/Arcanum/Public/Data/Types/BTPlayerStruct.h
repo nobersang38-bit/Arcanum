@@ -35,10 +35,14 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Setting")
 	FName TargetActorName = FName("TargetActor");
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Setting")
+	FName CharacterToTargetDistanceName = FName("CurrentDistance");
+
 	void SpawnUnit();
 	void SetTargetActor(AActor* InTargetACtor);
 	bool CostCheck();
 	bool UseSkill();
+	bool RangeCheck(EBSkillType InSkillType);
 
 protected:
 	UFUNCTION()

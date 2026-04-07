@@ -2,12 +2,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "Object/GachaLevel/GachaCamera.h"
 #include "ARGachaGameModeBase.generated.h"
 
 class AShootingStarActor;
 class AASplinePathActor;
 class AResultStarActor;
-class AGachaCamera;
 struct FGachaItemResult;
 enum class ESplinePathType : uint8;
 
@@ -17,7 +17,8 @@ enum class EGachaSequenceState : uint8
 	None,
 	Intro,
 	Result,
-	Finished
+	Finished,
+	OpenAllActor
 };
 
 UCLASS()
@@ -60,16 +61,26 @@ public:
 	UFUNCTION() void SkipGacha();
 	UFUNCTION() void SkipToFinal();
 
+	UFUNCTION() void OpenChildActorAll();
+
 private:
 	UFUNCTION() void OnShootingStarShrink();
 	UFUNCTION() void OnShootingStarImpact();
 
-	UFUNCTION()
-	void OnSingleResultFinished(AResultStarActor* FinishedActor);
+	UFUNCTION()	void OnSingleResultFinished(AResultStarActor* FinishedActor);
+
+	UFUNCTION()	void OnAllResultFinished();
+
+	void BindResultActorDelegates(AResultStarActor* ResultActor);
 
 	// ========================================================
 	// Spawn / 관리
 	// ========================================================
+
+public:
+	AActor* GetActiveGachaCamera() { return Cast<AActor>(ActiveGachaCamera.Get()); }
+	AResultStarActor* GetActiveResultStar() { return ActiveResultStar; }
+
 private:
 	UPROPERTY() TObjectPtr<AShootingStarActor> ActiveShootingStar;
 	UPROPERTY() TObjectPtr<AResultStarActor> ActiveResultStar;
@@ -117,8 +128,7 @@ private:
 	// 로비 복귀
 	// ========================================================
 public:
-	UFUNCTION()
-	void ReturnLobby();
+	UFUNCTION() void ReturnLobby();
 
 	UPROPERTY(EditAnywhere, Category = "Map")
 	TSoftObjectPtr<UWorld> LobbyMap;

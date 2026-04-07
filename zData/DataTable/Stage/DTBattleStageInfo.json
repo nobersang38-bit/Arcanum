@@ -1,0 +1,735 @@
+[
+	{
+		"Name": "NormalStage1",
+		"StageTag":
+		{
+			"TagName": "Arcanum.BattleStage.Normal.Stage1"
+		},
+		"BattleStageInfo":
+		{
+			"EnemyWaveDataInfo":
+			{
+				"EnemyUnitsSet": [
+					{
+						"EnemyUnitTag":
+						{
+							"TagName": "Arcanum.Unit.Enemy.Cell"
+						},
+						"UseOnceSpawn": false,
+						"EnemyUnitStartSpawnTimeData":
+						{
+							"bUseStartSpawnTime": true,
+							"StartSpawnTime": 5
+						},
+						"EnemyUnitEndSpawnTimeData":
+						{
+							"bUseEndSpawnTime": false,
+							"EndSpawnTime": 0,
+							"SpawnWeightCurve":
+							{
+								"EditorCurveData":
+								{
+									"Keys": [],
+									"DefaultValue": 3.40282e+38,
+									"PreInfinityExtrap": "RCCE_Constant",
+									"PostInfinityExtrap": "RCCE_Constant",
+									"KeyHandlesToIndices":
+									{
+									}
+								},
+								"ExternalCurve": "None"
+							}
+						},
+						"EnemyUnitEnemyBaseHealthTriggerData":
+						{
+							"bUseEnemyBaseHealthTrigger": false,
+							"EnemyBaseHealthThreshold": 0
+						},
+						"EnemyUnitAllyBaseHealthTriggerData":
+						{
+							"bUseAllyBaseHealthTrigger": false,
+							"AllyBaseHealthThreshold": 0,
+							"AllyBaseHealthTriggerProbability": 1
+						},
+						"EnemyUnitPlayerHealthTriggerData":
+						{
+							"bUsePlayerHealthTrigger": false,
+							"PlayerHealthThreshold": 0,
+							"PlayerHealthTriggerProbability": 1
+						},
+						"EnemyUnitSpawnIntervalData":
+						{
+							"SpawnInterval": 3,
+							"SpawnIntervalDeviation": 1,
+							"Internal_SpawnInterval": 0
+						},
+						"EnemyUnitDynamicIntervalData":
+						{
+							"bUseDynamicInterval": false,
+							"DynamicIntervalTime": 0.5,
+							"DynamicIntervalDeviation": 0.25,
+							"Internal_DynamicIntervalTime": 0
+						}
+					},
+					{
+						"EnemyUnitTag":
+						{
+							"TagName": "Arcanum.Unit.Enemy.Bat"
+						},
+						"UseOnceSpawn": false,
+						"EnemyUnitStartSpawnTimeData":
+						{
+							"bUseStartSpawnTime": true,
+							"StartSpawnTime": 2
+						},
+						"EnemyUnitEndSpawnTimeData":
+						{
+							"bUseEndSpawnTime": false,
+							"EndSpawnTime": 0,
+							"SpawnWeightCurve":
+							{
+								"EditorCurveData":
+								{
+									"Keys": [],
+									"DefaultValue": 3.40282e+38,
+									"PreInfinityExtrap": "RCCE_Constant",
+									"PostInfinityExtrap": "RCCE_Constant",
+									"KeyHandlesToIndices":
+									{
+									}
+								},
+								"ExternalCurve": "None"
+							}
+						},
+						"EnemyUnitEnemyBaseHealthTriggerData":
+						{
+							"bUseEnemyBaseHealthTrigger": false,
+							"EnemyBaseHealthThreshold": 0
+						},
+						"EnemyUnitAllyBaseHealthTriggerData":
+						{
+							"bUseAllyBaseHealthTrigger": false,
+							"AllyBaseHealthThreshold": 0,
+							"AllyBaseHealthTriggerProbability": 1
+						},
+						"EnemyUnitPlayerHealthTriggerData":
+						{
+							"bUsePlayerHealthTrigger": false,
+							"PlayerHealthThreshold": 0,
+							"PlayerHealthTriggerProbability": 1
+						},
+						"EnemyUnitSpawnIntervalData":
+						{
+							"SpawnInterval": 5,
+							"SpawnIntervalDeviation": 2,
+							"Internal_SpawnInterval": 0
+						},
+						"EnemyUnitDynamicIntervalData":
+						{
+							"bUseDynamicInterval": false,
+							"DynamicIntervalTime": 0.5,
+							"DynamicIntervalDeviation": 0.25,
+							"Internal_DynamicIntervalTime": 0
+						}
+					}
+				]
+			},
+			"StageLimitTime": 200,
+			"SpawnPossibleSize":
+			{
+				"X": 1500,
+				"Y": 900
+			}
+		}
+	},
+	{
+		"Name": "NormalStage2",
+		"StageTag":
+		{
+			"TagName": "Arcanum.BattleStage.Normal.Stage2"
+		},
+		"BattleStageInfo":
+		{
+			"EnemyWaveDataInfo":
+			{
+				"EnemyUnitsSet": [
+					{
+						"EnemyUnitTag":
+						{
+							"TagName": "Arcanum.Unit.Enemy.Felice"
+						},
+						"UseOnceSpawn": false,
+						"EnemyUnitStartSpawnTimeData":
+						{
+							"bUseStartSpawnTime": true,
+							"StartSpawnTime": 5
+						},
+						"EnemyUnitEndSpawnTimeData":
+						{
+							"bUseEndSpawnTime": false,
+							"EndSpawnTime": 0,
+							"SpawnWeightCurve":
+							{
+								"EditorCurveData":
+								{
+									"Keys": [],
+									"DefaultValue": 3.40282e+38,
+									"PreInfinityExtrap": "RCCE_Constant",
+									"PostInfinityExtrap": "RCCE_Constant",
+									"KeyHandlesToIndices":
+									{
+									}
+								},
+								"ExternalCurve": "None"
+							}
+						},
+						"EnemyUnitEnemyBaseHealthTriggerData":
+						{
+							"bUseEnemyBaseHealthTrigger": false,
+							"EnemyBaseHealthThreshold": 0
+						},
+						"EnemyUnitAllyBaseHealthTriggerData":
+						{
+							"bUseAllyBaseHealthTrigger": false,
+							"AllyBaseHealthThreshold": 0,
+							"AllyBaseHealthTriggerProbability": 1
+						},
+						"EnemyUnitPlayerHealthTriggerData":
+						{
+							"bUsePlayerHealthTrigger": false,
+							"PlayerHealthThreshold": 0,
+							"PlayerHealthTriggerProbability": 1
+						},
+						"EnemyUnitSpawnIntervalData":
+						{
+							"SpawnInterval": 3,
+							"SpawnIntervalDeviation": 1,
+							"Internal_SpawnInterval": 0
+						},
+						"EnemyUnitDynamicIntervalData":
+						{
+							"bUseDynamicInterval": false,
+							"DynamicIntervalTime": 0.5,
+							"DynamicIntervalDeviation": 0.25,
+							"Internal_DynamicIntervalTime": 0
+						}
+					},
+					{
+						"EnemyUnitTag":
+						{
+							"TagName": "Arcanum.Unit.Enemy.CupFelice"
+						},
+						"UseOnceSpawn": false,
+						"EnemyUnitStartSpawnTimeData":
+						{
+							"bUseStartSpawnTime": true,
+							"StartSpawnTime": 2
+						},
+						"EnemyUnitEndSpawnTimeData":
+						{
+							"bUseEndSpawnTime": false,
+							"EndSpawnTime": 0,
+							"SpawnWeightCurve":
+							{
+								"EditorCurveData":
+								{
+									"Keys": [],
+									"DefaultValue": 3.40282e+38,
+									"PreInfinityExtrap": "RCCE_Constant",
+									"PostInfinityExtrap": "RCCE_Constant",
+									"KeyHandlesToIndices":
+									{
+									}
+								},
+								"ExternalCurve": "None"
+							}
+						},
+						"EnemyUnitEnemyBaseHealthTriggerData":
+						{
+							"bUseEnemyBaseHealthTrigger": false,
+							"EnemyBaseHealthThreshold": 0
+						},
+						"EnemyUnitAllyBaseHealthTriggerData":
+						{
+							"bUseAllyBaseHealthTrigger": false,
+							"AllyBaseHealthThreshold": 0,
+							"AllyBaseHealthTriggerProbability": 1
+						},
+						"EnemyUnitPlayerHealthTriggerData":
+						{
+							"bUsePlayerHealthTrigger": false,
+							"PlayerHealthThreshold": 0,
+							"PlayerHealthTriggerProbability": 1
+						},
+						"EnemyUnitSpawnIntervalData":
+						{
+							"SpawnInterval": 5,
+							"SpawnIntervalDeviation": 2,
+							"Internal_SpawnInterval": 0
+						},
+						"EnemyUnitDynamicIntervalData":
+						{
+							"bUseDynamicInterval": false,
+							"DynamicIntervalTime": 0.5,
+							"DynamicIntervalDeviation": 0.25,
+							"Internal_DynamicIntervalTime": 0
+						}
+					},
+					{
+						"EnemyUnitTag":
+						{
+							"TagName": "Arcanum.Unit.Enemy.GhostMacaron"
+						},
+						"UseOnceSpawn": false,
+						"EnemyUnitStartSpawnTimeData":
+						{
+							"bUseStartSpawnTime": true,
+							"StartSpawnTime": 10
+						},
+						"EnemyUnitEndSpawnTimeData":
+						{
+							"bUseEndSpawnTime": false,
+							"EndSpawnTime": 0,
+							"SpawnWeightCurve":
+							{
+								"EditorCurveData":
+								{
+									"Keys": [],
+									"DefaultValue": 3.40282e+38,
+									"PreInfinityExtrap": "RCCE_Constant",
+									"PostInfinityExtrap": "RCCE_Constant",
+									"KeyHandlesToIndices":
+									{
+									}
+								},
+								"ExternalCurve": "None"
+							}
+						},
+						"EnemyUnitEnemyBaseHealthTriggerData":
+						{
+							"bUseEnemyBaseHealthTrigger": false,
+							"EnemyBaseHealthThreshold": 0
+						},
+						"EnemyUnitAllyBaseHealthTriggerData":
+						{
+							"bUseAllyBaseHealthTrigger": false,
+							"AllyBaseHealthThreshold": 0,
+							"AllyBaseHealthTriggerProbability": 1
+						},
+						"EnemyUnitPlayerHealthTriggerData":
+						{
+							"bUsePlayerHealthTrigger": false,
+							"PlayerHealthThreshold": 0,
+							"PlayerHealthTriggerProbability": 1
+						},
+						"EnemyUnitSpawnIntervalData":
+						{
+							"SpawnInterval": 5,
+							"SpawnIntervalDeviation": 2,
+							"Internal_SpawnInterval": 0
+						},
+						"EnemyUnitDynamicIntervalData":
+						{
+							"bUseDynamicInterval": false,
+							"DynamicIntervalTime": 0.5,
+							"DynamicIntervalDeviation": 0.25,
+							"Internal_DynamicIntervalTime": 0
+						}
+					}
+				]
+			},
+			"StageLimitTime": 300,
+			"SpawnPossibleSize":
+			{
+				"X": 1500,
+				"Y": 900
+			}
+		}
+	},
+	{
+		"Name": "NormalStage3",
+		"StageTag":
+		{
+			"TagName": "Arcanum.BattleStage.Normal.Stage3"
+		},
+		"BattleStageInfo":
+		{
+			"EnemyWaveDataInfo":
+			{
+				"EnemyUnitsSet": [
+					{
+						"EnemyUnitTag":
+						{
+							"TagName": "Arcanum.Unit.Enemy.Wolfron"
+						},
+						"UseOnceSpawn": false,
+						"EnemyUnitStartSpawnTimeData":
+						{
+							"bUseStartSpawnTime": true,
+							"StartSpawnTime": 0
+						},
+						"EnemyUnitEndSpawnTimeData":
+						{
+							"bUseEndSpawnTime": false,
+							"EndSpawnTime": 0,
+							"SpawnWeightCurve":
+							{
+								"EditorCurveData":
+								{
+									"Keys": [],
+									"DefaultValue": 3.40282e+38,
+									"PreInfinityExtrap": "RCCE_Constant",
+									"PostInfinityExtrap": "RCCE_Constant",
+									"KeyHandlesToIndices":
+									{
+									}
+								},
+								"ExternalCurve": "None"
+							}
+						},
+						"EnemyUnitEnemyBaseHealthTriggerData":
+						{
+							"bUseEnemyBaseHealthTrigger": false,
+							"EnemyBaseHealthThreshold": 0
+						},
+						"EnemyUnitAllyBaseHealthTriggerData":
+						{
+							"bUseAllyBaseHealthTrigger": false,
+							"AllyBaseHealthThreshold": 0,
+							"AllyBaseHealthTriggerProbability": 1
+						},
+						"EnemyUnitPlayerHealthTriggerData":
+						{
+							"bUsePlayerHealthTrigger": false,
+							"PlayerHealthThreshold": 0,
+							"PlayerHealthTriggerProbability": 1
+						},
+						"EnemyUnitSpawnIntervalData":
+						{
+							"SpawnInterval": 3,
+							"SpawnIntervalDeviation": 1,
+							"Internal_SpawnInterval": 0
+						},
+						"EnemyUnitDynamicIntervalData":
+						{
+							"bUseDynamicInterval": false,
+							"DynamicIntervalTime": 0.5,
+							"DynamicIntervalDeviation": 0.25,
+							"Internal_DynamicIntervalTime": 0
+						}
+					},
+					{
+						"EnemyUnitTag":
+						{
+							"TagName": "Arcanum.Unit.Enemy.Mask"
+						},
+						"UseOnceSpawn": false,
+						"EnemyUnitStartSpawnTimeData":
+						{
+							"bUseStartSpawnTime": true,
+							"StartSpawnTime": 5
+						},
+						"EnemyUnitEndSpawnTimeData":
+						{
+							"bUseEndSpawnTime": false,
+							"EndSpawnTime": 0,
+							"SpawnWeightCurve":
+							{
+								"EditorCurveData":
+								{
+									"Keys": [],
+									"DefaultValue": 3.40282e+38,
+									"PreInfinityExtrap": "RCCE_Constant",
+									"PostInfinityExtrap": "RCCE_Constant",
+									"KeyHandlesToIndices":
+									{
+									}
+								},
+								"ExternalCurve": "None"
+							}
+						},
+						"EnemyUnitEnemyBaseHealthTriggerData":
+						{
+							"bUseEnemyBaseHealthTrigger": false,
+							"EnemyBaseHealthThreshold": 0
+						},
+						"EnemyUnitAllyBaseHealthTriggerData":
+						{
+							"bUseAllyBaseHealthTrigger": false,
+							"AllyBaseHealthThreshold": 0,
+							"AllyBaseHealthTriggerProbability": 1
+						},
+						"EnemyUnitPlayerHealthTriggerData":
+						{
+							"bUsePlayerHealthTrigger": false,
+							"PlayerHealthThreshold": 0,
+							"PlayerHealthTriggerProbability": 1
+						},
+						"EnemyUnitSpawnIntervalData":
+						{
+							"SpawnInterval": 3,
+							"SpawnIntervalDeviation": 2,
+							"Internal_SpawnInterval": 0
+						},
+						"EnemyUnitDynamicIntervalData":
+						{
+							"bUseDynamicInterval": false,
+							"DynamicIntervalTime": 0.5,
+							"DynamicIntervalDeviation": 0.25,
+							"Internal_DynamicIntervalTime": 0
+						}
+					},
+					{
+						"EnemyUnitTag":
+						{
+							"TagName": "Arcanum.Unit.Enemy.MageMacaron"
+						},
+						"UseOnceSpawn": false,
+						"EnemyUnitStartSpawnTimeData":
+						{
+							"bUseStartSpawnTime": true,
+							"StartSpawnTime": 6
+						},
+						"EnemyUnitEndSpawnTimeData":
+						{
+							"bUseEndSpawnTime": false,
+							"EndSpawnTime": 0,
+							"SpawnWeightCurve":
+							{
+								"EditorCurveData":
+								{
+									"Keys": [],
+									"DefaultValue": 3.40282e+38,
+									"PreInfinityExtrap": "RCCE_Constant",
+									"PostInfinityExtrap": "RCCE_Constant",
+									"KeyHandlesToIndices":
+									{
+									}
+								},
+								"ExternalCurve": "None"
+							}
+						},
+						"EnemyUnitEnemyBaseHealthTriggerData":
+						{
+							"bUseEnemyBaseHealthTrigger": false,
+							"EnemyBaseHealthThreshold": 0
+						},
+						"EnemyUnitAllyBaseHealthTriggerData":
+						{
+							"bUseAllyBaseHealthTrigger": false,
+							"AllyBaseHealthThreshold": 0,
+							"AllyBaseHealthTriggerProbability": 1
+						},
+						"EnemyUnitPlayerHealthTriggerData":
+						{
+							"bUsePlayerHealthTrigger": false,
+							"PlayerHealthThreshold": 0,
+							"PlayerHealthTriggerProbability": 1
+						},
+						"EnemyUnitSpawnIntervalData":
+						{
+							"SpawnInterval": 10,
+							"SpawnIntervalDeviation": 5,
+							"Internal_SpawnInterval": 0
+						},
+						"EnemyUnitDynamicIntervalData":
+						{
+							"bUseDynamicInterval": false,
+							"DynamicIntervalTime": 0.5,
+							"DynamicIntervalDeviation": 0.25,
+							"Internal_DynamicIntervalTime": 0
+						}
+					},
+					{
+						"EnemyUnitTag":
+						{
+							"TagName": "Arcanum.Unit.Enemy.Macaron"
+						},
+						"UseOnceSpawn": false,
+						"EnemyUnitStartSpawnTimeData":
+						{
+							"bUseStartSpawnTime": true,
+							"StartSpawnTime": 3
+						},
+						"EnemyUnitEndSpawnTimeData":
+						{
+							"bUseEndSpawnTime": false,
+							"EndSpawnTime": 0,
+							"SpawnWeightCurve":
+							{
+								"EditorCurveData":
+								{
+									"Keys": [],
+									"DefaultValue": 3.40282e+38,
+									"PreInfinityExtrap": "RCCE_Constant",
+									"PostInfinityExtrap": "RCCE_Constant",
+									"KeyHandlesToIndices":
+									{
+									}
+								},
+								"ExternalCurve": "None"
+							}
+						},
+						"EnemyUnitEnemyBaseHealthTriggerData":
+						{
+							"bUseEnemyBaseHealthTrigger": false,
+							"EnemyBaseHealthThreshold": 0
+						},
+						"EnemyUnitAllyBaseHealthTriggerData":
+						{
+							"bUseAllyBaseHealthTrigger": false,
+							"AllyBaseHealthThreshold": 0,
+							"AllyBaseHealthTriggerProbability": 1
+						},
+						"EnemyUnitPlayerHealthTriggerData":
+						{
+							"bUsePlayerHealthTrigger": false,
+							"PlayerHealthThreshold": 0,
+							"PlayerHealthTriggerProbability": 1
+						},
+						"EnemyUnitSpawnIntervalData":
+						{
+							"SpawnInterval": 4,
+							"SpawnIntervalDeviation": 2,
+							"Internal_SpawnInterval": 0
+						},
+						"EnemyUnitDynamicIntervalData":
+						{
+							"bUseDynamicInterval": false,
+							"DynamicIntervalTime": 0.5,
+							"DynamicIntervalDeviation": 0.25,
+							"Internal_DynamicIntervalTime": 0
+						}
+					},
+					{
+						"EnemyUnitTag":
+						{
+							"TagName": "Arcanum.Unit.Enemy.Leech"
+						},
+						"UseOnceSpawn": false,
+						"EnemyUnitStartSpawnTimeData":
+						{
+							"bUseStartSpawnTime": true,
+							"StartSpawnTime": 10
+						},
+						"EnemyUnitEndSpawnTimeData":
+						{
+							"bUseEndSpawnTime": false,
+							"EndSpawnTime": 0,
+							"SpawnWeightCurve":
+							{
+								"EditorCurveData":
+								{
+									"Keys": [],
+									"DefaultValue": 3.40282e+38,
+									"PreInfinityExtrap": "RCCE_Constant",
+									"PostInfinityExtrap": "RCCE_Constant",
+									"KeyHandlesToIndices":
+									{
+									}
+								},
+								"ExternalCurve": "None"
+							}
+						},
+						"EnemyUnitEnemyBaseHealthTriggerData":
+						{
+							"bUseEnemyBaseHealthTrigger": false,
+							"EnemyBaseHealthThreshold": 0
+						},
+						"EnemyUnitAllyBaseHealthTriggerData":
+						{
+							"bUseAllyBaseHealthTrigger": false,
+							"AllyBaseHealthThreshold": 0,
+							"AllyBaseHealthTriggerProbability": 1
+						},
+						"EnemyUnitPlayerHealthTriggerData":
+						{
+							"bUsePlayerHealthTrigger": false,
+							"PlayerHealthThreshold": 0,
+							"PlayerHealthTriggerProbability": 1
+						},
+						"EnemyUnitSpawnIntervalData":
+						{
+							"SpawnInterval": 10,
+							"SpawnIntervalDeviation": 5,
+							"Internal_SpawnInterval": 0
+						},
+						"EnemyUnitDynamicIntervalData":
+						{
+							"bUseDynamicInterval": false,
+							"DynamicIntervalTime": 0.5,
+							"DynamicIntervalDeviation": 0.25,
+							"Internal_DynamicIntervalTime": 0
+						}
+					}
+				]
+			},
+			"StageLimitTime": 100,
+			"SpawnPossibleSize":
+			{
+				"X": 1500,
+				"Y": 900
+			}
+		}
+	},
+	{
+		"Name": "HardStage1",
+		"StageTag":
+		{
+			"TagName": "None"
+		},
+		"BattleStageInfo":
+		{
+			"EnemyWaveDataInfo":
+			{
+				"EnemyUnitsSet": []
+			},
+			"StageLimitTime": 100,
+			"SpawnPossibleSize":
+			{
+				"X": 1500,
+				"Y": 900
+			}
+		}
+	},
+	{
+		"Name": "HardStage2",
+		"StageTag":
+		{
+			"TagName": "None"
+		},
+		"BattleStageInfo":
+		{
+			"EnemyWaveDataInfo":
+			{
+				"EnemyUnitsSet": []
+			},
+			"StageLimitTime": 100,
+			"SpawnPossibleSize":
+			{
+				"X": 1500,
+				"Y": 900
+			}
+		}
+	},
+	{
+		"Name": "HardStage3",
+		"StageTag":
+		{
+			"TagName": "None"
+		},
+		"BattleStageInfo":
+		{
+			"EnemyWaveDataInfo":
+			{
+				"EnemyUnitsSet": []
+			},
+			"StageLimitTime": 100,
+			"SpawnPossibleSize":
+			{
+				"X": 1500,
+				"Y": 900
+			}
+		}
+	}
+]
