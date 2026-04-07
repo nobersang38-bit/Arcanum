@@ -89,20 +89,20 @@ public:
 		return true;
 	}
 
-	/* 전용 데이터 링크 유효성 */
-	bool HasDetailLink() const
-	{
-		return DetailTableTag.IsValid() && !DetailRowName.IsNone();
-	}
+	///* 전용 데이터 링크 유효성 */
+	//bool HasDetailLink() const
+	//{
+	//	return DetailTableTag.IsValid() && !DetailRowName.IsNone();
+	//}
 
-	/* 스택 최대값 */
-	int32 GetMaxStack() const
-	{
-		if (StackRule == EItemStackRule::Stackable)
-		{
-			return FMath::Max(1, MaxStack);
-		}
+	///* 스택 최대값 */
+	//int32 GetMaxStack() const
+	//{
+	//	if (StackRule == EItemStackRule::Stackable)
+	//	{
+	//		return FMath::Max(1, MaxStack);
+	//	}
 
-		return 1;
-	}
+	//	return 1;
+	//}
 };

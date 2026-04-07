@@ -716,8 +716,7 @@ bool UARGameInstance::AddTestEquipmentSet()
 		if (catalogRow->DetailRowName.IsNone()) continue;
 
 		FDTEquipmentInfoRow* equipRow = dataSubsystem->GetRow<FDTEquipmentInfoRow>(
-			Arcanum::DataTable::Equipment,
-			catalogRow->DetailRowName);
+			Arcanum::DataTable::Equipment, catalogRow->DetailRowName);
 		if (!equipRow) continue;
 		if (!equipRow->ItemTag.IsValid()) continue;
 		if (equipRow->BaseInfoSteps.IsEmpty()) continue;
